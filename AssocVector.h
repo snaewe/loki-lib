@@ -189,7 +189,7 @@ namespace Loki
         }
        
         template <class InputIterator>
-        iterator insert(InputIterator first, InputIterator last)
+        void insert(InputIterator first, InputIterator last)
         { for (; first != last; ++first) insert(*first); }
         
         void erase(iterator pos)
@@ -328,6 +328,7 @@ namespace Loki
 // June 11, 2001: remove paren in equal_range - credit due to Cristoph Koegl
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 22, 2002: fixed operator= - credit due to Tom Hyer
+// June 25, 2002: fixed template insert() - credit due to Robert Minsk
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ASSOCVECTOR_INC_
