@@ -36,7 +36,7 @@ void Loki::Private::AtExitFn()
     // Don't check errors - realloc with less memory 
     //     can't fail
     pTrackerArray = static_cast<TrackerArray>(std::realloc(
-        pTrackerArray, sizeof(T) * --elements));
+        pTrackerArray, sizeof(*pTrackerArray) * --elements));
     // Destroy the element
     delete pTop;
 }
@@ -46,4 +46,5 @@ void Loki::Private::AtExitFn()
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 10, 2002: Fixed bug in call to realloc - credit due to Nigel Gent and
 //      Eike Petersen
+// May 08, 2002: Refixed bug in call to realloc
 ////////////////////////////////////////////////////////////////////////////////
