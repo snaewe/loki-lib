@@ -1,4 +1,4 @@
-Last update: June 20, 2001
+Last update: Aug 14, 2002
 
 Directions:
 
@@ -12,9 +12,14 @@ Compatibility:
 
 Loki has been tested with Metrowerks CodeWarrior Pro 6 under Windows. CodeWarrior has a problem with the Conversion template (see TypeManip.h) and, though it compiles it, it doesn't provide correct results. Consequently, the DerivedToFront algorithm in Typelist.h does not function. This affects the static dispatcher in Multimethods.h. As a fix, you must order the types (putting the most derived ones in the front) when providing the typelist argument to StaticDispatcher.
 
-Also, Loki has been ported to gcc 2.95.3 by Nick Thurn.
+Also, Loki has been ported to gcc 2.95.3 and to MSVC7.
+A port to Borland C++ BUilder is in progress.
+Typelist have been ported to MSVC6.
 
 
 More info:
 
 http://moderncppdesign.com
+http://sourceforge.net/projects/loki-lib/
+
+
