@@ -71,102 +71,102 @@ public:
 
     bool test1=TestClass::instances == 0;
 
-    { p0 p = new TestClass(); }
-    { p1 p = new TestClass(); }
-//    { p2 p = new TestClass(); }
-    { p3 p = new TestClass(); }
-    { p4 p = new TestClass(); }
-    { p5 p = new TestClass(); }
-    { p6 p = new TestClass(); }
-    { p7 p = new TestClass(); }
-    { p8 p = new TestClass(); }
-    { p9 p = new TestClass(); }
-//    { p10 p = new TestClass(); }
-    { p11 p = new TestClass(); }
-    { p12 p = new TestClass(); }
-    { p13 p = new TestClass(); }
-    { p14 p = new TestClass(); }
-    { p15 p = new TestClass(); }
-    { p16 p = new TestClass(); }
-    { p17 p = new TestClass(); }
-//    { p18 p = new TestClass(); }
-    { p19 p = new TestClass(); }
-    { p20 p = new TestClass(); }
-    { p21 p = new TestClass(); }
-    { p22 p = new TestClass(); }
-    { p23 p = new TestClass(); }
-    { p24 p = new TestClass(); }
-    { p25 p = new TestClass(); }
-//    { p26 p = new TestClass(); }
-    { p27 p = new TestClass(); }
-    { p28 p = new TestClass(); }
-    { p29 p = new TestClass(); }
-    { p30 p = new TestClass(); }
-    { p31 p = new TestClass(); }
-    { p40 p = new TestClass(); }
-    { p41 p = new TestClass(); }
-//    { p42 p = new TestClass(); }
-    { p43 p = new TestClass(); }
-    { p44 p = new TestClass(); }
-    { p45 p = new TestClass(); }
-    { p46 p = new TestClass(); }
-    { p47 p = new TestClass(); }
-    { p48 p = new TestClass(); }
-    { p49 p = new TestClass(); }
-//    { p50 p = new TestClass(); }
-    { p51 p = new TestClass(); }
-    { p52 p = new TestClass(); }
-    { p53 p = new TestClass(); }
-    { p54 p = new TestClass(); }
-    { p55 p = new TestClass(); }
-    { p56 p = new TestClass(); }
-    { p57 p = new TestClass(); }
-//    { p58 p = new TestClass(); }
-    { p59 p = new TestClass(); }
-    { p60 p = new TestClass(); }
-    { p61 p = new TestClass(); }
-    { p62 p = new TestClass(); }
-    { p63 p = new TestClass(); }
-    { p64 p = new TestClass(); }
-    { p65 p = new TestClass(); }
-//    { p66 p = new TestClass(); }
-    { p67 p = new TestClass(); }
-    { p68 p = new TestClass(); }
-    { p69 p = new TestClass(); }
-    { p70 p = new TestClass(); }
-    { p71 p = new TestClass(); }
-    { p72 p = new TestClass(); }
-    { p73 p = new TestClass(); }
-//    { p74 p = new TestClass(); }
-    { p75 p = new TestClass(); }
-    { p76 p = new TestClass(); }
-    { p77 p = new TestClass(); }
-    { p78 p = new TestClass(); }
-    { p79 p = new TestClass(); }
-    { p80 p = new TestClass(); }
-    { p81 p = new TestClass(); }
-//    { p82 p = new TestClass(); }
-    { p83 p = new TestClass(); }
-    { p84 p = new TestClass(); }
-    { p85 p = new TestClass(); }
-    { p86 p = new TestClass(); }
-    { p87 p = new TestClass(); }
-    { p88 p = new TestClass(); }
-    { p89 p = new TestClass(); }
-//    { p90 p = new TestClass(); }
-    { p91 p = new TestClass(); }
-    { p92 p = new TestClass(); }
-    { p93 p = new TestClass(); }
-    { p94 p = new TestClass(); }
-    { p95 p = new TestClass(); }
-    { p96 p = new TestClass(); }
-    { p97 p = new TestClass(); }
-//    { p98 p = new TestClass(); }
-    { p99 p = new TestClass(); }
-    { p100 p = new TestClass(); }
-    { p101 p = new TestClass(); }
-    { p102 p = new TestClass(); }
-    { p103 p = new TestClass(); }
+    { p0 p(new TestClass); }
+    { p1 p(new TestClass); }
+//    { p2 p(new TestClass); }
+    { p3 p(new TestClass); }
+    { p4 p(new TestClass); }
+    { p5 p(new TestClass); }
+    { p6 p(new TestClass); }
+    { p7 p(new TestClass); }
+    { p8 p(new TestClass); }
+    { p9 p(new TestClass); }
+//    { p10 p(new TestClass); }
+    { p11 p(new TestClass); }
+    { p12 p(new TestClass); }
+    { p13 p(new TestClass); }
+    { p14 p(new TestClass); }
+    { p15 p(new TestClass); }
+    { p16 p(new TestClass); }
+    { p17 p(new TestClass); }
+//    { p18 p(new TestClass); }
+    { p19 p(new TestClass); }
+    { p20 p(new TestClass); }
+    { p21 p(new TestClass); }
+    { p22 p(new TestClass); }
+    { p23 p(new TestClass); }
+    { p24 p(new TestClass); }
+    { p25 p(new TestClass); }
+//    { p26 p(new TestClass); }
+    { p27 p(new TestClass); }
+    { p28 p(new TestClass); }
+    { p29 p(new TestClass); }
+    { p30 p(new TestClass); }
+    { p31 p(new TestClass); }
+    { p40 p(new TestClass); }
+    { p41 p(new TestClass); }
+//    { p42 p(new TestClass); }
+    { p43 p(new TestClass); }
+    { p44 p(new TestClass); }
+    { p45 p(new TestClass); }
+    { p46 p(new TestClass); }
+    { p47 p(new TestClass); }
+    { p48 p(new TestClass); }
+    { p49 p(new TestClass); }
+//    { p50 p(new TestClass); }
+    { p51 p(new TestClass); }
+    { p52 p(new TestClass); }
+    { p53 p(new TestClass); }
+    { p54 p(new TestClass); }
+    { p55 p(new TestClass); }
+    { p56 p(new TestClass); }
+    { p57 p(new TestClass); }
+//    { p58 p(new TestClass); }
+    { p59 p(new TestClass); }
+    { p60 p(new TestClass); }
+    { p61 p(new TestClass); }
+    { p62 p(new TestClass); }
+    { p63 p(new TestClass); }
+    { p64 p(new TestClass); }
+    { p65 p(new TestClass); }
+//    { p66 p(new TestClass); }
+    { p67 p(new TestClass); }
+    { p68 p(new TestClass); }
+    { p69 p(new TestClass); }
+    { p70 p(new TestClass); }
+    { p71 p(new TestClass); }
+    { p72 p(new TestClass); }
+    { p73 p(new TestClass); }
+//    { p74 p(new TestClass); }
+    { p75 p(new TestClass); }
+    { p76 p(new TestClass); }
+    { p77 p(new TestClass); }
+    { p78 p(new TestClass); }
+    { p79 p(new TestClass); }
+    { p80 p(new TestClass); }
+    { p81 p(new TestClass); }
+//    { p82 p(new TestClass); }
+    { p83 p(new TestClass); }
+    { p84 p(new TestClass); }
+    { p85 p(new TestClass); }
+    { p86 p(new TestClass); }
+    { p87 p(new TestClass); }
+    { p88 p(new TestClass); }
+    { p89 p(new TestClass); }
+//    { p90 p(new TestClass); }
+    { p91 p(new TestClass); }
+    { p92 p(new TestClass); }
+    { p93 p(new TestClass); }
+    { p94 p(new TestClass); }
+    { p95 p(new TestClass); }
+    { p96 p(new TestClass); }
+    { p97 p(new TestClass); }
+//    { p98 p(new TestClass); }
+    { p99 p(new TestClass); }
+    { p100 p(new TestClass); }
+    { p101 p(new TestClass); }
+    { p102 p(new TestClass); }
+    { p103 p(new TestClass); }
 
     bool test2=TestClass::instances==0;
 
