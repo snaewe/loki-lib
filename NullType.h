@@ -8,7 +8,7 @@
 //     purpose is hereby granted without fee, provided that the above copyright 
 //     notice appear in all copies and that both that copyright notice and this 
 //     permission notice appear in supporting documentation.
-// The author or Addison-Welsey Longman make no representations about the 
+// The author or Addison-Wesley Longman make no representations about the 
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +27,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     class NullType {};
+    
 }   // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
