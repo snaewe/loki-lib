@@ -82,6 +82,8 @@ namespace Private
 				head.operator()(ii);
 				tail.operator()(ii);
 			}
+		protected:
+			~In() {}
 		};
 	};
 	
@@ -100,6 +102,8 @@ namespace Private
 				*ii = genfunc();
 				++ii; //Is this even needed?
 			}
+		protected:
+			~In() {}
 		};
 	};
 
@@ -113,6 +117,8 @@ namespace Private
 			template<class II>
 			void operator()(II ii)
 			{}
+		protected:
+			~In() {}
 		};
 	};
 }	// end ns Private
@@ -140,4 +146,5 @@ namespace Private
 // 9/20/02 Named changed from GenData to IterateTypes
 // 10/8/02 insertion iterators are passed-by-value, not by-reference (oops)
 // 03/04/03 ported by Benjamin Kaufmann to MSVC 6.0 
+// 03/06/03 added protected destructors to private implementation classes B.K.
 ////////////////////////////////////////////////////////////////////////////////
