@@ -13,7 +13,14 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 11, 2002
+// Last update: Jan 12, 2003
+// changed SmallObject's op new from
+// static void* operator new(VC_BROKEN_STD::size_t size);
+// to 
+// static void* operator new(VC_BROKEN_STD::size_t size,
+//							 VC_BROKEN_STD::size_t dummy = 0);
+// and removed the ugly #pragma warning(disable:4291)"
+// Thanks to M.Yamada for the hint
 
 #ifndef SMALLOBJ_INC_
 #define SMALLOBJ_INC_
@@ -23,10 +30,6 @@
 #include "MSVC6Helpers.h"		// for apply-template
 #include <cstddef>
 #include <vector>
-#ifdef _MSC_VER
-#define for if(0);else for
-#	pragma warning(disable:4291)
-#endif
 
 #ifndef DEFAULT_CHUNK_SIZE
 #define DEFAULT_CHUNK_SIZE 4096
@@ -156,7 +159,7 @@ namespace Loki
         //        DefaultLifetime, ThreadingModel*/> MyAllocator;
         
     public:
-        static void* operator new(VC_BROKEN_STD::size_t size)
+        static void* operator new(VC_BROKEN_STD::size_t size, VC_BROKEN_STD::size_t dummy = 0)
         {
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
             typename MyThreadingModel::Lock lock;
