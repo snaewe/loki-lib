@@ -13,8 +13,6 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
-
 #ifndef FACTORY_INC_
 #define FACTORY_INC_
 
@@ -64,7 +62,7 @@ namespace Loki
         bool Register(const IdentifierType& id, ProductCreator creator)
         {
             return associations_.insert(
-                typename IdToProductMap::value_type(id, creator)).second;
+                IdToProductMap::value_type(id, creator)).second;
         }
         
         bool Unregister(const IdentifierType& id)
@@ -79,7 +77,7 @@ namespace Loki
             {
                 return (i->second)();
             }
-            return OnUnknownType(id);
+            return this->OnUnknownType(id);
         }
         
     private:
@@ -107,7 +105,7 @@ namespace Loki
         bool Register(const TypeInfo& ti, ProductCreator creator)
         {
             return associations_.insert(
-                typename IdToProductMap::value_type(ti, creator)).second;
+                IdToProductMap::value_type(ti, creator)).second;
         }
         
         bool Unregister(const TypeInfo& id)
@@ -125,7 +123,7 @@ namespace Loki
             {
                 return (i->second)(model);
             }
-            return OnUnknownType(typeid(*model));
+            return this->OnUnknownType(typeid(*model));
         }
         
     private:
@@ -136,10 +134,11 @@ namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// May 08, 2002: replaced const_iterator with iterator so that self-modifying
-//      ProductCreators are supported. Also, added a throw() spec to what().
-//      Credit due to Jason Fischl.
+// June 20,    2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// May 08,     2002: replaced const_iterator with iterator so that self-modifying
+//                   ProductCreators are supported. Also, added a throw()
+//                   spec to what(). Credit due to Jason Fischl.
+// February 2, 2003: fixed dependent names - credit due to Rani Sharoni
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // FACTORY_INC_

@@ -168,7 +168,7 @@ namespace Loki
             bool found(true);
             iterator i(lower_bound(val.first));
 
-            if (i == end() || operator()(val.first, i->first))
+            if (i == end() || this->operator()(val.first, i->first))
             {
                 i = Base::insert(i, val);
                 found = false;
@@ -178,10 +178,10 @@ namespace Loki
 
         iterator insert(iterator pos, const value_type& val)
         {
-            if (pos != end() && operator()(*pos, val) && 
+            if (pos != end() && this->operator()(*pos, val) &&
                 (pos == end() - 1 ||
-                    !operator()(val, pos[1]) &&
-                        operator()(pos[1], val)))
+                    !this->operator()(val, pos[1]) &&
+                        this->operator()(pos[1], val)))
             {
                 return Base::insert(pos, val);
             }
@@ -232,7 +232,7 @@ namespace Loki
         iterator find(const key_type& k)
         {
             iterator i(lower_bound(k));
-            if (i != end() && operator()(k, i->first))
+            if (i != end() && this->operator()(k, i->first))
             {
                 i = end();
             }
@@ -242,7 +242,7 @@ namespace Loki
         const_iterator find(const key_type& k) const
         {       
             const_iterator i(lower_bound(k));
-            if (i != end() && operator()(k, i->first))
+            if (i != end() && this->operator()(k, i->first))
             {
                 i = end();
             }
@@ -324,12 +324,13 @@ namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// May 20, 2001: change operator= - credit due to Cristoph Koegl
-// June 11, 2001: remove paren in equal_range - credit due to Cristoph Koegl
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// May 20,     2001: change operator= - credit due to Cristoph Koegl
+// June 11,    2001: remove paren in equal_range - credit due to Cristoph Koegl
+// June 20,    2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 22, 2002: fixed operator= - credit due to Tom Hyer
-// June 25, 2002: fixed template insert() - credit due to Robert Minsk
-// June 27, 2002: fixed member swap() - credit due to David Brookman
+// June 25,    2002: fixed template insert() - credit due to Robert Minsk
+// June 27,    2002: fixed member swap() - credit due to David Brookman
+// February 2, 2003: fixed dependent names - credit due to Rani Sharoni
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ASSOCVECTOR_INC_
