@@ -104,7 +104,7 @@ namespace Loki
         typedef typename Base::reverse_iterator reverse_iterator;
         typedef typename Base::const_reverse_iterator const_reverse_iterator;
 
-    	class value_compare
+        class value_compare
             : public std::binary_function<value_type, value_type, bool>
             , private key_compare
         {
@@ -138,9 +138,9 @@ namespace Loki
         
         AssocVector& operator=(const AssocVector& rhs)
         { 
-	    AssocVector(rhs).swap(*this); 
-	    return *this;
-	}
+            AssocVector(rhs).swap(*this); 
+            return *this;
+        }
 
         // iterators:
         // The following are here because MWCW gets 'using' wrong
@@ -208,7 +208,7 @@ namespace Loki
 
         void swap(AssocVector& other)
         {
-            using namespace std;
+            using std::swap;
             Base::swap(other);
             MyCompare& me = *this;
             MyCompare& rhs = other;
@@ -329,6 +329,7 @@ namespace Loki
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 22, 2002: fixed operator= - credit due to Tom Hyer
 // June 25, 2002: fixed template insert() - credit due to Robert Minsk
+// June 27, 2002: fixed member swap() - credit due to David Brookman
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ASSOCVECTOR_INC_
