@@ -2,25 +2,46 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Welsey Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Welsey Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 05, 2002
-// Most of the code is taken from Rani Sharoni's Loki VC 7 port
-// Reference, pointer and array detection is based on boost's type traits
+// Last update: Jan 31, 2003
+// This VC 6 port of TypeTraits is based on Rani Sharoni's Loki VC 7 port.
+// Reference, pointer, array, const and volatile detection is based on
+// boost's type traits.
+// see http://www.boost.org/libs/type_traits/
+//
+// The code for Enum- and pointer-to-member-function detection is based on
+// ideas from M. Yamada - many thanks :)
+//
 // AdjReference has moved to namespace-scope. Explicit specialization is
 // only allowed there.
+//
+// known bugs:
+// assert(TypeTraits<const void>::isConst == 1) fails.
+// assert(TypeTraits<volatile void>::isVolatile == 1) fails.
+// assert(TypeTraits<const volatile void>::isConst == 1) fails.
+// assert(TypeTraits<const volatile void>::isVolatile == 1) fails.
+// This is because the VC 6 does not differentiate
+// between void, const void, volatile void and const volatile void.
 
 #ifndef TYPETRAITS_INC_
 #define TYPETRAITS_INC_
+
+//
+// Ignore forcing value to bool 'true' or 'false' (performance warning)
+//
+#ifdef _MSC_VER
+#pragma warning (disable: 4800)
+#endif
 
 #include "Typelist.h"
 
@@ -29,7 +50,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // class template IsCustomUnsignedInt
 // Offers a means to integrate nonstandard built-in unsigned integral types
-// (such as unsigned __int64 or unsigned long long int) with the TypeTraits 
+// (such as unsigned __int64 or unsigned long long int) with the TypeTraits
 //     class template defined below.
 // Invocation: IsCustomUnsignedInt<T> where T is any type
 // Defines 'value', an enum that is 1 iff T is a custom built-in unsigned
@@ -42,12 +63,12 @@ namespace Loki
     struct IsCustomUnsignedInt
     {
         enum { value = 0 };
-    };        
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template IsCustomSignedInt
 // Offers a means to integrate nonstandard built-in unsigned integral types
-// (such as unsigned __int64 or unsigned long long int) with the TypeTraits 
+// (such as unsigned __int64 or unsigned long long int) with the TypeTraits
 //     class template defined below.
 // Invocation: IsCustomSignedInt<T> where T is any type
 // Defines 'value', an enum that is 1 iff T is a custom built-in signed
@@ -60,7 +81,7 @@ namespace Loki
     struct IsCustomSignedInt
     {
         enum { value = 0 };
-    };        
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template IsCustomFloat
@@ -77,7 +98,7 @@ namespace Loki
     struct IsCustomFloat
     {
         enum { value = 0 };
-    };        
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 // Helper types for class template TypeTraits defined below
@@ -91,7 +112,7 @@ namespace Loki
         typedef TYPELIST_3(bool, char, wchar_t) StdOtherInts;
         typedef TYPELIST_3(float, double, long double) StdFloats;
     }
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template TypeTraits
 // Figures out various properties of any given type
@@ -146,13 +167,94 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 	namespace Private
 	{
-		struct pointer_helper
+		template <class T> struct Wrap {};
+
+		// this array-detection approach is based on boost's
+		// Type-Traits. See: boost::array_traits.hpp
+		template <class U>
+		struct ArrayTester
 		{
-			pointer_helper(const volatile void*);
+			private:
+
+				// This function can only be used for non-array-types, because
+				// functions can't return arrays.
+				template<class T>
+				static T(* IsArrayTester1(Wrap<T>) )(Wrap<T>);
+				static char IsArrayTester1(...);
+
+				template<class T>
+				static NO IsArrayTester2(T(*)(Wrap<T>));
+				static YES IsArrayTester2(...);
+			public:
+				enum {
+					value = sizeof(IsArrayTester2(IsArrayTester1(Wrap<U>())))
+							== sizeof(YES)
+				};
 		};
-		
-		struct EnumFalse{ enum {value = 0};};
-		struct EnumTrue{ enum {value = 1};};
+
+		// const-detection based on boost's
+		// Type-Traits. See: boost\type_traits\is_const.hpp
+		YES IsConstTester(const volatile void*);
+		NO IsConstTester(volatile void *);
+
+		template <bool is_ref, bool array>
+		struct IsConstImpl
+		{
+			template <class T> struct In {enum {value=0};};
+		};
+		template <>
+		struct IsConstImpl<false,false>
+		{
+			template <typename T> struct In
+			{
+				static T* t;
+				enum {value = sizeof(YES) == sizeof(IsConstTester(t))};
+			};
+		};
+		template <>
+		struct IsConstImpl<false,true>
+		{
+			template <typename T> struct In
+			{
+				static T t;
+				enum { value = sizeof(YES) == sizeof(IsConstTester(&t)) };
+			};
+		};
+
+		// this volatile-detection approach is based on boost's
+		// Type-Traits. See: boost\type_traits\is_volatile.hpp
+		YES IsVolatileTester(void const volatile*);
+		NO IsVolatileTester(void const*);
+
+		template <bool is_ref, bool array>
+		struct IsVolatileImpl
+		{
+			template <typename T> struct In
+			{
+				enum {value = 0};
+			};
+		};
+
+		template <>
+		struct IsVolatileImpl<false,false>
+		{
+			template <typename T> struct In
+			{
+				static T* t;
+				enum {value = sizeof(YES) == sizeof(IsVolatileTester(t))};
+			};
+		};
+
+		template <>
+		struct IsVolatileImpl<false,true>
+		{
+			template <typename T> struct In
+			{
+				static T t;
+				enum {value = sizeof(YES) == sizeof(IsVolatileTester(&t))};
+			};
+		};
+
 		template<bool IsRef>
         struct AdjReference
         {
@@ -166,25 +268,33 @@ namespace Loki
             template<typename U>
             struct In { typedef U Result; };
         };
+		struct PointerHelper
+		{
+			PointerHelper(const volatile void*);
+		};
 
+
+		template <class T>
+		NO EnumDetection(T);
+
+		template <class T>
+		YES  EnumDetection(...);
 	}
-  
+
 	template <typename T>
     class TypeTraits
     {
-    private:	
-		static T MakeT(...);
-		template <class U> struct Wrap{};
-		struct pointer_helper
-		{
-			pointer_helper(const volatile void*);
-		};
-		static Private::YES is_pointer(pointer_helper);
-		static Private::NO  is_pointer(...);
-		
+
+	private:
+		static Private::YES IsPointer(Private::PointerHelper);
+		static Private::NO  IsPointer(...);
+
 		// With the VC 6. Rani Sharoni's approach to detect references unfortunately
-		// results in an error C1001: INTERNER COMPILER- FEHLER
-		// 
+		// results in an error C1001: INTERNAL COMPILER-ERROR
+		//
+		// this reference-detection approach is based on boost's
+		// Type-Traits. See: boost::composite_traits.h
+		//
 		// is_reference_helper1 is a function taking a Wrap<T> returning
 		// a pointer to a function taking a Wrap<T> returning a T&.
 		// This function can only be used if T is not a reference-Type.
@@ -194,109 +304,150 @@ namespace Loki
 		// references.
 		// In order to detect a reference, use the return-type of is_reference_helper1
 		// with is_reference_helper2.
-		// 
-		// this reference-detection approach is based on boost's
-		// Type-Traits. See: boost::composite_traits.h
-		template <class T> 
-		static T&(* is_reference_helper1(Wrap<T>) )(Wrap<T>);
-		static Private::NO	is_reference_helper1(...);
+		//
+		template <class U>
+		static U&(* IsReferenceHelper1(Private::Wrap<U>) )(Private::Wrap<U>);
+		static Private::NO	IsReferenceHelper1(...);
 
-		template <class T> 
-		static Private::NO	is_reference_helper2(T&(*)(Wrap<T>));
-		static Private::YES is_reference_helper2(...);
-	
-		template <class T, class U> 
-		static Private::YES is_pointer2member(U T::*);
-		static Private::NO	is_pointer2member(...);
+		template <class U>
+		static Private::NO	IsReferenceHelper2(U&(*)(Private::Wrap<U>));
+		static Private::YES IsReferenceHelper2(...);
 
-		// This function can only be used for non-array-types, because
-		// functions can't return arrays.
-		// this array-detection approach is based on boost's
-		// Type-Traits. See: boost::array_traits.h
-		template <class T> 
-		static T(* is_array_helper1(Wrap<T>) )(Wrap<T>);
-		static Private::NO is_array_helper1(...);
-
-		template <class T> 
-		static Private::NO is_array_helper2(T(*)(Wrap<T>));
-		static Private::YES is_array_helper2(...);
-
-		template<typename U>
-		static Private::YES is_const(Wrap<const U>);
-        static Private::NO  is_const(...);
-
-        template<typename U>
-		static Private::YES is_volatile(Wrap<volatile U>);
-        static Private::NO  is_volatile(...);
+		template <class U, class Z>
+		static Private::YES IsPointer2Member(Z U::*);
+		static Private::NO	IsPointer2Member(...);
+		struct DummyType{};
 	public:
+		enum {isArray = Private::ArrayTester<T>::value};
 		enum {isReference = sizeof(
-            is_reference_helper2(
-            is_reference_helper1(Wrap<T>()))) == sizeof(Private::YES)};
-		enum {isPointer = sizeof(is_pointer(MakeT())) == sizeof(Private::YES)};
-		enum {isMemberPointer = sizeof(is_pointer2member(MakeT())) == sizeof(Private::YES)};
-		enum {isArray = sizeof(
-				is_array_helper1(
-				is_array_helper2(Wrap<T>()))) == sizeof(Private::YES)};
+            IsReferenceHelper2(
+            IsReferenceHelper1(Private::Wrap<T>()))) == sizeof(Private::YES)};
 		enum {isVoid = Private::IsVoid<T>::value};
+		typedef typename Select<isArray || isVoid,DummyType, T>::Result NewT;
 
-		enum { isStdUnsignedInt = 
+	private:
+		static NewT MakeT();
+		enum {isMemberPointerTemp =
+				sizeof(IsPointer2Member(MakeT())) == sizeof(Private::YES)};
+	public:
+
+		enum {isPointer = sizeof(IsPointer(MakeT())) == sizeof(Private::YES)};
+		enum { isStdUnsignedInt =
             TL::IndexOf<Private::StdUnsignedInts, T>::value >= 0 };
-        enum { isStdSignedInt = 
+        enum { isStdSignedInt =
             TL::IndexOf<Private::StdSignedInts, T>::value >= 0 };
         enum { isStdIntegral = isStdUnsignedInt || isStdSignedInt ||
             TL::IndexOf<Private::StdOtherInts, T>::value >= 0 };
         enum { isStdFloat = TL::IndexOf<Private::StdFloats, T>::value >= 0 };
         enum { isStdArith = isStdIntegral || isStdFloat };
         enum { isStdFundamental = isStdArith || isStdFloat || isVoid };
-            
+
         enum { isUnsignedInt = isStdUnsignedInt || IsCustomUnsignedInt<T>::value };
         enum { isSignedInt = isStdSignedInt || IsCustomSignedInt<T>::value };
         enum { isIntegral = isStdIntegral || isUnsignedInt || isSignedInt };
         enum { isFloat = isStdFloat || IsCustomFloat<T>::value };
         enum { isArith = isIntegral || isFloat };
         enum { isFundamental = isStdFundamental || isArith || isFloat };
-		enum { 
-            isConst = 
-                sizeof(is_const(Wrap<T>())) == sizeof(Private::YES)
+		enum {
+            isConst =	Private::IsConstImpl
+						<isReference, isArray>::template In<T>::value
         };
 
-        enum { 
-            isVolatile = 
-                sizeof(is_volatile(Wrap<T>())) == sizeof(Private::YES)
+        enum {
+            isVolatile = Private::IsVolatileImpl
+						<isReference, isArray>::template In<T>::value
         };
-		enum { isScalar = isStdArith || isPointer ||  isMemberPointer};
 	private:
         typedef typename Private::AdjReference<isReference || isVoid>::
-                template In<T>::Result AdjType;
+		template In<T>::Result AdjType;
 
-    public:        
+		struct is_scalar
+        {
+        private:
+            struct BoolConvert { BoolConvert(bool); };
+
+            static Private::YES check(BoolConvert);
+            static Private::NO check(...);
+
+            struct NotScalar {};
+
+            typedef typename Select
+            <
+                isVoid || isReference || isArray,
+                NotScalar, T
+            >
+            ::Result RetType;
+
+            static RetType get();
+
+        public:
 
 
-        typedef typename Select
+            enum { value = sizeof(check(get())) == sizeof(Private::YES) };
+
+
+        }; // is_scalar
+
+    public:
+
+		enum { isScalar = is_scalar::value};
+		typedef typename Select
         <
             isScalar || isArray, T, AdjType
         >
         ::Result ParameterType;
-        
-        //
+
+
+		//
         // We get is_class for free
         // BUG - fails with functions types (ICE) and unknown size array
         // (but works for other incomplete types)
         // (the boost one (Paul Mensonides) is better)
         //
-        enum { isClass = 
-                !isScalar    && 
-                !isArray     && 
+        enum { isClass =
+                !isScalar    &&
+                !isArray     &&
                 !isReference &&
-                !isVoid 
+                !isVoid
         };
+	private:
+		typedef typename Loki::Select
+		<
+			isScalar,
+			T,
+			int
+		>::Result MayBeEnum;
+	public:
+		// enum types are the only scalar types that can't be initialized
+		// with 0.
+		// Because we replace all non scalars with int,
+		// template <class T>
+		// YES EnumDetection(...);
+		// will only be selected for enums.
+		enum {
+			isEnum = sizeof(Private::YES) ==
+				sizeof (Private::EnumDetection<MayBeEnum>(0))
+         };
+
+		enum {
+			isMemberFuncPointer =	isScalar && !isArith && !isPointer &&
+									!isMemberPointerTemp && !isEnum
+		};
+		enum {isMemberPointer = isMemberPointerTemp || isMemberFuncPointer};
     };
+
 }
+#ifdef _MSC_VER
+#pragma warning (default: 4800)
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
-// Oct	05, 2002: ported by Benjamin Kaufmann to MSVC 6 
+// Oct	05, 2002: ported by Benjamin Kaufmann to MSVC 6
+// Jan	31, 2003: fixed bugs in scalar and array detection.
+//					Added isMemberFuncPointer and isEnum. B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPETRAITS_INC_
