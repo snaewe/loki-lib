@@ -158,7 +158,7 @@ struct DefaultCatchAll
 ////////////////////////////////////////////////////////////////////////////////
 
 #define DEFINE_VISITABLE() \
-    virtual ReturnType Accept(Loki::BaseVisitor& guest) \
+	virtual ReturnType Accept(::Loki::BaseVisitor& guest) \
     { return AcceptImpl(*this, guest); }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,6 +197,7 @@ struct DefaultCatchAll
 // Change log:
 // March 20: add default argument DefaultCatchAll to BaseVisitable
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// September 28, 2004: replaced Loki:: with ::Loki:: in DEFINE_VISITABLE
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // VISITOR_INC_
