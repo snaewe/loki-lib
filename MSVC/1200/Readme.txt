@@ -1,6 +1,6 @@
 Loki VC 6.0 Port or how to produce C1001 - Internal Compiler Errors
 -------------------------------------------------------------------
-Version: 0.3
+Version: 0.3a
 
 Introduction/Compatibility:
 ---------------------------
@@ -29,6 +29,12 @@ If you use Singletons with longevity you must add Singleton.cpp to your project/
 
 Fixes:
 ------
+
+    Jan 12, 2003:
+    -------------
+    	* changed the signature of SmallObject's op new. Now it
+    	matches the corresponding op delete.
+		Thanks to M.Yamada for the hint and the solution.
 
     Dec 08, 2002:
     -------------
