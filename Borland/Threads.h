@@ -77,10 +77,7 @@ namespace Loki
         
         static IntType AtomicIncrement(volatile IntType& lval)
         { return ++lval; }
-        
-        static IntType AtomicDivide(volatile IntType& lval)
-        { return lval /= val; }
-        
+                
         static void AtomicAssign(volatile IntType & lval, IntType val)
         { lval = val; }
         
@@ -139,10 +136,7 @@ namespace Loki
 
         static IntType AtomicIncrement(volatile IntType& lval)
         { return InterlockedIncrement(&const_cast<IntType&>(lval)); }
-        
-        static IntType AtomicDivide(volatile IntType& lval)
-        { return InterlockedDecrement(&const_cast<IntType&>(lval)); }
-        
+                
         static void AtomicAssign(volatile IntType& lval, IntType val)
         { InterlockedExchange(&const_cast<IntType&>(lval), val); }
 
@@ -186,9 +180,6 @@ namespace Loki
 
         static IntType AtomicIncrement(volatile IntType& lval)
         { return InterlockedIncrement(&const_cast<IntType&>(lval)); }
-
-        static IntType AtomicDivide(volatile IntType& lval)
-        { return InterlockedDecrement(&const_cast<IntType&>(lval)); }
 
         static void AtomicAssign(volatile IntType& lval, IntType val)
         { InterlockedExchange(&const_cast<IntType&>(lval), val); }
@@ -274,6 +265,7 @@ public:
 // June    20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 10, 2002: Fixed bug in AtomicDivide - credit due to Jordi Guerrero
 // July    16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
+// March   06, 2003: Removed wrong AtomicDivide - credit due to Arthur Pawlak
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
