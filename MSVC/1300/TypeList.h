@@ -13,7 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: May 19, 2002
+// Last update: Oct 10, 2002
+//MSVC7
 
 #ifndef TYPELIST_INC_
 #define TYPELIST_INC_
@@ -373,7 +374,7 @@ namespace Loki
 // class template MakeTypelist
 // Takes a number of arguments equal to its numeric suffix
 // The arguments are type names.
-// MakeTypeList<T1, T2, ...>::Result
+// MakeTypelist<T1, T2, ...>::Result
 // returns a typelist that is of T1, T2, ...
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -386,10 +387,10 @@ namespace Loki
             typename T13 = NullType, typename T14 = NullType, typename T15 = NullType,
             typename T16 = NullType, typename T17 = NullType, typename T18 = NullType
         > 
-        struct MakeTypeList
+        struct MakeTypelist
         {
         private:
-            typedef typename MakeTypeList
+            typedef typename MakeTypelist
             <
                 T2 , T3 , T4 , 
                 T5 , T6 , T7 , 
@@ -405,7 +406,7 @@ namespace Loki
         };
 
         template<>
-        struct MakeTypeList
+        struct MakeTypelist
         <
             NullType, NullType, NullType, 
             NullType, NullType, NullType, 
@@ -1053,6 +1054,7 @@ typedef char _type_##_is_not_a_Typelist[true]
 //      (credit due to Dave Taylor)
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
+// Oct  10, 2002: added MakeTypelist (SGB/MKH)
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPELIST_INC_
