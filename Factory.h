@@ -14,6 +14,8 @@
 #		include "Reference/Factory.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/Factory.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/Factory.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/Factory.h"
 #	elif (_MSC_VER >= 1200)

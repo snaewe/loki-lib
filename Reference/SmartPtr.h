@@ -152,56 +152,66 @@ namespace Loki
 // class template RefCountedMT
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Implements external reference counting for multithreaded programs
+// Policy Usage: RefCountedMTAdj<ThreadingModel>::RefCountedMT
 ////////////////////////////////////////////////////////////////////////////////
-    template <class P,
-        template <class> class ThreadingModel>
-    class RefCountedMT : public ThreadingModel< RefCountedMT<P, ThreadingModel> >
-    {
-    public:
-        RefCountedMT() 
-        {
-            pCount_ = static_cast<unsigned int*>(
-                SmallObject<ThreadingModel>::operator new(
-                    sizeof(unsigned int)));
-            assert(pCount_);
-            *pCount_ = 1;
-        }
-        
-        RefCountedMT(const RefCountedMT& rhs) 
-        : pCount_(rhs.pCount_)
-        {}
-        
-        // MWCW lacks template friends, hence the following kludge
-        template <typename P1>
-        RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs) 
-        : pCount_(reinterpret_cast<const RefCounted<P>&>(rhs).pCount_)
-        {}
-        
-        P Clone(const P& val)
-        {
-            ThreadingModel<RefCountedMT>::AtomicIncrement(*pCount_);
-            return val;
-        }
-        
-        bool Release(const P&)
-        {
-            if (!ThreadingModel<RefCountedMT>::AtomicDecrement(*pCount_))
-            {
-                SmallObject<ThreadingModel>::operator delete(pCount_, 
-                    sizeof(unsigned int));
-                return true;
-            }
-            return false;
-        }
-        
-        void Swap(RefCountedMT& rhs)
-        { std::swap(pCount_, rhs.pCount_); }
     
-        enum { destructiveCopy = false };
+    template <template <class> class ThreadingModel>
+    struct RefCountedMTAdj
+    {
+        template <class P>
+        class RefCountedMT : public ThreadingModel< RefCountedMT<P> >
+        {
+            typedef ThreadingModel< RefCountedMT<P> > base_type;
+            typedef typename base_type::IntType       CountType;
+            typedef volatile CountType               *CountPtrType;
 
-    private:
-        // Data
-        volatile unsigned int* pCount_;
+        public:
+            RefCountedMT() 
+            {
+                pCount_ = static_cast<CountPtrType>(
+                    SmallObject<ThreadingModel>::operator new(
+                        sizeof(*pCount_)));
+                assert(pCount_);
+                *pCount_ = 1;
+            }
+
+            RefCountedMT(const RefCountedMT& rhs) 
+            : pCount_(rhs.pCount_)
+            {}
+
+            //MWCW lacks template friends, hence the following kludge
+            template <typename P1>
+            RefCountedMT(const RefCountedMT<P1>& rhs) 
+            : pCount_(reinterpret_cast<const RefCountedMT<P>&>(rhs).pCount_)
+            {}
+
+            P Clone(const P& val)
+            {
+                ThreadingModel<RefCountedMT>::AtomicIncrement(*pCount_);
+                return val;
+            }
+
+            bool Release(const P&)
+            {
+                if (!ThreadingModel<RefCountedMT>::AtomicDecrement(*pCount_))
+                {
+                    SmallObject<ThreadingModel>::operator delete(
+                        const_cast<CountType *>(pCount_), 
+                        sizeof(*pCount_));
+                    return true;
+                }
+                return false;
+            }
+
+            void Swap(RefCountedMT& rhs)
+            { std::swap(pCount_, rhs.pCount_); }
+
+            enum { destructiveCopy = false };
+
+        private:
+            // Data
+            CountPtrType pCount_;
+        };
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -514,7 +524,7 @@ namespace Loki
         {}
 
         static void OnDereference(P val)
-        { assert(val); }
+        { assert(val); (void)val; }
 
         static void Swap(AssertCheck&)
         {}
@@ -691,6 +701,7 @@ namespace Loki
         // gcc doesn't like this:
         // operator const T&() const { return value_; }
     private:
+        ByRef& operator=(const ByRef &);
         T& value_;
     };
 
@@ -708,6 +719,33 @@ namespace Loki
         template <class> class StoragePolicy = DefaultSPStorage
     >
     class SmartPtr;
+
+////////////////////////////////////////////////////////////////////////////////
+// class template SmartPtrDef (definition)
+// this class added to unify the usage of SmartPtr 
+// instead of writing SmartPtr<T,OP,CP,KP,SP> write SmartPtrDef<T,OP,CP,KP,SP>::type
+////////////////////////////////////////////////////////////////////////////////
+
+    template
+    <
+        typename T,
+        template <class> class OwnershipPolicy = RefCounted,
+        class ConversionPolicy = DisallowConversion,
+        template <class> class CheckingPolicy = AssertCheck,
+        template <class> class StoragePolicy = DefaultSPStorage
+    >
+    struct SmartPtrDef
+    {
+        typedef SmartPtr
+        <
+            T,
+            OwnershipPolicy,
+            ConversionPolicy,
+            CheckingPolicy,
+            StoragePolicy
+        >
+        type;
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template SmartPtr (definition)

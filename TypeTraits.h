@@ -14,6 +14,8 @@
 #		include "Reference/TypeTraits.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/TypeTraits.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/TypeTraits.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/TypeTraits.h"
 #	elif (_MSC_VER >= 1200)

@@ -14,6 +14,8 @@
 #		include "Reference/Singleton.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/Singleton.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/Singleton.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/Singleton.h"
 #	elif (_MSC_VER >= 1200)

@@ -1,26 +1,4 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
@@ -30,15 +8,15 @@ text
 //     purpose is hereby granted without fee, provided that the above copyright 
 //     notice appear in all copies and that both that copyright notice and this 
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
+// The author or Addison-Welsey Longman make no representations about the 
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// Last update: May 19, 2002
 
-#ifndef TYPEINFO_INC_
-#define TYPEINFO_INC_
+#ifndef LOKITYPEINFO_INC_
+#define LOKITYPEINFO_INC_
 
 #include <typeinfo>
 #include <cassert>
@@ -84,7 +62,7 @@ namespace Loki
     inline bool TypeInfo::before(const TypeInfo& rhs) const
     {
         assert(pInfo_);
-        return pInfo_->before(*rhs.pInfo_);
+        return pInfo_->before(*rhs.pInfo_) != 0;
     }
 
     inline const std::type_info& TypeInfo::Get() const
@@ -102,7 +80,7 @@ namespace Loki
 // Comparison operators
     
     inline bool operator==(const TypeInfo& lhs, const TypeInfo& rhs)
-    { return lhs.Get() == rhs.Get(); }
+    { return (lhs.Get() == rhs.Get()) != 0; }
 
     inline bool operator<(const TypeInfo& lhs, const TypeInfo& rhs)
     { return lhs.before(rhs); }
@@ -123,8 +101,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// July 16, 2002: Ported by Terje Slettebø to BCC 5.6
+// May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // TYPEINFO_INC_
-@
+#endif // LOKITYPEINFO_INC_

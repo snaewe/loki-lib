@@ -18,7 +18,7 @@
 #ifndef FACTORY_INC_
 #define FACTORY_INC_
 
-#include "Loki_TypeInfo.h"
+#include "LokiTypeInfo.h"
 #include "AssocVector.h"
 #include <exception>
 

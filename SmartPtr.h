@@ -14,6 +14,8 @@
 #		include "Reference/SmartPtr.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/SmartPtr.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/SmartPtr.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/SmartPtr.h"
 #	elif (_MSC_VER >= 1200)

@@ -335,13 +335,9 @@ namespace Loki
     class SingletonHolderStaticData
     {
         friend ClientType; // illegal (11.4/2) but works with VC
-        static ThreadingModelType s_ThreadingModelData;
         static PtrInstanceType    s_pInstance;
         static bool               s_destroyed;
     };
-
-    template<class C, class M, class P>
-    M SingletonHolderStaticData<C, M, P>::s_ThreadingModelData;
 
     template<class C, class M, class P>
     P SingletonHolderStaticData<C, M, P>::s_pInstance;
@@ -382,9 +378,7 @@ namespace Loki
         // Helpers
         static void MakeInstance()
         {
-            typename ThreadingModel<T>::Lock guard(
-                MySingletonHolderStaticData::s_ThreadingModelData);
-
+            typename ThreadingModel<SingletonHolder>::Lock guard;
             (void)guard;
 
             if (!pInstance_())

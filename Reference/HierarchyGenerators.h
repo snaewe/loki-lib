@@ -24,6 +24,12 @@
 
 namespace Loki
 {
+#if defined(_MSC_VER) && _MSC_VER >= 1300
+#pragma warning( push ) 
+ // 'class1' : base-class 'class2' is already a base-class of 'class3'
+#pragma warning( disable : 4584 )
+#endif // _MSC_VER
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template GenScatterHierarchy
 // Generates a scattered hierarchy starting from a typelist and a template
@@ -244,6 +250,9 @@ namespace Loki
     {
     };
 
+#if defined(_MSC_VER) && _MSC_VER >= 1300
+#pragma warning( pop ) 
+#endif
 }   // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////

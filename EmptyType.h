@@ -14,6 +14,8 @@
 #		include "Reference/EmptyType.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/EmptyType.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/EmptyType.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/EmptyType.h"
 #	elif (_MSC_VER >= 1200)

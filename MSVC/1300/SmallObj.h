@@ -129,20 +129,6 @@ namespace Loki
 
     template
     <
-        class ClientType,
-        class ThreadingModelType
-    >
-    class SmallObjectStaticData
-    {
-        friend ClientType; // illegal (11.4/2) but works with VC
-        static ThreadingModelType s_ThreadingModelData;
-    };
-
-    template<class C, class M>
-    M SmallObjectStaticData<C, M>::s_ThreadingModelData; 
-
-    template
-    <
         template <class> class ThreadingModel = DEFAULT_THREADING,
         std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE
@@ -153,13 +139,6 @@ namespace Loki
         typedef ThreadingModel< SmallObject<ThreadingModel, 
                 chunkSize, maxSmallObjectSize> > MyThreadingModel;
                 
-        typedef SmallObjectStaticData
-        <
-            SmallObject,
-            MyThreadingModel
-        > 
-        MySmallObjectStaticData;
-
         struct MySmallObjAllocator : public SmallObjAllocator
         {
             MySmallObjAllocator() 
@@ -175,8 +154,7 @@ namespace Loki
         static void* operator new(std::size_t size)
         {
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
-            typename MyThreadingModel::Lock lock(
-                MySmallObjectStaticData::s_ThreadingModelData);
+            typename MyThreadingModel::Lock lock;
             (void)lock; // get rid of warning
             
             return SingletonHolder<MySmallObjAllocator, CreateStatic, 
@@ -188,8 +166,7 @@ namespace Loki
         static void operator delete(void* p, std::size_t size)
         {
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
-            typename MyThreadingModel::Lock lock(
-                MySmallObjectStaticData::s_ThreadingModelData);
+            typename MyThreadingModel::Lock lock;
             (void)lock; // get rid of warning
             
             SingletonHolder<MySmallObjAllocator, CreateStatic, 

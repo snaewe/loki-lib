@@ -86,9 +86,6 @@ namespace Loki
         // Returns the block size with which the FixedAllocator was initialized
         std::size_t BlockSize() const
         { return blockSize_; }
-        // Comparison operator for sorting 
-        bool operator<(std::size_t rhs) const
-        { return BlockSize() < rhs; }
     };
     
 ////////////////////////////////////////////////////////////////////////////////

@@ -97,7 +97,7 @@ public:
   virtual void execute(TestResult &) =0;
   
 protected:
-  ~Test() {}
+  virtual ~Test() {}
 
   void printName(const TestResult &result) const
     {

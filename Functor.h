@@ -14,6 +14,8 @@
 #		include "Reference/Functor.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/Functor.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/Functor.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/Functor.h"
 #	elif (_MSC_VER >= 1200)

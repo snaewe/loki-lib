@@ -155,7 +155,9 @@ namespace Loki
 // class template RefCountedMT
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Implements external reference counting for multithreaded programs
+// Policy Usage: RefCountedMTAdj<ThreadingModel>::RefCountedMT
 ////////////////////////////////////////////////////////////////////////////////
+
     template <template <class> class ThreadingModel>
     struct RefCountedMTAdj
     {

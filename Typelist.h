@@ -14,6 +14,8 @@
 #		include "Reference/Typelist.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/Typelist.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/Typelist.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/Typelist.h"
 #	elif (_MSC_VER >= 1200)

@@ -54,9 +54,6 @@ namespace Loki
         
         static IntType AtomicDecrement(volatile IntType& lval)
         { return --lval; }
-
-        static IntType AtomicDivide(volatile IntType& lval)
-        { return lval /= val; }
         
         static void AtomicAssign(volatile IntType & lval, IntType val)
         { lval = val; }
@@ -98,13 +95,13 @@ namespace Loki
             
             Lock(const Lock&);
             Lock& operator=(const Lock&);
-            Lock(); // buggy design
         public:
 
             explicit Lock(ObjectLevelLockable& host) : host_(host)
             {
                 ::EnterCriticalSection(&host_.mtx_);
             }
+
             ~Lock()
             {
                 ::LeaveCriticalSection(&host_.mtx_);

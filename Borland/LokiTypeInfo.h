@@ -8,15 +8,15 @@
 //     purpose is hereby granted without fee, provided that the above copyright 
 //     notice appear in all copies and that both that copyright notice and this 
 //     permission notice appear in supporting documentation.
-// The author or Addison-Welsey Longman make no representations about the 
+// The author or Addison-Wesley Longman make no representations about the 
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: May 19, 2002
+// Last update: August 9, 2002
 
-#ifndef TYPEINFO_INC_
-#define TYPEINFO_INC_
+#ifndef LOKITYPEINFO_INC_
+#define LOKITYPEINFO_INC_
 
 #include <typeinfo>
 #include <cassert>
@@ -32,6 +32,7 @@ namespace Loki
     class TypeInfo
     {
     public:
+
         // Constructors
         TypeInfo(); // needed for containers
         TypeInfo(const std::type_info&); // non-explicit
@@ -62,7 +63,7 @@ namespace Loki
     inline bool TypeInfo::before(const TypeInfo& rhs) const
     {
         assert(pInfo_);
-        return pInfo_->before(*rhs.pInfo_) != 0;
+        return pInfo_->before(*rhs.pInfo_);
     }
 
     inline const std::type_info& TypeInfo::Get() const
@@ -80,7 +81,7 @@ namespace Loki
 // Comparison operators
     
     inline bool operator==(const TypeInfo& lhs, const TypeInfo& rhs)
-    { return (lhs.Get() == rhs.Get()) != 0; }
+    { return lhs.Get() == rhs.Get(); }
 
     inline bool operator<(const TypeInfo& lhs, const TypeInfo& rhs)
     { return lhs.before(rhs); }
@@ -101,7 +102,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
+// July 16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // TYPEINFO_INC_
+#endif // LOKITYPEINFO_INC_

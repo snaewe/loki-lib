@@ -178,6 +178,11 @@ namespace Loki
 
     template <class T> struct CreateStatic
     {
+#if defined(_MSC_VER) && _MSC_VER >= 1300
+#pragma warning( push ) 
+ // alignment of a member was sensitive to packing
+#pragma warning( disable : 4121 )
+#endif // _MSC_VER
         union MaxAlign
         {
             char t_[sizeof(T)];
@@ -191,6 +196,9 @@ namespace Loki
             int Test::* pMember_;
             int (Test::*pMemberFn_)(int);
         };
+#if defined(_MSC_VER) && _MSC_VER >= 1300
+#pragma warning( pop )
+#endif // _MSC_VER
         
         static T* Create()
         {

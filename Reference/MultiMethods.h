@@ -17,7 +17,7 @@
 #define MULTIMETHODS_INC_
 
 #include "Typelist.h"
-#include "TypeInfo.h"
+#include "LokiTypeInfo.h"
 #include "Functor.h"
 #include "AssocVector.h"
 
@@ -77,13 +77,10 @@ namespace Loki
             Executor exec, NullType)
         { return exec.OnError(lhs, rhs); }
         
-        template <class TList, class SomeLhs>
+        template <class Head, class Tail, class SomeLhs>
         static ResultType DispatchRhs(SomeLhs& lhs, BaseRhs& rhs,
-            Executor exec, TList)
-        {
-            typedef typename TList::Head Head;
-            typedef typename TList::Tail Tail;
-            
+            Executor exec, Typelist<Head, Tail>)
+        {            
             if (Head* p2 = dynamic_cast<Head*>(&rhs))
             {
                 Int2Type<(symmetric &&
@@ -102,13 +99,10 @@ namespace Loki
             Executor exec, NullType)
         { return exec.OnError(lhs, rhs); }
         
-        template <class TList>
+        template <class Head, class Tail>
         static ResultType DispatchLhs(BaseLhs& lhs, BaseRhs& rhs,
-            Executor exec, TList)
-        {
-            typedef typename TList::Head Head;
-            typedef typename TList::Tail Tail;
-            
+            Executor exec, Typelist<Head, Tail>)
+        {            
             if (Head* p1 = dynamic_cast<Head*>(&lhs))
             {
                 return DispatchRhs(*p1, rhs, exec, TypesRhs());
@@ -286,7 +280,7 @@ namespace Loki
         template <class SomeLhs, class SomeRhs,
             ResultType (*callback)(SomeLhs&, SomeRhs&),
             bool symmetric>
-        void Add()
+        void Add(bool = true) // [gcc] dummy bool
         {
 	    typedef Private::FnDispatcherHelper<
 					BaseLhs, BaseRhs, 

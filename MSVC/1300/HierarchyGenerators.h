@@ -240,7 +240,7 @@ namespace Loki
 
             typedef typename Select
             <
-                SameType<UnitType, TupleUnit<ElementType> >::value, 
+                IsSameType<UnitType, TupleUnit<ElementType> >::value, 
                 ElementType, 
                 UnitType
             >
@@ -285,7 +285,7 @@ namespace Loki
 
             typedef typename Select
             <
-                SameType<UnitType, TupleUnit<ElementType> >::value, 
+                IsSameType<UnitType, TupleUnit<ElementType> >::value, 
                 ElementType, 
                 UnitType
             >

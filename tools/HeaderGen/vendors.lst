@@ -7,6 +7,9 @@ Reference
 (__BORLANDC__ >= 0x560)
 Borland
 
+(_MSC_VER >= 1301)
+Reference
+
 (_MSC_VER >= 1300)
 MSVC/1300
 

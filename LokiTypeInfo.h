@@ -6,19 +6,21 @@
 ////////////////////////////////
 
 #ifdef LOKI_USE_REFERENCE
-#	include "Reference/TypeInfo.h"
+#	include "Reference/LokiTypeInfo.h"
 #else
 #	if (__INTEL_COMPILER)
-#		include "Reference/TypeInfo.h"
+#		include "Reference/LokiTypeInfo.h"
 #	elif (__MWERKS__)
-#		include "Reference/TypeInfo.h"
+#		include "Reference/LokiTypeInfo.h"
 #	elif (__BORLANDC__ >= 0x560)
-#		include "Borland/TypeInfo.h"
+#		include "Borland/LokiTypeInfo.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Borland/LokiTypeInfo.h"
 #	elif (_MSC_VER >= 1300)
-#		include "MSVC/1300/TypeInfo.h"
+#		include "MSVC/1300/LokiTypeInfo.h"
 #	elif (_MSC_VER >= 1200)
-#		include "MSVC/1200/TypeInfo.h"
+#		include "MSVC/1200/LokiTypeInfo.h"
 #	else
-#		include "Reference/TypeInfo.h"
+#		include "Reference/LokiTypeInfo.h"
 #	endif
 #endif

@@ -73,18 +73,18 @@ namespace Loki
         typedef typename In<flag>::Result Result;
     };
     
-/*
+
 ////////////////////////////////////////////////////////////////////////////////
-// class template SameType
+// class template IsSameType
 // Return true iff two given types are the same
-// Invocation: SameType<T, U>::value
+// Invocation: IsSameType<T, U>::value
 // where:
 // T and U are types
 // Result evaluates to true iff U == T (types equal)
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename T, typename U>
-    struct SameType
+    struct IsSameType
     {
     private:
         template<typename>
@@ -98,7 +98,6 @@ namespace Loki
     public:
         enum { value = In<U>::value };
     };
-	//*/
     
 ////////////////////////////////////////////////////////////////////////////////
 // Helper types Small and Big - guarantee that sizeof(Small) < sizeof(Big)
@@ -113,10 +112,10 @@ namespace Loki
         struct IsVoid
         {
             enum { result = 
-                SameType<T, void>::value          ||
-                SameType<T, const void>::value    ||
-                SameType<T, volatile void>::value ||
-                SameType<T, const volatile void>::value
+                IsSameType<T, void>::value          ||
+                IsSameType<T, const void>::value    ||
+                IsSameType<T, volatile void>::value ||
+                IsSameType<T, const volatile void>::value
             };
         };
     }
@@ -172,7 +171,7 @@ namespace Loki
     {
         enum { exists = (is_convertible<T,U>::exists) };
         enum { exists2Way = (exists && is_convertible<U, T>::exists) };
-        enum { sameType = (SameType<T, U>::value) };
+        enum { sameType = (IsSameType<T, U>::value) };
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +237,7 @@ struct SuperSubclassStrict
 // Change log:
 // June    20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May     10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
-// October 10, 2002: Commented SameType template (not a Loki-template - yet). MKH
+// October 10, 2002: Commented IsSameType template (not a Loki-template - yet). MKH
 // October 12, 2002: Added SuperSubclass and SuperSubclassStrict templates.
 //                   The corresponding macros are deprecated. T.S.
 ////////////////////////////////////////////////////////////////////////////////

@@ -68,6 +68,27 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
+// class template IsSameType
+// Return true iff two given types are the same
+// Invocation: SameType<T, U>::value
+// where:
+// T and U are types
+// Result evaluates to true iff U == T (types equal)
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename T, typename U>
+    struct IsSameType
+    {
+        enum { value = false };
+    };
+    
+    template <typename T>
+    struct IsSameType<T,T>
+    {
+        enum { value = true };
+    };
+
+////////////////////////////////////////////////////////////////////////////////
 // Helper types Small and Big - guarantee that sizeof(Small) < sizeof(Big)
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -128,11 +149,11 @@ namespace Loki
     template <class T>
     struct Conversion<T, void>    
     {
-        enum { exists = 1, exists2Way = 0, sameType = 0 };
+        enum { exists = 0, exists2Way = 0, sameType = 0 };
     };
     
     template <>
-    class Conversion<void, void>    
+    struct Conversion<void, void>    
     {
     public:
         enum { exists = 1, exists2Way = 1, sameType = 1 };
