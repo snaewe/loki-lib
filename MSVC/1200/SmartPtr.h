@@ -13,7 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Feb 24, 2003
+// Last update: Mar 06, 2003
+
 // ported RefCountedMT
 // To create a SmartPtr with RefCountedMT as ownership policy
 // use code like this:
@@ -76,7 +77,6 @@
 
 namespace Loki
 {
-
 ////////////////////////////////////////////////////////////////////////////////
 // class template DefaultSPStorage
 // Implementation of the StoragePolicy used by SmartPtr
@@ -128,7 +128,9 @@ namespace Loki
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
         void Destroy()
-        { delete pointee_; }
+        { 
+			delete pointee_;
+		}
         
         // Default value to initialize the pointer
         static StoredType Default()
@@ -1432,6 +1434,37 @@ namespace std
         { return less<T*>()(GetImpl(lhs), GetImpl(rhs)); }
     };
 }
+#else
+// macros that help to specialize std::less for smarptrs.
+#define SMARTPTR_SPECIALIZE_LESS_5(T, OP, CP, KP, SP) \
+namespace std	\
+{	\
+    struct less< Loki::SmartPtr<T, OP, CP, KP, SP> > \
+        : public binary_function<Loki::SmartPtr<T, OP, CP, KP, SP>, \
+            Loki::SmartPtr<T, OP, CP, KP, SP>, bool> \
+    {	\
+        bool operator()(const Loki::SmartPtr<T, OP, CP, KP, SP>& lhs,	\
+            const Loki::SmartPtr<T, OP, CP, KP, SP>& rhs) const	\
+        {	\
+			typedef ApplyInnerType<SP, T>::type TempType;	\
+			const TempType& rlhs = lhs;	\
+			const TempType& rrhs = rhs;	\
+			return less<T*>()(GetImpl(rlhs), GetImpl(rrhs));	\
+		}	\
+    };	\
+}
+
+#define SMARTPTR_SPECIALIZE_LESS_4(T, OP, CP, KP) \
+	SMARTPTR_SPECIALIZE_LESS_5(T, OP, CP, KP, DefaultSPStorageWrapper)
+
+#define SMARTPTR_SPECIALIZE_LESS_3(T, OP, CP) \
+	SMARTPTR_SPECIALIZE_LESS_5(T, OP, CP, AssertCheckWrapper, DefaultSPStorageWrapper)
+
+#define SMARTPTR_SPECIALIZE_LESS_2(T, OP) \
+	SMARTPTR_SPECIALIZE_LESS_5(T, OP, DisallowConversion, AssertCheckWrapper, DefaultSPStorageWrapper)
+
+#define SMARTPTR_SPECIALIZE_LESS(T) \
+	SMARTPTR_SPECIALIZE_LESS_5(T, RefCountedWrapper, DisallowConversion, AssertCheckWrapper, DefaultSPStorageWrapper)
 #endif
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
@@ -1440,6 +1473,7 @@ namespace std
 // Oct  26, 2002: ported by Benjamin Kaufmann to MSVC 6.0
 // Feb	24, 2003: ported RefCountedMT. In NoCopy replaced CT_ASSERT with 
 //					STATIC_CHECK. B.K.
+// Mar	06, 2003: added helper-macros for specializing std::less for
+//					Smart-Pointers.
 ////////////////////////////////////////////////////////////////////////////////
-
 #endif // SMARTPTR_INC_
