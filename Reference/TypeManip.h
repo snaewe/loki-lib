@@ -162,7 +162,7 @@ namespace Loki
 
 #define SUPERSUBCLASS_STRICT(T, U) \
     (SUPERSUBCLASS(T, U) && \
-    !::Loki::Conversion<const volatile T, const volatile U>::sameType)
+    !::Loki::Conversion<const volatile T*, const volatile U*>::sameType)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
