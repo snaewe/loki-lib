@@ -27,7 +27,7 @@ unsigned int Loki::Private::elements = 0;
 // Ensures proper destruction of objects with longevity
 ////////////////////////////////////////////////////////////////////////////////
 
-void Loki::Private::AtExitFn()
+void C_CALLING_CONVENTION_QUALIFIER Loki::Private::AtExitFn()
 {
     assert(elements > 0 && pTrackerArray != 0);
     // Pick the element at the top of the stack
