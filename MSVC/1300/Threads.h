@@ -73,7 +73,7 @@ namespace Loki
     template <class Host>
     class ObjectLevelLockable
     {
-        CRITICAL_SECTION mtx_;
+        mutable CRITICAL_SECTION mtx_;
 
     public:
         ObjectLevelLockable()
@@ -91,13 +91,13 @@ namespace Loki
         
         class Lock
         {
-            ObjectLevelLockable& host_;
+            ObjectLevelLockable const& host_;
             
             Lock(const Lock&);
             Lock& operator=(const Lock&);
         public:
 
-            explicit Lock(ObjectLevelLockable& host) : host_(host)
+            explicit Lock(const ObjectLevelLockable& host) : host_(host)
             {
                 ::EnterCriticalSection(&host_.mtx_);
             }
@@ -157,7 +157,7 @@ namespace Loki
             {
                 ::EnterCriticalSection(&initializer_.mtx_);
             }
-            explicit Lock(ClassLevelLockable&)
+            explicit Lock(const ClassLevelLockable&)
             {
                 ::EnterCriticalSection(&initializer_.mtx_);
             }
