@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	{
 	if(argc < 2)
 		{
-		cout <<"Usage: <Header List> [Version/Vender List]"<<endl;
+		cout <<"Usage: <Header List> [Version/Vendor List]"<<endl;
 		return -1;
 		}
 	
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 				{
 				header_file << "#\telif " << it->version_test << endl;
 				//header_file << "#\t\tinclude \".\\" << it->subdir;
-				header_file << "#\t\tinclude \"." << it->subdir;
+				header_file << "#\t\tinclude \"./" << it->subdir;
 				//header_file << "\\" << header << "\"\n";
 				header_file << "/" << header << "\"\n";
 				}
