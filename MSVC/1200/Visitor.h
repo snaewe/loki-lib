@@ -13,20 +13,24 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 27, 2002
+// Last update: Feb 23, 2003
 //
-// The original visitor implementation depends heavily on the possibility 
-// to return an expression of type "cv void" from a functions with a return 
-// type of cv void (6.6.3). 
-// Unfortunately the MSVC 6.0 does not allow that. Because I could not think
-// of any transparent workaround I decided to create a set of complete new
-// classes for the void-case.
-// Of course this is a very unattractive solution :-(
-// If you know of a better solution, please let me know.
-//
+// This new of visitor.h handles void returns transparently. See
+// readme.txt for an explanation of the used technique.
+// However there are still two sets of macros. One for return type = void
+// (DEFINE_VISITABLE_VOID, DEFINE_CYCLIC_VISITABLE_VOID) and one for return
+// type != void (DEFINE_VISITABLE, DEFINE_CYCLIC_VISITABLE)
+// 
+// If you prefer the old version of visitor.h which uses a different set of
+// visitor classes for the return type void, define the macro 
+// USE_VISITOR_OLD_VERSION.
+// 
 // The MSVC 6.0 does not allow void to be a default value for a template parameter.
 // I therefore changed all defaults to int.
 
+#ifdef USE_VISITOR_OLD_VERSION
+#include "VisitorOld.h"
+#else
 #ifndef VISITOR_INC_
 #define VISITOR_INC_
 
@@ -201,10 +205,6 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class TList, typename R = int /* =  void */ > class BaseVisitorImpl;
-	
-	// class for the void-case
-	template <class TList> class BaseVisitorImplVoid;
-
 namespace Private
 {
 	template <unsigned int ListTag>
@@ -252,88 +252,60 @@ namespace Private
 		typedef Workaround::LeftBase Result;
 	};
 
-	template <unsigned int ListTag>
-	struct BaseVisitorImplVoidHelper
+	template <class TList, class R>
+	struct BaseVisitorImplBase : public Visitor<typename TList::Head, R>,
+					public Private::BaseVisitorImplWrap<TList, R>::Result
 	{
-		template <typename T>
-        struct In 
-        { 
-            typedef typename T::ERROR_WRONG_SPECIALIZATION_SELECTED Result; 
-        };
+		ASSERT_TYPELIST(TList);
+		virtual R Visit(typename TList::Head&)
+        { return R(); }
 	};
 
-	template<> 
-	struct BaseVisitorImplVoidHelper<TL::Private::Typelist_ID>
-    {
-        template <typename TList>
-        struct In 
-        { 
-			typedef BaseVisitorImplVoid<TList> Result; 
-        };
-    };
-
-    template<> 
-	struct BaseVisitorImplVoidHelper<TL::Private::NullType_ID>
-    {
-        template <typename TList>
-        struct In 
-        { 
-            struct Result {}; 
-        };
-    };
-	
-	template <class T> 
-	struct BaseVisitorImplVoidWrap
-	{	
-		struct Dummy {};
-		typedef typename BaseVisitorImplVoidHelper
-		<
-			TL::Private::IsTypelist<typename T::Tail>::
-			type_id == TL::Private::AtomList_ID ? 
-			TL::Private::Typelist_ID : 
-			TL::Private::IsTypelist<typename T::Tail>::type_id
-		>::template In<typename T::Tail>::Result TempType;
-		typedef VC_Base_Workaround<TempType, Dummy> Workaround;
-		typedef Workaround::LeftBase Result;
-	};
+	template <class TList, class R>
+	struct BaseVisitorImplVoidBase : public Visitor<typename TList::Head, R>,
+					public Private::BaseVisitorImplWrap<TList, R>::Result
+	{
+		
+		ASSERT_TYPELIST(TList);
+		virtual R Visit(typename TList::Head&)
+        {  }
+	};	
 }
 
+
 	template <class TList, typename R>
-    class BaseVisitorImpl : public Visitor<typename TList::Head, R>, 
-							public Private::BaseVisitorImplWrap<TList, R>::Result
+	class BaseVisitorImpl : public Select
+							<
+								Private::IsVoid<R>::value,
+								Private::BaseVisitorImplVoidBase<TList,R>,
+								Private::BaseVisitorImplBase<TList, R>
+							>::Result
     {
         ASSERT_TYPELIST(TList);
 
     public:
-        // using BaseVisitorImpl<Tail, R>::Visit;
+		// using BaseVisitorImpl<Tail, R>::Visit;
 
-        virtual R Visit(typename TList::Head&)
-        { return R(); }
-    };
-
-	// class for the void-case
-	template <class TList>
-    class BaseVisitorImplVoid : public Visitor<typename TList::Head, void>, 
-								public Private::BaseVisitorImplVoidWrap<TList>::Result
-    {
-        ASSERT_TYPELIST(TList);
-
-    public:
-        // using BaseVisitorImpl<Tail, R>::Visit;
-
-        virtual void Visit(typename TList::Head&)
-        {}
     };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template DefaultCatchAll
 ////////////////////////////////////////////////////////////////////////////////
-
+namespace Private
+{
+	
+}
 template <typename R, typename Visited>
 struct DefaultCatchAll
 {
-    static R OnUnknownVisitor(Visited&, BaseVisitor&)
-    { return R(); }
+	static R OnUnknownVisitor(Visited&, BaseVisitor&)
+	{ return R(); }
+};
+template <typename R, typename Visited>
+struct DefaultCatchAllVoid
+{
+	static R OnUnknownVisitor(Visited&, BaseVisitor&)
+	{  }
 };
 
 // template template parameter workaround.
@@ -343,23 +315,10 @@ struct DefaultCatchAllWrapper
 	template <class R, class Visited>
 	struct In
 	{
-		typedef DefaultCatchAll<R, Visited> type;
-	};
-};
-
-template <typename R, typename Visited>
-struct DefaultCatchAllVoid
-{
-    static R OnUnknownVisitor(Visited&, BaseVisitor&)
-    {}
-};
-
-struct DefaultCatchAllVoidWrapper
-{
-	template <class R, class Visited>
-	struct In
-	{
-		typedef DefaultCatchAllVoid<R, Visited> type;
+		typedef typename Select<Private::IsVoid<R>::value,
+			DefaultCatchAllVoid<R, Visited>,
+			DefaultCatchAll<R, Visited>
+			>::Result type;
 	};
 };
 
@@ -368,15 +327,21 @@ struct DefaultCatchAllVoidWrapper
 // Implements non-strict visitation (you can implement only part of the Visit
 //     functions)
 ////////////////////////////////////////////////////////////////////////////////
-
     template <class T, class Base>
-    struct NonStrictVisitorUnit : public Base
+	struct NonStrictVisitorUnit : public Base
     {
-        typedef typename Base::ReturnType ReturnType;
+		typedef typename Base::ReturnType ReturnType;
         ReturnType Visit(T&)
         {
-            return ReturnType();
-        }
+			return ReturnType();
+		}
+    };
+	template <class T, class Base>
+	struct NonStrictVisitorUnitVoid : public Base
+    {
+		typedef typename Base::ReturnType ReturnType;
+        ReturnType Visit(T&)
+        {}
     };
     
 	struct NonStrictVisitorUnitWrapper
@@ -384,7 +349,11 @@ struct DefaultCatchAllVoidWrapper
         template <class T, class B>
 		struct In
 		{
-			typedef NonStrictVisitorUnit<T, B> type;
+			typedef typename B::ReturnType R;
+			typedef typename Select<Private::IsVoid<R>::value,
+			NonStrictVisitorUnitVoid<T, B>,
+			NonStrictVisitorUnit<T, B>
+			>::Result type;
 		};
     };
 
@@ -397,89 +366,63 @@ struct DefaultCatchAllVoidWrapper
             Visitor<TList, R> >
     {
     };
-
-	template <class T, class Base>
-    struct NonStrictVisitorUnitVoid : public Base
-    {
-        typedef void ReturnType;
-        ReturnType Visit(T&)
-        {
-        }
-    };
-    
-	struct NonStrictVisitorUnitVoidWrapper
-    {
-        template <class T, class B>
-		struct In
-		{
-			typedef NonStrictVisitorUnitVoid<T, B> type;
-		};
-    };
-
-
-    template <class TList> 
-    class NonStrictVisitorVoid 
-        : public GenLinearHierarchy<
-            TList, 
-            NonStrictVisitorUnitWrapper, 
-            Visitor<TList, void> >
-    {
-    };
 ////////////////////////////////////////////////////////////////////////////////
 // class template BaseVisitable
 ////////////////////////////////////////////////////////////////////////////////
-
+#include <stdio.h>
+namespace Private
+{
+	template <class R, class CatchAll>
+	class BaseVisitableBase
+	{
+		typedef R ReturnType;
+		protected:
+			template <class T>
+			static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
+			{
+				typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
+				// Apply the Acyclic Visitor
+				if (Visitor<T>* p = dynamic_cast<Visitor<T>*>(&guest))
+				{
+					return p->Visit(visited);
+				}
+				return CatchA::OnUnknownVisitor(visited, guest);
+			}
+	};
+	template <class R, class CatchAll>
+	class BaseVisitableVoidBase
+	{
+		typedef R ReturnType;	
+		protected:	
+			template <class T>
+			static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
+			{
+				typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
+				// Apply the Acyclic Visitor
+				if (Visitor<T, void>* p = dynamic_cast<Visitor<T, void>*>(&guest))
+				{
+					p->Visit(visited);
+					return;
+				}
+				CatchA::OnUnknownVisitor(visited, guest);
+			}
+	};
+}
     template 
     <
 		typename R = int/* =  void */, 
         class CatchAll = DefaultCatchAllWrapper
     >
-    class BaseVisitable
+    class BaseVisitable : public Select<Private::IsVoid<R>::value,
+			Private::BaseVisitableVoidBase<R, CatchAll>,
+			Private::BaseVisitableBase<R, CatchAll>
+			>::Result
+
     {
     public:
         typedef R ReturnType;
         virtual ~BaseVisitable() {}
         virtual ReturnType Accept(BaseVisitor&) = 0;
-        
-    protected: // give access only to the hierarchy
-        template <class T>
-        static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
-        {
-            typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
-			// Apply the Acyclic Visitor
-            if (Visitor<T>* p = dynamic_cast<Visitor<T>*>(&guest))
-            {
-                return p->Visit(visited);
-            }
-            return CatchA::OnUnknownVisitor(visited, guest);
-        }
-    };
-
-	
-	// class for the void-case
-	template 
-    <
-        class CatchAll = DefaultCatchAllVoidWrapper
-    >
-    class BaseVisitableVoid
-    {
-    public:
-        typedef void ReturnType;
-        virtual ~BaseVisitableVoid() {}
-        virtual ReturnType Accept(BaseVisitor&) = 0;
-        
-    protected: // give access only to the hierarchy
-        template <class T>
-        static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
-        {
-            typedef ApplyInnerType2<CatchAll, void, T>::type CatchA;
-			// Apply the Acyclic Visitor
-            if (Visitor<T, void>* p = dynamic_cast<Visitor<T, void>*>(&guest))
-            {
-                p->Visit(visited);
-            }
-            CatchA::OnUnknownVisitor(visited, guest);
-        }
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -489,11 +432,11 @@ struct DefaultCatchAllVoidWrapper
 ////////////////////////////////////////////////////////////////////////////////
 
 #define DEFINE_VISITABLE() \
-    virtual ReturnType Accept(BaseVisitor& guest) \
+    virtual ReturnType Accept(Loki::BaseVisitor& guest) \
     { return AcceptImpl(*this, guest); }
 
 #define DEFINE_VISITABLE_VOID() \
-    virtual void Accept(BaseVisitor& guest) \
+    virtual ReturnType Accept(Loki::BaseVisitor& guest) \
     { AcceptImpl(*this, guest); }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -501,35 +444,45 @@ struct DefaultCatchAllVoidWrapper
 // Put it in every class that you want to make visitable (in addition to 
 //     deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
-    template <typename R, class TList>
-    class CyclicVisitor : public Visitor<TList, R>
-    {
-    public:
-        typedef R ReturnType;
-        // using Visitor<TList, R>::Visit;
-        
-        template <class Visited>
+namespace Private
+{
+	template <typename R, class TList>
+	class CyclicVisitorBase : public Visitor<TList, R>
+	{
+	public:
+		template <class Visited>
         ReturnType GenericVisit(Visited& host)
         {
             Visitor<Visited, ReturnType>& subObj = *this;
             return subObj.Visit(host);
         }
-    };
-    
+	};
 	template <class TList>
-    class CyclicVisitorVoid : public Visitor<TList, void>
-    {
-    public:
-        typedef void ReturnType;
-        // using Visitor<TList, R>::Visit;
-        
-        template <class Visited>
+	class CyclicVisitorVoidBase : public Visitor<TList, void>
+	{
+	public:
+		template <class Visited>
         ReturnType GenericVisit(Visited& host)
         {
             Visitor<Visited, ReturnType>& subObj = *this;
             subObj.Visit(host);
         }
+	};
+}
+
+	template <typename R, class TList>
+	class CyclicVisitor : public Select<Private::IsVoid<R>::value,
+		Private::CyclicVisitorVoidBase<TList>,
+		Private::CyclicVisitorBase<R, TList>
+		>::Result
+    {
+    public:
+        typedef R ReturnType;
+        // using Visitor<TList, R>::Visit;
+        
+        
     };
+    
 ////////////////////////////////////////////////////////////////////////////////
 // macro DEFINE_CYCLIC_VISITABLE
 // Put it in every class that you want to make visitable by a cyclic visitor
@@ -550,7 +503,9 @@ struct DefaultCatchAllVoidWrapper
 // March 20: add default argument DefaultCatchAll to BaseVisitable
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Oct  27, 2002: ported by Benjamin Kaufmann to MSVC 6.0
+// Feb	23, 2003: Removed special visitor classes for return type void. 
+//		Added Loki:: qualification to Accept's Paramter (in the macro) B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // VISITOR_INC_
-
+#endif
