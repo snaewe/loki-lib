@@ -158,7 +158,7 @@ namespace Loki
         { me.pPrototype_ = pObj; }
         
         template <class U>
-        void GetPrototype(AbstractProduct*& p)
+        void GetPrototype(U*& p)
         { return DoGetPrototype(*this, p); }
         
         template <class U>
@@ -216,6 +216,8 @@ namespace Loki
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Oct  24, 2002: ported by Benjamin Kaufmann to MSVC 6.0
 // Feb	20, 2003: replaced pointer-dummy parameters with Type2Type-parameters. B.K.
+// September 25, 2004: Fixed bug in PrototypeFactoryUnit::GetPrototype, thanks
+//   to a bug report submitted by funcall.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ABSTRACTFACTORY_INC_
