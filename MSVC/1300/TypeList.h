@@ -454,8 +454,12 @@ namespace Loki
             static no  check(...);
 
         public:
-            // VC7 fail NPS_HierarchyGenerators.h if this one is enum
-            static const unsigned int type_id = sizeof(check( Type2Type<T>() ));
+            #if (_MSC_VER >= 1300)
+              // VC7 fail NPS_HierarchyGenerators.h if this one is enum
+              static const unsigned int type_id = sizeof(check( Type2Type<T>() ));
+            #else
+						  enum { type_id = sizeof(check( Type2Type<T>() )) };
+            #endif
 
             enum { value = type_id != sizeof(no) };
 

@@ -16,6 +16,7 @@
 #define ABSTRACTFACTORYTEST_H
 
 #include <memory>
+#include <typeinfo>
 #include <loki/AbstractFactory.h>
 #include "UnitTest.h"
 

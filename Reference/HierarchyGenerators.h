@@ -80,13 +80,13 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class T, class H>
-    typename H::Rebind<T>::Result& Field(H& obj)
+    typename H::template Rebind<T>::Result& Field(H& obj)
     {
         return obj;
     }
      
     template <class T, class H>
-    const typename H::Rebind<T>::Result& Field(const H& obj)
+    const typename H::template Rebind<T>::Result& Field(const H& obj)
     {
         return obj;
     }
@@ -126,7 +126,7 @@ namespace Loki
     struct FieldHelper<H, 0>
     {
         typedef typename H::TList::Head ElementType;
-        typedef typename H::Rebind<ElementType>::Result UnitType;
+        typedef typename H::template Rebind<ElementType>::Result UnitType;
         
         enum
         {
@@ -156,7 +156,7 @@ namespace Loki
     struct FieldHelper
     {
         typedef typename TL::TypeAt<typename H::TList, i>::Result ElementType;
-        typedef typename H::Rebind<ElementType>::Result UnitType;
+        typedef typename H::template Rebind<ElementType>::Result UnitType;
         
         enum
         {
@@ -249,6 +249,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// September 16, 2002: Fixed dependent template, using "::template" syntax. T.S.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // HIERARCHYGENERATORS_INC_

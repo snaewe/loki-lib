@@ -664,10 +664,10 @@ namespace Loki
 
         template <class TList> struct Reverse;
         
-        template <class T>
-        struct Reverse< TYPELIST_1(T) >
+        template <>
+        struct Reverse<NullType>
         {
-            typedef TYPELIST_1(T) Result;
+            typedef NullType Result;
         };
         
         template <class Head, class Tail>
@@ -700,7 +700,7 @@ namespace Loki
             typedef typename MostDerived<Tail, T>::Result Candidate;
         public:
             typedef typename Select<
-                SUPERSUBCLASS(Candidate, Head),
+                SuperSubclass<Candidate,Head>::value,
                     Head, Candidate>::Result Result;
         };
 
@@ -748,7 +748,10 @@ namespace Loki
 //          Kevin Cline who sent the first actual fix)
 // May 13, 2002: TYPELIST_46 called TYPELIST_45 with only 44 parameters.
 //      Credit due to Robert Minsk     
+// September 16, 2002: Changed MostDerived to use the new SuperSubclass template
+//     (rather than the SUPERSUBCLASS macro).
+//     Minor fix in Reverse, adding support for empty lists, like all the other
+//     algorithms. T.S.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPELIST_INC_
-

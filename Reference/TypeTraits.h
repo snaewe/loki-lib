@@ -70,6 +70,21 @@ namespace Loki
            int, long int) StdSignedInts;
         typedef TYPELIST_3(bool, char, wchar_t) StdOtherInts;
         typedef TYPELIST_3(float, double, long double) StdFloats;
+
+        template <class U> struct AddReference
+        {
+            typedef U & Result;
+        };
+
+        template <class U> struct AddReference<U &>
+        {
+            typedef U & Result;
+        };
+
+        template <> struct AddReference<void>
+        {
+            typedef NullType Result;
+        };
     }
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -216,8 +231,7 @@ namespace Loki
         enum { isFundamental = isStdFundamental || isArith || isFloat };
         
         typedef typename Select<isStdArith || isPointer || isMemberPointer,
-                T, ReferredType&>::Result
-            ParameterType;
+            T, typename Private::AddReference<T>::Result>::Result ParameterType;
         
         enum { isConst = UnConst<T>::isConst };
         typedef typename UnConst<T>::Result NonConstType;
@@ -231,6 +245,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// September 16, 2002: ParameterType fixed, as TypeTraits<void> made
+//     ParameterType give error about reference to void. T.S.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPETRAITS_INC_
