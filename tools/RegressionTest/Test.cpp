@@ -95,7 +95,7 @@ int main()
 
 int result = Test::run("Loki Unit Test");
 
-#if defined(__BORLANDC__) || defined(__GNUC__)
+#if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
   system("pause"); // Stop console window from closing if run from IDE.
 #endif
 
