@@ -1,0 +1,201 @@
+////////////////////////////////////////////////////////////////////////////////
+// The Loki Library
+// Data Generator by Shannon Barber
+// This code DOES NOT accompany the book:
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+//     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
+//
+// Code covered by the MIT License
+////////////////////////////////////////////////////////////////////////////////
+
+#include "TypeList.h"
+#include "StreamTypes.h"
+
+namespace Loki
+{
+////////////////////////////////////////////////////////////////////////////////
+// class template IterateTypes
+////////////////////////////////////////////////////////////////////////////////
+	namespace TL
+		{
+		template<typename T>
+		struct name_from_type
+			{
+			const char* operator()()
+				{
+				return typeid(T).name();
+				}
+			};
+    
+    template <class TList, template <typename> class UnitFunc>
+    struct IterateTypes;
+
+    namespace Private
+    {
+    // for some reason VC7 needs the base definition altough not in use
+    template <typename TListTag> 
+    struct IterateTypesHelper1
+    {
+        template <typename T, template <typename> class GenFunc>
+        struct In 
+        { 
+            typedef typename T::ERROR_THIS_INSTANCE_SELECTED Result; 
+        };
+    };
+
+    template <typename TListTag> 
+    struct IterateTypesHelper2
+    {
+        template <typename T, template <typename> class GenFunc>
+        struct In 
+        { 
+            typedef typename T::ERROR_THIS_INSTANCE_SELECTED Result; 
+        };
+    };
+
+    
+    template <> 
+    struct IterateTypesHelper1<TL::Typelist_tag>
+    {
+        template <class TList, template <typename> class GenFunc>
+        struct In
+        {
+            typedef IterateTypes<typename TList::Head, GenFunc> Result;
+        };
+    };
+
+    template <> 
+    struct IterateTypesHelper2<TL::Typelist_tag>
+    {
+        template <class TList, template <typename> class GenFunc>
+        struct In
+        {
+            typedef IterateTypes<typename TList::Tail, GenFunc> Result;
+        };
+    };
+    
+
+    template <> 
+    struct IterateTypesHelper1<TL::NoneList_tag>
+    {
+        template <typename AtomicType, template <typename> class GenFunc>
+        struct In 
+        { 
+            struct Result
+            {
+				    typedef GenFunc<AtomicType> genfunc_t;
+                template<class II>
+                void operator()(II& ii)
+                {
+                    genfunc_t gen;
+						  *ii = gen();
+						  ++ii;
+                }
+                template<class II, class P1>
+                void operator()(II& ii, P1 p1)
+                {
+                    genfunc_t gen;
+						  *ii = gen(p1);
+						  ++ii;
+                }
+            };
+        };
+    };
+
+    template <> 
+    struct IterateTypesHelper2<TL::NoneList_tag>
+    {
+        template <typename AtomicType, template <typename> class GenFunc>
+        struct In 
+        { 
+            struct Result 
+            {
+                template<class II> void operator()(II&) {}
+				    template<class II, class P1> void operator()(II&, P1) {}
+            }; 
+        };        
+    };
+
+
+    template <> 
+    struct IterateTypesHelper1<TL::NullType_tag>
+    {
+        template <class TList, template <typename> class GenFunc>
+        struct In 
+        { 
+            struct Result 
+            {
+                template<class II> void operator()(II&) {}
+				    template<class II, class P1> void operator()(II&, P1) {}
+				}; 
+        };        
+    };
+
+    template <> 
+    struct IterateTypesHelper2<TL::NullType_tag>
+    {
+        template <class TList, template <typename> class GenFunc>
+        struct In 
+        { 
+            struct Result 
+            {
+                template<class II> void operator()(II&) {}
+				    template<class II, class P1> void operator()(II&, P1) {}
+            }; 
+        };        
+    };
+
+    } // namespace Private
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// class template IterateTypes
+// Iteratates a TypeList, and invokes the ctor of GenFunc<T>
+// for each type in the list, passing a functor along the way.
+// The functor is designed to be an insertion iterator which GenFunc<T>
+// can use to output information about the types in the list.
+////////////////////////////////////////////////////////////////////////////////
+
+    
+    template <typename T, template <typename> class GenFunc>
+    struct IterateTypes
+    {
+    public:
+
+        typedef typename Private::IterateTypesHelper1
+        <
+            typename TL::is_Typelist<T>::type_tag
+        >
+        ::template In<T, GenFunc>::Result head_t;
+
+        typedef typename Private::IterateTypesHelper2
+        <
+            typename TL::is_Typelist<T>::type_tag
+        >
+        ::template In<T, GenFunc>::Result tail_t;
+		  head_t head;
+		  tail_t tail;
+
+	     template<class II>
+        void operator()(II& ii)
+        {
+		  this->head.operator()(ii);
+		  this->tail.operator()(ii);
+		  }
+	     template<class II, class P1>
+        void operator()(II& ii, P1 p1)
+        {
+		  this->head.operator()(ii, p1);
+		  this->tail.operator()(ii, p1);
+		  }
+	 };
+	}//ns TL
+}//ns Loki
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// Aug 17, 2002:  Ported to MSVC7 by Rani Sharoni 
+// Aug 18, 2002:  Removed ctor(ii&), replaced with operator(ii&) Shannon Barber
+////////////////////////////////////////////////////////////////////////////////
+
