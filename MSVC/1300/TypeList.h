@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 10, 2002
+// Last update: Oct 11, 2002
 //MSVC7
 
 #ifndef TYPELIST_INC_
@@ -1003,7 +1003,7 @@ typedef char _type_##_is_not_a_Typelist[true]
             typedef typename TList::Tail Tail;
         
             typedef typename MostDerived<Tail, Head>::Result TheMostDerived;
-            typedef typename ReplaceAll<Tail, TheMostDerived, Head>::Result Temp;
+            typedef typename Replace<Tail, TheMostDerived, Head>::Result Temp;
             typedef typename DerivedToFront<Temp>::Result L;
 
         public:
@@ -1055,6 +1055,7 @@ typedef char _type_##_is_not_a_Typelist[true]
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 // Oct  10, 2002: added MakeTypelist (SGB/MKH)
+// Oct  11, 2002: DerivedToFront was incorrectly using ReplaceAll, now uses Replace
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPELIST_INC_

@@ -55,10 +55,10 @@ Test::tests_type Test::tests;
  * gcc   2.95.3  ?               ?              ?               ?                ?            
  * gcc   3.2     AP              AP             AP              AP               P #ifdef?    
  * MSVC  6       ?               ?              ?               ?                ?            
- * MSVC  7       DerivedToFront  Conversion     FC              AP               P #ifdef?    
+ * MSVC  7       AP              Conversion     FC              AP               P #ifdef?    
  * Intel ?       ?               ?              ?               ?                ?            
  * BCB   5.5?    ?               ?              ?               ?                ?            
- * CW    6.0     DerivedToFront  ?              ?               ?                ?            
+ * CW    6.0     ?               ?              ?               ?                ?            
  *
  *               SmartPtrTest  FactoryTest  AbstractFactoryTest  AssocVectorTest  FunctorTest
  * gcc   2.95.3  ?             ?            ?                    ?                ?          
