@@ -1,4 +1,4 @@
-Last update: Aug 22, 2002
+Last update: Aug 29, 2002
 
 Directions:
 
@@ -14,7 +14,7 @@ Compatibility:
 Supported Compilers:
 Gcc v2.95.3
 Microsoft Visual C++ v7.0
-Borland C++ Builder v5.6
+Borland C++ Builder v6.0
 
 Mostly Supported:
 CodeWarrior 6.0
