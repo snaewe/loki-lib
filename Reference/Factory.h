@@ -62,7 +62,7 @@ namespace Loki
         bool Register(const IdentifierType& id, ProductCreator creator)
         {
             return associations_.insert(
-                IdToProductMap::value_type(id, creator)).second;
+                typename IdToProductMap::value_type(id, creator)).second;
         }
         
         bool Unregister(const IdentifierType& id)
@@ -105,7 +105,7 @@ namespace Loki
         bool Register(const TypeInfo& ti, ProductCreator creator)
         {
             return associations_.insert(
-                IdToProductMap::value_type(ti, creator)).second;
+                typename IdToProductMap::value_type(ti, creator)).second;
         }
         
         bool Unregister(const TypeInfo& id)
@@ -139,6 +139,7 @@ namespace Loki
 //                   ProductCreators are supported. Also, added a throw()
 //                   spec to what(). Credit due to Jason Fischl.
 // February 2, 2003: fixed dependent names - credit due to Rani Sharoni
+// March 4, 2003: fixed dependent names - credit due to Ruslan Zasukhin and CW 8.3 
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // FACTORY_INC_
