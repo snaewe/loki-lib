@@ -9,8 +9,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "TypeList.h"
-#include "StreamTypes.h"
 
+//MSVC7 version
 namespace Loki
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,14 @@ namespace Loki
 				return typeid(T).name();
 				}
 			};
-    
+		template<typename T>
+		struct sizeof_type
+			{
+			size_t operator()()
+				{
+				return sizeof(T);
+				}
+			};    
     template <class TList, template <typename> class UnitFunc>
     struct IterateTypes;
 
@@ -83,13 +90,13 @@ namespace Loki
         { 
             struct Result
             {
-				    typedef GenFunc<AtomicType> genfunc_t;
+				typedef GenFunc<AtomicType> genfunc_t;
                 template<class II>
                 void operator()(II& ii)
                 {
-                    genfunc_t gen;
-						  *ii = gen();
-						  ++ii;
+                genfunc_t gen;
+				*ii = gen();
+				++ii;
                 }
                 template<class II, class P1>
                 void operator()(II& ii, P1 p1)
@@ -190,6 +197,17 @@ namespace Loki
 		  this->tail.operator()(ii, p1);
 		  }
 	 };
+
+	//UnitFunc is really a template-template parameter, but MSVC7
+	// chokes on the correct defintion.  Oddly enough, it works correctly
+	// with the 'undecorated' template parameter declaraion!
+	//template <typename> class UnitFunc
+	template<typename Types, class UnitFunc, typename II>
+	void iterate_types(II &ii)
+		{
+		Loki::TL::IterateTypes<Types, UnitFunc> it;
+		it(ii);
+		}
 	}//ns TL
 }//ns Loki
 
