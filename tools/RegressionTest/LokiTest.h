@@ -25,6 +25,7 @@
 //#include "AbstractFactoryTest.h"
 //#include "AssocVectorTest.h"
 //#include "FunctorTest.h"
+#include "DataGeneratorsTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LokiTest
@@ -56,6 +57,7 @@ private:
 //		tests.add(abstractFactoryTest);
 //		tests.add(assocVectorTest);
 //		tests.add(functorTest);
+		tests.add(datageneratorTest);
 		}
 
 private:
@@ -72,6 +74,7 @@ private:
 //	AbstractFactoryTest abstractFactoryTest;
 //	AssocVectorTest assocVectorTest;
 //	FunctorTest functorTest;
+	DataGeneratorsTest datageneratorTest;
 };
 
 #endif

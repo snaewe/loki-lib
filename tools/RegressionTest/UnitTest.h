@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 ///////////////////////////////////////////////////////////////////////////////
 // SameType
@@ -28,6 +29,8 @@
 
 // Rani Sharoni's SameType
 
+//This is non-standard code, you are not allowed to 
+// specialize a nested template
 template<class T1,class T2>
 struct SameType
 {
@@ -49,13 +52,13 @@ public:
 template<class T1,class T2>
 struct SameType
 {
-		static const bool value=false;
+	static const bool value=false;
 };
 
 template<class T>
 struct SameType<T,T>
 {
-		static const bool value=true;
+	static const bool value=true;
 };
 
 #endif
@@ -75,17 +78,24 @@ public:
 	int notSupported;
 };
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // Test
 ///////////////////////////////////////////////////////////////////////////////
 
 class Test
 {
+typedef std::vector<Test*> tests_type;
+static tests_type tests;
+
 public:
-	explicit Test(const std::string &n) : name(n) {}
+	explicit Test(const std::string &n) : name(n)
+		{
+		Test::tests.push_back(this);
+		}
 
 	virtual void execute(TestResult &) =0;
-
+	
 protected:
 	~Test() {}
 
@@ -135,59 +145,23 @@ public:
 
 protected:
 	const std::string name;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// TestSuite
-///////////////////////////////////////////////////////////////////////////////
-
-class TestSuite : public Test
-{
-private:
-	typedef std::vector<Test *> TestList;
-
+	
 public:
-	explicit TestSuite(const std::string &name =emptyStr()) : Test(name) {}
-
-	void add(Test &test)
-		{
-		tests.push_back(&test);
-		}
-
-	virtual void execute(TestResult &result)
-		{
-		printName(result);
-
-		if(name.length()!=0)
-			result.pos+=2;
-
-		for(TestList::iterator i=tests.begin();i!=tests.end();++i)
-			(*i)->execute(result);
-
-		if(name.length()!=0)
-			result.pos-=2;
-		}
-
-private:
-	TestList tests;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// UnitTest
-///////////////////////////////////////////////////////////////////////////////
-
-class UnitTest
-{
-public:
-	int run(const std::string &title,TestSuite &tests) const
+	static int run(const std::string &title)
 		{
 		std::cout << title << std::string(Test::offset-title.length(),' ') << "Result\n";
 		std::cout << std::string(76,'-') << '\n';
-
+		
 		TestResult testResult;
-
-		tests.execute(testResult);
-
+		
+		tests_type::iterator it;
+		tests_type::const_iterator itEnd = Test::tests.end();
+		for(it=Test::tests.begin(); it!=itEnd; ++it)
+			{
+			Test* test = *it;
+			test->execute(testResult);
+			}
+		
 		std::cout << std::string(76,'-') << '\n';
 
 		const int total=testResult.passed+testResult.failed;
@@ -203,6 +177,8 @@ public:
 
 		return testResult.failed;
 		}
+
 };
+
 
 #endif

@@ -16,7 +16,6 @@
 #define TYPETRAITSTEST_H
 
 #include <Loki/TypeTraits.h>
-#include "UnitTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // TypeTraitsTest
@@ -111,6 +110,6 @@ public:
 
 		std::cout << '\n';
 		}
-};
+} typeTraitsTest;
 
 #endif

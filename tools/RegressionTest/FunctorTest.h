@@ -16,7 +16,6 @@
 #define FUNCTORTEST_H
 
 #include <loki/Functor.h>
-#include "UnitTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // FunctorTest
@@ -102,8 +101,12 @@ private:
 			result=true;
 			}
 	};
-};
+} functorTest;
 
 bool FunctorTest::testResult;
 
+#ifndef SMALLOBJ_CPP
+#	define SMALLOBJ_CPP
+#	include "../../SmallObj.cpp"
+#endif
 #endif

@@ -6,14 +6,6 @@
 
 #include <typeinfo>
 #include <Loki/DataGenerators.h>
-#include "UnitTest.h"
-
-template<typename T>
-T& remove_const(const T& t)
-	{
-	return const_cast<T&>(t);
-	}
-
 
 struct DataGeneratorsTest : public Test
 	{
@@ -38,7 +30,7 @@ struct DataGeneratorsTest : public Test
 		names.reserve(n);
 		//Some fascist decided that all temporaries should be const.
 		//The following line of code stupidity is a direct result of the half-baked idea
-		iterate_types<char_types, name_from_type>(remove_const(std::back_inserter(names)));
+		iterate_types<char_types, nameof_type>(std::back_inserter(names));
 		b = names.size() == n;
 		testAssert("iterate_types - Check Length", b, result);
 		
@@ -48,7 +40,7 @@ struct DataGeneratorsTest : public Test
 		                     short,
 		                     int,
 		                     double>::Result some_types;
-		iterate_types<some_types, sizeof_type>(remove_const(std::back_inserter(sizes)));
+		iterate_types<some_types, sizeof_type>(std::back_inserter(sizes));
 		size_t apriori_size[] = {sizeof(char), sizeof(short), sizeof(int), sizeof(double)};
 		b = true;
 		for(int i=0; i<n; ++i)
@@ -65,6 +57,6 @@ struct DataGeneratorsTest : public Test
 		b = sizes.size() == 0;
 		testAssert("iterate_types - Degenerate Case 2 - NullType", b, result);
 		}
-	};
+	} datageneratorsTest;
 
 #endif //DATAGENERATORSTEST_H

@@ -18,7 +18,6 @@
 #include <memory>
 #include <typeinfo>
 #include <loki/AbstractFactory.h>
-#include "UnitTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // AbstractFactoryTest
@@ -63,8 +62,8 @@ public:
 		Soldier *s;
 
 		s = easyFactory->Create<Soldier>();
-
-		r=typeid(*s)==typeid(SillySoldier);
+		
+		r= !!(typeid(*s)==typeid(SillySoldier)); //SGB !! eliminates bool-to-int performance warning
 
 		delete s;
 
@@ -82,6 +81,6 @@ public:
 
 		std::cout << '\n';
 		}
-};
+} abstractFactoryTest;
 
 #endif

@@ -6,8 +6,14 @@
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 //
 // Code covered by the MIT License
+// The author makes no representations about the suitability of this software
+//  for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// Last update: Oct 10, 2002
+
+#ifndef DATAGENERATORS_H
+#define DATAGENERATORS_H
 #include "TypeList.h"
 
 //Reference version
@@ -93,7 +99,7 @@ namespace Loki
         {}
     };
     
-	template<typename Types, template <typename> class UnitFunc, typename II>
+	template<typename Types, template <class> class UnitFunc, typename II>
 	void iterate_types(II ii)
 		{
 		Loki::TL::IterateTypes<Types, UnitFunc> it;
@@ -102,6 +108,7 @@ namespace Loki
 	}//ns TL
 }//ns Loki
 
+#endif //DATAGENERATORS_H
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // 9/20/02 Named changed from GenData to IterateTypes

@@ -16,7 +16,6 @@
 #define FACTORYTEST_H
 
 #include <loki/Factory.h>
-#include "UnitTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // FactoryTest
@@ -142,6 +141,6 @@ public:
 
 		std::cout << '\n';
 		}
-};
+} factoryTest;
 
 #endif

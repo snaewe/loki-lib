@@ -187,7 +187,7 @@ void test_vect1()
 		assert(vec11.size() == 0);
 
 		check_insert1(vec11);
-		unsigned size1 = vec11.size();
+		size_t size1 = vec11.size();
 		assert(size1);
 
 		test_vect1_t vec12(vec11.begin(), vec11.end());
@@ -244,7 +244,7 @@ void test_vect2()
 		assert(it->second == 3);
 
 		std::pair<test_vect2_t::iterator, bool> aux = vec21.insert(std::make_pair("xyz", 99));
-		assert(aux.first);
+		assert(aux.first); //TODOSGB was second meant, not first?  MSVC7 dies here (more errors follow)
 		it = vec21.find("xyz");
 		assert(it->second == 3);
 
@@ -353,6 +353,6 @@ public:
 
 		std::cout << '\n';
 		}
-};
+} assocVectorTest;
 
 #endif
