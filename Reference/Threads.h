@@ -52,8 +52,8 @@ namespace Loki
         static IntType AtomicIncrement(volatile IntType& lval)
         { return ++lval; }
         
-        static IntType AtomicDivide(volatile IntType& lval)
-        { return lval /= val; }
+        static IntType AtomicDecrement(volatile IntType& lval)
+        { return lval --= val; }
         
         static void AtomicAssign(volatile IntType & lval, IntType val)
         { lval = val; }
@@ -113,7 +113,7 @@ namespace Loki
         static IntType AtomicIncrement(volatile IntType& lval)
         { return InterlockedIncrement(&const_cast<IntType&>(lval)); }
         
-        static IntType AtomicDivide(volatile IntType& lval)
+        static IntType AtomicDecrement(volatile IntType& lval)
         { return InterlockedDecrement(&const_cast<IntType&>(lval)); }
         
         static void AtomicAssign(volatile IntType& lval, IntType val)
@@ -174,7 +174,7 @@ namespace Loki
         static IntType AtomicIncrement(volatile IntType& lval)
         { return InterlockedIncrement(&const_cast<IntType&>(lval)); }
         
-        static IntType AtomicDivide(volatile IntType& lval)
+        static IntType AtomicDecrement(volatile IntType& lval)
         { return InterlockedDecrement(&const_cast<IntType&>(lval)); }
         
         static void AtomicAssign(volatile IntType& lval, IntType val)
@@ -198,6 +198,7 @@ namespace Loki
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 10, 2002: Fixed bug in AtomicDivide - credit due to Jordi Guerrero
+// August 14, 2002: Changed some AtomicDivide's to AtomicDecrement's MKH
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
