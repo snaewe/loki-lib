@@ -91,6 +91,40 @@ namespace Loki
         typedef TYPELIST_3(float, double, long double) StdFloats;
     }
         
+    namespace Private
+    {
+        
+        template<typename T>
+        class IsArray
+        {
+            template <typename> struct Type2Type2 {};
+
+            typedef char (&yes)[1];
+            typedef char (&no) [2];
+        
+            template<typename U, size_t N>
+            static void vc7_need_this_for_is_array(Type2Type2<U(*)[N]>);
+        
+            template<typename U, size_t N>
+            static yes is_array1(Type2Type2<U[N]>*);
+            static no  is_array1(...);
+        
+            template<typename U>
+            static yes is_array2(Type2Type2<U[]>*);
+            static no  is_array2(...);
+        
+        public:
+            enum { 
+                value =
+                    sizeof(is_array1((Type2Type2<T>*)0)) == sizeof(yes) ||
+                    sizeof(is_array2((Type2Type2<T>*)0)) == sizeof(yes)
+            };
+            
+        };
+        
+
+    } // Private Namespace
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template TypeTraits
 // Figures out various properties of any given type
@@ -150,9 +184,6 @@ namespace Loki
         typedef char (&yes)[1];
         typedef char (&no) [2];
 
-        template<typename U, size_t N>
-        static void vc7_need_this_for_is_array(Type2Type<U[N]>);
-
         template<typename U>
         static yes is_reference(Type2Type<U&>);
         static no  is_reference(...);
@@ -176,14 +207,6 @@ namespace Loki
         template<typename U, typename V>
         static yes is_pointer2member(Type2Type<U V::*>);
         static no  is_pointer2member(...);
-
-        template<typename U, size_t N>
-        static yes is_array1(Type2Type<U[N]>);
-        static no  is_array1(...);
-
-        template<typename U>
-        static yes is_array2(Type2Type<U[]>);
-        static no  is_array2(...);
 
         template<typename U>
         static yes is_const(Type2Type<const U>);
@@ -219,9 +242,7 @@ namespace Loki
         };
     
         enum { 
-            isArray =
-                sizeof(is_array1(Type2Type<T>())) == sizeof(yes) ||
-                sizeof(is_array2(Type2Type<T>())) == sizeof(yes)
+            isArray = Private::IsArray<T>::value
         };
 
         enum { 
