@@ -13,7 +13,24 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Mar 06, 2003
+// Last update: Mar 20, 2003
+// Interface change for FnDispatcher::Add:
+// The trampoline-Version of FnDispatcher::Add needs explicit template
+// argument specification for type and non-type parameters. Unfortunately 
+// all workarounds used so far failed for this member-function. 
+// Therefore I need to use a new one which leads to another interface change:
+// Example (see "Modern C++ Design" Section 11.6)
+// ----------------------------------------------
+// Using the original one writes:
+// typedef FnDispatcher<Shape> Dispatcher;
+// void Hatch(Rectangle& lhs, Poly& rhs) {...}
+// 
+// Dispatcher dis;
+// disp.Add<Rectangle, Poly, &Hatch>();
+//
+// Using this port the example becomes:
+// Dispatcher::AddI<Rectangle, Poly, &Hatch>()(dis);
+// 
 // All dispatchers now have void as default value for return types.
 // All dispatchers now support void as return type. 
 // 
@@ -62,143 +79,158 @@ namespace Loki
 	
 namespace Private
 {
-	template <class SomeLhs, class SomeRhs, 
-		class Executor, typename ResultType>
-    struct InvocationTraits
-    {
-        static ResultType 
-		DoDispatch(SomeLhs& lhs, SomeRhs& rhs, Executor& exec, Int2Type<false>)
-        {
-            return exec.Fire(lhs, rhs);
-        }
-        static ResultType DoDispatch(	SomeLhs& lhs, SomeRhs& rhs, 
-										Executor& exec, Int2Type<true>)
-        {
-            return exec.Fire(rhs, lhs);
-        }
-    };
+	template <class SomeLhs, class SomeRhs, class Executor, typename ResultType>
+	struct InvocationTraitsBase
+	{
+	protected:
+		template <class R>
+		struct BaseImpl
+		{
+			static ResultType 
+			DoDispatch(SomeLhs& lhs, SomeRhs& rhs, Executor& exec, Int2Type<false>)
+			{
+				return exec.Fire(lhs, rhs);
+			}
+			static ResultType DoDispatch(	SomeLhs& lhs, SomeRhs& rhs, 
+											Executor& exec, Int2Type<true>)
+			{
+				return exec.Fire(rhs, lhs);
+			}
+		};
+		template <>
+		struct BaseImpl<void>
+		{
+			static ResultType 
+			DoDispatch(SomeLhs& lhs, SomeRhs& rhs, Executor& exec, Int2Type<false>)
+			{
+				exec.Fire(lhs, rhs);
+			}
+			static ResultType DoDispatch(	SomeLhs& lhs, SomeRhs& rhs, 
+											Executor& exec, Int2Type<true>)
+			{
+				exec.Fire(rhs, lhs);
+			}
+		};
+	public:
+		typedef BaseImpl<ResultType> Base;
+	};
+	template <class SomeLhs, class SomeRhs, class Executor, typename ResultType>
+	struct InvocationTraits : public InvocationTraitsBase
+								<SomeLhs, SomeRhs, Executor, ResultType>::Base
+	{
+		
+	};
 	
-	template <class SomeLhs, class SomeRhs, class Executor>
-    struct InvocationTraitsVoid
-    {
-        typedef void ResultType;
-		static ResultType 
-		DoDispatch(SomeLhs& lhs, SomeRhs& rhs, Executor& exec, Int2Type<false>)
-        {
-            exec.Fire(lhs, rhs);
-        }
-        static ResultType DoDispatch(	SomeLhs& lhs, SomeRhs& rhs, 
-										Executor& exec, Int2Type<true>)
-        {
-            exec.Fire(rhs, lhs);
-        }
-    };
-	
-	// Implementation for StaticDispatcher with result type != void
 	template<class Executor, class BaseLhs, class TypesLhs, bool symmetric,
 		class BaseRhs, class TypesRhs, typename ResultType>
 	class StaticDispatcherBase
 	{
-		template <class SomeLhs>
-		static ResultType DispatchRhs(	SomeLhs& lhs, BaseRhs& rhs,
-										Executor exec, NullType)
-		{ return exec.OnError(lhs, rhs); }
+	private:
+		// Base for ResultType != void
+		template <class R>
+		class In
+		{
+			template <class SomeLhs>
+			static ResultType DispatchRhs(	SomeLhs& lhs, BaseRhs& rhs,
+											Executor exec, NullType)
+			{ return exec.OnError(lhs, rhs); }
     
-		template <class Head, class Tail, class SomeLhs>
-		static ResultType DispatchRhs(SomeLhs& lhs, BaseRhs& rhs,
-										Executor exec, Typelist<Head, Tail>)
-		{            
-			if (Head* p2 = dynamic_cast<Head*>(&rhs))
-			{
-				Int2Type<(symmetric &&
-						  int(TL::IndexOf<TypesRhs, Head>::value) <
-						  int(TL::IndexOf<TypesLhs, SomeLhs>::value))> i2t;
+			template <class Head, class Tail, class SomeLhs>
+			static ResultType DispatchRhs(SomeLhs& lhs, BaseRhs& rhs,
+											Executor exec, Typelist<Head, Tail>)
+			{            
+				if (Head* p2 = dynamic_cast<Head*>(&rhs))
+				{
+					Int2Type<(symmetric &&
+							  int(TL::IndexOf<TypesRhs, Head>::value) <
+							  int(TL::IndexOf<TypesLhs, SomeLhs>::value))> i2t;
 
-				typedef Private::InvocationTraits< 
-						SomeLhs, Head, Executor, ResultType> CallTraits;
+					typedef Private::InvocationTraits< 
+							SomeLhs, Head, Executor, ResultType> CallTraits;
                 
-				return CallTraits::DoDispatch(lhs, *p2, exec, i2t);
+					return CallTraits::DoDispatch(lhs, *p2, exec, i2t);
+				}
+				return DispatchRhs(lhs, rhs, exec, Tail());
 			}
-			return DispatchRhs(lhs, rhs, exec, Tail());
-		}
 
-		static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
-										Executor exec, NullType)
-		{ return exec.OnError(lhs, rhs); }
+			static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
+											Executor exec, NullType)
+			{ return exec.OnError(lhs, rhs); }
     
-		template <class Head, class Tail>
-		static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
-										Executor exec, Typelist<Head, Tail>)
-		{            
-			if (Head* p1 = dynamic_cast<Head*>(&lhs))
-			{
-				return DispatchRhs(*p1, rhs, exec, TypesRhs());
+			template <class Head, class Tail>
+			static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
+											Executor exec, Typelist<Head, Tail>)
+			{            
+				if (Head* p1 = dynamic_cast<Head*>(&lhs))
+				{
+					return DispatchRhs(*p1, rhs, exec, TypesRhs());
+				}
+				return DispatchLhs(lhs, rhs, exec, Tail());
 			}
-			return DispatchLhs(lhs, rhs, exec, Tail());
-		}
 
-	protected:
-		~StaticDispatcherBase() {}
-	public:
-		static ResultType Go(	BaseLhs& lhs, BaseRhs& rhs,
+		protected:
+			~In() {}
+		public:
+			static ResultType Go(	BaseLhs& lhs, BaseRhs& rhs,
 								Executor exec)
-		{ return DispatchLhs(lhs, rhs, exec, TypesLhs()); }
-	};
-
-	// Implementation for StaticDispatcher with result type = void
-	template<class Executor, class BaseLhs, class TypesLhs, bool symmetric,
-		class BaseRhs, class TypesRhs>
-	class StaticDispatcherVoidBase
-	{
-		typedef void ResultType;
-		template <class SomeLhs>
-		static ResultType DispatchRhs(	SomeLhs& lhs, BaseRhs& rhs,
-										Executor exec, NullType)
-		{ exec.OnError(lhs, rhs); }
+			{ return DispatchLhs(lhs, rhs, exec, TypesLhs()); }
+		};	// In<R>
+	
+		// Base for ResultType == void
+		template <>
+		class In<void>
+		{
+			template <class SomeLhs>
+			static ResultType DispatchRhs(	SomeLhs& lhs, BaseRhs& rhs,
+											Executor exec, NullType)
+			{ exec.OnError(lhs, rhs); }
     
-		template <class Head, class Tail, class SomeLhs>
-		static ResultType DispatchRhs(SomeLhs& lhs, BaseRhs& rhs,
-										Executor exec, Typelist<Head, Tail>)
-		{            
-			if (Head* p2 = dynamic_cast<Head*>(&rhs))
-			{
-				Int2Type<(symmetric &&
-						  int(TL::IndexOf<TypesRhs, Head>::value) <
-						  int(TL::IndexOf<TypesLhs, SomeLhs>::value))> i2t;
+			template <class Head, class Tail, class SomeLhs>
+			static ResultType DispatchRhs(SomeLhs& lhs, BaseRhs& rhs,
+											Executor exec, Typelist<Head, Tail>)
+			{            
+				if (Head* p2 = dynamic_cast<Head*>(&rhs))
+				{
+					Int2Type<(symmetric &&
+							  int(TL::IndexOf<TypesRhs, Head>::value) <
+							  int(TL::IndexOf<TypesLhs, SomeLhs>::value))> i2t;
 
-				typedef Private::InvocationTraitsVoid< 
-						SomeLhs, Head, Executor> CallTraits;
+					typedef Private::InvocationTraits< 
+							SomeLhs, Head, Executor, void> CallTraits;
                 
-				CallTraits::DoDispatch(lhs, *p2, exec, i2t);
-				return;
+					CallTraits::DoDispatch(lhs, *p2, exec, i2t);
+					return;
+				}
+				DispatchRhs(lhs, rhs, exec, Tail());
 			}
-			DispatchRhs(lhs, rhs, exec, Tail());
-		}
 
-		static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
-										Executor exec, NullType)
-		{ exec.OnError(lhs, rhs); }
+			static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
+											Executor exec, NullType)
+			{ exec.OnError(lhs, rhs); }
     
-		template <class Head, class Tail>
-		static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
-										Executor exec, Typelist<Head, Tail>)
-		{            
-			if (Head* p1 = dynamic_cast<Head*>(&lhs))
-			{
-				DispatchRhs(*p1, rhs, exec, TypesRhs());
-				return;
+			template <class Head, class Tail>
+			static ResultType DispatchLhs(	BaseLhs& lhs, BaseRhs& rhs,
+											Executor exec, Typelist<Head, Tail>)
+			{            
+				if (Head* p1 = dynamic_cast<Head*>(&lhs))
+				{
+					DispatchRhs(*p1, rhs, exec, TypesRhs());
+					return;
+				}
+				DispatchLhs(lhs, rhs, exec, Tail());
 			}
-			DispatchLhs(lhs, rhs, exec, Tail());
-		}
 
-	protected:
-		~StaticDispatcherVoidBase() {}
+		protected:
+			~In<void>() {}
+		public:
+			static ResultType Go(	BaseLhs& lhs, BaseRhs& rhs,
+									Executor exec)
+			{ DispatchLhs(lhs, rhs, exec, TypesLhs()); }
+		};	// In<void>
 	public:
-		static ResultType Go(	BaseLhs& lhs, BaseRhs& rhs,
-								Executor exec)
-		{ DispatchLhs(lhs, rhs, exec, TypesLhs()); }
-	};
-
+		typedef In<ResultType> Base;
+	};	// StaticDispatcherBase
+	
 }	// namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -215,16 +247,11 @@ namespace Private
         class TypesRhs = TypesLhs,
         typename ResultType = Loki::Private::VoidWrap::type
     >
-    class StaticDispatcher : public ::Loki::Select
+    class StaticDispatcher : public ::Loki::Private::StaticDispatcherBase
 								<
-								::Loki::Private::IsVoid<ResultType>::value,
-								::Loki::Private::StaticDispatcherVoidBase<Executor,
-									BaseLhs, TypesLhs, symmetric, BaseRhs, 
-									TypesRhs>,
-								::Loki::Private::StaticDispatcherBase<Executor,
-									BaseLhs, TypesLhs, symmetric, BaseRhs, 
-									TypesRhs, ResultType>
-								>::Result
+									Executor, BaseLhs, TypesLhs, symmetric, 
+									BaseRhs,  TypesRhs, ResultType
+								>::Base
     {
         
     public:
@@ -238,111 +265,83 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 namespace Private
 {
-	// Implementation for result types != void
 	template <class BaseLhs, class BaseRhs, typename ResultType,
-		typename CallbackType> struct BasicDispatcherBase;
-
-	// Implementation for result type = 0
-	template <class BaseLhs, class BaseRhs,
-		typename CallbackType> struct BasicDispatcherVoidBase;
-
-	// Common (independent of the result type) code for BasicDispatcher
-	template<typename CallbackType>
-	class BasicDispatcherCommonBase
+		typename CallbackType> 
+	class BasicDispatcherBase
 	{
 	private:
-		void DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun);
-		bool DoRemove(TypeInfo lhs, TypeInfo rhs);
-	protected:
-		typedef std::pair<TypeInfo,TypeInfo> KeyType;
-		typedef CallbackType MappedType;
-		typedef AssocVector<KeyType, MappedType> MapType;
-		MapType callbackMap_;
-		~BasicDispatcherCommonBase() {}
-	public:
-		template <class SomeLhs, class SomeRhs>
-		void Add(CallbackType fun, ::Loki::Type2Type<SomeLhs>,
-										::Loki::Type2Type<SomeRhs>)
+		// Common (independent of the result type) code for BasicDispatcher
+		class Common
 		{
-			DoAdd(typeid(SomeLhs), typeid(SomeRhs), fun);
-		}
+		private:
+			void DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
+			{
+				callbackMap_[KeyType(lhs, rhs)] = fun;
+			}
+			bool DoRemove(TypeInfo lhs, TypeInfo rhs)
+			{
+				return callbackMap_.erase(KeyType(lhs, rhs)) == 1;
+			}
+		protected:
+			typedef std::pair<TypeInfo,TypeInfo> KeyType;
+			typedef CallbackType MappedType;
+			typedef AssocVector<KeyType, MappedType> MapType;
+			MapType callbackMap_;
+			~Common() {}
+		public:
+			template <class SomeLhs, class SomeRhs>
+			void Add(CallbackType fun, ::Loki::Type2Type<SomeLhs>,
+											::Loki::Type2Type<SomeRhs>)
+			{
+				DoAdd(typeid(SomeLhs), typeid(SomeRhs), fun);
+			}
 
 
-		template <class SomeLhs, class SomeRhs>
-		bool Remove(::Loki::Type2Type<SomeLhs>, ::Loki::Type2Type<SomeRhs>)
+			template <class SomeLhs, class SomeRhs>
+			bool Remove(::Loki::Type2Type<SomeLhs>, ::Loki::Type2Type<SomeRhs>)
+			{
+				return DoRemove(typeid(SomeLhs), typeid(SomeRhs));
+			}
+		};	// Common
+		template <class R>	// Base for ResultType != void
+		class In : public Common
 		{
-			return DoRemove(typeid(SomeLhs), typeid(SomeRhs));
-		}
+		public:	
+			ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+			{
+				typename MapType::key_type k(typeid(lhs),typeid(rhs));
+				typename MapType::iterator i = Common::callbackMap_.find(k);
+				if (i == Common::callbackMap_.end())
+				{
+					throw std::runtime_error("Function not found");
+				}
+				return (i->second)(lhs, rhs);
+			}
+		protected:
+			~In() {}	
+		};	// In
+		template <>	// Base for ResultType == void
+		class In<void> : public Common
+		{
+		public:	
+			ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+			{
+				typename MapType::key_type k(typeid(lhs),typeid(rhs));
+				typename MapType::iterator i = Common::callbackMap_.find(k);
+				if (i == Common::callbackMap_.end())
+				{
+					throw std::runtime_error("Function not found");
+				}
+				(i->second)(lhs, rhs);
+			}
+		protected:
+			~In<void>() {}	
+		};	// In
 		
-	};
-
-	// Non-inline to reduce compile time overhead...
-	template <typename CallbackType>
-	void BasicDispatcherCommonBase<CallbackType>
-		 ::DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
-	{
-		callbackMap_[KeyType(lhs, rhs)] = fun;
-	}
-
-	template <typename CallbackType>
-	bool BasicDispatcherCommonBase<CallbackType>
-		 ::DoRemove(TypeInfo lhs, TypeInfo rhs)
-	{
-		return callbackMap_.erase(KeyType(lhs, rhs)) == 1;
-	}
-
-	// Implementation for result types != void
-	template <class BaseLhs, class BaseRhs, typename ResultType,
-		typename CallbackType>
-	struct BasicDispatcherBase : public BasicDispatcherCommonBase<CallbackType>
-	{
-		typedef BasicDispatcherCommonBase<CallbackType> Base;
-
-		ResultType Go(BaseLhs& lhs, BaseRhs& rhs);
-	protected:
-		~BasicDispatcherBase() {}
-	};
-	template <class BaseLhs, class BaseRhs,
-    typename ResultType, typename CallbackType>
-	ResultType
-	BasicDispatcherBase<BaseLhs,BaseRhs,ResultType,CallbackType>
-			   ::Go(BaseLhs& lhs, BaseRhs& rhs)
-	{
-
-		typename MapType::key_type k(typeid(lhs),typeid(rhs));
-		typename MapType::iterator i = Base::callbackMap_.find(k);
-		if (i == Base::callbackMap_.end())
-		{
-				throw std::runtime_error("Function not found");
-		}
-		return (i->second)(lhs, rhs);
-	}
-
-	// Implementation for result types = void
-	template <class BaseLhs, class BaseRhs, typename CallbackType>
-	struct BasicDispatcherVoidBase : public BasicDispatcherCommonBase<CallbackType>
-	{
-		typedef void ResultType;
-		typedef BasicDispatcherCommonBase<CallbackType> Base;
-
-		ResultType Go(BaseLhs& lhs, BaseRhs& rhs);
-	protected:
-		~BasicDispatcherVoidBase() {}
-	};
-	template <class BaseLhs, class BaseRhs, typename CallbackType>
-	typename BasicDispatcherVoidBase<BaseLhs,BaseRhs, CallbackType>::ResultType
-	BasicDispatcherVoidBase<BaseLhs,BaseRhs, CallbackType>
-			   ::Go(BaseLhs& lhs, BaseRhs& rhs)
-	{
-
-		typename MapType::key_type k(typeid(lhs),typeid(rhs));
-		typename MapType::iterator i = Base::callbackMap_.find(k);
-		if (i == Base::callbackMap_.end())
-		{
-				throw std::runtime_error("Function not found");
-		}
-		(i->second)(lhs, rhs);
-	}
+	public:
+		typedef In<ResultType> Base;
+	};	// BasicDispatcherBase
+	
 } // namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -357,14 +356,10 @@ namespace Private
         typename ResultType = Loki::Private::VoidWrap::type,
         typename CallbackType = ResultType (*)(BaseLhs&, BaseRhs&)
     >
-    class BasicDispatcher : public ::Loki::Select
+    class BasicDispatcher : public ::Loki::Private::BasicDispatcherBase
 							<
-								::Loki::Private::IsVoid<ResultType>::value,
-								::Loki::Private::BasicDispatcherVoidBase<
-									BaseLhs, BaseRhs, CallbackType>,
-								::Loki::Private::BasicDispatcherBase<
-									BaseLhs, BaseRhs, ResultType, CallbackType>
-							>::Result
+								BaseLhs, BaseRhs, ResultType, CallbackType
+							>::Base
     {
         public:
 			// member functions moved to base class
@@ -436,72 +431,84 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 	namespace Private
     {
-		template <typename ResultType, class BaseLhs, class BaseRhs,
+		template <class BaseLhs, class BaseRhs, typename ResultType,
 			class DispatcherBackend>
-		struct FnDispatcherBase
+		class FnDispatcherBase
 		{
-			ApplyInnerType4<DispatcherBackend, BaseLhs, BaseRhs, ResultType,
+		private:
+			// Implementation for ResultType != void
+			template <class R>
+			class In
+			{
+			public:
+				ApplyInnerType4<DispatcherBackend, BaseLhs, BaseRhs, ResultType,
 				ResultType (*)(BaseLhs&, BaseRhs&)>::type backEnd_;
 
-			ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+				ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					return backEnd_.Go(lhs, rhs);
+				}
+			protected:
+				~In() {}	
+			};	// In
+			// Implementation for ResultType == void
+			template <>
+			class In<void>
 			{
-				return backEnd_.Go(lhs, rhs);
-			}
-		protected:
-			~FnDispatcherBase() {}
-		};
-
-		template <class BaseLhs, class BaseRhs, class DispatcherBackend>
-		struct FnDispatcherVoidBase
-		{
-			typedef void ResultType;
-			ApplyInnerType4<DispatcherBackend, BaseLhs, BaseRhs, ResultType,
+			public:
+				ApplyInnerType4<DispatcherBackend, BaseLhs, BaseRhs, ResultType,
 				ResultType (*)(BaseLhs&, BaseRhs&)>::type backEnd_;
 
-			ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
-			{
-				backEnd_.Go(lhs, rhs);
-			}
-		protected:
-			~FnDispatcherVoidBase() {}
-		};
-
-
+				ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					backEnd_.Go(lhs, rhs);
+				}
+			protected:
+				~In<void>() {}	
+			};	// In<void>
+		public:
+			typedef In<ResultType> Base;
+		};	// FnDispatcherBase
+	
 		template< class BaseLhs, class BaseRhs, class SomeLhs, class SomeRhs,
-				class CastLhs, class CastRhs,
+				class ResultType, class CastLhs, class CastRhs, 
 				void (*Callback)(SomeLhs&, SomeRhs&)>
-        struct FnDispatcherHelperVoidBase
-        {
-            typedef void ResultType;
-			static ResultType Trampoline(BaseLhs& lhs, BaseRhs& rhs)
-            {
-                Callback(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
-            }
-            static ResultType TrampolineR(BaseRhs& rhs, BaseLhs& lhs)
-            {
-                Trampoline(lhs, rhs);
-            }
-		protected:
-			~FnDispatcherHelperVoidBase() {}
-        };
-
-		template<typename ResultType, class BaseLhs, class BaseRhs,
-			class SomeLhs, class SomeRhs, class CastLhs, class CastRhs,
-			ResultType (*Callback)(SomeLhs&, SomeRhs&)>
-        struct FnDispatcherHelperBase
-        {
-            typedef void ResultType;
-			static ResultType Trampoline(BaseLhs& lhs, BaseRhs& rhs)
-            {
-                Callback(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
-            }
-            static ResultType TrampolineR(BaseRhs& rhs, BaseLhs& lhs)
-            {
-                Trampoline(lhs, rhs);
-            }
-		protected:
-			~FnDispatcherHelperBase() {}
-        };
+		class FnDispatcherHelperBase
+		{
+		private:
+			template <class R>
+			class In
+			{
+			public:
+				static ResultType Trampoline(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					return Callback(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+				}
+				static ResultType TrampolineR(BaseRhs& rhs, BaseLhs& lhs)
+				{
+					return Trampoline(lhs, rhs);
+				}
+			protected:
+				~In() {}
+			};
+			template <>
+			class In<void>
+			{
+			public:
+				static ResultType Trampoline(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					Callback(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+				}
+				static ResultType TrampolineR(BaseRhs& rhs, BaseLhs& lhs)
+				{
+					Trampoline(lhs, rhs);
+				}
+			protected:
+				~In<void>() {}
+			};
+		public:
+			typedef In<ResultType> Base;
+		};
 
 		template
 		<
@@ -509,46 +516,33 @@ namespace Private
 			typename ResultType, class CastLhs, class CastRhs,
 			ResultType (*Callback)(SomeLhs&, SomeRhs&)
 		>
-        struct FnDispatcherHelper : public ::Loki::Select
+        struct FnDispatcherHelper : public FnDispatcherHelperBase
 									<
-									::Loki::Private::IsVoid<ResultType>::value,
-									FnDispatcherHelperVoidBase<BaseLhs, BaseRhs,
-										SomeLhs, SomeRhs, CastLhs, CastRhs,
-										Callback>,
-									FnDispatcherHelperBase<ResultType, BaseLhs, BaseRhs,
-										SomeLhs, SomeRhs, CastLhs, CastRhs,
-										Callback>
-									>::Result
+										BaseLhs, BaseRhs, SomeLhs, SomeRhs,
+										ResultType, CastLhs, CastRhs, Callback
+									>::Base
         {};
     }
-
 ////////////////////////////////////////////////////////////////////////////////
 // class template FnDispatcher
 // Implements an automatic logarithmic double dispatcher for functions
 // Features automated conversions
 ////////////////////////////////////////////////////////////////////////////////
-
     template <class BaseLhs, class BaseRhs = BaseLhs,
               typename ResultType = Loki::Private::VoidWrap::type,
               class CastingPolicy = DynamicCasterWrapper,
               class DispatcherBackend = BasicDispatcherWrapper>
-	class FnDispatcher : public ::Loki::Select
+	class FnDispatcher : public ::Loki::Private::FnDispatcherBase
 							<
-							::Loki::Private::IsVoid<ResultType>::value,
-							::Loki::Private::FnDispatcherVoidBase<BaseLhs,
-								BaseRhs, DispatcherBackend>,
-							::Loki::Private::FnDispatcherBase<ResultType, BaseLhs,
-								BaseRhs, DispatcherBackend>
-							>::Result
+								BaseLhs, BaseRhs, 
+								ResultType, DispatcherBackend
+							>::Base
+	
     {
-        typedef typename ::Loki::Select
-			<::Loki::Private::IsVoid<ResultType>::value,
-			::Loki::Private::FnDispatcherVoidBase<BaseLhs,
-				BaseRhs, DispatcherBackend>,
-			::Loki::Private::FnDispatcherBase<ResultType, BaseLhs,
-				BaseRhs, DispatcherBackend>
-			>::Result Base;
-        
+        typedef typename  ::Loki::Private::FnDispatcherBase
+		<
+			BaseLhs, BaseRhs, ResultType, DispatcherBackend
+		>::Base Base;    
     public:
         template <class SomeLhs, class SomeRhs>
         void Add(ResultType (*pFun)(BaseLhs&, BaseRhs&), 
@@ -559,44 +553,29 @@ namespace Private
 				::Loki::Type2Type<SomeRhs>());
         }        
         
-        template <class SomeLhs, class SomeRhs,
-            ResultType (*callback)(SomeLhs&, SomeRhs&)>
-        void Add(::Loki::Type2Type<SomeLhs>, ::Loki::Type2Type<SomeRhs>)
-        {
-        typedef Private::FnDispatcherHelper<
-                    BaseLhs, BaseRhs, 
-                    SomeLhs, SomeRhs,
-                    ResultType,
-                    typename ApplyInnerType2<CastingPolicy, SomeLhs,BaseLhs>::type, 
-                    typename ApplyInnerType2<CastingPolicy,SomeRhs,BaseRhs>::type, 
-                    callback> Local;
-
-            Add(&Local::Trampoline, ::Loki::Type2Type<SomeLhs>(), 
-					::Loki::Type2Type<SomeRhs>());
-        }
         
-        template <class SomeLhs, class SomeRhs,
-            ResultType (*callback)(SomeLhs&, SomeRhs&)>
-        void Add(::Loki::Type2Type<SomeLhs>, ::Loki::Type2Type<SomeRhs>, 
-					bool Symmetric)
-        {
-        typedef Private::FnDispatcherHelper<
-                    BaseLhs, BaseRhs, 
-                    SomeLhs, SomeRhs,
-                    ResultType,
-                    typename ApplyInnerType2<CastingPolicy, SomeLhs,BaseLhs>::type, 
-                    typename ApplyInnerType2<CastingPolicy,SomeRhs,BaseRhs>::type, 
+		template <class SomeLhs, class SomeRhs, 
+			ResultType (*callback)(SomeLhs&, SomeRhs&), bool symmetric = false>
+		struct AddI
+		{
+			void operator()(FnDispatcher<BaseLhs, BaseRhs, ResultType, 
+							CastingPolicy,DispatcherBackend>& f)
+			{
+				typedef Private::FnDispatcherHelper<
+                    BaseLhs, BaseRhs, SomeLhs, SomeRhs, ResultType,
+                    ApplyInnerType2<CastingPolicy, SomeLhs,BaseLhs>::type, 
+                    ApplyInnerType2<CastingPolicy,SomeRhs,BaseRhs>::type, 
                     callback> Local;
-
-            Add(&Local::Trampoline, ::Loki::Type2Type<SomeLhs>(), 
+				f.Add(&Local::Trampoline, ::Loki::Type2Type<SomeLhs>(), 
 					::Loki::Type2Type<SomeRhs>());
-            if (Symmetric)
-            {
-                Add(&Local::Trampoline, ::Loki::Type2Type<SomeLhs>(), 
-					::Loki::Type2Type<SomeRhs>());
-            }
-        }
-        
+				if (symmetric)
+				{
+					f.Add(&Local::TrampolineR, ::Loki::Type2Type<SomeRhs>(), 
+					::Loki::Type2Type<SomeLhs>());
+				}
+			}
+		};
+		
         template <class SomeLhs, class SomeRhs>
         void Remove(::Loki::Type2Type<SomeLhs>, ::Loki::Type2Type<SomeRhs>)
         {
@@ -608,7 +587,7 @@ namespace Private
 		// moved to base class
 		// ResultType Go(BaseLhs& lhs, BaseRhs& rhs);
     };
-
+	
 ////////////////////////////////////////////////////////////////////////////////
 // class template FunctorDispatcherAdaptor
 // permits use of FunctorDispatcher under gcc.2.95.2/3
@@ -618,99 +597,118 @@ namespace Private
     {
 		template <class BaseLhs, class BaseRhs, class SomeLhs, class SomeRhs,
 			typename ResultType, class CastLhs, class CastRhs, class Fun, bool SwapArgs>
-        class FunctorDispatcherHelper 
-        {
-            Fun fun_;
-            ResultType Fire(BaseLhs& lhs, BaseRhs& rhs,Int2Type<false>)
-            {
-                return fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
-            }
-            ResultType Fire(BaseLhs& rhs, BaseRhs& lhs,Int2Type<true>)
-            {
-                return fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
-            }
-        public:
-            FunctorDispatcherHelper(const Fun& fun) : fun_(fun) {}
-
-            ResultType operator()(BaseLhs& lhs, BaseRhs& rhs)
-            {
-                return Fire(lhs,rhs,Int2Type<SwapArgs>());
-            }
-        };
-
-		template <class BaseLhs, class BaseRhs, class SomeLhs, class SomeRhs,
-			class CastLhs, class CastRhs, class Fun, bool SwapArgs>
-        class FunctorDispatcherHelperVoid
-        {
-            Fun fun_;
-            typedef void ResultType;
-			ResultType Fire(BaseLhs& lhs, BaseRhs& rhs,Int2Type<false>)
-            {
-                fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
-            }
-            ResultType Fire(BaseLhs& rhs, BaseRhs& lhs,Int2Type<true>)
-            {
-                fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
-            }
-        public:
-            FunctorDispatcherHelperVoid(const Fun& fun) : fun_(fun) {}
-
-            ResultType operator()(BaseLhs& lhs, BaseRhs& rhs)
-            {
-                Fire(lhs,rhs,Int2Type<SwapArgs>());
-            }
-        };
-
-		template <class BaseLhs, class BaseRhs, typename ResultType, 
-			class DispatcherBackend> 
-		class FunctorDispatcherCommonBase
+        class FunctorDispatcherHelperBase
 		{
-			protected:
-			typedef TYPELIST_2(BaseLhs&, BaseRhs&) ArgsList;
-			typedef Functor<ResultType, ArgsList, DEFAULT_THREADING> FunctorType;
+			template <class R>
+			class In
+			{
+				Fun fun_;
+				ResultType Fire(BaseLhs& lhs, BaseRhs& rhs,Int2Type<false>)
+				{
+					return fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+				}
+				ResultType Fire(BaseLhs& rhs, BaseRhs& lhs,Int2Type<true>)
+				{
+					return fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+				}
+			public:
+				In(const Fun& fun) : fun_(fun) {}
 
-			ApplyInnerType4<DispatcherBackend,BaseLhs, BaseRhs, ResultType, 
-				FunctorType>::type backEnd_;
-			~FunctorDispatcherCommonBase() {}
+				ResultType operator()(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					return Fire(lhs,rhs,Int2Type<SwapArgs>());
+				}
+			};
+			template <>
+			class In<void>
+			{
+				Fun fun_;
+				ResultType Fire(BaseLhs& lhs, BaseRhs& rhs,Int2Type<false>)
+				{
+					fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+				}
+				ResultType Fire(BaseLhs& rhs, BaseRhs& lhs,Int2Type<true>)
+				{
+					fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+				}
+			public:
+				In<void>(const Fun& fun) : fun_(fun) {}
+
+				ResultType operator()(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					Fire(lhs,rhs,Int2Type<SwapArgs>());
+				}
+			};
+		public:
+			typedef In<ResultType> Base;
+		};	// FunctorDispatcherHelperBase
+		
+		template <class BaseLhs, class BaseRhs, class SomeLhs, class SomeRhs,
+			typename ResultType, class CastLhs, class CastRhs, class Fun, bool SwapArgs>
+		class FunctorDispatcherHelper : public FunctorDispatcherHelperBase
+										< 
+											BaseLhs, BaseRhs, SomeLhs, SomeRhs,
+											ResultType, CastLhs, CastRhs, Fun,
+											SwapArgs
+										>::Base
+		{
+		private:	
+			typedef typename FunctorDispatcherHelperBase
+			< 
+				BaseLhs, BaseRhs, SomeLhs, SomeRhs,
+				ResultType, CastLhs, CastRhs, Fun, SwapArgs
+			>::Base Base;
+		public:
+			FunctorDispatcherHelper(const Fun& f) : Base(f)
+			{}
 		};
 		
 		template <typename ResultType, class BaseLhs, class BaseRhs, 
 			class DispatcherBackend>
-		class FunctorDispatcherBase : public FunctorDispatcherCommonBase<BaseLhs, 
-												BaseRhs, ResultType, DispatcherBackend>
+		class FunctorDispatcherBase
 		{
-			typedef FunctorDispatcherCommonBase<BaseLhs, BaseRhs, ResultType, 
-				DispatcherBackend> Base;
-		public:
-			typedef typename Base::ArgsList ArgsList;
-			typedef typename Base::FunctorType FunctorType;
-
-			ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+		private:
+			class Common
 			{
-				return Base::backEnd_.Go(lhs, rhs);
-			}
-		protected:
-			~FunctorDispatcherBase() {}
+			protected:
+				typedef TYPELIST_2(BaseLhs&, BaseRhs&) ArgsList;
+				typedef Functor<ResultType, ArgsList, DEFAULT_THREADING> FunctorType;
+
+				ApplyInnerType4<DispatcherBackend,BaseLhs, BaseRhs, ResultType, 
+					FunctorType>::type backEnd_;
+				~Common() {}
+			};
+
+			template <class R>
+			class In : public Common
+			{
+			public:
+				typedef typename Common::ArgsList ArgsList;
+				typedef typename Common::FunctorType FunctorType;
+				ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					return Common::backEnd_.Go(lhs, rhs);
+				}
+			protected:
+				In() {}
+			};
+			template <>
+			class In<void> : public Common
+			{
+			public:
+				typedef typename Common::ArgsList ArgsList;
+				typedef typename Common::FunctorType FunctorType;
+				ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
+				{
+					Common::backEnd_.Go(lhs, rhs);
+				}
+			protected:
+				In<void>() {}
+			};
+		public:
+			typedef In<ResultType> Base;
 		};
 		
-		template <class BaseLhs, class BaseRhs, class DispatcherBackend>
-		class FunctorDispatcherVoidBase : public FunctorDispatcherCommonBase<BaseLhs, 
-												BaseRhs, void, DispatcherBackend>
-		{
-			typedef void ResultType;
-			typedef FunctorDispatcherCommonBase<BaseLhs, BaseRhs, ResultType, 
-				DispatcherBackend> Base;
-		public:
-			typedef typename Base::ArgsList ArgsList;
-			typedef typename Base::FunctorType FunctorType;
-
-			ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
-			{
-				Base::backEnd_.Go(lhs, rhs);
-			}
-		protected:
-			~FunctorDispatcherVoidBase() {}
-		};
     }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -723,23 +721,15 @@ namespace Private
               typename ResultType = Loki::Private::VoidWrap::type,
               class CastingPolicy = DynamicCasterWrapper, 
               class DispatcherBackend = BasicDispatcherWrapper>
-	class FunctorDispatcher : public ::Loki::Select
-								< 
-								::Loki::Private::IsVoid<ResultType>::value,
-								::Loki::Private::FunctorDispatcherVoidBase<BaseLhs,
-									BaseRhs, DispatcherBackend>,
-								::Loki::Private::FunctorDispatcherBase<ResultType,
-									BaseLhs, BaseRhs, DispatcherBackend>
-								>::Result
+	class FunctorDispatcher : public ::Loki::Private::FunctorDispatcherBase
+								<
+									ResultType, BaseLhs, BaseRhs, DispatcherBackend
+								>::Base
     {
-        typedef typename ::Loki::Select
-		< 
-			::Loki::Private::IsVoid<ResultType>::value,
-			::Loki::Private::FunctorDispatcherVoidBase<BaseLhs, BaseRhs, 
-				DispatcherBackend>,
-			::Loki::Private::FunctorDispatcherBase<ResultType, BaseLhs, BaseRhs, 
-				DispatcherBackend>
-		>::Result Base;
+        typedef typename ::Loki::Private::FunctorDispatcherBase
+		<
+			ResultType, BaseLhs, BaseRhs, DispatcherBackend
+		>::Base Base;
     public:
         typedef Base::ArgsList ArgsList;
         typedef Base::FunctorType FunctorType;
@@ -749,13 +739,12 @@ namespace Private
         {
             typedef typename ApplyInnerType2<CastingPolicy,SomeLhs, BaseLhs>::type CastOne;
 			typedef typename ApplyInnerType2<CastingPolicy,SomeRhs, BaseRhs>::type CastTwo;
-			typedef typename Select<
-				Private::IsVoid<ResultType>::value,	
-				Private::FunctorDispatcherHelperVoid<BaseLhs, BaseRhs, SomeLhs, 
-							SomeRhs, CastOne,CastTwo,Fun, false>,
-				Private::FunctorDispatcherHelper<BaseLhs, BaseRhs, SomeLhs, SomeRhs,
-							ResultType,CastOne,CastTwo,Fun, false>
-							>::Result Adapter;
+			typedef typename 
+				Private::FunctorDispatcherHelper
+				<
+					BaseLhs, BaseRhs, SomeLhs, SomeRhs,
+					ResultType,CastOne,CastTwo,Fun, false
+				>::Base Adapter;
 			Base::backEnd_.Add(FunctorType(Adapter(fun), Loki::Disambiguate()), 
 				Type2Type<SomeLhs>(), Type2Type<SomeRhs>());
 		}
@@ -770,15 +759,15 @@ namespace Private
 			// Note: symmetry only makes sense where BaseLhs==BaseRhs
 				typedef typename ApplyInnerType2<CastingPolicy,SomeLhs, BaseLhs>::type CastOne;
 				typedef typename ApplyInnerType2<CastingPolicy,SomeRhs, BaseLhs>::type CastTwo;
-				typedef typename Select<Private::IsVoid<ResultType>::value,
-						Private::FunctorDispatcherHelperVoid<BaseLhs, BaseLhs,
-							SomeLhs, SomeRhs, CastOne,CastTwo, Fun, true>,
-						Private::FunctorDispatcherHelper<BaseLhs, BaseLhs,
-							ResultType, SomeLhs, SomeRhs,CastOne, CastTwo,Fun, true>
-							>::Result AdapterR;
+				typedef typename 
+					Private::FunctorDispatcherHelper
+				<
+					BaseLhs, BaseRhs, SomeLhs, SomeRhs,
+					ResultType,CastOne,CastTwo,Fun, true
+				>::Base AdapterR;
 
-				Base::backEnd_.Add(FunctorType(Adapter(fun)), 
-						Type2Type<SomeLhs>(), Type2Type<SomeRhs>());
+				Base::backEnd_.Add(FunctorType(AdapterR(fun), Loki::Disambiguate()), 
+						Type2Type<SomeRhs>(), Type2Type<SomeLhs>());
 			}
         }
         
@@ -803,6 +792,9 @@ namespace Private
 //					support for return type void. B.K.
 // Mar	06, 2003: Changed default values for return types to void.
 //				  Added protected destructors to private implementation classes B.K.
+// Mar	20. 2003: Fixed Bugs in FnDispatcherHelperBase, FnDispatcher::Add and
+//					FunctorDispatcher::Add.
+//					New Interface for FnDispatcher::Add.B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
