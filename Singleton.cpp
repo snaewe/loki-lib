@@ -8,7 +8,7 @@
 //     purpose is hereby granted without fee, provided that the above copyright 
 //     notice appear in all copies and that both that copyright notice and this 
 //     permission notice appear in supporting documentation.
-// The author or Addison-Welsey Longman make no representations about the 
+// The author or Addison-Wesley Longman make no representations about the 
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ void Loki::Private::AtExitFn()
     // Don't check errors - realloc with less memory 
     //     can't fail
     pTrackerArray = static_cast<TrackerArray>(std::realloc(
-        pTrackerArray, --elements));
+        pTrackerArray, sizeof(T) * --elements));
     // Destroy the element
     delete pTop;
 }
@@ -44,4 +44,6 @@ void Loki::Private::AtExitFn()
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// January 10, 2002: Fixed bug in call to realloc - credit due to Nigel Gent and
+//      Eike Petersen
 ////////////////////////////////////////////////////////////////////////////////
