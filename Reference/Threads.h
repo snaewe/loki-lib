@@ -53,7 +53,7 @@ namespace Loki
         { return ++lval; }
         
         static IntType AtomicDecrement(volatile IntType& lval)
-        { return lval --= val; }
+        { return --lval; }
         
         static void AtomicAssign(volatile IntType & lval, IntType val)
         { lval = val; }
