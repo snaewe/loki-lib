@@ -1,6 +1,6 @@
 Loki VC 6.0 Port or how to produce C1001 - Internal Compiler Errors
 -------------------------------------------------------------------
-Version: 0.5d
+Version: 0.5e
 
 Introduction/Compatibility:
 ---------------------------
@@ -32,7 +32,7 @@ Fixes:
     Mar 18, 2004:
     -------------
     	* In SmartPtr.h: Added operator=-workaround for pointer-assignment
-    	* In Functor.h:  Changed value parameter to referemce parameter
+    	* In Functor.h:  Changed value parameter to reference parameter
     					 in FunctorBase and FunctorVoidBase Ctors.
     Mar 21, 2003:
     -------------
