@@ -35,7 +35,7 @@ namespace Loki
     {
         struct Exception : public std::exception
         {
-            const char* what() const { return "Unknown Type"; }
+            const char* what() const throw() { return "Unknown Type"; }
         };
         
         static AbstractProduct* OnUnknownType(IdentifierType)
@@ -74,7 +74,7 @@ namespace Loki
         
         AbstractProduct* CreateObject(const IdentifierType& id)
         {
-            typename IdToProductMap::const_iterator i = associations_.find(id);
+            typename IdToProductMap::iterator i = associations_.find(id);
             if (i != associations_.end())
             {
                 return (i->second)();
@@ -119,7 +119,7 @@ namespace Loki
         {
             if (model == 0) return 0;
             
-            typename IdToProductMap::const_iterator i = 
+            typename IdToProductMap::iterator i = 
                 associations_.find(typeid(*model));
             if (i != associations_.end())
             {
@@ -137,6 +137,9 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// May 08, 2002: replaced const_iterator with iterator so that self-modifying
+//      ProductCreators are supported. Also, added a throw() spec to what().
+//      Credit due to Jason Fischl.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // FACTORY_INC_
