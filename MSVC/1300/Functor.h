@@ -899,9 +899,11 @@ namespace Loki
         : spImpl_(new MemFunHandler<Functor, PtrObj, MemFn>(p, memFn))
         {}
 
-        operator bool()
+        typedef impl * (std::auto_ptr<impl>::*unspecified_bool_type)() const;
+
+        operator unspecified_bool_type() const
         {
-            return spImpl_.get() ? true : false;
+            return spImpl_.get() ? &std::auto_ptr<impl>::get : 0;
         }
 
         Functor& operator=(const Functor& rhs)
