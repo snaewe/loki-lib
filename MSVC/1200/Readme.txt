@@ -1,6 +1,6 @@
 Loki VC 6.0 Port or how to produce C1001 - Internal Compiler Errors
 -------------------------------------------------------------------
-Version: 0.5b
+Version: 0.5c
 
 Introduction/Compatibility:
 ---------------------------
@@ -207,7 +207,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     }
     [/code]
 
-    Unfortunately adding dummy-parameters does not always work. 
+    Unfortunately adding dummy-parameters does not always work.
     For example for one of FnDispatcher's Add-member-functions you have to explicitly
     specify two type- and one non-type parameter.
     [code]
@@ -216,7 +216,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     {
     public:
 	    //...
-	    template <class SomeLhs, class SomeRhs, 
+	    template <class SomeLhs, class SomeRhs,
 		    ResultType (*callback)(SomeLhs&, SomeRhs&)>
 	    void Add(){/*...*/}
     };
@@ -235,7 +235,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     {
     public:
 	    //...
-	    template <class SomeLhs, class SomeRhs, 
+	    template <class SomeLhs, class SomeRhs,
 		    ResultType (*callback)(SomeLhs&, SomeRhs&)>
 	    void Add(Helper<SomeLhs, SomeRhs, ResultType, callback>)
 	    {}
@@ -256,7 +256,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     public:
 	    // the member-function Add becomes a member-template-class
 	    // with overloaded function operator.
-	    template <class SomeLhs, class SomeRhs, 
+	    template <class SomeLhs, class SomeRhs,
 		    ResultType (*callback)(SomeLhs&, SomeRhs&)>
 	    struct AddI
 	    {
@@ -606,19 +606,19 @@ Interface changes:
 	{
 		x.Add(&Hatch_Helper<Circle, Rectangle>::HatchShapes);
 	}
-    
+
     Some words to FnDispatcher:
 	---------------------------
     The trampoline-Versions of FnDispatcher::Add differ
     from the original library.
-    
+
     Using the original library one writes:
     typedef FnDispatcher<Shape> Dispatcher;
     void Hatch(Rectangle& lhs, Poly& rhs) {...}
 
     Dispatcher dis;
     disp.Add<Rectangle, Poly, &Hatch>();
-    
+
     Using this port the last line has to be:
     Dispatcher::AddI<Rectangle, Poly, &Hatch>()(dis);
 
