@@ -24,89 +24,89 @@
 class FunctorTest : public Test
 {
 public:
-	FunctorTest() : Test("Functor.h") {}
+  FunctorTest() : Test("Functor.h") {}
 
-	virtual void execute(TestResult &result)
-		{
-		printName(result);
+  virtual void execute(TestResult &result)
+    {
+    printName(result);
 
-		using namespace Loki;
+    using namespace Loki;
 
-		bool r;
+    bool r;
 
-		TestFunctor testFunctor;
-		TestClass testClass;
+    TestFunctor testFunctor;
+    TestClass testClass;
 
-		Functor<void,TYPELIST_1(bool &)> function(testFunction);
-		Functor<void,TYPELIST_1(bool &)> functor(testFunctor);
-		Functor<void,TYPELIST_1(bool &)> classFunctor(&testClass,&TestClass::member);
-		Functor<void,TYPELIST_1(bool &)> functorCopy(function);
-		Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
-		Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
+    Functor<void,TYPELIST_1(bool &)> function(testFunction);
+    Functor<void,TYPELIST_1(bool &)> functor(testFunctor);
+    Functor<void,TYPELIST_1(bool &)> classFunctor(&testClass,&TestClass::member);
+    Functor<void,TYPELIST_1(bool &)> functorCopy(function);
+    Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
+    Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
 
-		testResult=false;
-		function(testResult);
-		bool functionResult=testResult;
+    testResult=false;
+    function(testResult);
+    bool functionResult=testResult;
 
-		testResult=false;
-		functor(testResult);
-		bool functorResult=testResult;
+    testResult=false;
+    functor(testResult);
+    bool functorResult=testResult;
 
-		testResult=false;
-		classFunctor(testResult);
-		bool classFunctorResult=testResult;
+    testResult=false;
+    classFunctor(testResult);
+    bool classFunctorResult=testResult;
 
-		testResult=false;
-		functorCopy(testResult);
-		bool functorCopyResult=testResult;
+    testResult=false;
+    functorCopy(testResult);
+    bool functorCopyResult=testResult;
 
-		testResult=false;
-		bindFunctor();
-		bool bindFunctorResult=testResult;
+    testResult=false;
+    bindFunctor();
+    bool bindFunctorResult=testResult;
 
-		testResult=false;
-		chainFunctor();
-		bool chainFunctorResult=testResult;
+    testResult=false;
+    chainFunctor();
+    bool chainFunctorResult=testResult;
 
-		r=functionResult && functorResult && classFunctorResult && functorCopyResult && bindFunctorResult &&
-			chainFunctorResult;
+    r=functionResult && functorResult && classFunctorResult && functorCopyResult && bindFunctorResult &&
+      chainFunctorResult;
 
-		testAssert("Functor",r,result);
+    testAssert("Functor",r,result);
 
-		std::cout << '\n';
-		}
+    std::cout << '\n';
+    }
 
 private:
-	static bool testResult;
+  static bool testResult;
 
-	static void testFunction(bool &result)
-		{
-		result=true;
-		}
+  static void testFunction(bool &result)
+    {
+    result=true;
+    }
 
-	class TestFunctor
-	{
-	public:
-		void operator()(bool &result)
-			{
-			result=true;
-			}
-	};
+  class TestFunctor
+  {
+  public:
+    void operator()(bool &result)
+      {
+      result=true;
+      }
+  };
 
-	class TestClass
-	{
-	public:
-		void member(bool &result)
-			{
-			result=true;
-			}
-	};
+  class TestClass
+  {
+  public:
+    void member(bool &result)
+      {
+      result=true;
+      }
+  };
 } functorTest;
 
 bool FunctorTest::testResult;
 
 #ifndef SMALLOBJ_CPP
-#	define SMALLOBJ_CPP
-#	include "../../SmallObj.cpp"
+# define SMALLOBJ_CPP
+# include "../../SmallObj.cpp"
 #endif
 #endif
