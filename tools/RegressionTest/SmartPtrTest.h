@@ -285,6 +285,6 @@ private:
 	typedef SmartPtr<TestClass, DestructiveCopy, DisallowConversion, NoCheck, DefaultSPStorage> p101;
 	typedef SmartPtr<TestClass, NoCopy, DisallowConversion, NoCheck, DefaultSPStorage> p102;
 	typedef SmartPtr<TestClass, NoCopy, DisallowConversion, NoCheck, DefaultSPStorage> p103;
-};
+} smartPtrTest;
 
 #endif

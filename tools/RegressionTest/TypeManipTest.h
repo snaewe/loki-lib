@@ -114,6 +114,6 @@ private:
 	struct Base { char c; };
 	struct Derived1 : Base { char c; };
 	struct Derived2 : Derived1 { char c; };
-};
+} typeManipTest;
 
 #endif

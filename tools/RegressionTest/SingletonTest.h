@@ -76,7 +76,7 @@ namespace
 	typedef SingletonHolder<MyClass<19>, CreateStatic, SingletonWithLongevity, SingleThreaded> t19;
 	typedef SingletonHolder<MyClass<20>, CreateStatic, NoDestroy, SingleThreaded> t20;
 
-#if !__INTEL_COMPILER && !__GNUC__
+#if !__INTEL_COMPILER && !__GNUC__ && !_MSC_VER
 
 	typedef SingletonHolder<MyClass<5>, CreateUsingNew, DefaultLifetime, ClassLevelLockable> t5;
 	typedef SingletonHolder<MyClass<6>, CreateUsingNew, PhoenixSingleton, ClassLevelLockable> t6;
@@ -126,7 +126,7 @@ public:
 		MAKE_TEST(t19)
 		MAKE_TEST(t20)
 
-#if !__INTEL_COMPILER && !__GNUC__
+#if !__INTEL_COMPILER && !__GNUC__ && !_MSC_VER
 
 		MAKE_TEST(t5)
 		MAKE_TEST(t6)
@@ -152,6 +152,8 @@ public:
 
 private:
 	bool singletonTest;
-};
+} singletonTest;
+
+#include "../../Singleton.cpp"
 
 #endif

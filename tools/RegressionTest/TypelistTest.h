@@ -16,7 +16,6 @@
 #define TYPELISTTEST_H
 
 #include <Loki/Typelist.h>
-#include "UnitTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // TypelistTest
@@ -185,6 +184,5 @@ private:
 	struct Base { char c; };
 	struct Derived1 : Base { char c; };
 	struct Derived2 : Derived1 { char c; };
-};
-
+} typelistTest;
 #endif

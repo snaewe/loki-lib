@@ -144,7 +144,7 @@ private:
 
 			for (int j = 0; j < 1024; ++j)
 			{
-				int pos = std::rand() % vec.size();
+				size_t pos = std::rand() % vec.size();
 
 				delete vec[pos];
 
@@ -159,6 +159,10 @@ private:
 			vec.pop_back();
 		}
 	}
-};
+} smallObjectTest;
 
+#ifndef SMALLOBJ_CPP
+#	define SMALLOBJ_CPP
+#	include "../../SmallObj.cpp"
+#endif
 #endif

@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: May 19, 2002
+// Last update: Oct 10, 2002
 
 #ifndef FUNCTOR_INC_
 #define FUNCTOR_INC_
@@ -61,7 +61,10 @@ namespace Loki
         {
             if (!pObj) return 0;
             U* pClone = static_cast<U*>(pObj->DoClone());
-            assert(typeid(*pClone) == typeid(*pObj));
+			//MSVC7: warning C4541: 'typeid' used on polymorphic type 'Loki::FunctorImpl<R,TList,ThreadingModel>' with /GR-; unpredictable behavior may result
+			//I rather RTTI wasn't a requirement
+            //TODOSGB find another way
+			//assert(typeid(*pClone) == typeid(*pObj));
             return pClone;
         }
     };
@@ -1342,6 +1345,7 @@ namespace Loki
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
+// Oct  10, 2002: removed rtti/polymorphic use of typeid
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif  // FUNCTOR_INC_

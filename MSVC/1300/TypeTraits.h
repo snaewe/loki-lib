@@ -15,6 +15,8 @@
 
 // Last update: May 19, 2002
 
+//TODOSGB None of the parameter types are defined inside of TypeTraits, e.g. PointeeType, ReferredType, etc...
+
 #ifndef TYPETRAITS_INC_
 #define TYPETRAITS_INC_
 
