@@ -8,7 +8,7 @@
 // affects only default template arguments
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Dec 03, 2002
+// Last update: Feb 20, 2003
 // note: In this VC 6 port all template policies become non-templates with
 // either member-template functions or a nested template struct named In
 
@@ -108,14 +108,14 @@ namespace Loki
         
 			class Lock
 			{
-				ObjectLevelLockable& host_;
+				ObjectLevelLockable::In<Host>& host_;
             
 				Lock(const Lock&);
 				Lock& operator=(const Lock&);
-				Lock(); // buggy design
+				//Lock(); // buggy design
 			public:
 
-				explicit Lock(ObjectLevelLockable& host) : host_(host)
+				explicit Lock(ObjectLevelLockable::In<Host>& host) : host_(host)
 				{
 					::EnterCriticalSection(&host_.mtx_);
 				}
@@ -148,9 +148,12 @@ namespace Loki
 		template <class Host>
 		struct In
 		{
-		private:
+		public:
+			struct Initializer;
+			friend struct Initializer;
 			struct Initializer
 			{   
+				
 				CRITICAL_SECTION mtx_;
 
 				Initializer()
@@ -217,6 +220,7 @@ namespace Loki
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Oct	06,	2002: ported by Benjamin Kaufmann to MSVC 6.0
+// Feb	20, 2003: corrected constructor parameter in ObjectLevelLockable::Lock
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
