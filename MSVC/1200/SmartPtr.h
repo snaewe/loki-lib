@@ -13,8 +13,12 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Nov 19, 2002
-
+// Last update: Feb 24, 2003
+// ported RefCountedMT
+// To create a SmartPtr with RefCountedMT as ownership policy
+// use code like this:
+// SmartPtr<Foo, RefCountedMTWrapper<ClassLevelLockable> > pointer;
+//
 // replaced all template template parameters with 'normal' parameters
 // For each Policy there is now a wrapper-class (non template class) 
 // containing a nested template class called In which
@@ -215,52 +219,59 @@ namespace Loki
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Implements external reference counting for multithreaded programs
 ////////////////////////////////////////////////////////////////////////////////
-// Note: I could not figure out how this class is supposed to work. Therefore
-// i could not port it.
-// pCount has type volatile unsigned int but the different Thread-Policies 
-// expect volatile int& resp. volatile long&
-// :-(
+//	
 
-	/*
-	template <class P,
-        template <class> class ThreadingModel>
-    class RefCountedMT : public ThreadingModel< RefCountedMT<P, ThreadingModel> >
+	template <class P, class ThreadingModel>
+	class RefCountedMT : public Apply1<ThreadingModel, RefCountedMT<P, ThreadingModel> >
     {
     public:
-        RefCountedMT() 
+		typedef Apply1<ThreadingModel, RefCountedMT<P, ThreadingModel> > base_type;
+		typedef typename base_type::IntType       CountType;
+        typedef volatile CountType               *CountPtrType;
+		RefCountedMT() 
         {
-            pCount_ = static_cast<unsigned int*>(
+            pCount_ = static_cast<CountPtrType>(
                 SmallObject<ThreadingModel>::operator new(
                     sizeof(unsigned int)));
             assert(pCount_);
             *pCount_ = 1;
         }
         
-        RefCountedMT(const RefCountedMT& rhs) 
-        : pCount_(rhs.pCount_)
+		// MWCW lacks template friends, hence the following kludge
+        // BK: Without the dummy-Parameter, the VC 6.0 won't compile the
+		// copy ctor (error C2535: 'member function already defined or declared')
+		// Adding the dummy-Parameter results in two things:
+		// 1. The VC doesn't complain about the copy-ctor
+		// 2. The VC *always* calls the template-copy-ctor, whether *this and rhs
+		// have the same type or not.
+		template <typename P1>
+        RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs, int dummy=0) 
+        : pCount_(reinterpret_cast<const RefCountedMT<P, ThreadingModel>&>(rhs).pCount_)
         {}
         
-        // MWCW lacks template friends, hence the following kludge
-        template <typename P1>
-        RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs) 
-        : pCount_(reinterpret_cast<const RefCounted<P>&>(rhs).pCount_)
+		
+		RefCountedMT(const RefCountedMT& rhs) 
+        : pCount_(rhs.pCount_)
         {}
+		
+        
         
         P Clone(const P& val)
         {
-            ThreadingModel<RefCountedMT>::AtomicIncrement(*pCount_);
+			ThreadingModel::template In<RefCountedMT>::AtomicIncrement(*pCount_);
             return val;
         }
         
         bool Release(const P&)
         {
-            if (!ThreadingModel<RefCountedMT>::AtomicDecrement(*pCount_))
-            {
-                SmallObject<ThreadingModel>::operator delete(pCount_, 
-                    sizeof(unsigned int));
-                return true;
-            }
-            return false;
+            if (!ThreadingModel::template In<RefCountedMT>::AtomicDecrement(*pCount_))
+			{
+				SmallObject<ThreadingModel>::operator delete(
+                        const_cast<CountType *>(pCount_), 
+                        sizeof(*pCount_));
+				return true;
+			}
+			return false;
         }
         
         void Swap(RefCountedMT& rhs)
@@ -270,8 +281,19 @@ namespace Loki
 
     private:
         // Data
-        volatile unsigned int* pCount_;
-    };*/
+        //volatile unsigned int* pCount_;
+		CountPtrType pCount_;
+    };	
+
+	template <class ThreadingModel>
+	struct RefCountedMTWrapper
+	{
+		template <class U>
+		struct In
+		{
+			typedef RefCountedMT<U, ThreadingModel> type;
+		};
+	};
 ////////////////////////////////////////////////////////////////////////////////
 // class template COMRefCounted
 // Implementation of the OwnershipPolicy used by SmartPtr
@@ -509,7 +531,7 @@ namespace Loki
         
         static P Clone(const P&)
         {
-            CT_ASSERT(false, This_Policy_Disallows_Value_Copying);
+            STATIC_CHECK(false, This_Policy_Disallows_Value_Copying);
         }
         
         static bool Release(const P&)
@@ -1416,6 +1438,8 @@ namespace std
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // December 09, 2001: Included <cassert>
 // Oct  26, 2002: ported by Benjamin Kaufmann to MSVC 6.0
+// Feb	24, 2003: ported RefCountedMT. In NoCopy replaced CT_ASSERT with 
+//					STATIC_CHECK. B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMARTPTR_INC_
