@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 07, 2002
+// Last update: Feb 24, 2003
 
 #ifndef SINGLETON_INC_
 #define SINGLETON_INC_
@@ -165,7 +165,7 @@ namespace Loki
     struct CreateUsingMalloc
     {
 		template <class T>
-		static T* Create(const volatile T* p = 0)
+		static T* Create(const volatile T* dummy = 0)
         {
             void* p = VC_BROKEN_STD::malloc(sizeof(T));
             if (!p) return 0;
@@ -234,7 +234,11 @@ namespace Loki
 // Schedules an object's destruction as per C++ rules
 // Forwards to std::atexit
 ////////////////////////////////////////////////////////////////////////////////
-
+	namespace
+	{
+		void Thrower(const char* s) {throw std::logic_error(s); }
+	}
+	
     struct DefaultLifetime
     {
         template <class T>
@@ -243,7 +247,12 @@ namespace Loki
         
 		template <class T>
 		static void OnDeadReference(const volatile T* p = 0 )
-        { throw std::logic_error("Dead Reference Detected"); }
+        { 
+			// the throw will yield a C1001-internal compiler error.
+			// The new level of indirection solves the problem
+			// throw std::logic_error("Dead Reference Detected");
+			Thrower("Dead Reference Detected");	
+		}
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +335,12 @@ namespace Loki
         
         template <class T>
 		static void OnDeadReference(const volatile T* p = 0 )
-        { throw std::logic_error("Dead Reference Detected"); }
+        { 
+			// the throw will yield a C1001-internal compiler error.
+			// The new level of indirection solves the problem
+			// throw std::logic_error("Dead Reference Detected");
+			Thrower("Dead Reference Detected"); 
+		}
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -438,7 +452,8 @@ namespace Loki
     void SingletonHolder<T, CreationPolicy, 
         LifetimePolicy, ThreadingModel>::MakeInstance()
     {
-        typename Apply1<ThreadingModel, T>::Lock guard;
+        //typename Apply1<ThreadingModel, T>::Lock guard;
+		typename Apply1<ThreadingModel, SingletonHolder>::Lock guard;
         (void)guard;
         
         if (!pInstance_)
@@ -475,6 +490,9 @@ namespace Loki
 // May 21, 2001: Correct the volatile qualifier - credit due to Darin Adler
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Oct	06	2002: ported by Benjamin Kaufmann to MSVC 6.0
+// Feb	24, 2003: changed parameter name of CreateUsingMalloc::Create, 
+//					changed SingletonHolder::MakeInstance in accordance with 
+//					Bug-report #691687 B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SINGLETON_INC_
