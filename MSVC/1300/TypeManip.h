@@ -13,24 +13,13 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: August 22, 2001
+// Last update: May 19, 2002
 
 #ifndef TYPEMANIP_INC_
 #define TYPEMANIP_INC_
 
-namespace Loki {
-
-   namespace Private {
-
-      struct big { char c[2]; };
-
-      struct any {
-         template<typename T>
-         any(const T&);
-      };
-
-   }  // namespace Private
-
+namespace Loki
+{    
 ////////////////////////////////////////////////////////////////////////////////
 // class template Int2Type
 // Converts each integral constant into a unique type
@@ -53,8 +42,9 @@ namespace Loki {
 
     template <typename T>
     struct Type2Type
-    {
+    {   
         typedef T OriginalType;
+        Type2Type(){} // VC7
     };
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,96 +57,98 @@ namespace Loki {
 // Result evaluates to T if flag is true, and to U otherwise.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Private {
+    template <bool flag, typename T, typename U>
+    struct Select
+    {
+    private:
+        template<bool>
+        struct In 
+        { typedef T Result; };
 
-namespace Select_ {
+        template<>
+        struct In<false>
+        { typedef U Result; };
 
-struct ChooseT {
-   template<typename T, typename U>
-   struct Choose {
-      typedef T Result;
-   };
-};
+    public:
+        typedef typename In<flag>::Result Result;
+    };
+    
 
-struct ChooseU {
-   template<typename T, typename U>
-   struct Choose {
-      typedef U Result;
-   };
-};
+////////////////////////////////////////////////////////////////////////////////
+// class template SameType
+// Return true iff two given types are the same
+// Invocation: SameType<T, U>::value
+// where:
+// T and U are types
+// Result evaluates to true iff U == T (types equal)
+////////////////////////////////////////////////////////////////////////////////
 
-template<bool flag>
-struct Selector {
-   typedef ChooseT Result;
-};
+    template <typename T, typename U>
+    struct SameType
+    {
+    private:
+        template<typename>
+        struct In 
+        { enum { value = false }; };
 
-template<>
-struct Selector<false> {
-   typedef ChooseU Result;
-};
+        template<>
+        struct In<T>
+        { enum { value = true };  };
 
-} // namespace Select_
+    public:
+        enum { value = In<U>::value };
+    };
+    
+////////////////////////////////////////////////////////////////////////////////
+// Helper types Small and Big - guarantee that sizeof(Small) < sizeof(Big)
+////////////////////////////////////////////////////////////////////////////////
 
-} // namespace Private
+    namespace Private
+    {
+        typedef char Small;
+        class Big { char dummy[2]; };
 
-template<bool flag, typename T, typename U>
-struct Select {
-private:
-   typedef typename Private::Select_::Selector<flag>::Result selector;
-public:
-   typedef typename selector::Choose<T, U>::Result Result;
-};
+        template<typename T>
+        struct IsVoid
+        {
+            enum { result = 
+                SameType<T, void>::value          ||
+                SameType<T, const void>::value    ||
+                SameType<T, volatile void>::value ||
+                SameType<T, const volatile void>::value
+            };
+        };
+    }
 
-namespace Private {
+//
+// is one type convertable to another?
+//
+    template <class T, class U>
+    class is_convertible
+    {
+        struct VoidReplace {};
 
-template<typename T>
-struct is_void {
-   enum { value = 0 };
-};
+        typedef typename Select
+        <
+            Private::IsVoid<T>::result,
+            VoidReplace, T
+        >
+        ::Result T1;
 
-template<>
-struct is_void<void> {
-   enum { value = 1 };
-};
+        typedef typename Select
+        <
+            Private::IsVoid<U>::result,
+            VoidReplace, U
+        >
+        ::Result U1;
 
-namespace is_same_ {
+        static Private::Big   Test(...);
+        static Private::Small Test(U1);
+        static T1 MakeT();
 
-template<typename T>
-char test_same(T*, T*);
-
-template<typename T>
-big test_same(T*, any);
-
-template<typename T, typename U>
-struct is_same_imp {
-   static T t;
-   static U u;
-   enum { result = sizeof(test_same(&t, &u)) == sizeof(char) };
-};
-
-}  // namespace is_same_
-
-template<typename T, typename U>
-struct is_same {
-   enum { voidT = is_void<T>::value };
-   enum { voidU = is_void<U>::value };
-   struct BothVoid {
-      enum { result = 1 };
-   };
-   struct OneVoid {
-      enum { result = 0 };
-   };
-   typedef typename Select<voidT & voidU, 
-                           BothVoid,
-                           typename Select<voidT | voidU,
-                                           OneVoid,
-                                           is_same_::is_same_imp<T, U>
-                                          >::Result
-                          >::Result tester;
-   enum { result = tester::result };
-};
-
-}  // namespace Private
+    public:       
+        enum { exists = sizeof(Test(MakeT())) == sizeof(Private::Small) };
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template Conversion
@@ -174,65 +166,13 @@ struct is_same {
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Private {
-
-namespace Conversion_ {
-
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4181)
-#pragma warning(disable:4800)
-#pragma warning(disable:4244)
-#endif
-template<typename T, typename U>
-struct Determine {
-   template<typename X, typename Y>
-   struct tester {
-      static char test(X, Y);
-      static big test(any, any);
-   };
-   static T t;
-   static U u;
-   enum { exists = sizeof(tester<T, U>::test(t, t)) == sizeof(char) };
-   enum { exists2Way = exists & (sizeof(tester<U, T>::test(u, u)) == sizeof(char)) };
-   enum { sameType = exists2Way & is_same<T, U>::result };
-};
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
-}  // namespace Conversion_
-
-}  // namespace Private
-
-template<typename T, typename U>
-struct Conversion {
-private:
-   enum { voidT = Private::is_void<T>::value };
-   enum { voidU = Private::is_void<U>::value };
-
-   struct both_void {
-      enum { exists = 1, exists2Way = 1, sameType = 1 };
-   };
-
-   struct one_void {
-      enum { exists = 1, exists2Way = 0, sameType = 0 };
-   };
-
-   typedef typename Select<voidT & voidU,
-                           both_void,
-                           typename Select<voidT | voidU,
-                                           one_void,
-                                           Private::Conversion_::Determine<T, U>
-                                          >::Result
-                          >::Result Chooser;
-public:
-   enum { exists = Chooser::exists };
-   enum { exists2Way = Chooser::exists2Way };
-   enum { sameType = Chooser::sameType };
-};
-
-}  // namespace Loki
+    template <class T, class U>
+    struct Conversion
+    {
+        enum { exists = (is_convertible<T,U>::exists) };
+        enum { exists2Way = (exists && is_convertible<U, T>::exists) };
+        enum { sameType = (SameType<T, U>::value) };
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS
@@ -244,8 +184,8 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 #define SUPERSUBCLASS(T, U) \
-    (::Loki::Conversion<const U*, const T*>::exists && \
-    !::Loki::Conversion<const T*, const void*>::sameType)
+    (::Loki::Conversion<const volatile U*, const volatile T*>::exists && \
+    !::Loki::Conversion<const volatile T*, const volatile void*>::sameType)
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS
@@ -257,12 +197,15 @@ public:
 
 #define SUPERSUBCLASS_STRICT(T, U) \
     (SUPERSUBCLASS(T, U) && \
-    !::Loki::Conversion<const T, const U>::sameType)
+    !::Loki::Conversion<const volatile T *, const volatile U *>::sameType)
+
+} // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// August 22, 2001: ported by Jonathan H Lundquist to MSVC6
+// May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_
+

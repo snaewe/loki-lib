@@ -1,3 +1,20 @@
+////////////////////////////////////////////////////////////////////////////////
+// The Loki Library
+// Copyright (c) 2001 by Andrei Alexandrescu
+// This code accompanies the book:
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+//     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
+// Permission to use, copy, modify, distribute and sell this software for any 
+//     purpose is hereby granted without fee, provided that the above copyright 
+//     notice appear in all copies and that both that copyright notice and this 
+//     permission notice appear in supporting documentation.
+// The author or Addison-Welsey Longman make no representations about the 
+//     suitability of this software for any purpose. It is provided "as is" 
+//     without express or implied warranty.
+////////////////////////////////////////////////////////////////////////////////
+
+// Last update: May 19, 2002
+
 #ifndef TYPETRAITS_INC_
 #define TYPETRAITS_INC_
 
@@ -21,14 +38,7 @@ namespace Loki
     struct IsCustomUnsignedInt
     {
         enum { value = 0 };
-    };
-
-#ifdef _MSC_VER
-    template<>
-    struct IsCustomUnsignedInt<unsigned __int64> {
-       enum { value = 1 };
-    };
-#endif
+    };        
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template IsCustomSignedInt
@@ -47,13 +57,6 @@ namespace Loki
     {
         enum { value = 0 };
     };        
-
-#ifdef _MSC_VER
-    template<>
-    struct IsCustomSignedInt<__int64> {
-       enum { value = 1 };
-    };
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template IsCustomFloat
@@ -84,189 +87,6 @@ namespace Loki
            int, long int) StdSignedInts;
         typedef TYPELIST_3(bool, char, wchar_t) StdOtherInts;
         typedef TYPELIST_3(float, double, long double) StdFloats;
-
-        char test_ptr(const volatile void*, const volatile void*);
-        big test_ptr(any, any);
-
-        template<typename T>
-        T* unrefptr(T&);
-
-        char test_const(const volatile void*);
-        big test_const(volatile void*);
-        char test_volatile(const volatile void*);
-        big test_volatile(const void*);
-
-        template<typename V, typename X>
-        char test_mptr(V X::*, any);
-
-        big test_mptr(any, any);
-
-        template<bool isReference>
-        struct AddReferenceImp {
-           template<typename T>
-           struct Imp {
-              typedef T Result;
-           };
-        };
-
-        template<>
-        struct AddReferenceImp<false> {
-           template<typename T>
-           struct Imp {
-              typedef T& Result;
-           };
-        };
-
-#ifndef _MSC_VER
-        template <class U> struct PointerTraits
-        {
-            enum { result = false };
-            typedef NullType PointeeType;
-        };
-        
-        template <class U> struct PointerTraits<U*>
-        {
-            enum { result = true };
-            typedef U PointeeType;
-        };
-#else
-        template<typename U>
-        struct PointerTraits {
-        private:
-           static U u;
-        public:
-           typedef void PointeeType;  // unable to determine correctly
-           enum { result = sizeof(Private::test_ptr(&u, u)) == sizeof(char) };
-        };
-
-        template<>
-        struct PointerTraits<void> {
-           typedef void PointeeType;
-           enum { result = 0 };
-        };
-#endif
-#ifndef _MSC_VER
-        template <class U> struct ReferenceTraits
-        {
-            enum { result = false };
-            typedef U ReferredType;
-        };
-        
-        template <class U> struct ReferenceTraits<U&>
-        {
-            enum { result = true };
-            typedef U ReferredType;
-        };
-#else
-#pragma warning(push)
-#pragma warning(disable:4181)
-        template<typename U>
-        struct ReferenceTraits {
-           typedef U const volatile cv_u;
-           static cv_u u;
-        public:
-           enum { result = (sizeof(Private::test_const(&u)) != sizeof(char)) 
-                  | (sizeof(Private::test_volatile(&u)) != sizeof(char)) };
-           typedef void ReferredType; // unable to determine correctly
-        };
-#pragma warning(pop)
-
-        template<>
-        struct ReferenceTraits<void> {
-           enum { result = 0 };
-           typedef void ReferredType;
-        };
-#endif
-#ifndef _MSC_VER
-        template <class U> struct PToMTraits
-        {
-            enum { result = false };
-        };
-        
-        template <class U, class V>
-        struct PToMTraits<U V::*>
-        {
-            enum { result = true };
-        };
-#else
-        template<typename U> 
-        struct PToMTraits {
-        private:
-           static U u;
-        public:
-           enum { result = sizeof(Private::test_mptr(u, &u)) == sizeof(char) };
-        };
-
-        template<>
-        struct PToMTraits<void> {
-           enum { result = 0 };
-        };
-#endif
-#ifndef _MSC_VER
-        template <class U> struct UnConst
-        {
-            typedef U Result;
-            enum { isConst = 0 };
-        };
-        
-        template <class U> struct UnConst<const U>
-        {
-            typedef U Result;
-            enum { isConst = 1 };
-        };
-#else
-        template<typename U>
-        struct UnConst {
-        private:
-           static U u;
-        public:
-           typedef void Result; // unable to determine correctly
-           enum { isConst = sizeof(Private::test_const(Private::unrefptr(u))) == sizeof(char) };
-        };
-
-        template<>
-        struct UnConst<void> {
-           typedef void Result;
-           enum { isConst = 0 };
-        };
-#endif
-#ifndef _MSC_VER
-        template <class U> struct UnVolatile
-        {
-            typedef U Result;
-            enum { isVolatile = 0 };
-        };
-        
-        template <class U> struct UnVolatile<volatile U>
-        {
-            typedef U Result;
-            enum { isVolatile = 1 };
-        };
-#else
-        template<typename U>
-        struct UnVolatile {
-        private:
-           static U u;
-        public:
-           typedef void Result; // unable to determine correctly
-           enum { isVolatile = sizeof(Private::test_volatile(Private::unrefptr(u))) == sizeof(char) };
-        };
-
-        template<>
-        struct UnVolatile<void> {
-           typedef void Result;
-           enum { isVolatile = 0 };
-        };
-#endif
-        template<typename U, bool isReference>
-        struct AddReference {
-           typedef typename Private::AddReferenceImp<isReference>::template Imp<U>::Result Result;
-        };
-
-        template<>
-        struct AddReference<void, false> {
-           typedef void Result;
-        };
     }
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -325,50 +145,203 @@ namespace Loki
     template <typename T>
     class TypeTraits
     {
-    public:
-        static const isPointer = Private::PointerTraits<T>::result;
-        //enum { isPointer = Private::PointerTraits<T>::result };
-        typedef typename Private::PointerTraits<T>::PointeeType PointeeType;
-        static const isReference = Private::ReferenceTraits<T>::result;
-        typedef typename Private::ReferenceTraits<T>::ReferredType ReferredType;
+        typedef char (&yes)[1];
+        typedef char (&no) [2];
+
+        template<typename U, size_t N>
+        static void vc7_need_this_for_is_array(Type2Type<U[N]>);
+
+        template<typename U>
+        static yes is_reference(Type2Type<U&>);
+        static no  is_reference(...);
+
+        template<typename U>
+        static yes is_pointer1(Type2Type<U*>);
+        static no  is_pointer1(...);
+
+        template<typename U>
+        static yes is_pointer2(Type2Type<U const *>);
+        static no  is_pointer2(...);
+
+        template<typename U>
+        static yes is_pointer3(Type2Type<U volatile *>);
+        static no  is_pointer3(...);
+
+        template<typename U>
+        static yes is_pointer4(Type2Type<U const volatile *>);
+        static no  is_pointer4(...);
+
+        template<typename U, typename V>
+        static yes is_pointer2member(Type2Type<U V::*>);
+        static no  is_pointer2member(...);
+
+        template<typename U, size_t N>
+        static yes is_array1(Type2Type<U[N]>);
+        static no  is_array1(...);
+
+        template<typename U>
+        static yes is_array2(Type2Type<U[]>);
+        static no  is_array2(...);
+
+        template<typename U>
+        static yes is_const(Type2Type<const U>);
+        static no  is_const(...);
+
+        template<typename U>
+        static yes is_volatile(Type2Type<volatile U>);
+        static no  is_volatile(...);
+
+    public:        
+        //
+        // VC7 BUG - will not detect refernce to function
+        //
+        enum { 
+            isReference = 
+                sizeof(is_reference(Type2Type<T>())) == sizeof(yes) 
+        };
         
-        static const isMemberPointer = Private::PToMTraits<T>::result;
+        //
+        // VC7 BUG - will not detect pointer to function
+        //
+        enum { 
+            isPointer = 
+                sizeof(is_pointer1(Type2Type<T>())) == sizeof(yes) ||
+                sizeof(is_pointer2(Type2Type<T>())) == sizeof(yes) ||
+                sizeof(is_pointer3(Type2Type<T>())) == sizeof(yes) ||
+                sizeof(is_pointer4(Type2Type<T>())) == sizeof(yes)
+        };
         
-        static const isStdUnsignedInt = 
-            TL::IndexOf<Private::StdUnsignedInts, T>::value >= 0;
-        static const isStdSignedInt = 
-            TL::IndexOf<Private::StdSignedInts, T>::value >= 0;
-        static const isStdIntegral = isStdUnsignedInt || isStdSignedInt ||
-            TL::IndexOf<Private::StdOtherInts, T>::value >= 0;
-        static const isStdFloat = TL::IndexOf<Private::StdFloats, T>::value >= 0;
-        static const isStdArith = isStdIntegral || isStdFloat;
-        static const isStdFundamental = isStdArith || isStdFloat || 
-            Conversion<T, void>::sameType;
+        enum { 
+            isMemberPointer = 
+                sizeof(is_pointer2member(Type2Type<T>())) == sizeof(yes)
+        };
+    
+        enum { 
+            isArray =
+                sizeof(is_array1(Type2Type<T>())) == sizeof(yes) ||
+                sizeof(is_array2(Type2Type<T>())) == sizeof(yes)
+        };
+
+        enum { 
+            isVoid = 
+                SameType<T, void>::value          ||
+                SameType<T, const void>::value    ||
+                SameType<T, volatile void>::value ||
+                SameType<T, const volatile void>::value
+        };
+
+        enum { isStdUnsignedInt = 
+            TL::IndexOf<Private::StdUnsignedInts, T>::value >= 0 };
+        enum { isStdSignedInt = 
+            TL::IndexOf<Private::StdSignedInts, T>::value >= 0 };
+        enum { isStdIntegral = isStdUnsignedInt || isStdSignedInt ||
+            TL::IndexOf<Private::StdOtherInts, T>::value >= 0 };
+        enum { isStdFloat = TL::IndexOf<Private::StdFloats, T>::value >= 0 };
+        enum { isStdArith = isStdIntegral || isStdFloat };
+        enum { isStdFundamental = isStdArith || isStdFloat || isVoid };
             
-        static const isUnsignedInt = isStdUnsignedInt || IsCustomUnsignedInt<T>::value;
-        static const isSignedInt = isStdSignedInt || IsCustomSignedInt<T>::value;
-        static const isIntegral = isStdIntegral || isUnsignedInt || isSignedInt;
-        static const isFloat = isStdFloat || IsCustomFloat<T>::value;
-        static const isArith = isIntegral || isFloat;
-        static const isFundamental = isStdFundamental || isArith || isFloat;
+        enum { isUnsignedInt = isStdUnsignedInt || IsCustomUnsignedInt<T>::value };
+        enum { isSignedInt = isStdSignedInt || IsCustomSignedInt<T>::value };
+        enum { isIntegral = isStdIntegral || isUnsignedInt || isSignedInt };
+        enum { isFloat = isStdFloat || IsCustomFloat<T>::value };
+        enum { isArith = isIntegral || isFloat };
+        enum { isFundamental = isStdFundamental || isArith || isFloat };
         
-        typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
-           typename Private::AddReference<T, isReference>::Result
-          >::Result ParameterType;
+        enum { 
+            isConst = 
+                sizeof(is_const(Type2Type<T>())) == sizeof(yes)
+        };
+
+        enum { 
+            isVolatile = 
+                sizeof(is_volatile(Type2Type<T>())) == sizeof(yes)
+        };
+
         
-        static const isConst = Private::UnConst<T>::isConst;
-        typedef typename Private::UnConst<T>::Result NonConstType;
-        static const isVolatile = Private::UnVolatile<T>::isVolatile;
-        typedef typename Private::UnVolatile<T>::Result NonVolatileType;
-        typedef typename Private::UnVolatile<typename Private::UnConst<T>::Result>::Result 
-            UnqualifiedType;
+    private:
+        // is_scalar include functions types
+        struct is_scalar
+        {
+        private:
+            struct BoolConvert { BoolConvert(bool); };
+
+            static yes check(BoolConvert);
+            static no  check(...);
+
+            struct NotScalar {};
+
+            typedef typename Select
+            <
+                isVoid || isReference || isArray, 
+                NotScalar, T
+            >
+            ::Result RetType;
+            
+            static RetType& get();
+
+        public:
+//
+// Ignore forcing value to bool 'true' or 'false' (performance warning)
+//
+#ifdef _MSC_VER
+#pragma warning (disable: 4800)
+#endif
+
+            enum { value = sizeof(check(get())) == sizeof(yes) };
+
+#ifdef _MSC_VER
+#pragma warning (default: 4800)
+#endif
+        }; // is_scalar
+
+    
+    private:
+        template<bool IsRef>
+        struct AdjReference
+        {
+            template<typename U>
+            struct In { typedef U const & Result; };
+        };
+
+        template<>
+        struct AdjReference<true>
+        {
+            template<typename U>
+            struct In { typedef U Result; };
+        };
+
+        typedef typename AdjReference<isReference || isVoid>::
+                template In<T>::Result AdjType;
+
+    public:        
+        enum { isScalar = is_scalar::value };
+
+
+        typedef typename Select
+        <
+            isScalar || isArray, T, AdjType
+        >
+        ::Result ParameterType;
+        
+        //
+        // We get is_class for free
+        // BUG - fails with functions types (ICE) and unknown size array
+        // (but works for other incomplete types)
+        // (the boost one (Paul Mensonides) is better)
+        //
+        enum { isClass = 
+                !isScalar    && 
+                !isArray     && 
+                !isReference &&
+                !isVoid 
+        };
     };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// August 22, 2001: ported by Jonathan H Lundquist to MSVC
+// May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPETRAITS_INC_
