@@ -12,15 +12,37 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// Last update: Oct 14, 2002
-// All functors will return an object of the udt VoidAsType if the template
-// parameter R is void.
-// *Do not* use this returned object. It is only used as a workaround.
-
+//
+// Last update: Feb 25, 2003
+// Functor no longer uses the udt VoidAsType as a workaround for void returns.
+// Instead I created several pairs of base classes (one the general case and 
+// for the void case)
+// The original classes now derive from one of these classes depending on the
+// actual return type.
+// 
+// If you don't like this workaround you can switch to the old version
+// by defining the macro USE_OLD_FUNCTOR_VERSION
+// 
+// Functor's Template-Ctor now has a Loki::Disambiguate parameter.
+// Use it, when the VC complains about an ambiguity. For example if you
+// want to create a functor with a functor of different but compatible type.
+// Functor<R, Arguments> Fun(AnotherFun, Disambiguate());
+// 
+// Changed BindFirst from
+// typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
+// BindFirst(const Fctor& fun, typename Fctor::Parm1 bound);
+// to
+// template <class R, class TList, class Thread>
+// Functor<R, Private::BinderFirstTraitsHelper<TList>::ParmList, Thread>
+// BindFirst(const Functor<R, TList, Thread>& fun, Functor<R, TList, Thread>::Parm1 bound)
+// The old return type was to complicated for the VC and responsible for
+// some C1001-Internal Compiler errors.
+    
+#ifdef USE_FUNCTOR_OLD_VERSION
+#include "FunctorOld.h"
+#else
 #ifndef FUNCTOR_INC_
 #define FUNCTOR_INC_
-
 #include "Typelist.h"
 #include "EmptyType.h"
 #include "SmallObj.h"
@@ -28,6 +50,7 @@
 #include <typeinfo>
 #include <memory>
 #include "MSVC6Helpers.h"
+
 namespace Loki
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,12 +63,6 @@ namespace Loki
     struct FunctorImplBase : public SmallObject<ThreadingModel>
     {
         typedef R ResultType;
-        typedef typename Select
-		<
-			IsVoid<R>::value != 0, 
-			VoidAsType, 
-			R
-		>::Result NewRType;
         typedef EmptyType Parm1;
         typedef EmptyType Parm2;
         typedef EmptyType Parm3;
@@ -104,13 +121,7 @@ namespace Loki
         {
         public:
             typedef R ResultType;
-			typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-            virtual NewRType operator()() = 0;
+			virtual ResultType operator()() = 0;
         };      
     };
 
@@ -130,14 +141,8 @@ namespace Loki
     
         public:
             typedef R ResultType;
-			typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
             typedef typename TypeTraits<P1>::ParameterType Parm1;
-            virtual NewRType operator()(Parm1) = 0;
+            virtual ResultType operator()(Parm1) = 0;
         };      
     };
 
@@ -157,15 +162,10 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
+		   
            typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
-           virtual NewRType operator()(Parm1, Parm2) = 0;
+           virtual ResultType operator()(Parm1, Parm2) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -184,16 +184,11 @@ namespace Loki
 
        public:
            typedef R ResultType;
-           typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
+           
 		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
-           virtual NewRType operator()(Parm1, Parm2, Parm3) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,17 +208,12 @@ namespace Loki
 
        public:
            typedef R ResultType;
-           typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
+           
 		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -244,18 +234,13 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
+		   
            typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
            typedef typename TypeTraits<P5>::ParameterType Parm5;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -277,19 +262,14 @@ namespace Loki
 
        public:
            typedef R ResultType;
-           typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
+           
 		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
            typedef typename TypeTraits<P5>::ParameterType Parm5;
            typedef typename TypeTraits<P6>::ParameterType Parm6;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -312,20 +292,14 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
            typedef typename TypeTraits<P5>::ParameterType Parm5;
            typedef typename TypeTraits<P6>::ParameterType Parm6;
            typedef typename TypeTraits<P7>::ParameterType Parm7;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -349,13 +323,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -363,7 +331,7 @@ namespace Loki
            typedef typename TypeTraits<P6>::ParameterType Parm6;
            typedef typename TypeTraits<P7>::ParameterType Parm7;
            typedef typename TypeTraits<P8>::ParameterType Parm8;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -388,13 +356,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -403,7 +365,7 @@ namespace Loki
            typedef typename TypeTraits<P7>::ParameterType Parm7;
            typedef typename TypeTraits<P8>::ParameterType Parm8;
            typedef typename TypeTraits<P9>::ParameterType Parm9;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -429,13 +391,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -445,7 +401,7 @@ namespace Loki
            typedef typename TypeTraits<P8>::ParameterType Parm8;
            typedef typename TypeTraits<P9>::ParameterType Parm9;
            typedef typename TypeTraits<P10>::ParameterType Parm10;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -472,13 +428,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -489,7 +439,7 @@ namespace Loki
            typedef typename TypeTraits<P9>::ParameterType Parm9;
            typedef typename TypeTraits<P10>::ParameterType Parm10;
            typedef typename TypeTraits<P11>::ParameterType Parm11;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -517,13 +467,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -535,7 +479,7 @@ namespace Loki
            typedef typename TypeTraits<P10>::ParameterType Parm10;
            typedef typename TypeTraits<P11>::ParameterType Parm11;
            typedef typename TypeTraits<P12>::ParameterType Parm12;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -564,13 +508,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -583,7 +521,7 @@ namespace Loki
            typedef typename TypeTraits<P11>::ParameterType Parm11;
            typedef typename TypeTraits<P12>::ParameterType Parm12;
            typedef typename TypeTraits<P13>::ParameterType Parm13;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -613,13 +551,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -633,7 +565,7 @@ namespace Loki
            typedef typename TypeTraits<P12>::ParameterType Parm12;
            typedef typename TypeTraits<P13>::ParameterType Parm13;
            typedef typename TypeTraits<P14>::ParameterType Parm14;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14) = 0;
        };
    };
 ////////////////////////////////////////////////////////////////////////////////
@@ -664,13 +596,7 @@ namespace Loki
 
        public:
            typedef R ResultType;
-		   typedef typename Select
-			<
-				IsVoid<R>::value != 0, 
-				VoidAsType, 
-				R
-			>::Result NewRType;
-           typedef typename TypeTraits<P1>::ParameterType Parm1;
+		   typedef typename TypeTraits<P1>::ParameterType Parm1;
            typedef typename TypeTraits<P2>::ParameterType Parm2;
            typedef typename TypeTraits<P3>::ParameterType Parm3;
            typedef typename TypeTraits<P4>::ParameterType Parm4;
@@ -685,7 +611,7 @@ namespace Loki
            typedef typename TypeTraits<P13>::ParameterType Parm13;
            typedef typename TypeTraits<P14>::ParameterType Parm14;
            typedef typename TypeTraits<P15>::ParameterType Parm15;
-           virtual NewRType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14, Parm15) = 0;
+           virtual ResultType operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14, Parm15) = 0;
        };
    };
 
@@ -721,486 +647,15 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 namespace Private
 {
-	template <class R>
-	struct FunCallWrapper
-	{
-		template <class ParentFunctor, class Fun>
-		struct In
-		{
-			typedef typename ParentFunctor::Impl Base;
-			typedef typename Base::Parm1 A0;
-			typedef typename Base::Parm2 A1;
-			typedef typename Base::Parm3 A2;
-			typedef typename Base::Parm4 A3;
-			typedef typename Base::Parm5 A4;
-			typedef typename Base::Parm6 A5;
-			typedef typename Base::Parm7 A6;
-			typedef typename Base::Parm8 A7;
-			typedef typename Base::Parm9 A8;
-			typedef typename Base::Parm10 A9;
-			typedef typename Base::Parm11 A10;
-			typedef typename Base::Parm12 A11;
-			typedef typename Base::Parm13 A12;
-			typedef typename Base::Parm14 A13;
-			typedef typename Base::Parm15 A14;
-			private:
-				Fun f_;
-			public:
-				In(Fun f) : f_(f) {}
-				
-				
-				R operator() (){return f_();}
-				R operator()(A0 p0) {return f_(p0);}
-				R operator()(A0 p0, A1 p1) {return f_(p0, p1);}
-				
-				
-				R operator()(A0 p0, A1 p1, A2 p2) 
-				{return f_(p0, p1, p2);}
-				
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3) 
-				{return f_(p0, p1, p2, p3);}
-				
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4) 
-				{return f_(p0, p1, p2, p3, p4);}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5) 
-				{return f_(p0, p1, p2, p3, p4, p5);}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6) 
-				{return f_(p0, p1, p2, p3, p4, p5, p6);}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7) 
-				{return f_(p0, p1, p2, p3, p4, p5, p6, p7);}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8) 
-				{return f_(p0, p1, p2, p3, p4, p5, p6, p7, p8);}
-
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9) 
-				{return f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10) 
-				{return f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11) 
-				{return f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12) 
-				{
-					return f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
-								p12); 
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13) 
-				{
-					return f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
-								p12, p13); 
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13, A14 p14) 
-				{
-					return f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
-								p12, p13, p14); 
-				}
-
-		};
-	};
-
-	template <>
-	struct FunCallWrapper<void>
-	{
-		template <class ParentFunctor, class Fun>
-		struct In
-		{
-			typedef typename ParentFunctor::Impl Base;
-			typedef typename Base::Parm1 A0;
-			typedef typename Base::Parm2 A1;
-			typedef typename Base::Parm3 A2;
-			typedef typename Base::Parm4 A3;
-			typedef typename Base::Parm5 A4;
-			typedef typename Base::Parm6 A5;
-			typedef typename Base::Parm7 A6;
-			typedef typename Base::Parm8 A7;
-			typedef typename Base::Parm9 A8;
-			typedef typename Base::Parm10 A9;
-			typedef typename Base::Parm11 A10;
-			typedef typename Base::Parm12 A11;
-			typedef typename Base::Parm13 A12;
-			typedef typename Base::Parm14 A13;
-			typedef typename Base::Parm15 A14;
-			typedef VoidAsType R;
-			private:
-				Fun f_;
-			public:
-				In(Fun f) : f_(f) {}
-								
-				R operator() (){f_(); return VoidAsType();}
-				R operator()(A0 p0) {f_(p0); return VoidAsType();}
-				R operator()(A0 p0, A1 p1) {f_(p0, p1); return VoidAsType();}
-				R operator()(A0 p0, A1 p1, A2 p2) 
-				{f_(p0, p1, p2); return VoidAsType();}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3) 
-				{f_(p0, p1, p2, p3); return VoidAsType();}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4) 
-				{f_(p0, p1, p2, p3, p4); return VoidAsType();}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5) 
-				{f_(p0, p1, p2, p3, p4, p5); return VoidAsType();}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6) 
-				{f_(p0, p1, p2, p3, p4, p5, p6); return VoidAsType();}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7) 
-				{f_(p0, p1, p2, p3, p4, p5, p6, p7); return VoidAsType();}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8) 
-				{f_(p0, p1, p2, p3, p4, p5, p6, p7, p8); return VoidAsType();}
-
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9) 
-				{f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9); return VoidAsType();}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10) 
-				{
-					f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); 
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11) 
-				{
-					f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); 
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12) 
-				{
-					f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); 
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13) 
-				{
-					f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, 
-							p13); 
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13, A14 p14) 
-				{
-					f_(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, 
-							p13, p14); 
-					return VoidAsType();
-				}
-		};
-	};
-
-	template <class R>
-	struct MemFunCallWrapper
-	{
-		template <class ParentFunctor, class pToObj, class pToMemFun>
-		struct In
-		{
-			typedef typename ParentFunctor::Impl Base;
-			typedef typename Base::Parm1 A0;
-			typedef typename Base::Parm2 A1;
-			typedef typename Base::Parm3 A2;
-			typedef typename Base::Parm4 A3;
-			typedef typename Base::Parm5 A4;
-			typedef typename Base::Parm6 A5;
-			typedef typename Base::Parm7 A6;
-			typedef typename Base::Parm8 A7;
-			typedef typename Base::Parm9 A8;
-			typedef typename Base::Parm10 A9;
-			typedef typename Base::Parm11 A10;
-			typedef typename Base::Parm12 A11;
-			typedef typename Base::Parm13 A12;
-			typedef typename Base::Parm14 A13;
-			typedef typename Base::Parm15 A14;
-			private:
-				pToObj		pObj_;
-				pToMemFun	pMemFun_;
-			public:
-				In(const pToObj& pObj, pToMemFun pMemFun) 
-					: pObj_(pObj)
-					, pMemFun_(pMemFun)
-				{}
-				
-				R operator() (){return ((*pObj_).*pMemFun_)();}
-				R operator()(A0 p0) {return ((*pObj_).*pMemFun_)(p0);}
-				R operator()(A0 p0, A1 p1) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1);
-				}
-				
-				
-				R operator()(A0 p0, A1 p1, A2 p2) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2);
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3);
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4);
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5);
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6);
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7);
-				}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8);
-				}
-
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9);
-				}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10);
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11);
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11, p12); 
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11, p12, p13); 
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13, A14 p14) 
-				{
-					return ((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11, p12, p13, p14); 
-				}
-
-		};
-	};
-
-	template <>
-	struct MemFunCallWrapper<void>
-	{
-		template <class ParentFunctor, class pToObj, class pToMemFun>
-		struct In
-		{
-			typedef VoidAsType R;
-			typedef typename ParentFunctor::Impl Base;
-			typedef typename Base::Parm1 A0;
-			typedef typename Base::Parm2 A1;
-			typedef typename Base::Parm3 A2;
-			typedef typename Base::Parm4 A3;
-			typedef typename Base::Parm5 A4;
-			typedef typename Base::Parm6 A5;
-			typedef typename Base::Parm7 A6;
-			typedef typename Base::Parm8 A7;
-			typedef typename Base::Parm9 A8;
-			typedef typename Base::Parm10 A9;
-			typedef typename Base::Parm11 A10;
-			typedef typename Base::Parm12 A11;
-			typedef typename Base::Parm13 A12;
-			typedef typename Base::Parm14 A13;
-			typedef typename Base::Parm15 A14;
-			private:
-				pToObj		pObj_;
-				pToMemFun	pMemFun_;
-			public:
-				In(const pToObj& pObj, pToMemFun pMemFun) 
-					: pObj_(pObj)
-					, pMemFun_(pMemFun)
-				{}
-				
-				R operator() (){((*pObj_).*pMemFun_)(); return VoidAsType();}
-				R operator()(A0 p0) 
-				{((*pObj_).*pMemFun_)(p0); return VoidAsType();}
-				R operator()(A0 p0, A1 p1) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1);
-					return VoidAsType();
-				}
-				
-				
-				R operator()(A0 p0, A1 p1, A2 p2) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2);
-					return VoidAsType();
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3);
-					return VoidAsType();
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4);
-					return VoidAsType();
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5);
-					return VoidAsType();
-				}
-				
-				R operator()(A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6);
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7);
-					return VoidAsType();
-				}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8);
-					return VoidAsType();
-				}
-
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9);
-					return VoidAsType();
-				}
-
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10);
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11);
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11, p12); 
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11, p12, p13); 
-					return VoidAsType();
-				}
-				
-				R operator()(	A0 p0, A1 p1, A2 p2, A3 p3, A4 p4, A5 p5, A6 p6, 
-								A7 p7, A8 p8, A9 p9, A10 p10, A11 p11, A12 p12,
-								A13 p13, A14 p14) 
-				{
-					((*pObj_).*pMemFun_)(p0, p1, p2, p3, p4, p5, p6, 
-							p7, p8, p9, p10, p11, p12, p13, p14); 
-					return VoidAsType();
-				}
-
-		};
-	};
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// class template FunctorHandler
-// Wraps functors and pointers to functions
-////////////////////////////////////////////////////////////////////////////////
+	// implementation class for FunctorHandler and return type != void	
 	template <class ParentFunctor, typename Fun>
-	class FunctorHandler : public ParentFunctor::Impl	
-    {
-        typedef typename ParentFunctor::Impl Base;
-		
+	struct FunctorHandlerBase : public ParentFunctor::Impl
+	{
+		typedef typename ParentFunctor::Impl Base;
+
     public:
+        typedef typename ParentFunctor::ThreadModel ThreadModel;
 		typedef typename Base::ResultType ResultType;
-		typedef typename Base::NewRType NewRType;
-		typedef typename ParentFunctor::ThreadModel ThreadModel;
         typedef typename Base::Parm1 Parm1;
         typedef typename Base::Parm2 Parm2;
         typedef typename Base::Parm3 Parm3;
@@ -1216,92 +671,460 @@ namespace Private
         typedef typename Base::Parm13 Parm13;
         typedef typename Base::Parm14 Parm14;
         typedef typename Base::Parm15 Parm15;
-	private:
-		typedef typename 
-		Private::FunCallWrapper<ResultType>::template In
-		<ParentFunctor, Fun> CallImplType;
-	public:
-        FunctorHandler(const Fun& fun) : CallImpl_(fun) {}
         
-        DEFINE_CLONE_FUNCTORIMPL(FunctorHandler)
-		
+        FunctorHandlerBase(const Fun& fun) : f_(fun) {}
+
         // operator() implementations for up to 15 arguments
                 
-        NewRType operator()()
-        { 
-			return CallImpl_();
-		}
+        ResultType operator()()
+        { return f_(); }
 
-        NewRType operator()(Parm1 p1)
-        { return CallImpl_(p1);}
+        ResultType operator()(Parm1 p1)
+        { return f_(p1); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2)
-        { return CallImpl_(p1, p2); }
+        ResultType operator()(Parm1 p1, Parm2 p2)
+        { return f_(p1, p2); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
-        { return CallImpl_(p1, p2, p3); }
-
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
-        { return CallImpl_(p1, p2, p3, p4);}
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { return f_(p1, p2, p3); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
-        { return CallImpl_(p1, p2, p3, p4, p5);}
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { return f_(p1, p2, p3, p4); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { return f_(p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6);}
+        { return f_(p1, p2, p3, p4, p5, p6); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7);}
+        { return f_(p1, p2, p3, p4, p5, p6, p7); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8);}
+        { return f_(p1, p2, p3, p4, p5, p6, p7, p8); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9);}
+        { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);}
+        { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-									p11);}
+        { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-									p11, p12);}
+        { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-									p11, p12, p13);}
+        { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-									p11, p12, p13, p14);}
+        {
+            return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                p14);
+        }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-									p11, p12, p13, p14, p15);}
+        {
+            return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                p14, p15);
+        }
         
     private:
-        CallImplType CallImpl_;
+        Fun f_;
+    };
+
+	// implementation class for FunctorHandler and return type = void
+	template <class ParentFunctor, typename Fun>
+	struct FunctorHandlerVoidBase : public ParentFunctor::Impl
+	{
+		typedef typename ParentFunctor::Impl Base;
+
+    public:
+        typedef typename ParentFunctor::ThreadModel ThreadModel;
+		typedef typename Base::ResultType ResultType;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
+        
+        FunctorHandlerVoidBase(const Fun& fun) : f_(fun) {}
+        
+        // operator() implementations for up to 15 arguments
+                
+        ResultType operator()()
+        { f_(); }
+
+        ResultType operator()(Parm1 p1)
+        { f_(p1); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2)
+        { f_(p1, p2); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { f_(p1, p2, p3); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { f_(p1, p2, p3, p4); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { f_(p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6)
+        { f_(p1, p2, p3, p4, p5, p6); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7)
+        { f_(p1, p2, p3, p4, p5, p6, p7); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8)
+        { f_(p1, p2, p3, p4, p5, p6, p7, p8); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+        { f_(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+        { f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+        { f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12)
+        { f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13)
+        { f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14)
+        {
+            f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                p14);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
+        {
+            f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                p14, p15);
+        }
+        
+    private:
+        Fun f_;
+    };
+	
+}
+	
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorHandler
+// Wraps functors and pointers to functions
+////////////////////////////////////////////////////////////////////////////////
+	template <class ParentFunctor, typename Fun>
+    class FunctorHandler
+		: public Select<
+			IsEqualType<typename ParentFunctor::Impl::ResultType, void>::value,
+			Private::FunctorHandlerVoidBase<ParentFunctor, Fun>,
+			Private::FunctorHandlerBase<ParentFunctor, Fun>
+			>::Result
+    {
+        typedef typename Select<
+			IsEqualType<typename ParentFunctor::Impl::ResultType, void>::value,
+			Private::FunctorHandlerVoidBase<ParentFunctor, Fun>,
+			Private::FunctorHandlerBase<ParentFunctor, Fun>
+			>::Result ImplBase;
+		typedef typename ParentFunctor::Impl Base;
+    public:
+        typedef typename ParentFunctor::ThreadModel ThreadModel;
+		typedef typename Base::ResultType ResultType;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
+        
+        FunctorHandler(const Fun& fun) : ImplBase(fun) {}
+        
+        DEFINE_CLONE_FUNCTORIMPL(FunctorHandler)
+
+		// all function operators are implemented in the helper
+		// base class
     };
 
 
+////////////////////////////////////////////////////////////////////////////////
+namespace Private
+{
+	// implementation class for MemFunHandler and return type != void
+	template <class ParentFunctor, typename PointerToObj,
+        typename PointerToMemFn>
+    class MemFunHandlerBase : public ParentFunctor::Impl
+    {
+        typedef typename ParentFunctor::Impl Base;
 
+    public:
+        typedef typename ParentFunctor::ThreadModel ThreadModel;
+		typedef typename Base::ResultType ResultType;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
+
+        MemFunHandlerBase(const PointerToObj& pObj, PointerToMemFn pMemFn) 
+        : pObj_(pObj), pMemFn_(pMemFn)
+        {}
+        
+        ResultType operator()()
+        { return ((*pObj_).*pMemFn_)(); }
+
+        ResultType operator()(Parm1 p1)
+        { return ((*pObj_).*pMemFn_)(p1); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2)
+        { return ((*pObj_).*pMemFn_)(p1, p2); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+        { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+        {
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12)
+        {
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13)
+        {
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12, p13);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14)
+        {
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12, p13, p14);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
+        {
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12, p13, p14, p15);
+        }
+        
+    private:
+        PointerToObj pObj_;
+        PointerToMemFn pMemFn_;
+    };
+	
+	// implementation class for MemFunHandler and return type = void
+	template <class ParentFunctor, typename PointerToObj,
+        typename PointerToMemFn>
+    class MemFunHandlerVoidBase : public ParentFunctor::Impl
+    {
+        typedef typename ParentFunctor::Impl Base;
+
+    public:
+        typedef typename ParentFunctor::ThreadModel ThreadModel;
+		typedef typename Base::ResultType ResultType;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
+
+        MemFunHandlerVoidBase(const PointerToObj& pObj, PointerToMemFn pMemFn) 
+        : pObj_(pObj), pMemFn_(pMemFn)
+        {}
+        
+        ResultType operator()()
+        { ((*pObj_).*pMemFn_)(); }
+
+        ResultType operator()(Parm1 p1)
+        { ((*pObj_).*pMemFn_)(p1); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2)
+        { ((*pObj_).*pMemFn_)(p1, p2); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3, p4); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+        { ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+        {
+            ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12)
+        {
+            ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13)
+        {
+            ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12, p13);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14)
+        {
+            ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12, p13, p14);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
+        {
+            ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+                p11, p12, p13, p14, p15);
+        }
+        
+    private:
+        PointerToObj pObj_;
+        PointerToMemFn pMemFn_;
+    };
+
+}
 ////////////////////////////////////////////////////////////////////////////////
 // class template FunctorHandler
 // Wraps pointers to member functions
@@ -1309,13 +1132,23 @@ namespace Private
 
     template <class ParentFunctor, typename PointerToObj,
         typename PointerToMemFn>
-    class MemFunHandler : public ParentFunctor::Impl
+    class MemFunHandler 
+		: public Select<
+			IsEqualType<typename ParentFunctor::Impl::ResultType, void>::value,
+			Private::MemFunHandlerVoidBase<ParentFunctor, PointerToObj, PointerToMemFn>,
+			Private::MemFunHandlerBase<ParentFunctor, PointerToObj, PointerToMemFn>
+			>::Result
     {
-        typedef typename ParentFunctor::Impl Base;
+        typedef typename Select<
+			IsEqualType<typename ParentFunctor::Impl::ResultType, void>::value,
+			Private::MemFunHandlerVoidBase<ParentFunctor, PointerToObj, PointerToMemFn>,
+			Private::MemFunHandlerBase<ParentFunctor, PointerToObj, PointerToMemFn>
+			>::Result ImplBase;
+		
+		typedef typename ParentFunctor::Impl Base;
 
     public:
         typedef typename Base::ResultType ResultType;
-        typedef typename Base::NewRType NewRType;
 		typedef typename ParentFunctor::ThreadModel ThreadModel;
 		typedef typename Base::Parm1 Parm1;
         typedef typename Base::Parm2 Parm2;
@@ -1332,122 +1165,155 @@ namespace Private
         typedef typename Base::Parm13 Parm13;
         typedef typename Base::Parm14 Parm14;
         typedef typename Base::Parm15 Parm15;
-	private:
-		typedef typename Private::MemFunCallWrapper<ResultType>::template In
-		<
-			ParentFunctor,
-			PointerToObj,
-			PointerToMemFn
-		> CallImplType;
-							
+	
 	public:
 		MemFunHandler(const PointerToObj& pObj, PointerToMemFn pMemFn) 
-			: CallImpl_(pObj, pMemFn)
+			: ImplBase(pObj, pMemFn)
         {}
         
         DEFINE_CLONE_FUNCTORIMPL(MemFunHandler)
-		
-		NewRType operator()()
-        { return CallImpl_(); }
 
-        NewRType operator()(Parm1 p1)
-        { return CallImpl_(p1); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2)
-        { return CallImpl_(p1, p2); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
-        { return CallImpl_(p1, p2, p3); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
-        { return CallImpl_(p1, p2, p3, p4); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
-        { return CallImpl_(p1, p2, p3, p4, p5); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
-        { return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
-        {
-            return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-                p11);
-        }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12)
-        {
-            return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-                p11, p12);
-        }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13)
-        {
-            return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-                p11, p12, p13);
-        }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13, Parm14 p14)
-        {
-            return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-                p11, p12, p13, p14);
-        }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
-        {
-            return CallImpl_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
-                p11, p12, p13, p14, p15);
-        }
-        
-    private:
-        CallImplType CallImpl_;
+		// all function operators are implemented in the helper
+		// base class
     };
         
 ////////////////////////////////////////////////////////////////////////////////
-// class template Functor
-// A generalized functor implementation with value semantics
-////////////////////////////////////////////////////////////////////////////////
-       
-    template<typename R, class TList = NullType,
+template<typename R, class TList = NullType,
 			class ThreadingModel = DEFAULT_THREADING>
-    class Functor
-    {
-    public:
-        // Handy type definitions for the body type
-        typedef FunctorImpl<R, TList, ThreadingModel> Impl;
-        typedef R               ResultType;
-        typedef TList           ParmList;
-        typedef ThreadingModel	ThreadModel;
-        typedef typename Select
-			<	Private::IsVoid<R>::value != 0, 
-				Private::VoidAsType, R
-			>::Result NewRType;
+			class Functor;
+// Helper type used to disambiguate Functor's first template ctor
+// from the copy-ctor.
+struct Disambiguate
+{
+	Disambiguate() {}
+};
+namespace Private
+{
+	// implementation class for Functor with return type != void
+	template <class R, class Impl>
+	class FunctorBase
+	{
+		typedef R ResultType;
 
+	public:
+		typedef typename Impl::Parm1 Parm1;
+        typedef typename Impl::Parm2 Parm2;
+        typedef typename Impl::Parm3 Parm3;
+        typedef typename Impl::Parm4 Parm4;
+        typedef typename Impl::Parm5 Parm5;
+        typedef typename Impl::Parm6 Parm6;
+        typedef typename Impl::Parm7 Parm7;
+        typedef typename Impl::Parm8 Parm8;
+        typedef typename Impl::Parm9 Parm9;
+        typedef typename Impl::Parm10 Parm10;
+        typedef typename Impl::Parm11 Parm11;
+        typedef typename Impl::Parm12 Parm12;
+        typedef typename Impl::Parm13 Parm13;
+        typedef typename Impl::Parm14 Parm14;
+        typedef typename Impl::Parm15 Parm15;		
+		FunctorBase() : spImpl_() {}
+		
+		template <class Fun, class MyFunctor>
+		FunctorBase(Fun fun, Loki::Type2Type<MyFunctor>) 
+			: spImpl_(new FunctorHandler<MyFunctor, Fun>(fun))
+		{}
+
+		FunctorBase(const FunctorBase& rhs) 
+			: spImpl_(Impl::Clone(rhs.spImpl_.get()))
+        {}
+		
+		// Ctor for user defined impl-classes
+		FunctorBase(std::auto_ptr<Impl> spImpl) : spImpl_(spImpl)
+        {}
+
+		template <class PtrObj, typename MemFn, class MyFunctor>
+		FunctorBase(const PtrObj& p, MemFn memFn, Loki::Type2Type<MyFunctor>)
+        : spImpl_(new MemFunHandler<MyFunctor, PtrObj, MemFn>(p, memFn))
+        {}
+
+		ResultType operator()()
+        { return (*spImpl_)(); }
+
+		ResultType operator()(Parm1 p1)
+        { return (*spImpl_)(p1); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2)
+        { return (*spImpl_)(p1, p2); }
+        
+		ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { return (*spImpl_)(p1, p2, p3); }
+
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { return (*spImpl_)(p1, p2, p3, p4); }
+        
+		ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { return (*spImpl_)(p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6)
+        { return (*spImpl_)(p1, p2, p3, p4, p5, p6); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7)
+        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8)
+        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12)
+        {
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+                p12);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13)
+        {
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
+            p12, p13);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14)
+        {
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+                p12, p13, p14);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
+        {
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+                p12, p13, p14, p15);
+        }	
+		protected:
+			std::auto_ptr<Impl> spImpl_;
+	};
+
+	// implementation class for Functor with return type = void
+	template <class Impl>
+	class FunctorVoidBase
+	{
+		typedef void ResultType;
+	public:
 		typedef typename Impl::Parm1 Parm1;
         typedef typename Impl::Parm2 Parm2;
         typedef typename Impl::Parm3 Parm3;
@@ -1463,265 +1329,322 @@ namespace Private
         typedef typename Impl::Parm13 Parm13;
         typedef typename Impl::Parm14 Parm14;
         typedef typename Impl::Parm15 Parm15;
+
+		FunctorVoidBase() : spImpl_() {}
+		
+		template <class Fun, class MyFunctor>
+		FunctorVoidBase(Fun fun, Loki::Type2Type<MyFunctor>) 
+			: spImpl_(new FunctorHandler<MyFunctor, Fun>(fun))
+		{}
+
+		FunctorVoidBase(const FunctorVoidBase& rhs) 
+			: spImpl_(Impl::Clone(rhs.spImpl_.get()))
+        {}
+		
+		// Ctor for user defined impl-classes
+		FunctorVoidBase(std::auto_ptr<Impl> spImpl) : spImpl_(spImpl)
+        {}
+
+		template <class PtrObj, typename MemFn, class MyFunctor>
+		FunctorVoidBase(const PtrObj& p, MemFn memFn, Loki::Type2Type<MyFunctor>)
+        : spImpl_(new MemFunHandler<MyFunctor, PtrObj, MemFn>(p, memFn))
+        {}
+		
+		
+		ResultType operator()()
+        { (*spImpl_)(); }
+
+		ResultType operator()(Parm1 p1)
+        { (*spImpl_)(p1); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2)
+        { (*spImpl_)(p1, p2); }
+        
+		ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { (*spImpl_)(p1, p2, p3); }
+
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { (*spImpl_)(p1, p2, p3, p4); }
+        
+		ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { (*spImpl_)(p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6)
+        { (*spImpl_)(p1, p2, p3, p4, p5, p6); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7)
+        { (*spImpl_)(p1, p2, p3, p4, p5, p6, p7); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8)
+        { (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+        { (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+        { (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+        { (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12)
+        {
+            (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+                p12);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13)
+        {
+            (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
+            p12, p13);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14)
+        {
+            (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+                p12, p13, p14);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
+        {
+            (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+                p12, p13, p14, p15);
+        }	
+		protected:
+			std::auto_ptr<Impl> spImpl_;
+	};
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// class template Functor
+// A generalized functor implementation with value semantics
+////////////////////////////////////////////////////////////////////////////////
+    template<typename R, class TList = NullType,
+			class ThreadingModel = DEFAULT_THREADING>
+	class Functor : public Select<
+						IsEqualType<R, void>::value,
+						Private::FunctorVoidBase<FunctorImpl<R, TList, ThreadingModel> >,
+						Private::FunctorBase<R, FunctorImpl<R, TList, ThreadingModel> >
+						>::Result
+    {
+    typedef typename Select<
+			IsEqualType<R, void>::value,
+			Private::FunctorVoidBase<FunctorImpl<R, TList, ThreadingModel> >,
+			Private::FunctorBase<R, FunctorImpl<R, TList, ThreadingModel> >
+			>::Result ImplBase;
 	public:
-        // Member functions
-		Functor() : spImpl_()
+        
+		// Handy type definitions for the body type
+        typedef FunctorImpl<R, TList, ThreadingModel> Impl;
+        typedef R               ResultType;
+        typedef TList           ParmList;
+        typedef ThreadingModel	ThreadModel;
+        typedef typename Impl::Parm1 Parm1;
+        typedef typename Impl::Parm2 Parm2;
+        typedef typename Impl::Parm3 Parm3;
+        typedef typename Impl::Parm4 Parm4;
+        typedef typename Impl::Parm5 Parm5;
+        typedef typename Impl::Parm6 Parm6;
+        typedef typename Impl::Parm7 Parm7;
+        typedef typename Impl::Parm8 Parm8;
+        typedef typename Impl::Parm9 Parm9;
+        typedef typename Impl::Parm10 Parm10;
+        typedef typename Impl::Parm11 Parm11;
+        typedef typename Impl::Parm12 Parm12;
+        typedef typename Impl::Parm13 Parm13;
+        typedef typename Impl::Parm14 Parm14;
+        typedef typename Impl::Parm15 Parm15;
+	public:
+        
+		// Member functions
+		Functor() : ImplBase()
         {}
 		        
-		
-		// Copy-Ctor. 
-		Functor(const Functor& rhs) : spImpl_(Impl::Clone(rhs.spImpl_.get()))
-        {}      
-
-        
-		// Ctor for user defined impl-classes
-		Functor(std::auto_ptr<Impl> spImpl) : spImpl_(spImpl)
-        {}
-
-        // we can't use loki's original approach with VC 6 because
+		// we can't use loki's original ctor with VC 6 because
 		// this compiler will not recognize the copy-ctor 
-		// if a template-ctor is present.
-		// template <typename Fun>
-        // Functor(Fun fun)
-        // : spImpl_(new FunctorHandler<Functor, Fun>(fun))
-        // {}
-		
-		// dummy-Parameter added.
+		// if this template-ctor is present.
+		//template <typename Fun>
+        //Functor(Fun fun)
+        //: spImpl_(new FunctorHandler<Functor, Fun>(fun))
+        //{}
+		// The Loki::Disambiguate parameters makes this ctor distingushable
+		// from the copy-ctor. 
 		template <class Fun>
-		Functor(Fun fun, int* pDummy)
-         : spImpl_(new FunctorHandler<Functor, Fun>(fun))
-        {}
+		Functor(Fun fun, Loki::Disambiguate) 
+			: ImplBase(fun, Type2Type<Functor>())
+		{}
 
+		Functor(const Functor& rhs) : ImplBase(rhs)
+        {}
+		
+		// Ctor for user defined impl-classes
+		Functor(std::auto_ptr<Impl> spImpl) : ImplBase(spImpl) 
+        {}
+		
 		// ctors for functions with up to 15 arguments.
-		template <class R>
-		Functor(R (*p)()) : spImpl_(new FunctorHandler<Functor, R(*)()>(p))
+		template <class Ret>
+		Functor(Ret (*p)()) : ImplBase(p, Type2Type<Functor>())
 		{}
         
-		template <class R, class A0>
-		Functor(R (*p)(A0)) 
-			: spImpl_(new FunctorHandler<Functor, R(*)(A0)>(p))
+		template <class Ret, class A0>
+		Functor(Ret (*p)(A0)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
-		template <class R, class A0, class A1>
-		Functor(R (*p)(A0, A1)) 
-			: spImpl_(new FunctorHandler<Functor, R(*)(A0, A1)>(p))
+		template <class Ret, class A0, class A1>
+		Functor(Ret (*p)(A0, A1)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
-		template <class R, class A0, class A1, class A2>
-		Functor(R (*p)(A0, A1, A2)) 
-			: spImpl_(new FunctorHandler<Functor, R(*)(A0, A1, A2)>(p))
+		template <class Ret, class A0, class A1, class A2>
+		Functor(Ret (*p)(A0, A1, A2)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
-		template <class R, class A0, class A1, class A2, class A3>
-		Functor(R (*p)(A0, A1, A2, A3)) 
-			: spImpl_(new FunctorHandler<Functor, R(*)(A0, A1, A2, A3)>(p))
+		template <class Ret, class A0, class A1, class A2, class A3>
+		Functor(Ret (*p)(A0, A1, A2, A3)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
-		template <class R, class A0, class A1, class A2, class A3, class A4>
-		Functor(R (*p)(A0, A1, A2, A3, A4)) 
-			: spImpl_(new FunctorHandler<Functor, R(*)(A0, A1, A2, A3, A4)>(p))
+		template <class Ret, class A0, class A1, class A2, class A3, class A4>
+		Functor(Ret (*p)(A0, A1, A2, A3, A4)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7, class A8
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7, A8)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7, class A8, class A9
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7, class A8, class A9, class A10
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7, class A8, class A9, class A10, 
 			class A11
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7, class A8, class A9, class A10, 
 			class A11, class A12
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7, class A8, class A9, class A10, 
 			class A11, class A12, class A13
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 
 		template 
 		<	
-			class R, class A0, class A1, class A2, class A3, class A4, 
+			class Ret, class A0, class A1, class A2, class A3, class A4, 
 			class A5, class A6, class A7, class A8, class A9, class A10, 
 			class A11, class A12, class A13, class A14
 		>
-		Functor(R (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14)) 
-			: spImpl_(new FunctorHandler<Functor, 
-			R(*)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14)>(p))
+		Functor(Ret (*p)(A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14)) 
+			: ImplBase(p, Type2Type<Functor>())
 		{}
 		
-		
-		template <class PtrObj, typename MemFn>
+        template <class PtrObj, typename MemFn>
         Functor(const PtrObj& p, MemFn memFn)
-        : spImpl_(new MemFunHandler<Functor, PtrObj, MemFn>(p, memFn))
+        : ImplBase(p, memFn, Type2Type<Functor>())
         {}
 		
-        Functor& operator=(const Functor& rhs)
+		Functor& operator=(const Functor& rhs)
         {
             if (this == &rhs) 
 				return *this;
 			// the auto_ptr provided by the MSVC 6.0 does not have
 			// a reset-function.
 			Functor copy(rhs);
-			delete spImpl_.release();
-			spImpl_ = copy.spImpl_;
+			delete ImplBase::spImpl_.release();
+			ImplBase::spImpl_ = copy.ImplBase::spImpl_;
 			
             return *this;
         }
-        
-        NewRType operator()()
-        { return (*spImpl_)(); }
 
-        NewRType operator()(Parm1 p1)
-        { return (*spImpl_)(p1); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2)
-        { return (*spImpl_)(p1, p2); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
-        { return (*spImpl_)(p1, p2, p3); }
+		typedef Impl * (std::auto_ptr<Impl>::*unspecified_bool_type)() const;
 
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
-        { return (*spImpl_)(p1, p2, p3, p4); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
-        { return (*spImpl_)(p1, p2, p3, p4, p5); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6)
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7)
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8)
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12)
+        operator unspecified_bool_type() const
         {
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
-                p12);
+            return spImpl_.get() ? &std::auto_ptr<Impl>::get : 0;
         }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13)
-        {
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
-            p12, p13);
-        }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13, Parm14 p14)
-        {
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
-                p12, p13, p14);
-        }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
-        {
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
-                p12, p13, p14, p15);
-        }
-
-    private:
-		std::auto_ptr<Impl> spImpl_;
         
     };
     
@@ -1741,31 +1664,26 @@ namespace Private
             >
             ::Result ParmList;
 			typedef typename Fctor::ThreadModel ThreadModel;
-            //typedef typename TList::Tail ParmList;
+            
 
-			typedef Functor<Fctor::ResultType, ParmList, ThreadModel> BoundFunctorType;
+			typedef Functor<typename Fctor::ResultType, 
+				ParmList, ThreadModel> BoundFunctorType;
 			typedef typename BoundFunctorType::Impl Impl;
         };
 
     } // namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template BinderFirst
-// Binds the first parameter of a Functor object to a specific value
-////////////////////////////////////////////////////////////////////////////////
-
-    template <class OriginalFunctor>
-    class BinderFirst 
-        : public Private::BinderFirstTraits<OriginalFunctor>::Impl
-    {
-        typedef typename Private::BinderFirstTraits<OriginalFunctor>::Impl Base;
+namespace Private
+{
+	// implementation class for BinderFirst and return type != void
+	template <class OriginalFunctor>
+	struct BinderFirstBase : public Private::BinderFirstTraits<OriginalFunctor>::Impl
+	{
+		typedef typename Private::BinderFirstTraits<OriginalFunctor>::Impl Base;
         typedef typename Private::BinderFirstTraits<OriginalFunctor>::ThreadModel ThreadModel;
 		typedef typename OriginalFunctor::ResultType ResultType;
-		typedef typename Select
-			<	Private::IsVoid<ResultType>::value != 0, 
-				Private::VoidAsType, ResultType
-			>::Result NewRType;
-        typedef typename OriginalFunctor::Parm1 BoundType;
+		typedef typename OriginalFunctor::Parm1 BoundType;
 
         typedef typename OriginalFunctor::Parm2 Parm1;
         typedef typename OriginalFunctor::Parm3 Parm2;
@@ -1782,119 +1700,286 @@ namespace Private
         typedef typename OriginalFunctor::Parm14 Parm13;
         typedef typename OriginalFunctor::Parm15 Parm14;
         typedef EmptyType Parm15;
-    public:
-        BinderFirst(const OriginalFunctor& fun, BoundType bound)
-        : f_(fun), b_(bound)
-        {}
-        
-        DEFINE_CLONE_FUNCTORIMPL(BinderFirst)
-		
-        // operator() implementations for up to 15 arguments
-                
-        NewRType operator()()
+
+		BinderFirstBase(const OriginalFunctor& fun, BoundType bound)
+			: f_(fun), b_(bound)
+		{}
+
+		ResultType operator()()
         { return f_(b_); }
 
-        NewRType operator()(Parm1 p1)
+        ResultType operator()(Parm1 p1)
         { return f_(b_, p1); }
-        
-        NewRType operator()(Parm1 p1, Parm2 p2)
+
+		ResultType operator()(Parm1 p1, Parm2 p2)
         { return f_(b_, p1, p2); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
         { return f_(b_, p1, p2, p3); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
         { return f_(b_, p1, p2, p3, p4); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
         { return f_(b_, p1, p2, p3, p4, p5); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6)
         { return f_(b_, p1, p2, p3, p4, p5, p6); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14)
         {
             return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
                 p14);
         }
-        
+
         // VC7 BUG
-        virtual ~BinderFirst() {}
+        virtual ~BinderFirstBase() {}
     private:
         OriginalFunctor f_;
         BoundType b_;
+	};
+	
+	// implementation class for BinderFirst and return type = void
+	template <class OriginalFunctor>
+	struct BinderFirstVoidBase : public Private::BinderFirstTraits<OriginalFunctor>::Impl
+	{
+		typedef typename Private::BinderFirstTraits<OriginalFunctor>::Impl Base;
+        typedef typename Private::BinderFirstTraits<OriginalFunctor>::ThreadModel ThreadModel;
+		typedef typename OriginalFunctor::ResultType ResultType;
+		typedef typename OriginalFunctor::Parm1 BoundType;
+
+        typedef typename OriginalFunctor::Parm2 Parm1;
+        typedef typename OriginalFunctor::Parm3 Parm2;
+        typedef typename OriginalFunctor::Parm4 Parm3;
+        typedef typename OriginalFunctor::Parm5 Parm4;
+        typedef typename OriginalFunctor::Parm6 Parm5;
+        typedef typename OriginalFunctor::Parm7 Parm6;
+        typedef typename OriginalFunctor::Parm8 Parm7;
+        typedef typename OriginalFunctor::Parm9 Parm8;
+        typedef typename OriginalFunctor::Parm10 Parm9;
+        typedef typename OriginalFunctor::Parm11 Parm10;
+        typedef typename OriginalFunctor::Parm12 Parm11;
+        typedef typename OriginalFunctor::Parm13 Parm12;
+        typedef typename OriginalFunctor::Parm14 Parm13;
+        typedef typename OriginalFunctor::Parm15 Parm14;
+        typedef EmptyType Parm15;
+
+		BinderFirstVoidBase(const OriginalFunctor& fun, BoundType bound)
+			: f_(fun), b_(bound)
+		{}
+		ResultType operator()()
+        { f_(b_); }
+
+        ResultType operator()(Parm1 p1)
+        { f_(b_, p1); }
+
+		ResultType operator()(Parm1 p1, Parm2 p2)
+        { f_(b_, p1, p2); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { f_(b_, p1, p2, p3); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { f_(b_, p1, p2, p3, p4); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { f_(b_, p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6)
+        { f_(b_, p1, p2, p3, p4, p5, p6); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7)
+        { f_(b_, p1, p2, p3, p4, p5, p6, p7); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8)
+        { f_(b_, p1, p2, p3, p4, p5, p6, p7, p8); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+        { f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+        { f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+        { f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12)
+        { f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13)
+        { f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14)
+        {
+            f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                p14);
+        }
+
+        // VC7 BUG
+        virtual ~BinderFirstVoidBase() {}
+    private:
+        OriginalFunctor f_;
+        BoundType b_;
+	};
+}
+////////////////////////////////////////////////////////////////////////////////
+// class template BinderFirst
+// Binds the first parameter of a Functor object to a specific value
+////////////////////////////////////////////////////////////////////////////////
+
+    template <class OriginalFunctor>
+    class BinderFirst 
+        : public Select<
+			IsEqualType<OriginalFunctor::ResultType, void>::value,
+			Private::BinderFirstVoidBase<OriginalFunctor>,
+			Private::BinderFirstBase<OriginalFunctor>
+			>::Result
+    {
+        typedef typename Select<
+			IsEqualType<OriginalFunctor::ResultType, void>::value,
+			Private::BinderFirstVoidBase<OriginalFunctor>,
+			Private::BinderFirstBase<OriginalFunctor>
+			>::Result ImplBase;
+
+		typedef typename Private::BinderFirstTraits<OriginalFunctor>::Impl Base;
+        typedef typename Private::BinderFirstTraits<OriginalFunctor>::ThreadModel ThreadModel;
+		typedef typename OriginalFunctor::ResultType ResultType;
+		typedef typename OriginalFunctor::Parm1 BoundType;
+
+        typedef typename OriginalFunctor::Parm2 Parm1;
+        typedef typename OriginalFunctor::Parm3 Parm2;
+        typedef typename OriginalFunctor::Parm4 Parm3;
+        typedef typename OriginalFunctor::Parm5 Parm4;
+        typedef typename OriginalFunctor::Parm6 Parm5;
+        typedef typename OriginalFunctor::Parm7 Parm6;
+        typedef typename OriginalFunctor::Parm8 Parm7;
+        typedef typename OriginalFunctor::Parm9 Parm8;
+        typedef typename OriginalFunctor::Parm10 Parm9;
+        typedef typename OriginalFunctor::Parm11 Parm10;
+        typedef typename OriginalFunctor::Parm12 Parm11;
+        typedef typename OriginalFunctor::Parm13 Parm12;
+        typedef typename OriginalFunctor::Parm14 Parm13;
+        typedef typename OriginalFunctor::Parm15 Parm14;
+        typedef EmptyType Parm15;
+	    
+	public:
+		
+
+        BinderFirst(const OriginalFunctor& fun, BoundType bound)
+			: ImplBase(fun,bound)
+        {}
+        
+		DEFINE_CLONE_FUNCTORIMPL(BinderFirst)
+		
+		// all function operators are implemented in the base class
+
+		// VC7 BUG
+        virtual ~BinderFirst() {}
+        
     };
     
 ////////////////////////////////////////////////////////////////////////////////
 // function template BindFirst
 // Binds the first parameter of a Functor object to a specific value
 ////////////////////////////////////////////////////////////////////////////////
-
-    template <class Fctor>
-    typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
-    BindFirst(
-        const Fctor& fun,
-        typename Fctor::Parm1 bound)
-    {
-        typedef typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
-            Outgoing;
-		typedef typename Private::BinderFirstTraits<Fctor>::BoundFunctorType::Impl
-			Impl;
-		return Outgoing(std::auto_ptr<Impl>(
-            new BinderFirst<Fctor>(fun, bound)));
-    }
-
+	
+	// The return-type of the original library is to complicated for
+	// the VC 6.0
+	// template <class Fctor>
+    // typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
+    // BindFirst(
+	// const Fctor& fun,
+	// typename Fctor::Parm1 bound)
+    // {
+    //	typedef typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
+	//	Outgoing;
+	//        
+	//	return Outgoing(std::auto_ptr<Outgoing::Impl>(
+	//	new BinderFirst<Fctor>(fun, bound)));
+    //	}
+	
+	namespace Private
+	{
+		template <class TList>
+		struct BinderFirstTraitsHelper
+		{
+			typedef typename TL::Erase
+            <
+                TList, 
+                typename TL::TypeAt<TList, 0>::Result
+            >
+            ::Result ParmList;
+		};
+	}
+	
+	template <class R, class TList, class Thread>
+	Functor<R, Private::BinderFirstTraitsHelper<TList>::ParmList, Thread>
+	BindFirst(const Functor<R, TList, Thread>& fun, Functor<R, TList, Thread>::Parm1 bound)
+	{
+		typedef typename Private::BinderFirstTraitsHelper<TList>::ParmList NewList;
+		typedef typename Functor<R, NewList, Thread> Out;
+		
+		return Out(std::auto_ptr<Out::Impl>(
+			new BinderFirst<Functor<R, TList, Thread> >(fun, bound)));
+	}
+	
 ////////////////////////////////////////////////////////////////////////////////
-// class template Chainer
-// Chains two functor calls one after another
-////////////////////////////////////////////////////////////////////////////////
-
-    template <typename Fun1, typename Fun2>
-    class Chainer : public Fun2::Impl
-    {
-        typedef Fun2 Base;
-
-    public:
-        typedef typename Base::ResultType ResultType;
+namespace Private
+{
+	// implementation class for Chainer and return type != void
+	template <class Fun1, class Fun2>
+	struct ChainerBase : public Fun2::Impl
+	{
+		typedef Fun2 Base;
+	public:
+		typedef typename Base::ResultType ResultType;
 		typedef typename Base::ThreadModel ThreadModel;
-        typedef typename Select
-			<	Private::IsVoid<ResultType>::value != 0, 
-				Private::VoidAsType, ResultType
-			>::Result NewRType;
-		typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm1 Parm1;
         typedef typename Base::Parm2 Parm2;
         typedef typename Base::Parm3 Parm3;
         typedef typename Base::Parm4 Parm4;
@@ -1910,76 +1995,75 @@ namespace Private
         typedef typename Base::Parm14 Parm14;
         typedef typename Base::Parm15 Parm15;
         
-        Chainer(const Fun1& fun1, const Fun2& fun2) : f1_(fun1), f2_(fun2) {}
+        ChainerBase(const Fun1& fun1, const Fun2& fun2) 
+			: f1_(fun1), f2_(fun2) {}
 
         //
         // VC7 don't see this implicit constructor
         //
 
-        virtual ~Chainer() {}
-
-        DEFINE_CLONE_FUNCTORIMPL(Chainer)
+        virtual ~ChainerBase() {}
 		
         // operator() implementations for up to 15 arguments
 
-        NewRType operator()()
+        ResultType operator()()
         { return f1_(), f2_(); }
 
-        NewRType operator()(Parm1 p1)
+        ResultType operator()(Parm1 p1)
         { return f1_(p1), f2_(p1); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2)
+        ResultType operator()(Parm1 p1, Parm2 p2)
         { return f1_(p1, p2), f2_(p1, p2); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
         { return f1_(p1, p2, p3), f2_(p1, p2, p3); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
         { return f1_(p1, p2, p3, p4), f2_(p1, p2, p3, p4); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
         { return f1_(p1, p2, p3, p4, p5), f2_(p1, p2, p3, p4, p5); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6)
         { return f1_(p1, p2, p3, p4, p5, p6), f2_(p1, p2, p3, p4, p5, p6); }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7),
                 f2_(p1, p2, p3, p4, p5, p6, p7);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12)
         {
@@ -1987,7 +2071,7 @@ namespace Private
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13)
         {
@@ -1995,7 +2079,7 @@ namespace Private
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14)
         {
@@ -2005,7 +2089,7 @@ namespace Private
                    p14);
         }
         
-        NewRType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
         {
@@ -2015,9 +2099,197 @@ namespace Private
                     p14, p15);
         }
         
-    private:
+    protected:
         Fun1 f1_;
         Fun2 f2_;
+ 
+	};
+	
+	// implementation class for Chainer and return type = void
+	template <class Fun1, class Fun2>
+	struct ChainerVoidBase : public Fun2::Impl
+	{
+		typedef Fun2 Base;
+	public:
+		typedef typename Base::ResultType ResultType;
+		typedef typename Base::ThreadModel ThreadModel;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
+        
+        ChainerVoidBase(const Fun1& fun1, const Fun2& fun2) 
+			: f1_(fun1), f2_(fun2) {}
+
+        //
+        // VC7 don't see this implicit constructor
+        //
+
+        virtual ~ChainerVoidBase() {}
+		
+        // operator() implementations for up to 15 arguments
+
+        ResultType operator()()
+        { f1_(), f2_(); }
+
+        ResultType operator()(Parm1 p1)
+        { f1_(p1), f2_(p1); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2)
+        { f1_(p1, p2), f2_(p1, p2); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        { f1_(p1, p2, p3), f2_(p1, p2, p3); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        { f1_(p1, p2, p3, p4), f2_(p1, p2, p3, p4); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        { f1_(p1, p2, p3, p4, p5), f2_(p1, p2, p3, p4, p5); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6)
+        { f1_(p1, p2, p3, p4, p5, p6), f2_(p1, p2, p3, p4, p5, p6); }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7),
+                f2_(p1, p2, p3, p4, p5, p6, p7);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                    p14),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                   p14);
+        }
+        
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
+            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
+        {
+            f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                    p14, p15),
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                    p14, p15);
+        }
+        
+    protected:
+        Fun1 f1_;
+        Fun2 f2_;
+ 
+	};
+}
+////////////////////////////////////////////////////////////////////////////////
+// class template Chainer
+// Chains two functor calls one after another
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename Fun1, typename Fun2>
+	class Chainer 
+		: public Select<
+			IsEqualType<typename Fun2::ResultType, void>::value,
+			Private::ChainerVoidBase<Fun1, Fun2>,
+			Private::ChainerBase<Fun1, Fun2>
+			>::Result
+
+    {
+        typedef typename Select<
+			IsEqualType<typename Fun2::ResultType, void>::value,
+			Private::ChainerVoidBase<Fun1, Fun2>,
+			Private::ChainerBase<Fun1, Fun2>
+			>::Result ImplBase;
+		
+		typedef Fun2 Base;
+
+    public:
+        typedef typename Base::ResultType ResultType;
+		typedef typename Base::ThreadModel ThreadModel;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
+        
+        Chainer(const Fun1& fun1, const Fun2& fun2) : ImplBase(fun1,fun2) {}
+
+        //
+        // VC7 don't see this implicit constructor
+        //
+
+        virtual ~Chainer() {}
+
+        DEFINE_CLONE_FUNCTORIMPL(Chainer)
+		
     };
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -2049,6 +2321,14 @@ namespace Private
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 // Oct	12, 2002: ported by Benjamin Kaufmann to MSVC 6
+// Feb	22, 2003: corrected the return type template paramter of functors constructors
+//					for function pointers. 
+//					Added Loki::Disambiguate parameter to the template conversion ctor.
+//					changed the implementation of BindFirst to circumvent
+//					C1001-Internal-Compiler errors.
+//					Replaced the void return workaround.
+//					B.K.
+// Feb	25, 2003: added conversion unspecified_bool_type. B.K.
 ////////////////////////////////////////////////////////////////////////////////
-
 #endif  // FUNCTOR_INC_
+#endif	// #ifdef USE_FUNCTOR_OLD_VERSION
