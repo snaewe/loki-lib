@@ -1,6 +1,6 @@
 Loki VC 6.0 Port or how to produce C1001 - Internal Compiler Errors
 -------------------------------------------------------------------
-Version: 0.5c
+Version: 0.5d
 
 Introduction/Compatibility:
 ---------------------------
@@ -29,10 +29,16 @@ If you use Singletons with longevity you must add Singleton.cpp to your project/
 
 Fixes:
 ------
+    Mar 21, 2003:
+    -------------
+        * In MultiMethods.h: Added a new explicit template argument specification (ETAS)-workaround 
+        for FnDispatcher::Add which is more compliant with other 
+        ETAS-workarounds used in this port.
+
     Mar 20, 2003:
     -------------
         * In MultiMethods.h: Fixed bugs in FnDispatcher and FunctorDispatcher.
-        Fixing FnDispatcher lead to an Interface change (see section "Interface changes").
+        Fixing FnDispatcher led to an Interface change (see section "Interface changes").
 
 	Mar 08, 2003:
     -------------
@@ -269,6 +275,39 @@ Unfortunately the MSVC 6.0 supports neither of them.
     [/code]
 
     If you know of a better workaround, please let me know.
+    
+    Update:
+    -------
+    The problem in the example above is Add's nontype-function-pointer-Parameter.
+    If one changes this parameter to a type-parameter the problem vanishes.
+    The example above then becomes:
+    [code]
+    template </*...*/typename ResultType/*...*/>
+    class FnDispatcher
+    {
+    public:
+	    // Etas stands for explicit template argument specification.
+        // Do whatever you need to do with callback in this class.
+        template <class SomeLhs, class SomeRhs, 
+			ResultType (*callback)(SomeLhs&, SomeRhs&), bool symmetric = false>
+		struct Etas
+		{/*...*/};
+		
+		// EtasType has to be a template parameter. If one tries to use
+		// a parameter of type Etas the MSVC 6.0 won't generate correct
+		// code.
+		template <class EtasType>
+        void Add(EtasType EtasObj)
+        {/*...*/}
+    };
+    //...
+    typedef FnDispatcher<void> DisType;
+    DisType f;
+	f.Add(DisType::Etas<Rectangle, Rectangle, &Func>());
+    [/code]
+
+    The port provides both workarounds but the use of the second should be preferred,
+    because it betters fits to the rest of the port's workarounds.
 
     D. Virtual functions that use covariant return types (e.g. return a pointer to Derived)
     in the original library were changed so that they have exactly the
@@ -330,7 +369,34 @@ Unfortunately the MSVC 6.0 supports neither of them.
 	struct Foo	: public Select<IsVoid<R>::value, FooVoidBase, FooBase<R> >::Result
 	{};
 	[/code]
-	Please note that *all* new base classes are only meant as a hidden
+	
+    The MSVC 6 allows explicit template specialization in class scope.
+    In contrast the C++ Standards only allows explicit template specialization
+    in namespace scope. Using the non-compliant feature, the implementation
+    of the example above becomes a little less complicated:
+    [code]
+    namespace Private
+    {
+	    struct FooBase
+	    {
+		    template <class R> 
+		    struct In
+		    {
+			    R Func() {return R();}
+		    };
+		    template <> 
+		    struct In<void>
+		    {;
+			    void Func() {}    
+		    };
+	    };
+    }
+    template <class R>
+    struct Foo	: Private::FooBase::In<R>
+    {};
+    [/code]
+    
+    Please note that *all* new base classes are only meant as a hidden
 	implementation detail.
 	You should never use any of them directly or indirectly. In particular don't
 	make use of the possible derived-to-base conversion.
@@ -606,21 +672,29 @@ Interface changes:
 	{
 		x.Add(&Hatch_Helper<Circle, Rectangle>::HatchShapes);
 	}
-
+    [/code]
     Some words to FnDispatcher:
 	---------------------------
     The trampoline-Versions of FnDispatcher::Add differ
     from the original library.
 
     Using the original library one writes:
+    [code]
     typedef FnDispatcher<Shape> Dispatcher;
     void Hatch(Rectangle& lhs, Poly& rhs) {...}
 
     Dispatcher dis;
     disp.Add<Rectangle, Poly, &Hatch>();
-
-    Using this port the last line has to be:
+    [/code]
+    
+    Using this port the last line either becomes:
+    [code]
+    disp.Add(Dispatcher::Etas<Rectangle, Poly, &Hatch>());
+    [/code]
+    or
+    [code]
     Dispatcher::AddI<Rectangle, Poly, &Hatch>()(dis);
+    [/code]
 
 More info:
 ----------
