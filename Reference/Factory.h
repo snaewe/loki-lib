@@ -64,7 +64,7 @@ namespace Loki
         bool Register(const IdentifierType& id, ProductCreator creator)
         {
             return associations_.insert(
-                IdToProductMap::value_type(id, creator)).second;
+                typename IdToProductMap::value_type(id, creator)).second;
         }
         
         bool Unregister(const IdentifierType& id)
@@ -107,7 +107,7 @@ namespace Loki
         bool Register(const TypeInfo& ti, ProductCreator creator)
         {
             return associations_.insert(
-                IdToProductMap::value_type(ti, creator)).second;
+                typename IdToProductMap::value_type(ti, creator)).second;
         }
         
         bool Unregister(const TypeInfo& id)
