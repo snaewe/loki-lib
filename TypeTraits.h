@@ -190,10 +190,10 @@ namespace Loki
 
     public:
         enum { isPointer = PointerTraits<T>::result };
-        typedef PointerTraits<T>::PointeeType PointeeType;
+        typedef typename PointerTraits<T>::PointeeType PointeeType;
 
         enum { isReference = ReferenceTraits<T>::result };
-        typedef ReferenceTraits<T>::ReferredType ReferredType;
+        typedef typename ReferenceTraits<T>::ReferredType ReferredType;
         
         enum { isMemberPointer = PToMTraits<T>::result };
     
@@ -215,16 +215,22 @@ namespace Loki
         enum { isArith = isIntegral || isFloat };
         enum { isFundamental = isStdFundamental || isArith || isFloat };
         
-        typedef Select<isStdArith || isPointer || isMemberPointer,
+        typedef typename Select<isStdArith || isPointer || isMemberPointer,
                 T, ReferredType&>::Result
             ParameterType;
         
         enum { isConst = UnConst<T>::isConst };
-        typedef UnConst<T>::Result NonConstType;
+        typedef typename UnConst<T>::Result NonConstType;
         enum { isVolatile = UnVolatile<T>::isVolatile };
-        typedef UnVolatile<T>::Result NonVolatileType;
-        typedef UnVolatile<UnConst<T>::Result>::Result UnqualifiedType;
+        typedef typename UnVolatile<T>::Result NonVolatileType;
+        typedef typename UnVolatile<typename UnConst<T>::Result>::Result 
+            UnqualifiedType;
     };
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPETRAITS_INC_

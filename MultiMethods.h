@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef MULTIMETHODS_INC_
 #define MULTIMETHODS_INC_
@@ -38,25 +38,21 @@ namespace Loki
 
     namespace Private
     {
-        template <bool swapArgs, class SomeLhs, class SomeRhs, class Executor,
-            typename ResultType>
+        template <class SomeLhs, class SomeRhs, 
+			class Executor, typename ResultType>
         struct InvocationTraits
         {
-            static ResultType DoDispatch(SomeLhs& lhs, SomeRhs& rhs,
-                Executor& exec)
+            static ResultType 
+	    DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
+			Executor& exec, Int2Type<false>)
             {
                 return exec.Fire(lhs, rhs);
             }
-        };
-        
-        template <class SomeLhs, class SomeRhs, class Executor, 
-            typename ResultType>
-        struct InvocationTraits<true, SomeLhs, SomeRhs, Executor, ResultType>
-        {
-            static ResultType DoDispatch(SomeLhs& lhs, SomeRhs& rhs,
-                Executor& exec)
+            static ResultType 
+	    DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
+			Executor& exec, Int2Type<true>)
             {
-                return exec.Fire(rhs, lhs); // swap arguments
+                return exec.Fire(rhs, lhs);
             }
         };
     }
@@ -69,9 +65,9 @@ namespace Loki
     template
     <
         class Executor,
-        bool symmetric,
         class BaseLhs, 
         class TypesLhs,
+        bool symmetric = true,
         class BaseRhs = BaseLhs,
         class TypesRhs = TypesLhs,
         typename ResultType = void
@@ -92,14 +88,14 @@ namespace Loki
             
             if (Head* p2 = dynamic_cast<Head*>(&rhs))
             {
-                enum { swapArgs = symmetric &&
-                    TL::IndexOf<TypesRhs, Head>::value <
-                    TL::IndexOf<TypesLhs, SomeLhs>::value };
-                typedef Private::InvocationTraits<swapArgs, 
-                        SomeLhs, Head, Executor, ResultType>
-                    CallTraits;
+                Int2Type<(symmetric &&
+                          int(TL::IndexOf<TypesRhs, Head>::value) <
+                          int(TL::IndexOf<TypesLhs, SomeLhs>::value))> i2t;
+
+                typedef Private::InvocationTraits< 
+                        SomeLhs, Head, Executor, ResultType> CallTraits;
                     
-                return CallTraits::DoDispatch(lhs, *p2, exec);
+                return CallTraits::DoDispatch(lhs, *p2, exec, i2t);
             }
             return DispatchRhs(lhs, rhs, exec, Tail());
         }
@@ -143,22 +139,15 @@ namespace Loki
     >
     class BasicDispatcher
     {
-        typedef std::pair<TypeInfo, TypeInfo> KeyType;
+        typedef std::pair<TypeInfo,TypeInfo> KeyType;
         typedef CallbackType MappedType;
         typedef AssocVector<KeyType, MappedType> MapType;
         MapType callbackMap_;
         
+        void DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun);
+        bool DoRemove(TypeInfo lhs, TypeInfo rhs);
+        
     public:
-        void DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
-        {
-            callbackMap_[KeyType(lhs, rhs)] = fun;
-        }
-        
-        bool DoRemove(TypeInfo lhs, TypeInfo rhs)
-        {
-            return callbackMap_.erase(KeyType(lhs, rhs)) == 1;
-        }
-        
         template <class SomeLhs, class SomeRhs>
         void Add(CallbackType fun)
         {
@@ -171,45 +160,92 @@ namespace Loki
             return DoRemove(typeid(SomeLhs), typeid(SomeRhs));
         }
         
-        ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
-        {
-            MapType::iterator i = callbackMap_.find(
-                KeyType(typeid(lhs), typeid(rhs)));
-            if (i == callbackMap_.end())
-            {
-                throw std::runtime_error("Function not found");
-            }
-            return (i->second)(lhs, rhs);
-        }
+        ResultType Go(BaseLhs& lhs, BaseRhs& rhs);
     };
+
+    // Non-inline to reduce compile time overhead...
+    template <class BaseLhs, class BaseRhs, 
+		typename ResultType, typename CallbackType>
+    void BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
+    	 ::DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
+    {
+        callbackMap_[KeyType(lhs, rhs)] = fun;
+    }
+        
+    template <class BaseLhs, class BaseRhs, 
+		typename ResultType, typename CallbackType>
+    bool BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
+         ::DoRemove(TypeInfo lhs, TypeInfo rhs)
+    {
+        return callbackMap_.erase(KeyType(lhs, rhs)) == 1;
+    }
+
+    template <class BaseLhs, class BaseRhs, 
+		typename ResultType, typename CallbackType>
+    ResultType BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
+               ::Go(BaseLhs& lhs, BaseRhs& rhs)
+    {
+    	typename MapType::key_type k(typeid(lhs),typeid(rhs));
+        typename MapType::iterator i = callbackMap_.find(k);
+        if (i == callbackMap_.end())
+        {
+                throw std::runtime_error("Function not found");
+        }
+        return (i->second)(lhs, rhs);
+    }
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template StaticCaster
 // Implementation of the CastingPolicy used by FunctorDispatcher
 ////////////////////////////////////////////////////////////////////////////////
 
-template <class To, class From>
-struct StaticCaster
-{
-    static To& Cast(From& obj)
+    template <class To, class From>
+    struct StaticCaster
     {
-        return static_cast<To&>(obj);
-    }
-};
+        static To& Cast(From& obj)
+        {
+            return static_cast<To&>(obj);
+        }
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template DynamicCaster
 // Implementation of the CastingPolicy used by FunctorDispatcher
 ////////////////////////////////////////////////////////////////////////////////
 
-template <class To, class From>
-struct DynamicCaster
-{
-    static To& Cast(From& obj)
+    template <class To, class From>
+    struct DynamicCaster
     {
-        return dynamic_cast<To&>(obj);
+        static To& Cast(From& obj)
+        {
+            return dynamic_cast<To&>(obj);
+        }
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template Private::FnDispatcherHelper
+// Implements trampolines and argument swapping used by FnDispatcher
+////////////////////////////////////////////////////////////////////////////////
+
+    namespace Private
+    {
+        template <class BaseLhs, class BaseRhs,
+	    class SomeLhs, class SomeRhs,
+            typename ResultType,
+            class CastLhs, class CastRhs,
+            ResultType (*Callback)(SomeLhs&, SomeRhs&)>
+        struct FnDispatcherHelper
+        {
+            static ResultType Trampoline(BaseLhs& lhs, BaseRhs& rhs)
+            {
+                return Callback(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+            }
+            static ResultType TrampolineR(BaseRhs& rhs, BaseLhs& lhs)
+            {
+                return Trampoline(lhs, rhs);
+            }
+        };
     }
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template FnDispatcher
@@ -218,52 +254,101 @@ struct DynamicCaster
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class BaseLhs, class BaseRhs = BaseLhs,
-        typename ResultType = void,
-        template <class, class> class CastingPolicy = DynamicCaster,
-        template <class, class, class, class>
-            class DispatcherBackend = BasicDispatcher>
+              typename ResultType = void,
+              template <class, class> class CastingPolicy = DynamicCaster,
+              template <class, class, class, class>
+              class DispatcherBackend = BasicDispatcher>
     class FnDispatcher
     {
         DispatcherBackend<BaseLhs, BaseRhs, ResultType, 
             ResultType (*)(BaseLhs&, BaseRhs&)> backEnd_;
         
     public:
-        template <class ConcreteLhs, class ConcreteRhs>
+        template <class SomeLhs, class SomeRhs>
         void Add(ResultType (*pFun)(BaseLhs&, BaseRhs&))
         {
-            return backEnd_.Add<ConcreteLhs, ConcreteRhs>(pFun);
+            return backEnd_.Add<SomeLhs, SomeRhs>(pFun);
         }        
         
-        template <class ConcreteLhs, class ConcreteRhs,
-            ResultType (*callback)(ConcreteLhs&, ConcreteRhs&),
+        template <class SomeLhs, class SomeRhs,
+            ResultType (*callback)(SomeLhs&, SomeRhs&)>
+        void Add()
+        {
+	    typedef Private::FnDispatcherHelper<
+					BaseLhs, BaseRhs, 
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs,BaseLhs>, 
+					CastingPolicy<SomeRhs,BaseRhs>, 
+					callback> Local;
+
+            Add<SomeLhs, SomeRhs>(&Local::Trampoline);
+        }
+        
+        template <class SomeLhs, class SomeRhs,
+            ResultType (*callback)(SomeLhs&, SomeRhs&),
             bool symmetric>
         void Add()
         {
-            struct Local
-            {
-                static ResultType Trampoline(BaseLhs& lhs, BaseRhs& rhs)
-                {
-                    return callback(
-                        CastingPolicy<ConcreteLhs, BaseLhs>::Cast(lhs),
-                        CastingPolicy<ConcreteRhs, BaseRhs>::Cast(rhs));
-                }
-                static ResultType TrampolineR(BaseRhs& rhs, BaseLhs& lhs)
-                {
-                    return Trampoline(lhs, rhs);
-                }
-            };
-            Add<ConcreteLhs, ConcreteRhs>(&Local::Trampoline);
+	    typedef Private::FnDispatcherHelper<
+					BaseLhs, BaseRhs, 
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs,BaseLhs>, 
+					CastingPolicy<SomeRhs,BaseRhs>, 
+					callback> Local;
+
+            Add<SomeLhs, SomeRhs>(&Local::Trampoline);
             if (symmetric)
             {
-                Add<ConcreteRhs, ConcreteLhs>(&Local::TrampolineR);
+                Add<SomeRhs, SomeLhs>(&Local::TrampolineR);
             }
         }
         
+        template <class SomeLhs, class SomeRhs>
+        void Remove()
+        {
+            backEnd_.Remove<SomeLhs, SomeRhs>();
+        }
+
         ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
         {
             return backEnd_.Go(lhs, rhs);
         }
     };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorDispatcherAdaptor
+// permits use of FunctorDispatcher under gcc.2.95.2/3
+///////////////////////////////////////////////////////////////////////////////
+
+    namespace Private
+    {
+	template <class BaseLhs, class BaseRhs,
+		  class SomeLhs, class SomeRhs,
+		  typename ResultType,
+		  class CastLhs, class CastRhs,
+		  class Fun, bool SwapArgs>
+        class FunctorDispatcherHelper 
+        {
+            Fun fun_;
+            ResultType Fire(BaseLhs& lhs, BaseRhs& rhs,Int2Type<false>)
+            {
+                return fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+            }
+            ResultType Fire(BaseLhs& rhs, BaseRhs& lhs,Int2Type<true>)
+            {
+                return fun_(CastLhs::Cast(lhs), CastRhs::Cast(rhs));
+            }
+        public:
+            FunctorDispatcherHelper(const Fun& fun) : fun_(fun) {}
+
+            ResultType operator()(BaseLhs& lhs, BaseRhs& rhs)
+            {
+                return Fire(lhs,rhs,Int2Type<SwapArgs>());
+            }
+        };
+    }
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template FunctorDispatcher
@@ -272,43 +357,57 @@ struct DynamicCaster
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class BaseLhs, class BaseRhs = BaseLhs,
-        typename ResultType = void,
-        template <class, class> class CastingPolicy = DynamicCaster,
-        template <class, class, class, class>
-            class DispatcherBackend = BasicDispatcher>
+              typename ResultType = void,
+              template <class, class> class CastingPolicy = DynamicCaster, 
+              template <class, class, class, class>
+              class DispatcherBackend = BasicDispatcher>
     class FunctorDispatcher
     {
         typedef TYPELIST_2(BaseLhs&, BaseRhs&) ArgsList;
         typedef Functor<ResultType, ArgsList, DEFAULT_THREADING> FunctorType;
-            
-        typedef DispatcherBackend<BaseLhs, BaseRhs, ResultType, FunctorType>
-            BackEndType;
-        BackEndType backEnd_;
+
+        DispatcherBackend<BaseLhs, BaseRhs, ResultType, FunctorType> backEnd_;
 
     public:
         template <class SomeLhs, class SomeRhs, class Fun>
         void Add(const Fun& fun)
         {
-            typedef FunctorImpl<ResultType, TYPELIST_2(BaseLhs, BaseRhs)>
-                FunctorImplType;
-            class Adapter : public FunctorImplType
-            {
-                Fun fun_;
-                virtual ResultType operator()(BaseLhs& lhs, BaseRhs& rhs)
-                {
-                    return fun_(
-                        CastingPolicy<ConcreteLhs, BaseLhs>::Cast(lhs),
-                        CastingPolicy<ConcreteRhs, BaseRhs>::Cast(rhs));
-                }
-                virtual FunctorImplType* DoClone() const
-                { return new Adapter(*this); }
-            public:
-                Adapter(const Fun& fun) : fun_(fun) {}
-            };
-            backEnd_.Add<SomeLhs, SomeRhs>(
-                Functor<ResultType, ArgsList, DEFAULT_THREADING>(new Adapter(fun)));
+            typedef Private::FunctorDispatcherHelper<
+					BaseLhs, BaseRhs,
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs, BaseLhs>,
+					CastingPolicy<SomeRhs, BaseRhs>,
+					Fun, false> Adapter;
+
+            backEnd_.Add<SomeLhs, SomeRhs>(FunctorType(Adapter(fun)));
+	}
+        template <class SomeLhs, class SomeRhs, bool symmetric, class Fun>
+        void Add(const Fun& fun)
+        {
+	    Add<SomeLhs,SomeRhs>(fun);
+
+	    if (symmetric)
+	    {
+		// Note: symmetry only makes sense where BaseLhs==BaseRhs
+            	typedef Private::FunctorDispatcherHelper<
+					BaseLhs, BaseLhs,
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs, BaseLhs>,
+					CastingPolicy<SomeRhs, BaseLhs>,
+					Fun, true> AdapterR;
+
+               	backEnd_.Add<SomeRhs, SomeLhs>(FunctorType(AdapterR(fun)));
+	    }
         }
         
+        template <class SomeLhs, class SomeRhs>
+        void Remove()
+        {
+            backEnd_.Remove<SomeLhs, SomeRhs>();
+        }
+
         ResultType Go(BaseLhs& lhs, BaseRhs& rhs)
         {
             return backEnd_.Go(lhs, rhs);
@@ -316,5 +415,9 @@ struct DynamicCaster
     };
 } // namespace Loki
 
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif

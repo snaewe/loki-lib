@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef TYPEINFO_INC_
 #define TYPEINFO_INC_
@@ -97,5 +97,10 @@ namespace Loki
     inline bool operator>=(const TypeInfo& lhs, const TypeInfo& rhs)
     { return !(lhs < rhs); }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEINFO_INC_

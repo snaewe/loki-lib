@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef SMALLOBJ_INC_
 #define SMALLOBJ_INC_
@@ -133,6 +133,9 @@ namespace Loki
     class SmallObject : public ThreadingModel< 
         SmallObject<ThreadingModel, chunkSize, maxSmallObjectSize> >
     {
+    	typedef ThreadingModel< SmallObject<ThreadingModel, 
+    			chunkSize, maxSmallObjectSize> > MyThreadingModel;
+    			
         struct MySmallObjAllocator : public SmallObjAllocator
         {
             MySmallObjAllocator() 
@@ -148,8 +151,8 @@ namespace Loki
         static void* operator new(std::size_t size)
         {
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
-            Lock lock;
-            lock; // get rid of warning
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
             
             return SingletonHolder<MySmallObjAllocator, CreateStatic, 
                 PhoenixSingleton>::Instance().Allocate(size);
@@ -160,8 +163,8 @@ namespace Loki
         static void operator delete(void* p, std::size_t size)
         {
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
-            Lock lock;
-            lock; // get rid of warning
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
             
             SingletonHolder<MySmallObjAllocator, CreateStatic, 
                 PhoenixSingleton>::Instance().Deallocate(p, size);
@@ -172,5 +175,10 @@ namespace Loki
         virtual ~SmallObject() {}
     };
 } // namespace Loki
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMALLOBJ_INC_

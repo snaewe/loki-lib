@@ -13,14 +13,14 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #include "Singleton.h"
 
 using namespace Loki::Private;
 
-extern TrackerArray Loki::Private::pTrackerArray = 0;
-extern unsigned int Loki::Private::elements = 0;
+Loki::Private::TrackerArray Loki::Private::pTrackerArray = 0;
+unsigned int Loki::Private::elements = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 // function AtExitFn
@@ -40,3 +40,8 @@ void Loki::Private::AtExitFn()
     // Destroy the element
     delete pTop;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
