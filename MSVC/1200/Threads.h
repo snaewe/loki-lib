@@ -8,9 +8,12 @@
 // affects only default template arguments
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 07, 2002
+// Last update: Dec 03, 2002
 // note: In this VC 6 port all template policies become non-templates with
 // either member-template functions or a nested template struct named In
+
+// Changed wrong ctor/dtor names in ObjectLevelLockable. 
+// Thanks to Adi Shavit for pointing that out
 
 #ifndef DEFAULT_THREADING
 #define DEFAULT_THREADING /**/ ::Loki::SingleThreaded
@@ -90,12 +93,12 @@ namespace Loki
 			CRITICAL_SECTION mtx_;
 
 		public:
-			ObjectLevelLockable()
+			In()
 			{
 				::InitializeCriticalSection(&mtx_);
 			}
 
-			~ObjectLevelLockable()
+			~In()
 			{
 				::DeleteCriticalSection(&mtx_);
 			}

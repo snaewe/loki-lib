@@ -1,3 +1,7 @@
+// Last update: Dec 03, 2002
+// Added qualification ::Loki::Private:: to types from the Private-Namespace
+// Thanks to Adi Shavit
+
 #ifndef MSVC6HELPERS__H
 #define MSVC6HELPERS__H
 #if !defined (_MSC_VER) || _MSC_VER >= 1300
@@ -7,18 +11,22 @@ namespace Loki
 {
 	namespace Private
 	{
+		template <class T, class U>
+		struct VC_InaccessibleBase : public T
+		{};
+
 		// workaround for the "Error C2516. : is not a legal base class"
-		// Use VC_Base_Workaround's LeftBase instead of the 
+		// Use VC_Base_Workaround's LeftBase instead of the
 		// alleged illegal base class.
 		template <class T, class U>
 		struct VC_Base_Workaround : public T, public U
 		{
 			typedef T LeftBase;
 		};
-	
+
 		// MSVC 6.0 does not allow the return of
-		// expressions of type "cv void" in a functions with a return 
-		// type of cv void (6.6.3). 
+		// expressions of type "cv void" in a functions with a return
+		// type of cv void (6.6.3).
 		// Functor.h uses this Type as a workaround.
 		struct VoidAsType {};
 
@@ -50,10 +58,10 @@ namespace Loki
 			{	template<class> struct In; };
 
 			template< typename T1 > struct Result : public
-			VC_WORKAROUND< AlwaysFalse<TypeWithNestedTemplate>::value >::template In<T1>
+			VC_WORKAROUND< ::Loki::Private::AlwaysFalse<TypeWithNestedTemplate>::value >::template In<T1>
 			{
-				typedef VC_WORKAROUND< AlwaysFalse<TypeWithNestedTemplate>::value >::template In<T1> Base;
-				
+				typedef VC_WORKAROUND< ::Loki::Private::AlwaysFalse<TypeWithNestedTemplate>::value >::template In<T1> Base;
+
 			};
 		};
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +80,7 @@ namespace Loki
 			{template<class T, class U> struct In; };
 
 			template< typename T1, typename T2 > struct Result : public
-			VC_WORKAROUND< AlwaysFalse<TypeWithNestedTemplate>::value >::template In<T1, T2>
+			VC_WORKAROUND< ::Loki::Private::AlwaysFalse<TypeWithNestedTemplate>::value >::template In<T1, T2>
 			{
 			};
 		};
@@ -88,9 +96,9 @@ namespace Loki
 // i first saw this technique in boost's mpl library.
 ////////////////////////////////////////////////////////////////////////////////
 	template<typename F, typename T1>
-	struct Apply1 : Private::ApplyImpl1<F>::template Result<T1>
+	struct Apply1 : ::Loki::Private::ApplyImpl1<F>::template Result<T1>
 	{
-		typedef typename Private::ApplyImpl1<F>::template Result<T1>::Base Base;
+		typedef typename ::Loki::Private::ApplyImpl1<F>::template Result<T1>::Base Base;
 	};
 ////////////////////////////////////////////////////////////////////////////////
 // class template Apply2
@@ -100,9 +108,9 @@ namespace Loki
 // i first saw this technique in boost's mpl library.
 ////////////////////////////////////////////////////////////////////////////////
 	template<typename F, typename T1, typename T2>
-	struct Apply2 : Private::ApplyImpl2<F>::template Result<T1, T2>
+	struct Apply2 : ::Loki::Private::ApplyImpl2<F>::template Result<T1, T2>
 	{
-		
+
 	};
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,11 +125,11 @@ namespace Loki
 	struct ApplyInnerType
 	{
 		template<bool> struct Wrapper_VC : Wrapper {};
-		
+
 		template<> struct Wrapper_VC<true>
 		{ template<class X> struct In; };
-		typedef typename 
-		Wrapper_VC<Private::AlwaysFalse<Wrapper>::value>::template In<T>::type type;
+		typedef typename
+		Wrapper_VC< ::Loki::Private::AlwaysFalse<Wrapper>::value>::template In<T>::type type;
 	};
 ////////////////////////////////////////////////////////////////////////////////
 // class template ApplyInnerType2
@@ -135,23 +143,24 @@ namespace Loki
 	struct ApplyInnerType2
 	{
 		template<bool> struct Wrapper_VC : Wrapper {};
-		
+
 		template<> struct Wrapper_VC<true>
 		{ template<class X, class Y> struct In; };
-		typedef typename 
-		Wrapper_VC<Private::AlwaysFalse<Wrapper>::value>::template In<T, V>::type type;
+		typedef typename
+		Wrapper_VC< ::Loki::Private::AlwaysFalse<Wrapper>::value>::template In<T, V>::type type;
 	};
 
 	template <class Wrapper, class T, class U, class V, class W>
 	struct ApplyInnerType4
 	{
 		template<bool> struct Wrapper_VC : Wrapper {};
-		
+
 		template<> struct Wrapper_VC<true>
 		{ template<class W, class X, class Y, class Z> struct In; };
-		typedef typename 
-		Wrapper_VC<Private::AlwaysFalse<Wrapper>::value>::template In<T, U, V, W>::type type;
+		typedef typename
+		Wrapper_VC< ::Loki::Private::AlwaysFalse<Wrapper>::value>::template In<T, U, V, W>::type type;
 	};
+
 
 }
 #endif

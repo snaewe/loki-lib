@@ -37,7 +37,8 @@ namespace Loki
     template <int v>
     struct Int2Type
     {
-        enum { value = v };
+        Int2Type() {}
+		enum { value = v };
     };
 
 ////////////////////////////////////////////////////////////////////////////////

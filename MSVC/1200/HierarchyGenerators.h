@@ -13,7 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 24, 2002
+// Last update: Dec 08, 2002
+
 
 #ifndef HIERARCHYGENERATORS_INC_
 #define HIERARCHYGENERATORS_INC_
@@ -68,15 +69,40 @@ namespace Loki
 //
 //	See "Metaprogramming VC++ - more of Loki ported" from Mat Marcus
 //	(http://lists.boost.org/MailArchives/boost/msg20915.php)
-
+//
+//	Update:
+//	-------
+//	The first version of GenScatterHierarchy did not work with typelists
+//	containing equal types. The MSVC 6.0 erroneously complains about 
+//	inaccessible base-classes (error C2584).
+//	This new version adds Dummy-classes to the left branch of the generated
+//	hierarchy to workaround this VC-Bug. 
+//	It creates hierarchies like this:
+//
+//						Holder<int>				NullType
+//							\					/
+//Holder<int>			GenScatter<int>	GenScatter<NullType>
+//		\						\		/
+//VC_InaccessibleBase		  InheritFromTo
+//		  \							|
+//GenScatter<int>	GenScatter<TYPELIST_1(int)>
+//			\		/
+//          InheritFromTo
+//				|
+//				|		   
+//GenScatter<TYPELIST_2(int, int)>
+//
+//	Of course this version of GenScatterHierarchy generates a lot more
+//	classes (5*n) than Alexandrescu's original implementation (3*n)
+//	
+	
 	template <class TList, class Unit> class GenScatterHierarchy;
-
 namespace Private
 {
+	
 	template <class T, class U>
-	class InheritFromTwo : public T, public U
-	{
-		public:
+	struct InheritFromTwo : public T, public U
+	{	
 	};
 	
 	template <int tag>
@@ -90,16 +116,34 @@ namespace Private
 		struct In : public GenScatterHierarchy<typename T::Head,MetaFunctionWrapper>
 		{
 			typedef
-			InheritFromTwo	<	GenScatterHierarchy<typename T::Head,
-								MetaFunctionWrapper>,
+			InheritFromTwo	<	VC_InaccessibleBase<GenScatterHierarchy<typename T::Head,
+								MetaFunctionWrapper>, typename T::Tail>,
 								GenScatterHierarchy<typename T::Tail,
 								MetaFunctionWrapper>
 							> type;
-			typedef GenScatterHierarchy<typename T::Head, MetaFunctionWrapper> LeftBase;
+			typedef VC_InaccessibleBase<GenScatterHierarchy<typename T::Head, MetaFunctionWrapper>,typename T::Tail> LeftBase;
 			typedef GenScatterHierarchy<typename T::Tail, MetaFunctionWrapper> RightBase;
 		};
 	};
-
+	
+	// Specialization for a typelist with only one element
+	template <>
+	struct GenScatterImpl<TL::Private::AtomList_ID>
+	{
+		template <class T, class MetaFunctionWrapper>
+		struct In : public GenScatterHierarchy<typename T::Head,MetaFunctionWrapper>
+		{
+			// for the last Holder-class no dummy class is needed.
+			typedef
+			InheritFromTwo	<	GenScatterHierarchy<typename T::Head,
+								MetaFunctionWrapper>,
+								GenScatterHierarchy<NullType,
+								MetaFunctionWrapper>
+							> type;
+			typedef GenScatterHierarchy<typename T::Head, MetaFunctionWrapper> LeftBase;
+			typedef GenScatterHierarchy<NullType, MetaFunctionWrapper> RightBase;
+		};
+	};
 	// Specialization for a single type
 	template <>
 	struct GenScatterImpl<TL::Private::NoneList_ID>
@@ -111,7 +155,9 @@ namespace Private
 			ApplyInnerType<MetaFunctionWrapper, AtomicType>::type type;
 			typedef type LeftBase;
 			typedef EmptyType RightBase;
+			//typedef AtomicType::THIS_SELECTED bla;
 		};
+
 	};
 
 	// Specialization for NullType
@@ -127,14 +173,11 @@ namespace Private
 		};
 	};
 } // end namespace Private
-
+	
 	template <class T, class Unit>
 	class GenScatterHierarchy : public Private::GenScatterImpl
 	<
-	IS_TYPELIST(T)::type_id == TL::Private::Typelist_ID ? TL::Private::Typelist_ID :
-	IS_TYPELIST(T)::type_id == TL::Private::AtomList_ID ? TL::Private::Typelist_ID :
-	IS_TYPELIST(T)::type_id == TL::Private::NullType_ID ? TL::Private::NullType_ID :
-	TL::Private::NoneList_ID
+		IS_TYPELIST(T)::type_id
 	>::template In<T, Unit>::type
 	{
 	public:
@@ -142,28 +185,22 @@ namespace Private
 		<
 			TL::Private::IsTypelist<T>::value, T, void
 		>::Result TList;
-	typedef typename Private::GenScatterImpl
-	<
-	IS_TYPELIST(T)::type_id == TL::Private::Typelist_ID ? TL::Private::Typelist_ID :
-	IS_TYPELIST(T)::type_id == TL::Private::AtomList_ID ? TL::Private::Typelist_ID :
-	IS_TYPELIST(T)::type_id == TL::Private::NullType_ID ? TL::Private::NullType_ID :
-	TL::Private::NoneList_ID
-	>::template In<T, Unit>::LeftBase LeftBase;
-			
-	typedef typename Private::GenScatterImpl
-	<
-	IS_TYPELIST(T)::type_id == TL::Private::Typelist_ID ? TL::Private::Typelist_ID :
-	IS_TYPELIST(T)::type_id == TL::Private::AtomList_ID ? TL::Private::Typelist_ID :
-	IS_TYPELIST(T)::type_id == TL::Private::NullType_ID ? TL::Private::NullType_ID :
-	TL::Private::NoneList_ID
-	>::template In<T, Unit>::RightBase RightBase;
-			
+		
+		typedef typename Private::GenScatterImpl
+		<
+			IS_TYPELIST(T)::type_id
+		>::template In<T, Unit>::LeftBase LeftBase;
+		typedef typename Private::GenScatterImpl
+		<
+			IS_TYPELIST(T)::type_id
+		>::template In<T, Unit>::RightBase RightBase;
+		
 		template <typename U> struct Rebind
 		{
 			typedef ApplyInnerType<Unit, U>::type Result;
 		};
 	};
-
+	
 ////////////////////////////////////////////////////////////////////////////////
 // function template Field
 // Accesses a field in an object of a type generated with GenScatterHierarchy
@@ -269,11 +306,12 @@ namespace Private
 			// If Do is not a template and H& is used as parameter
 			// MSVC will give a linker error.
 			template <class T>
-			static ResultType& Do(T& obj)
+			static ResultType& Do(H& obj, T*)
             {
-                typedef typename T::RightBase RightBase;
+                //typedef typename T::RightBase RightBase;
+				//RightBase& rightBase = obj;
 				RightBase& rightBase = obj;
-                return FieldHelper<i - 1>::template In<RightBase, Unit>::Do(rightBase);
+                return FieldHelper<i - 1>::template In<RightBase, Unit>::Do(rightBase, (int*)0);
             }
         };
     };
@@ -317,7 +355,7 @@ namespace Private
             
 		public:
             template <class T>
-			static ResultType& Do(T& obj)
+			static ResultType& Do(H& obj, T*)
             {
                 LeftBase& leftBase = obj;
                 return leftBase;
@@ -334,17 +372,14 @@ namespace Private
 // returns a reference to Unit<T>, where Unit is the template used to generate H
 //     and T is the i-th type in the typelist 
 ////////////////////////////////////////////////////////////////////////////////
-	
 	template <unsigned int i, class TList, class UnitWrapper>
     typename FieldHelper<i>::template In<GenScatterHierarchy<TList, UnitWrapper>,UnitWrapper>::ResultType&
-    Field(GenScatterHierarchy<TList, UnitWrapper>& obj)
+    Field(GenScatterHierarchy<TList, UnitWrapper>& obj, Int2Type<i>)
     {
-        typedef typename GenScatterHierarchy<TList, UnitWrapper> H;
-		
-		return FieldHelper<i>::template In<H, UnitWrapper>::Do(obj);
+		typedef typename GenScatterHierarchy<TList, UnitWrapper> H;
+		return FieldHelper<i>::template In<H, UnitWrapper>::Do(obj, (int*)0);
     }
 	
-
 ////////////////////////////////////////////////////////////////////////////////
 // class template GenLinearHierarchy
 // Generates a linear hierarchy starting from a typelist and a template
@@ -386,7 +421,8 @@ namespace Private
             typedef typename TList::Tail Tail;
 
         public:
-            typedef ApplyInnerType2<Unit, Head, GenLinearHierarchy<Tail, Unit, Root> >::type Result; 
+            typedef typename
+			ApplyInnerType2<Unit, Head, GenLinearHierarchy<Tail, Unit, Root> >::type Result; 
         };
     };
 
@@ -400,7 +436,7 @@ namespace Private
             typedef typename TList::Head Head;
 
         public:
-            typedef ApplyInnerType2<Unit,Head, Root>::type Result;
+            typedef typename ApplyInnerType2<Unit,Head, Root>::type Result;
         };
     };
 	
@@ -417,13 +453,12 @@ namespace Private
           >
           ::template In<T, U, Root>::Result TempType;
 		
-		typedef typename
-			Private::VC_Base_Workaround<TempType, Dummy> type;
+		typedef Private::VC_Base_Workaround<TempType, Dummy> type;
 		
 		// this is nothing more than a typedef to the created hierarchy (TempType).
 		// But if we try to inherit directly from TempType VC 6.0
 		// will produce a "Error C2516. : is not a legal base class."
-		typedef type::LeftBase Base;
+		typedef typename type::LeftBase Base;
 	};
 } // namespace Private
 
@@ -450,11 +485,26 @@ namespace Private
 
 }   // namespace Loki
 
+#if defined (_MSC_VER) && _MSC_VER <= 1300
+#define FIELD(Obj, Nr) \
+	Field(Obj, Int2Type<Nr>())
+#else
+#define FIELD(Obj, Nr) \
+	Field<Nr>(Obj)
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // September 16, 2002: Fixed dependent template, using "::template" syntax. T.S.
 // Oct  24, 2002: ported by Benjamin Kaufmann to MSVC 6 
+// Dec	08, 2002: Fixed problems with MSVC6-Version of GenScatterHierarchy when
+//					used with typelists containing equal types. B.K.
+//					New Version is ugly :-(
+// Dec	08, 2002: Interface changed for Field-Function. The old version does not
+//					work correctly due to the "Explicitly Specified Template 
+//					Functions Not Overloaded Correctly"-Bug 
+//					(Microsoft KB Article - 240871). B.K.
 ////////////////////////////////////////////////////////////////////////////////
 #undef IS_TYPELIST
 #endif // HIERARCHYGENERATORS_INC_

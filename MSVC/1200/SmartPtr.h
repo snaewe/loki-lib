@@ -13,21 +13,18 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 26, 2002
+// Last update: Nov 19, 2002
+
 // replaced all template template parameters with 'normal' parameters
 // For each Policy there is now a wrapper-class (non template class) 
 // containing a nested template class called In which
 // provides a typedef (type) to the real Policy-class
 // 
-// VC special: The MSVC 6.0 has problems with template ctors resp. template
-// assignemt operators. If there exists a template copy ctor (a template op=) the
-// compiler will complain about a non-template version. On the other hand, 
-// if one does not provide a non-template version and one tries to
-// initialize a new object with one having the same type the compiler will synthesize
-// a default version (the same for assignment).
-// Because the MSVC allows explicit specialization in class scope i used 
-// this as a workaround.
-// Instead of:
+// VC special: The MSVC 6.0 introduces an order-dependency for template ctor 
+// resp. template assignemt operators. 
+// If you need both a copy-ctor and a template copy ctor (same for copy-assignment), then
+// you *must* write the templated version first.
+// So instead of
 //	template <class T>
 //	struct Foo
 //	{
@@ -37,19 +34,21 @@
 //		Foo(const Foo<U>& r)
 //		{}
 //	};
-//	
-//	this port uses:
-//
+// you *need* to write:
 //	template <class T>
 //	struct Foo
 //	{
 //		template <class U>
 //		Foo(const Foo<U>& r)
 //		{}
-//		template <>
+//		
 //		Foo(const Foo& r)
 //		{}
 //	};
+//
+// Many thanks to Nelson Elói for pointing that out and for providing me
+// with this solution
+
 
 #ifndef SMARTPTR_INC_
 #define SMARTPTR_INC_
@@ -93,19 +92,16 @@ namespace Loki
 
         // The storage policy doesn't initialize the stored pointer 
         //     which will be initialized by the OwnershipPolicy's Clone fn
-#if !defined(_MSC_VER)        
+		
+		// do not alter the order of the following two constructors
+		// otherwise the MSVC 6.0 will not compile the class.
+		template <class U>
+		DefaultSPStorage(const DefaultSPStorage<U>&)  {}
+
 		DefaultSPStorage(const DefaultSPStorage&)
         {}
-#endif
-        template <class U>
-        DefaultSPStorage(const DefaultSPStorage<U>&) 
-        {}
-#if _MSC_VER <= 1200
-		template <>
-        DefaultSPStorage(const DefaultSPStorage&) 
-        {}
-#endif
-        DefaultSPStorage(const StoredType& p) : pointee_(p) {}
+
+		DefaultSPStorage(const StoredType& p) : pointee_(p) {}
         
         PointerType operator->() const { return pointee_; }
         
@@ -166,24 +162,19 @@ namespace Loki
             *pCount_ = 1;
         }
         
-#if !defined(_MSC_VER)        
-		RefCounted(const RefCounted& rhs) 
-        : pCount_(rhs.pCount_)
-        {}
-#endif
-        
-        // MWCW lacks template friends, hence the following kludge
+		// do not alter the order of the following two constructors
+		// otherwise the MSVC 6.0 will fail to compile the class.
+
+		// MWCW lacks template friends, hence the following kludge
         template <typename P1>
         RefCounted(const RefCounted<P1>& rhs) 
         : pCount_(reinterpret_cast<const RefCounted&>(rhs).pCount_)
         {}
-        
-#if _MSC_VER <= 1200
-		template<>
+
 		RefCounted(const RefCounted& rhs) 
         : pCount_(rhs.pCount_)
         {}
-#endif
+        
         P Clone(const P& val)
         {
             ++*pCount_;
@@ -976,11 +967,9 @@ namespace Private
 			}
 		
 		}
-
-#if !defined(_MSC_VER)
-		SmartPtr(CopyArg& rhs)
-        : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-#endif
+		
+		// do not alter the order of the following three constructors
+		// otherwise the MSVC 6.0 will fail to compile the class.
 		template
         <
             typename T1,
@@ -1005,29 +994,16 @@ namespace Private
     	: SP(rhs), OP(rhs), KP(rhs), CP(rhs)
     	{ GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
 
-#if _MSC_VER <= 1200
-		
-		template <>
 		SmartPtr(CopyArg& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-#endif
-        
 		{ GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
-        SmartPtr(ByRef<SmartPtr> rhs)
-    	: SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-        {}
-        
         operator ByRef<SmartPtr>()
         { return ByRef<SmartPtr>(*this); }
-#if !defined(_MSC_VER)
-    	SmartPtr& operator=(CopyArg& rhs)
-    	{
-    	    SmartPtr temp(rhs);
-    	    temp.Swap(*this);
-    	    return *this;
-    	}
-#endif
-        template
+
+		
+		// do not alter the order of the following three copy-assignment operators
+		// otherwise the MSVC 6.0 will fail to compile the class.
+		template
         <
             typename T1,
             class OP1,
@@ -1057,15 +1033,13 @@ namespace Private
     	    temp.Swap(*this);
     	    return *this;
     	}
-#if _MSC_VER <= 1200    	
-		template<>
+
 		SmartPtr& operator=(CopyArg& rhs)
     	{
     	    SmartPtr temp(rhs);
     	    temp.Swap(*this);
     	    return *this;
     	}
-#endif
     	void Swap(SmartPtr& rhs)
     	{
     	    OP::Swap(rhs);
