@@ -272,6 +272,9 @@ FixedAllocator::Chunk* FixedAllocator::VicinityFind(void* p)
     Chunk* hi = deallocChunk_ + 1;
     Chunk* loBound = &chunks_.front();
     Chunk* hiBound = &chunks_.back() + 1;
+	
+	// Special case: deallocChunk_ is the last in the array
+	if (hi == hiBound) hi = 0;
 
     for (;;)
     {
@@ -413,4 +416,5 @@ void SmallObjAllocator::Deallocate(void* p, std::size_t numBytes)
 // March 20: fix exception safety issue in FixedAllocator::Allocate 
 //     (thanks to Chris Udazvinis for pointing that out)
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// Aug 02, 2002: Fix in VicinityFind sent by Pavel Vozenilek
 ////////////////////////////////////////////////////////////////////////////////
