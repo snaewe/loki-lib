@@ -1,6 +1,6 @@
 Loki VC 6.0 Port or how to produce C1001 - Internal Compiler Errors
 -------------------------------------------------------------------
-Version: 0.5
+Version: 0.5a
 
 Introduction/Compatibility:
 ---------------------------
@@ -30,7 +30,16 @@ If you use Singletons with longevity you must add Singleton.cpp to your project/
 Fixes:
 ------
 	
-	Feb 2003:
+	Mar 08, 2003:
+    -------------
+        * In SmartPointer.h: Added helper-macros for convenient specialization
+        of std::less for Smart-Pointers.
+
+        * I found a way to use void as a default value for template parameters.
+        Therefore I changed MultiMethods.h and Visitor.h accordingly.
+
+
+    Feb 2003:
 	---------
 		* created new versions of Functor.h, Visitor.h and MultiMethods.h that
 		now can handle void return types transparently.
@@ -175,8 +184,25 @@ Unfortunately the MSVC 6.0 supports neither of them.
     in the original library were changed so that they have exactly the
     same return type as the original virtual function (e.g. return a pointer to Base).
 
-    E. All template parameters that have a default type of void in the original lib now
-    have int as default type. 
+    E. The MSVC 6.0 does not allow code like this:
+    [code]
+    // error C2182: '__formal' illegal use of type 'void'
+    template <class T, class R = void>
+    struct Blub {};
+    [/code]
+    
+    Interestingly enough you can have void as default type by simply using another
+    level of indirection:
+    [code]
+    struct VoidWrap
+    {
+	    typedef void type;
+    };
+
+    template <class T, class R = VoidWrap::type>
+    struct Blub 
+    {};
+    [/code]
     
     F. To workaround void returns I did the following:
     From every original class I moved those functions that potentially
@@ -402,6 +428,28 @@ Interface changes:
    (see 7.for a description of the consequences)
 
    * This port does not specialize std::less
+
+   Update:
+   -------
+   The port provides some helper-macros for convenient specialization
+   of std::less for Smart-Pointers.
+
+   If, for example, you want to use a Smart-Pointer as the key of a std::map,
+   you can do it like this:
+   [code]
+   #include <map>
+   #include <loki/SmartPtr.h>
+   
+   SMARTPTR_SPECIALIZE_LESS(Apple)
+   
+   class Apple {};
+
+    int main()
+    {
+        std::map<SmartPointer<Apple>, int> m;
+        //...
+    }
+    [/code]
 
 9. Visitor.h
 
