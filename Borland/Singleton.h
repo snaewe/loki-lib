@@ -1,26 +1,4 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
@@ -35,6 +13,8 @@ text
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// Last update: August 9, 2002
+
 #ifndef SINGLETON_INC_
 #define SINGLETON_INC_
 
@@ -44,6 +24,11 @@ text
 #include <cassert>
 #include <cstdlib>
 #include <new>
+#include <string>
+
+#ifdef __BORLANDC__
+#  define ATEXIT_FIXED
+#endif
 
 namespace Loki
 {
@@ -65,7 +50,7 @@ namespace Loki
             static bool Compare(const LifetimeTracker* lhs,
                 const LifetimeTracker* rhs)
             {
-                return rhs->longevity_ > lhs->longevity_;
+                return lhs->longevity_ > rhs->longevity_;
             }
             
         private:
@@ -125,7 +110,7 @@ namespace Loki
         
         TrackerArray pNewArray = static_cast<TrackerArray>(
                 std::realloc(pTrackerArray, 
-                    sizeof(T) * (elements + 1)));
+                    sizeof(*pTrackerArray) * (elements + 1)));
         if (!pNewArray) throw std::bad_alloc();
         
         // Delayed assignment for exception safety
@@ -225,7 +210,7 @@ namespace Loki
             p->~T();
         }
     };
-
+    
 ////////////////////////////////////////////////////////////////////////////////
 // class template DefaultLifetime
 // Implementation of the LifetimePolicy used by SingletonHolder
@@ -236,15 +221,11 @@ namespace Loki
     template <class T>
     struct DefaultLifetime
     {
-//#ifdef __BORLANDC__
-//        static void ScheduleDestruction(T*, void (cdecl *pFun)())
-//#else
         static void ScheduleDestruction(T*, void (*pFun)())
-//#endif
         { std::atexit(pFun); }
-
+        
         static void OnDeadReference()
-        { throw std::logic_error("Dead Reference Detected"); }
+        { throw std::logic_error(std::string("Dead Reference Detected")); }
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -317,7 +298,7 @@ namespace Loki
         }
         
         static void OnDeadReference()
-        { throw std::logic_error("Dead Reference Detected"); }
+        { throw std::logic_error(std::string("Dead Reference Detected")); }
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -467,8 +448,9 @@ namespace Loki
 //                   Eike Petersen
 // March   08, 2002: moved the assignment to pTrackerArray in SetLongevity to fix
 //                   exception safety issue. Credit due to Kari Hoijarvi
-// July    16, 2002: Ported by Terje Slettebø to BCC 5.6
+// May     09, 2002: Fixed bug in Compare that caused longevities to act backwards.
+//                   Credit due to Scott McDonald.
+// July    16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SINGLETON_INC_
-@

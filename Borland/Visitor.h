@@ -1,47 +1,24 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Wesley Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// Last update: August 9, 2002
 
 #ifndef VISITOR_INC_
 #define VISITOR_INC_
 
 #include "Typelist.h"
-#include "HierarchyGenerators.h"
 
 namespace Loki
 {
@@ -56,7 +33,7 @@ namespace Loki
     public:
         virtual ~BaseVisitor() {}
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template Visitor
 // The building block of Acyclic Visitor
@@ -69,15 +46,15 @@ namespace Loki
         typedef R ReturnType;
         virtual ReturnType Visit(T&) = 0;
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template Visitor (specialization)
 // This specialization is not present in the book. It makes it easier to define
 // Visitors for multiple types in a shot by using a typelist. Example:
 //
-// class SomeVisitor : 
+// class SomeVisitor :
 //     public BaseVisitor // required
-//     public Visitor<TYPELIST_2(RasterBitmap, Paragraph)>, 
+//     public Visitor<TYPELIST_2(RasterBitmap, Paragraph)>,
 //     public Visitor<Paragraph>
 // {
 // public:
@@ -95,7 +72,7 @@ namespace Loki
        // using Visitor<Head, R>::Visit;
        // using Visitor<Tail, R>::Visit;
     };
-    
+
     template <class Head, typename R>
     class Visitor<Typelist<Head, NullType>, R> : public Visitor<Head, R>
     {
@@ -123,7 +100,7 @@ namespace Loki
         virtual R Visit(Head&)
         { return R(); }
     };
-    
+
     template <class Head, typename R>
     class BaseVisitorImpl<Typelist<Head, NullType>, R>
         : public Visitor<Head, R>
@@ -132,7 +109,7 @@ namespace Loki
         virtual R Visit(Head&)
         { return R(); }
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template BaseVisitable
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,9 +125,9 @@ struct DefaultCatchAll
 // class template BaseVisitable
 ////////////////////////////////////////////////////////////////////////////////
 
-    template 
+    template
     <
-        typename R = void, 
+        typename R = void,
         template <typename, class> class CatchAll = DefaultCatchAll
     >
     class BaseVisitable
@@ -159,7 +136,7 @@ struct DefaultCatchAll
         typedef R ReturnType;
         virtual ~BaseVisitable() {}
         virtual ReturnType Accept(BaseVisitor&) = 0;
-        
+
     protected: // give access only to the hierarchy
         template <class T>
         static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
@@ -175,17 +152,18 @@ struct DefaultCatchAll
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro DEFINE_VISITABLE
-// Put it in every class that you want to make visitable (in addition to 
+// Put it in every class that you want to make visitable (in addition to
 //     deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
 
+//### BCB port - added Loki:: prefix
 #define DEFINE_VISITABLE() \
-    virtual ReturnType Accept(BaseVisitor& guest) \
+    virtual ReturnType Accept(Loki::BaseVisitor& guest) \
     { return AcceptImpl(*this, guest); }
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template CyclicVisitor
-// Put it in every class that you want to make visitable (in addition to 
+// Put it in every class that you want to make visitable (in addition to
 //     deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -195,7 +173,7 @@ struct DefaultCatchAll
     public:
         typedef R ReturnType;
         // using Visitor<TList, R>::Visit;
-        
+
         template <class Visited>
         ReturnType GenericVisit(Visited& host)
         {
@@ -203,7 +181,7 @@ struct DefaultCatchAll
             return subObj.Visit(host);
         }
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // macro DEFINE_CYCLIC_VISITABLE
 // Put it in every class that you want to make visitable by a cyclic visitor
@@ -218,9 +196,8 @@ struct DefaultCatchAll
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // March 20: add default argument DefaultCatchAll to BaseVisitable
-// June  20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// July  16, 2002: Ported by Terje Slettebø to BCC 5.6
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // VISITOR_INC_
-@
+

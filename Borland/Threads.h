@@ -1,26 +1,4 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
@@ -35,8 +13,10 @@ text
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef THREADS_H_
-#define THREADS_H_
+// Last update: August 9, 2002
+
+#ifndef THREADS_INC_
+#define THREADS_INC_
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro DEFAULT_THREADING
@@ -45,6 +25,15 @@ text
 // All classes in Loki have configurable threading model; DEFAULT_THREADING
 // affects only default template arguments
 ////////////////////////////////////////////////////////////////////////////////
+
+#ifdef __WIN32__
+#  ifndef _WINDOWS_
+#    define WIN32_LEAN_AND_MEAN
+#      include <windows.h>
+#  endif
+#endif
+#include <cassert>
+
 
 // Last update: June 20, 2001
 
@@ -99,7 +88,8 @@ namespace Loki
         { lval = val; }
     };
     
-#ifdef _WINDOWS_
+//#ifdef _WINDOWS_  Borland doesn't use this
+#ifdef __WIN32__
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template ObjectLevelLockable
@@ -129,7 +119,7 @@ namespace Loki
         class Lock
         {
             ObjectLevelLockable& host_;
-            
+
             Lock(const Lock&);
             Lock& operator=(const Lock&);
         public:
@@ -155,16 +145,20 @@ namespace Loki
         
         static void AtomicAssign(volatile IntType& lval, IntType val)
         { InterlockedExchange(&const_cast<IntType&>(lval), val); }
-        
+
         static void AtomicAssign(IntType& lval, volatile IntType& val)
         { InterlockedExchange(&lval, val); }
     };
-    
+
     template <class Host>
     class ClassLevelLockable
     {
         static CRITICAL_SECTION mtx_;
+        static volatile LONG mtx_initialisation_started;
+        static volatile LONG mtx_initialisation_done;
 
+        //### Borland C++ doesn't like this (it is ignored)
+        /*
         struct Initializer;
         friend struct Initializer;
         struct Initializer
@@ -178,24 +172,78 @@ namespace Loki
                 ::DeleteCriticalSection(&mtx_);
             }
         };
-        
+
         static Initializer initializer_;
+        */
 
     public:
         class Lock;
         friend class Lock;
-        
+
+        typedef volatile Host VolatileType;
+
+        typedef LONG IntType;
+
+        static IntType AtomicIncrement(volatile IntType& lval)
+        { return InterlockedIncrement(&const_cast<IntType&>(lval)); }
+
+        static IntType AtomicDivide(volatile IntType& lval)
+        { return InterlockedDecrement(&const_cast<IntType&>(lval)); }
+
+        static void AtomicAssign(volatile IntType& lval, IntType val)
+        { InterlockedExchange(&const_cast<IntType&>(lval), val); }
+
+        static void AtomicAssign(IntType& lval, volatile IntType& val)
+        { InterlockedExchange(&lval, val); }
+
+private:
+        // used to protect critical section initialisation
+        static LONG AtomicExchange(volatile IntType& lval, IntType& new_value) {
+            return InterlockedExchange(&lval, new_value);
+        }
+public:
+
         class Lock
         {
             Lock(const Lock&);
             Lock& operator=(const Lock&);
+
+            //### BCB: the initialisation itself must be protected as it is not done during static initialisation
+            void initialize_impl(void)
+            {
+                LONG now = true;
+                now = ClassLevelLockable<Host>::AtomicExchange(ClassLevelLockable<Host>::mtx_initialisation_started, now);
+                assert(ClassLevelLockable<Host>::mtx_initialisation_started);
+                if (!now) {
+                    assert(!ClassLevelLockable<Host>::mtx_initialisation_done);
+                    ::InitializeCriticalSection(&mtx_);
+                    ClassLevelLockable<Host>::mtx_initialisation_done = true;
+                } else {
+                    // critical section is just being initialized by other thread
+                    while (!ClassLevelLockable<Host>::mtx_initialisation_done) {
+                        Sleep(0);
+                    }
+                }
+            }
+
         public:
             Lock()
             {
+                //### Here's the trick to make it working on BC++B 6.0
+                // (because the static Initializer struct is ignored)
+                //
+                // The critical section isn't deleted by atexit().
+                //    Shouldn't matter in practise. You may add it here if you want.
+                if (!mtx_initialisation_done) {
+                    initialize_impl();
+                }
                 ::EnterCriticalSection(&mtx_);
             }
             Lock(Host&)
             {
+                if (!mtx_initialisation_done) {
+                    initialize_impl();
+                }
                 ::EnterCriticalSection(&mtx_);
             }
             ~Lock()
@@ -203,40 +251,29 @@ namespace Loki
                 ::LeaveCriticalSection(&mtx_);
             }
         };
-
-        typedef volatile Host VolatileType;
-
-        typedef LONG IntType; 
-
-        static IntType AtomicIncrement(volatile IntType& lval)
-        { return InterlockedIncrement(&const_cast<IntType&>(lval)); }
-        
-        static IntType AtomicDivide(volatile IntType& lval)
-        { return InterlockedDecrement(&const_cast<IntType&>(lval)); }
-        
-        static void AtomicAssign(volatile IntType& lval, IntType val)
-        { InterlockedExchange(&const_cast<IntType&>(lval), val); }
-        
-        static void AtomicAssign(IntType& lval, volatile IntType& val)
-        { InterlockedExchange(&lval, val); }
     };
-    
+
     template <class Host>
     CRITICAL_SECTION ClassLevelLockable<Host>::mtx_;
-    
+
     template <class Host>
-    typename ClassLevelLockable<Host>::Initializer 
-    ClassLevelLockable<Host>::initializer_;
-    
-#endif    
+    LONG volatile ClassLevelLockable<Host>::mtx_initialisation_started;
+    template <class Host>
+    LONG volatile ClassLevelLockable<Host>::mtx_initialisation_done;
+
+//### Borland C++ does like this
+//    template <class Host>
+//    typename ClassLevelLockable<Host>::Initializer
+//    ClassLevelLockable<Host>::initializer_;
+
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June    20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 10, 2002: Fixed bug in AtomicDivide - credit due to Jordi Guerrero
-// July    16, 2002: Ported by Terje Slettebø to BCC 5.6
+// July    16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
-@

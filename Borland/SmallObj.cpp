@@ -1,47 +1,32 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@// @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Wesley Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: March 20, 2001
+// Last update: August 9, 2002
 
 #include "SmallObj.h"
 #include <cassert>
 #include <algorithm>
 
 using namespace Loki;
+
+// Used by std::lower_bound in SmallObjAllocator
+static bool operator <(const FixedAllocator& lhs, const FixedAllocator& rhs)
+{
+    return lhs.BlockSize() < rhs.BlockSize();
+}
+////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // FixedAllocator::Chunk::Init
@@ -53,7 +38,7 @@ void FixedAllocator::Chunk::Init(std::size_t blockSize, unsigned char blocks)
     assert(blockSize > 0);
     assert(blocks > 0);
     // Overflow check
-    assert((blockSize * blocks) / blockSize == blocks);
+    assert((blockSize * blocks) / blockSize == (unsigned)blocks);
 
     pData_ = new unsigned char[blockSize * blocks];
     Reset(blockSize, blocks);
@@ -69,7 +54,7 @@ void FixedAllocator::Chunk::Reset(std::size_t blockSize, unsigned char blocks)
     assert(blockSize > 0);
     assert(blocks > 0);
     // Overflow check
-    assert((blockSize * blocks) / blockSize == blocks);
+    assert((blockSize * blocks) / blockSize == (unsigned)blocks);
 
     firstAvailableBlock_ = 0;
     blocksAvailable_ = blocks;
@@ -102,7 +87,7 @@ void* FixedAllocator::Chunk::Allocate(std::size_t blockSize)
     if (!blocksAvailable_) return 0;
 
     assert((firstAvailableBlock_ * blockSize) / blockSize ==
-        firstAvailableBlock_);
+        (unsigned)firstAvailableBlock_);
 
     unsigned char* pResult =
         pData_ + (firstAvailableBlock_ * blockSize);
@@ -129,7 +114,7 @@ void FixedAllocator::Chunk::Deallocate(void* p, std::size_t blockSize)
     firstAvailableBlock_ = static_cast<unsigned char>(
         (toRelease - pData_) / blockSize);
     // Truncation check
-    assert(firstAvailableBlock_ == (toRelease - pData_) / blockSize);
+    assert((unsigned)firstAvailableBlock_ == (toRelease - pData_) / blockSize);
 
     ++blocksAvailable_;
 }
@@ -153,7 +138,7 @@ FixedAllocator::FixedAllocator(std::size_t blockSize)
     else if (numBlocks == 0) numBlocks = 8 * blockSize;
 
     numBlocks_ = static_cast<unsigned char>(numBlocks);
-    assert(numBlocks_ == numBlocks);
+    assert((unsigned)numBlocks_ == numBlocks);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -256,7 +241,7 @@ void* FixedAllocator::Allocate()
     }
     assert(allocChunk_ != 0);
     assert(allocChunk_->blocksAvailable_ > 0);
-
+    
     return allocChunk_->Allocate(blockSize_);
 }
 
@@ -316,6 +301,7 @@ FixedAllocator::Chunk* FixedAllocator::VicinityFind(void* p)
             if (++hi == hiBound) hi = 0;
         }
     }
+//#pragma warn -8066
     assert(false);
     return 0;
 }
@@ -342,8 +328,8 @@ void FixedAllocator::DoDeallocate(void* p)
         if (&lastChunk == deallocChunk_)
         {
             // check if we have two last chunks empty
-
-            if (chunks_.size() > 1 &&
+            
+            if (chunks_.size() > 1 && 
                 deallocChunk_[-1].blocksAvailable_ == numBlocks_)
             {
                 // Two free chunks, discard the last one
@@ -353,7 +339,7 @@ void FixedAllocator::DoDeallocate(void* p)
             }
             return;
         }
-
+        
         if (lastChunk.blocksAvailable_ == numBlocks_)
         {
             // Two free blocks, discard one
@@ -398,7 +384,9 @@ void* SmallObjAllocator::Allocate(std::size_t numBytes)
     {
         return pLastAlloc_->Allocate();
     }
-    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes);
+
+    FixedAllocator aux(numBytes);
+    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), aux);
     if (i == pool_.end() || i->BlockSize() != numBytes)
     {
         i = pool_.insert(i, FixedAllocator(numBytes));
@@ -423,7 +411,8 @@ void SmallObjAllocator::Deallocate(void* p, std::size_t numBytes)
         pLastDealloc_->Deallocate(p);
         return;
     }
-    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes);
+    FixedAllocator aux(numBytes);
+    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), aux);
     assert(i != pool_.end());
     assert(i->BlockSize() == numBytes);
     pLastDealloc_ = &*i;
@@ -432,9 +421,8 @@ void SmallObjAllocator::Deallocate(void* p, std::size_t numBytes)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// March 20: fix exception safety issue in FixedAllocator::Allocate
+// March 20:      fix exception safety issue in FixedAllocator::Allocate
 //     (thanks to Chris Udazvinis for pointing that out)
-// June  20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// July  16, 2002: Ported by Terje Slettebø to BCC 5.6
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// July 16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
-@
