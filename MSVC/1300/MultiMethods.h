@@ -19,7 +19,7 @@
 #define MULTIMETHODS_INC_
 
 #include "Typelist.h"
-#include "LokiTypeInfo.h"
+#include "TypeInfo.h"
 #include "Functor.h"
 #include "AssocVector.h"
 
