@@ -15,43 +15,34 @@
 
 // Last update: June 20, 2001
 
-#ifndef STATIC_CHECK_INC_
-#define STATIC_CHECK_INC_
+#include "Singleton.h"
 
-namespace Loki
+using namespace Loki::Private;
+
+Loki::Private::TrackerArray Loki::Private::pTrackerArray = 0;
+unsigned int Loki::Private::elements = 0;
+
+////////////////////////////////////////////////////////////////////////////////
+// function AtExitFn
+// Ensures proper destruction of objects with longevity
+////////////////////////////////////////////////////////////////////////////////
+
+void Loki::Private::AtExitFn()
 {
-////////////////////////////////////////////////////////////////////////////////
-// Helper structure for the STATIC_CHECK macro
-////////////////////////////////////////////////////////////////////////////////
-
-    template<bool CompileTimeAssertion>
-    struct CompileTimeError;
-
-    template<> 
-    struct CompileTimeError<true> 
-    {
-        typedef void type;
-    };
+    assert(elements > 0 && pTrackerArray != 0);
+    // Pick the element at the top of the stack
+    LifetimeTracker* pTop = pTrackerArray[elements - 1];
+    // Remove that object off the stack
+    // Don't check errors - realloc with less memory 
+    //     can't fail
+    pTrackerArray = static_cast<TrackerArray>(std::realloc(
+        pTrackerArray, sizeof(*pTrackerArray) * --elements));
+    // Destroy the element
+    delete pTop;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// macro STATIC_CHECK
-// Invocation: STATIC_CHECK(expr, id)
-// where:
-// expr is a compile-time integral or pointer expression
-// id is a C++ identifier that does not need to be defined
-// If expr is zero, id will appear in a compile-time error message.
-////////////////////////////////////////////////////////////////////////////////
-
-#define STATIC_CHECK(expr, msg) \
-typedef char ERROR_##msg[1][(expr)]
-
-////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// March 20, 2001: add extra parens to STATIC_CHECK - it looked like a fun 
-//     definition
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// July 09, 2002: improved for favor of VC diagnostic and usage 
+// May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif // STATIC_CHECK_INC_
