@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// Last update: November 22, 2001
 
 #ifndef TYPELIST_INC_
 #define TYPELIST_INC_
@@ -365,6 +365,8 @@ namespace Loki
        typedef U Tail;
     };
 
+// Typelist utility algorithms
+
     namespace TL
     {
 ////////////////////////////////////////////////////////////////////////////////
@@ -679,7 +681,7 @@ namespace Loki
 // class template MostDerived
 // Finds the type in a typelist that is the most derived from a given type
 // Invocation (TList is a typelist, T is a type):
-// Replace<TList, T>::Result
+// MostDerived<TList, T>::Result
 // returns the type in TList that's the most derived from T
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -724,8 +726,9 @@ namespace Loki
         private:
             typedef typename MostDerived<Tail, Head>::Result
                 TheMostDerived;
-            typedef typename Replace<Tail, 
-                TheMostDerived, Head>::Result L;
+            typedef typename ReplaceAll<Tail, 
+                TheMostDerived, Head>::Result Temp;
+            typedef typename DerivedToFront<Temp>::Result L;
         public:
             typedef Typelist<TheMostDerived, L> Result;
         };
@@ -738,6 +741,11 @@ namespace Loki
 // June 09, 2001: Fix bug in parameter list of macros TYPELIST_23 to TYPELIST_27
 //      (credit due to Dave Taylor)
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// November 22, 2001: fixed bug in DerivedToFront
+//      (credit due to Gianni Luciani who noticed the bug first;
+//          Adam Wilkshire;
+//          Friedrik Hedman who fixed the bug but didn't send the fix;
+//          Kevin Cline who sent the first actual fix)
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPELIST_INC_

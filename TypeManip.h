@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// Last update: November 22, 2001
 
 #ifndef TYPEMANIP_INC_
 #define TYPEMANIP_INC_
@@ -116,28 +116,28 @@ namespace Loki
     template <class T>
     struct Conversion<T, T>    
     {
-        enum { exists = 1, exists2Way = 1,sameType = 1 };
+        enum { exists = 1, exists2Way = 1, sameType = 1 };
     };
     
     template <class T>
     struct Conversion<void, T>    
     {
-        enum { exists = 1, exists2Way = 0,sameType = 0 };
+        enum { exists = 0, exists2Way = 0, sameType = 0 };
     };
     
     template <class T>
     struct Conversion<T, void>    
     {
-        enum { exists = 1, exists2Way = 0,sameType = 0 };
+        enum { exists = 1, exists2Way = 0, sameType = 0 };
     };
     
     template <>
     class Conversion<void, void>    
     {
     public:
-        enum { exists = 1, exists2Way = 1,sameType = 1 };
-    };    
-}
+        enum { exists = 1, exists2Way = 1, sameType = 1 };
+    };
+}   // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS
@@ -149,8 +149,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #define SUPERSUBCLASS(T, U) \
-    (::Loki::Conversion<const U*, const T*>::exists && \
-    !::Loki::Conversion<const T*, const void*>::sameType)
+    (::Loki::Conversion<const volatile U*, const volatile T*>::exists && \
+    !::Loki::Conversion<const volatile T*, const volatile void*>::sameType)
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS
@@ -162,11 +162,16 @@ namespace Loki
 
 #define SUPERSUBCLASS_STRICT(T, U) \
     (SUPERSUBCLASS(T, U) && \
-    !::Loki::Conversion<const T, const U>::sameType)
+    !::Loki::Conversion<const volatile T, const volatile U>::sameType)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// November 22, 2001: minor change to support porting to boost
+// November 22, 2001: fixed bug in Conversion<void, T>
+//      (credit due to Brad Town)
+// November 23, 2001: (well it's 12:01 am) fixed bug in SUPERSUBCLASS - added
+//      the volatile qualifier to be 100% politically correct
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_
