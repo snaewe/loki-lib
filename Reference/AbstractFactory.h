@@ -158,9 +158,9 @@ namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // September 25, 2004: Fixed bug in PrototypeFactoryUnit::GetPrototype, thanks
 //   to a bug report submitted by funcall.
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ABSTRACTFACTORY_INC_
