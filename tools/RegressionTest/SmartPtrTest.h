@@ -48,6 +48,11 @@ public:
     delete this;
   }
 
+  TestClass* Clone()
+  {
+    return new TestClass(*this);
+  }
+
 public:
   static int instances;
 
