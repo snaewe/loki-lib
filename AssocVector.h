@@ -13,8 +13,6 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
-
 #ifndef ASSOCVECTOR_INC_
 #define ASSOCVECTOR_INC_
 
@@ -139,7 +137,10 @@ namespace Loki
         }
         
         AssocVector& operator=(const AssocVector& rhs)
-        { AssocVector(rhs).swap(*this); }
+        { 
+	    AssocVector(rhs).swap(*this); 
+	    return *this;
+	}
 
         // iterators:
         // The following are here because MWCW gets 'using' wrong
@@ -326,6 +327,7 @@ namespace Loki
 // May 20, 2001: change operator= - credit due to Cristoph Koegl
 // June 11, 2001: remove paren in equal_range - credit due to Cristoph Koegl
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// January 22, 2002: fixed operator= - credit due to Tom Hyer
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ASSOCVECTOR_INC_
