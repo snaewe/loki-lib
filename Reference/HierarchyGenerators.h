@@ -39,17 +39,32 @@ namespace Loki
 // template 'Model' with the types contained in TList 
 ////////////////////////////////////////////////////////////////////////////////
 
+    namespace Private
+    {
+        // The following type helps to overcome subtle flaw in the original 
+        // implementation of GenScatterHierarchy. 
+        // The flaw is revealed when the input type list of GenScatterHierarchy 
+        // contains more then one element of the same type (e.g. TYPELIST_2(int, int)). 
+        // In this case GenScatterHierarchy will contain multiple bases of the same 
+        // type and some of them will not be reachable (per 10.3).
+        // For example before the fix the first element of Tuple<TYPELIST_2(int, int)>
+        // is not reachable in any way!
+        template<class, class> 
+        struct ScatterHierarchyTag;
+    }
+
     template <class TList, template <class> class Unit>
     class GenScatterHierarchy;
      
     template <class T1, class T2, template <class> class Unit>
     class GenScatterHierarchy<Typelist<T1, T2>, Unit>
-        : public GenScatterHierarchy<T1, Unit>
+        : public GenScatterHierarchy<Private::ScatterHierarchyTag<T1, T2>, Unit>
         , public GenScatterHierarchy<T2, Unit>
     {
     public:
         typedef Typelist<T1, T2> TList;
-        typedef GenScatterHierarchy<T1, Unit> LeftBase;
+        // Insure that LeftBase is unique and therefore reachable
+        typedef GenScatterHierarchy<Private::ScatterHierarchyTag<T1, T2>, Unit> LeftBase;
         typedef GenScatterHierarchy<T2, Unit> RightBase;
         template <typename T> struct Rebind
         {
@@ -57,6 +72,13 @@ namespace Loki
         };
     };
      
+    // In the middle *unique* class that resolve possible ambiguity
+    template <class T1, class T2, template <class> class Unit>
+    class GenScatterHierarchy<Private::ScatterHierarchyTag<T1, T2>, Unit> 
+        : public GenScatterHierarchy<T1, Unit>
+    {
+    };
+
     template <class AtomicType, template <class> class Unit>
     class GenScatterHierarchy : public Unit<AtomicType>
     {
@@ -149,7 +171,7 @@ namespace Loki
             UnitType>::Result UnqualifiedResultType;
 
         typedef typename Select<isConst, const UnqualifiedResultType,
-                		UnqualifiedResultType>::Result ResultType;
+                        UnqualifiedResultType>::Result ResultType;
             
         static ResultType& Do(H& obj)
         {
@@ -179,7 +201,7 @@ namespace Loki
             UnitType>::Result UnqualifiedResultType;
 
         typedef typename Select<isConst, const UnqualifiedResultType,
-                		UnqualifiedResultType>::Result ResultType;
+                        UnqualifiedResultType>::Result ResultType;
             
         static ResultType& Do(H& obj)
         {
