@@ -1,26 +1,4 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
@@ -35,12 +13,12 @@ text
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// Last update: August 9, 2002
 
 #ifndef FACTORY_INC_
 #define FACTORY_INC_
 
-#include "TypeInfo.h"
+#include "Loki_TypeInfo.h"
 #include "AssocVector.h"
 #include <exception>
 
@@ -57,13 +35,9 @@ namespace Loki
     {
         struct Exception : public std::exception
         {
-#ifdef __BORLANDC__
-            const char* what() { return "Unknown Type"; }
-#else
-            const char* what() const { return "Unknown Type"; }
-#endif
+            const char* what() const throw() { return "Unknown Type"; }
         };
-
+        
         static AbstractProduct* OnUnknownType(IdentifierType)
         {
             throw Exception();
@@ -77,16 +51,18 @@ namespace Loki
 
     template
     <
-        class AbstractProduct,
+        class AbstractProduct, 
         typename IdentifierType,
         typename ProductCreator = AbstractProduct* (*)(),
         template<typename, class>
             class FactoryErrorPolicy = DefaultFactoryError
     >
-    class Factory
+    class Factory 
         : public FactoryErrorPolicy<IdentifierType, AbstractProduct>
     {
     public:
+        typedef ProductCreator ProductCreator; //### added for convenience, Pavel
+        
         bool Register(const IdentifierType& id, ProductCreator creator)
         {
             return associations_.insert(
@@ -100,7 +76,7 @@ namespace Loki
         
         AbstractProduct* CreateObject(const IdentifierType& id)
         {
-            typename IdToProductMap::const_iterator i = associations_.find(id);
+            typename IdToProductMap::iterator i = associations_.find(id);
             if (i != associations_.end())
             {
                 return (i->second)();
@@ -121,7 +97,7 @@ namespace Loki
     template
     <
         class AbstractProduct, 
-        class ProductCreator = 
+        class ProductCreator =
             AbstractProduct* (*)(const AbstractProduct*),
         template<typename, class>
             class FactoryErrorPolicy = DefaultFactoryError
@@ -130,6 +106,8 @@ namespace Loki
         : public FactoryErrorPolicy<TypeInfo, AbstractProduct>
     {
     public:
+        typedef ProductCreator ProductCreator; //### added for convenience, Pavel
+        
         bool Register(const TypeInfo& ti, ProductCreator creator)
         {
             return associations_.insert(
@@ -145,7 +123,7 @@ namespace Loki
         {
             if (model == 0) return 0;
             
-            typename IdToProductMap::const_iterator i = 
+            typename IdToProductMap::iterator i = 
                 associations_.find(typeid(*model));
             if (i != associations_.end())
             {
@@ -163,8 +141,10 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// July 16, 2002: Ported by Terje Slettebø to BCC 5.6
+// May  08, 2002: replaced const_iterator with iterator so that self-modifying
+//                ProductCreators are supported. Also, added a throw() spec to what().
+//                Credit due to Jason Fischl.
+// July 16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // FACTORY_INC_
-@

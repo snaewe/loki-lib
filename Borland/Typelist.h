@@ -1,26 +1,4 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
@@ -34,6 +12,8 @@ text
 //     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
+
+// Last update: August 9, 2002
 
 #ifndef TYPELIST_INC_
 #define TYPELIST_INC_
@@ -683,11 +663,11 @@ namespace Loki
                 typename Reverse<Tail>::Result, Head>::Result Result;
         };
 
-				template <>
-				struct Reverse<NullType>
-				{
-						typedef NullType Result;
-				};
+        template <>
+        struct Reverse<NullType>
+        {
+            typedef NullType Result;
+        };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template MostDerived
@@ -761,8 +741,7 @@ namespace Loki
 //          Adam Wilkshire;
 //          Friedrik Hedman who fixed the bug but didn't send the fix;
 //          Kevin Cline who sent the first actual fix)
-// July     16, 2002: Ported by Terje Slettebø to BCC 5.6
+// July     16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPELIST_INC_
-@

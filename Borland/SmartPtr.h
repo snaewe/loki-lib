@@ -1,26 +1,4 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
@@ -35,7 +13,7 @@ text
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// Last update: August 9, 2002
 
 #ifndef SMARTPTR_INC_
 #define SMARTPTR_INC_
@@ -67,7 +45,7 @@ namespace Loki
     template <class T>
     class DefaultSPStorage
     {
-    protected:
+    public:
         typedef T* StoredType;    // the type of the pointee_ object
         typedef T* PointerType;   // type returned by operator->
         typedef T& ReferenceType; // type returned by operator*
@@ -98,11 +76,11 @@ namespace Loki
         friend inline PointerType GetImpl(const DefaultSPStorage& sp)
         { return sp.pointee_; }
         
-      friend inline const StoredType& GetImplRef(const DefaultSPStorage& sp)
-      { return sp.pointee_; }
+    	friend inline const StoredType& GetImplRef(const DefaultSPStorage& sp)
+    	{ return sp.pointee_; }
 
-      friend inline StoredType& GetImplRef(DefaultSPStorage& sp)
-      { return sp.pointee_; }
+    	friend inline StoredType& GetImplRef(DefaultSPStorage& sp)
+    	{ return sp.pointee_; }
 
     protected:
         // Destroys the data stored
@@ -172,7 +150,7 @@ namespace Loki
         // Data
         unsigned int* pCount_;
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template RefCountedMT
 // Implementation of the OwnershipPolicy used by SmartPtr
@@ -183,7 +161,7 @@ namespace Loki
     class RefCountedMT : public ThreadingModel< RefCountedMT<P, ThreadingModel> >
     {
     public:
-        RefCountedMT() 
+        RefCountedMT()
         {
             pCount_ = static_cast<unsigned int*>(
                 SmallObject<ThreadingModel>::operator new(
@@ -191,37 +169,37 @@ namespace Loki
             assert(pCount_);
             *pCount_ = 1;
         }
-        
-        RefCountedMT(const RefCountedMT& rhs) 
+
+        RefCountedMT(const RefCountedMT& rhs)
         : pCount_(rhs.pCount_)
         {}
-        
+
         // MWCW lacks template friends, hence the following kludge
         template <typename P1>
-        RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs) 
+        RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs)
         : pCount_(reinterpret_cast<const RefCounted<P>&>(rhs).pCount_)
         {}
-        
+
         P Clone(const P& val)
         {
             ThreadingModel<RefCountedMT>::AtomicIncrement(*pCount_);
             return val;
         }
-        
+
         bool Release(const P&)
         {
             if (!ThreadingModel<RefCountedMT>::AtomicDecrement(*pCount_))
             {
-                SmallObject<ThreadingModel>::operator delete(pCount_, 
+                SmallObject<ThreadingModel>::operator delete(pCount_,
                     sizeof(unsigned int));
                 return true;
             }
             return false;
         }
-        
+
         void Swap(RefCountedMT& rhs)
         { std::swap(pCount_, rhs.pCount_); }
-    
+
         enum { destructiveCopy = false };
 
     private:
@@ -241,22 +219,22 @@ namespace Loki
     public:
         COMRefCounted()
         {}
-        
+
         template <class U>
         COMRefCounted(const COMRefCounted<U>&)
         {}
-        
+
         static P Clone(const P& val)
         {
             val->AddRef();
             return val;
         }
-        
+
         static bool Release(const P& val)
         { val->Release(); return false; }
-        
+
         enum { destructiveCopy = false };
-        
+
         static void Swap(COMRefCounted&)
         {}
     };
@@ -264,7 +242,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // class template DeepCopy
 // Implementation of the OwnershipPolicy used by SmartPtr
-// Implements deep copy semantics, assumes existence of a Clone() member 
+// Implements deep copy semantics, assumes existence of a Clone() member
 //     function of the pointee type
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -273,23 +251,23 @@ namespace Loki
     {
         DeepCopy()
         {}
-        
+
         template <class P1>
         DeepCopy(const DeepCopy<P1>&)
         {}
-        
+
         static P Clone(const P& val)
         { return val->Clone(); }
-        
+
         static bool Release(const P& val)
         { return true; }
-        
+
         static void Swap(DeepCopy&)
         {}
-        
+
         enum { destructiveCopy = false };
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template RefLinked
 // Implementation of the OwnershipPolicy used by SmartPtr
@@ -569,7 +547,7 @@ namespace Loki
         
         static void OnDefault(P val)
         { assert(val); }
-        
+
         static void OnInit(P val)
         { assert(val); }
         
@@ -589,7 +567,7 @@ namespace Loki
     {
         NullPointerException() : std::runtime_error("")
         { }
-        const char* what() const
+        const char* what() const throw () //### BCB: throw() added
         { return "Null Pointer Exception"; }
     };
         
@@ -604,35 +582,35 @@ namespace Loki
     {
         RejectNullStatic()
         {}
-        
+
         template <class P1>
         RejectNullStatic(const RejectNullStatic<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStatic(const NoCheck<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStatic(const AssertCheck<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStatic(const AssertCheckStrict<P1>&)
         {}
-        
+
         static void OnDefault(const P&)
         {
             CompileTimeError<false>
                 ERROR_This_Policy_Does_Not_Allow_Default_Initialization;
         }
-        
+
         static void OnInit(const P& val)
         { if (!val) throw NullPointerException(); }
-        
+
         static void OnDereference(const P& val)
         { if (!val) throw NullPointerException(); }
-        
+
         static void Swap(RejectNullStatic&)
         {}
     };
@@ -681,7 +659,7 @@ namespace Loki
         template <class P1>
         RejectNullStrict(const RejectNullStrict<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStrict(const RejectNull<P1>&)
         {}
@@ -708,8 +686,7 @@ namespace Loki
     public:
         ByRef(T& v) : value_(v) {}
         operator T&() { return value_; }
-        // gcc doesn't like this:
-        // operator const T&() const { return value_; }
+        operator const T&() const { return value_; }
     private:
         T& value_;
     };
@@ -756,18 +733,19 @@ namespace Loki
         typedef typename SP::PointerType PointerType;
         typedef typename SP::StoredType StoredType;
         typedef typename SP::ReferenceType ReferenceType;
-        
-        typedef typename Select<OP::destructiveCopy, 
-                SmartPtr, const SmartPtr>::Result
-            CopyArg;
+
+        enum { aux = OP::destructiveCopy }; //### BCB
+        typedef const SmartPtr<T, OwnershipPolicy, ConversionPolicy, CheckingPolicy, StoragePolicy> Ptr_t;
+        typedef const Ptr_t cPtr_t;
+        typedef typename Select<aux, Ptr_t, cPtr_t>::Result CopyArg;
     
         SmartPtr()
         { KP::OnDefault(GetImpl(*this)); }
-      
+    	
         SmartPtr(const StoredType& p) : SP(p)
         { KP::OnInit(GetImpl(*this)); }
-      
-      SmartPtr(CopyArg& rhs)
+    	
+    	SmartPtr(CopyArg& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
 
@@ -779,9 +757,9 @@ namespace Loki
             template <class> class KP1,
             template <class> class SP1
         >
-      SmartPtr(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
-      : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-      { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
+    	SmartPtr(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+    	: SP(rhs), OP(rhs), KP(rhs), CP(rhs)
+    	{ GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
 
         template
         <
@@ -791,23 +769,25 @@ namespace Loki
             template <class> class KP1,
             template <class> class SP1
         >
-      SmartPtr(SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
-      : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-      { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
+    	SmartPtr(SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+    	: SP(rhs), OP(rhs), KP(rhs), CP(rhs)
+    	{ GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
 
-        SmartPtr(ByRef<SmartPtr> rhs)
-      : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
+        //### BCB
+        SmartPtr(ByRef<Ptr_t> rhs)
+    	: SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {}
-        
-        operator ByRef<SmartPtr>()
+
+        //### BCB        
+        operator ByRef<Ptr_t>()
         { return ByRef<SmartPtr>(*this); }
 
-      SmartPtr& operator=(CopyArg& rhs)
-      {
-          SmartPtr temp(rhs);
-          temp.Swap(*this);
-          return *this;
-      }
+    	SmartPtr& operator=(CopyArg& rhs)
+    	{
+    	    SmartPtr temp(rhs);
+    	    temp.Swap(*this);
+    	    return *this;
+    	}
 
         template
         <
@@ -817,13 +797,13 @@ namespace Loki
             template <class> class KP1,
             template <class> class SP1
         >
-      SmartPtr& operator=(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
-      {
-          SmartPtr temp(rhs);
-          temp.Swap(*this);
-          return *this;
-      }
-      
+    	SmartPtr& operator=(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+    	{
+    	    SmartPtr temp(rhs);
+    	    temp.Swap(*this);
+    	    return *this;
+    	}
+    	
         template
         <
             typename T1,
@@ -832,65 +812,65 @@ namespace Loki
             template <class> class KP1,
             template <class> class SP1
         >
-      SmartPtr& operator=(SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
-      {
-          SmartPtr temp(rhs);
-          temp.Swap(*this);
-          return *this;
-      }
-      
-      void Swap(SmartPtr& rhs)
-      {
-          OP::Swap(rhs);
-          CP::Swap(rhs);
-          KP::Swap(rhs);
-          SP::Swap(rhs);
-      }
-      
-      ~SmartPtr()
-      {
-          if (OP::Release(GetImpl(*static_cast<SP*>(this))))
-          {
-              SP::Destroy();
-          }
-      }
-      
-      friend inline void Release(SmartPtr& sp, typename SP::StoredType& p)
-      {
-          p = GetImplRef(sp);
-          GetImplRef(sp) = SP::Default();
-      }
-      
-      friend inline void Reset(SmartPtr& sp, typename SP::StoredType p)
-      { SmartPtr(p).Swap(sp); }
+    	SmartPtr& operator=(SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+    	{
+    	    SmartPtr temp(rhs);
+    	    temp.Swap(*this);
+    	    return *this;
+    	}
+    	
+    	void Swap(SmartPtr& rhs)
+    	{
+    	    OP::Swap(rhs);
+    	    CP::Swap(rhs);
+    	    KP::Swap(rhs);
+    	    SP::Swap(rhs);
+    	}
+    	
+    	~SmartPtr()
+    	{
+    	    if (OP::Release(GetImpl(*static_cast<SP*>(this))))
+    	    {
+    	        SP::Destroy();
+    	    }
+    	}
+    	
+    	friend inline void Release(SmartPtr& sp, typename SP::StoredType& p)
+    	{
+    	    p = GetImplRef(sp);
+    	    GetImplRef(sp) = SP::Default();
+    	}
+    	
+    	friend inline void Reset(SmartPtr& sp, typename SP::StoredType p)
+    	{ SmartPtr(p).Swap(sp); }
 
-        PointerType operator->()
+        T* operator->() //### BCB PointerType causes internal compiler crash
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator->();
         }
 
-        PointerType operator->() const
+        T* operator->() const //### BCB PointerType causes internal compiler crash
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator->();
         }
 
-        ReferenceType operator*()
+        T& operator*() //### BCB ReferenceType causes internal compiler crash
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator*();
         }
-      
-        ReferenceType operator*() const
+
+        T& operator*() const //### BCB ReferenceType causes internal compiler crash
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator*();
         }
-      
+    	
         bool operator!() const // Enables "if (!sp) ..."
         { return GetImpl(*this) == 0; }
-        
+
         inline friend bool operator==(const SmartPtr& lhs,
             const T* rhs)
         { return GetImpl(lhs) == rhs; }
@@ -967,11 +947,12 @@ namespace Loki
         {
             Insipid(PointerType) {}
         };
-        
-        typedef typename Select<CP::allow, PointerType, Insipid>::Result
+
+        enum { aux2 = CP::allow }; // ### BCB, PointerType must be also removed
+        typedef typename Select<aux2, T*, Insipid>::Result
             AutomaticConversionResult;
-    
-    public:        
+
+    public:
         operator AutomaticConversionResult() const
         { return GetImpl(*this); }
     };
@@ -1210,10 +1191,9 @@ namespace std
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// June     20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // December 09, 2001: Included <cassert>
-// July     16, 2002: Ported by Terje Slettebø to BCC 5.6
+// July     16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMARTPTR_INC_
-@

@@ -1,39 +1,19 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.04;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any
-//     purpose is hereby granted without fee, provided that the above copyright
-//     notice appear in all copies and that both that copyright notice and this
+// Permission to use, copy, modify, distribute and sell this software for any 
+//     purpose is hereby granted without fee, provided that the above copyright 
+//     notice appear in all copies and that both that copyright notice and this 
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the
-//     suitability of this software for any purpose. It is provided "as is"
+// The author or Addison-Wesley Longman make no representations about the 
+//     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
+
+// Last update: August 9, 2002
 
 #ifndef ASSOCVECTOR_INC_
 #define ASSOCVECTOR_INC_
@@ -62,21 +42,21 @@ namespace Loki
         public:
             AssocVectorCompare()
             {}
-
+            
             AssocVectorCompare(const C& src) : C(src)
             {}
-
-            bool operator()(const first_argument_type& lhs,
+            
+            bool operator()(const first_argument_type& lhs, 
                 const first_argument_type& rhs) const
             { return C::operator()(lhs, rhs); }
-
+            
             bool operator()(const Data& lhs, const Data& rhs) const
             { return operator()(lhs.first, rhs.first); }
-
-            bool operator()(const Data& lhs,
+            
+            bool operator()(const Data& lhs, 
                 const first_argument_type& rhs) const
             { return operator()(lhs.first, rhs); }
-
+            
             bool operator()(const first_argument_type& lhs,
                 const Data& rhs) const
             { return operator()(lhs, rhs.first); }
@@ -94,8 +74,6 @@ namespace Loki
 // * iterators are random
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef __BORLANDC__
-
     template
     <
         class K,
@@ -103,7 +81,7 @@ namespace Loki
         class C = std::less<K>,
         class A = std::allocator< std::pair<K, V> >
     >
-    class AssocVector
+    class AssocVector 
         : private std::vector< std::pair<K, V>, A >
         , private Private::AssocVectorCompare<V, C>
     {
@@ -128,12 +106,12 @@ namespace Loki
         typedef typename Base::reverse_iterator reverse_iterator;
         typedef typename Base::const_reverse_iterator const_reverse_iterator;
 
-      class value_compare
+        class value_compare
             : public std::binary_function<value_type, value_type, bool>
             , private key_compare
         {
             friend class AssocVector;
-
+        
         protected:
             value_compare(key_compare pred) : key_compare(pred)
             {}
@@ -142,278 +120,28 @@ namespace Loki
             bool operator()(const value_type& lhs, const value_type& rhs) const
             { return key_compare::operator()(lhs.first, rhs.first); }
         };
-
+        
         // 23.3.1.1 construct/copy/destroy
 
-        explicit AssocVector(const key_compare& comp = key_compare(),
-            const A& alloc = A())
-        : std::vector< std::pair<K, V>, A >(alloc), MyCompare(comp)
-        {}
-
-        template <class InputIterator>
-        AssocVector(InputIterator first, InputIterator last,
-            const key_compare& comp = key_compare(),
-            const A& alloc = A())
-        : std::vector< std::pair<K, V>, A >(first, last, alloc), MyCompare(comp)
-        {
-            MyCompare& me = *this;
-            std::sort(begin(), end(), me);
-        }
-
-        AssocVector& operator=(const AssocVector& rhs)
-        {
-        AssocVector(rhs).swap(*this);
-        return *this;
-        }
-
-        // iterators:
-        // The following are here because MWCW gets 'using' wrong
-        iterator begin() { return std::vector< std::pair<K, V>, A >::begin(); }
-        const_iterator begin() const { return std::vector< std::pair<K, V>, A >::begin(); }
-        iterator end() { return std::vector< std::pair<K, V>, A >::end(); }
-        const_iterator end() const { return std::vector< std::pair<K, V>, A >::end(); }
-        reverse_iterator rbegin() { return std::vector< std::pair<K, V>, A >::rbegin(); }
-        const_reverse_iterator rbegin() const { return std::vector< std::pair<K, V>, A >::rbegin(); }
-        reverse_iterator rend() { return std::vector< std::pair<K, V>, A >::rend(); }
-        const_reverse_iterator rend() const { return std::vector< std::pair<K, V>, A >::rend(); }
-
-        // capacity:
-        bool empty() const { return std::vector< std::pair<K, V>, A >::empty(); }
-        size_type size() const { return std::vector< std::pair<K, V>, A >::size(); }
-        size_type max_size() { return std::vector< std::pair<K, V>, A >::max_size(); }
-
-        // 23.3.1.2 element access:
-        mapped_type& operator[](const key_type& key)
-        { return insert(value_type(key, mapped_type())).first->second; }
-
-        // modifiers:
-        std::pair<iterator, bool> insert(const value_type& val)
-        {
-            bool found(true);
-            iterator i(lower_bound(val.first));
-
-            if (i == end() || operator()(val.first, i->first))
-            {
-                i = std::vector< std::pair<K, V>, A >::insert(i, val);
-                found = false;
-            }
-            return std::make_pair(i, !found);
-        }
-
-        iterator insert(iterator pos, const value_type& val)
-        {
-            if (pos != end() && operator()(*pos, val) &&
-                (pos == end() - 1 ||
-                    !operator()(val, pos[1]) &&
-                        operator()(pos[1], val)))
-            {
-                return std::vector< std::pair<K, V>, A >::insert(pos, val);
-            }
-            return insert(val).first;
-        }
-
-        template <class InputIterator>
-        iterator insert(InputIterator first, InputIterator last)
-        { for (; first != last; ++first) insert(*first); }
-
-        void erase(iterator pos)
-        { std::vector< std::pair<K, V>, A >::erase(pos); }
-
-        size_type erase(const key_type& k)
-        {
-            iterator i(find(k));
-            if (i == end()) return 0;
-            erase(i);
-            return 1;
-        }
-
-        void erase(iterator first, iterator last)
-        { std::vector< std::pair<K, V>, A >::erase(first, last); }
-
-        void swap(AssocVector& other)
-        {
-            using namespace std;
-            std::vector< std::pair<K, V>, A >::swap(other);
-            MyCompare& me = *this;
-            MyCompare& rhs = other;
-            swap(me, rhs);
-        }
-
-        void clear()
-        { std::vector< std::pair<K, V>, A >::clear(); }
-
-        // observers:
-        key_compare key_comp() const
-        { return *this; }
-
-        value_compare value_comp() const
-        {
-            const key_compare& comp = *this;
-            return value_compare(comp);
-        }
-
-        // 23.3.1.3 map operations:
-        iterator find(const key_type& k)
-        {
-            iterator i(lower_bound(k));
-            if (i != end() && operator()(k, i->first))
-            {
-                i = end();
-            }
-            return i;
-        }
-
-        const_iterator find(const key_type& k) const
-        {
-            const_iterator i(lower_bound(k));
-            if (i != end() && operator()(k, i->first))
-            {
-                i = end();
-            }
-            return i;
-        }
-
-        size_type count(const key_type& k) const
-        { return find(k) != end(); }
-
-        iterator lower_bound(const key_type& k)
-        {
-            MyCompare& me = *this;
-            return std::lower_bound(begin(), end(), k, me);
-        }
-
-        const_iterator lower_bound(const key_type& k) const
-        {
-            const MyCompare& me = *this;
-            return std::lower_bound(begin(), end(), k, me);
-        }
-
-        iterator upper_bound(const key_type& k)
-        {
-            MyCompare& me = *this;
-            return std::upper_bound(begin(), end(), k, me);
-        }
-
-        const_iterator upper_bound(const key_type& k) const
-        {
-            const MyCompare& me = *this;
-            return std::upper_bound(begin(), end(), k, me);
-        }
-
-        std::pair<iterator, iterator> equal_range(const key_type& k)
-        {
-            MyCompare& me = *this;
-            return std::equal_range(begin(), end(), k, me);
-        }
-
-        std::pair<const_iterator, const_iterator> equal_range(
-            const key_type& k) const
-        {
-            const MyCompare& me = *this;
-            return std::equal_range(begin(), end(), k, me);
-        }
-
-        friend bool operator==(const AssocVector& lhs, const AssocVector& rhs)
-        {
-            const std::vector< std::pair<K, V>, A >& me = lhs;
-            return me == rhs;
-        }
-
-        bool operator<(const AssocVector& rhs) const
-        {
-            const std::vector< std::pair<K, V>, A >& me = *this;
-            const std::vector< std::pair<K, V>, A >& yo = rhs;
-            return me < yo;
-        }
-
-        friend bool operator!=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(lhs == rhs); }
-
-        friend bool operator>(const AssocVector& lhs, const AssocVector& rhs)
-        { return rhs < lhs; }
-
-        friend bool operator>=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(lhs < rhs); }
-
-        friend bool operator<=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(rhs < lhs); }
-    };
-
-    // specialized algorithms:
-    template <class K, class V, class C, class A>
-    void swap(AssocVector<K, V, C, A>& lhs, AssocVector<K, V, C, A>& rhs)
-    { lhs.swap(rhs); }
-
-#else
-
-    template
-    <
-        class K,
-        class V,
-        class C = std::less<K>,
-        class A = std::allocator< std::pair<K, V> >
-    >
-    class AssocVector
-        : private std::vector< std::pair<K, V>, A >
-        , private Private::AssocVectorCompare<V, C>
-    {
-        typedef std::vector<std::pair<K, V>, A> Base;
-        typedef Private::AssocVectorCompare<V, C> MyCompare;
-
-    public:
-        typedef K key_type;
-        typedef V mapped_type;
-        typedef typename Base::value_type value_type;
-
-        typedef C key_compare;
-        typedef A allocator_type;
-        typedef typename A::reference reference;
-        typedef typename A::const_reference const_reference;
-        typedef typename Base::iterator iterator;
-        typedef typename Base::const_iterator const_iterator;
-        typedef typename Base::size_type size_type;
-        typedef typename Base::difference_type difference_type;
-        typedef typename A::pointer pointer;
-        typedef typename A::const_pointer const_pointer;
-        typedef typename Base::reverse_iterator reverse_iterator;
-        typedef typename Base::const_reverse_iterator const_reverse_iterator;
-
-      class value_compare
-            : public std::binary_function<value_type, value_type, bool>
-            , private key_compare
-        {
-            friend class AssocVector;
-
-        protected:
-            value_compare(key_compare pred) : key_compare(pred)
-            {}
-
-        public:
-            bool operator()(const value_type& lhs, const value_type& rhs) const
-            { return key_compare::operator()(lhs.first, rhs.first); }
-        };
-
-        // 23.3.1.1 construct/copy/destroy
-
-        explicit AssocVector(const key_compare& comp = key_compare(),
+        explicit AssocVector(const key_compare& comp = key_compare(), 
             const A& alloc = A())
         : Base(alloc), MyCompare(comp)
         {}
-
+        
         template <class InputIterator>
-        AssocVector(InputIterator first, InputIterator last,
-            const key_compare& comp = key_compare(),
+        AssocVector(InputIterator first, InputIterator last, 
+            const key_compare& comp = key_compare(), 
             const A& alloc = A())
         : Base(first, last, alloc), MyCompare(comp)
         {
             MyCompare& me = *this;
             std::sort(begin(), end(), me);
         }
-
+        
         AssocVector& operator=(const AssocVector& rhs)
-        {
-        AssocVector(rhs).swap(*this);
-        return *this;
+        { 
+            AssocVector<K, V, C, A>(rhs).swap(*this);  // ### Borland fix: template params added to cast
+            return *this;
         }
 
         // iterators:
@@ -426,7 +154,7 @@ namespace Loki
         const_reverse_iterator rbegin() const { return Base::rbegin(); }
         reverse_iterator rend() { return Base::rend(); }
         const_reverse_iterator rend() const { return Base::rend(); }
-
+        
         // capacity:
         bool empty() const { return Base::empty(); }
         size_type size() const { return Base::size(); }
@@ -452,7 +180,7 @@ namespace Loki
 
         iterator insert(iterator pos, const value_type& val)
         {
-            if (pos != end() && operator()(*pos, val) &&
+            if (pos != end() && operator()(*pos, val) && 
                 (pos == end() - 1 ||
                     !operator()(val, pos[1]) &&
                         operator()(pos[1], val)))
@@ -461,11 +189,11 @@ namespace Loki
             }
             return insert(val).first;
         }
-
+       
         template <class InputIterator>
-        iterator insert(InputIterator first, InputIterator last)
+        void insert(InputIterator first, InputIterator last)
         { for (; first != last; ++first) insert(*first); }
-
+        
         void erase(iterator pos)
         { Base::erase(pos); }
 
@@ -482,13 +210,13 @@ namespace Loki
 
         void swap(AssocVector& other)
         {
-            using namespace std;
+            using std::swap;
             Base::swap(other);
             MyCompare& me = *this;
             MyCompare& rhs = other;
             swap(me, rhs);
         }
-
+        
         void clear()
         { Base::clear(); }
 
@@ -514,7 +242,7 @@ namespace Loki
         }
 
         const_iterator find(const key_type& k) const
-        {
+        {       
             const_iterator i(lower_bound(k));
             if (i != end() && operator()(k, i->first))
             {
@@ -562,28 +290,28 @@ namespace Loki
             const MyCompare& me = *this;
             return std::equal_range(begin(), end(), k, me);
         }
-
+        
         friend bool operator==(const AssocVector& lhs, const AssocVector& rhs)
         {
             const Base& me = lhs;
             return me == rhs;
-        }
+        } 
 
         bool operator<(const AssocVector& rhs) const
         {
             const Base& me = *this;
             const Base& yo = rhs;
             return me < yo;
-        }
+        } 
 
         friend bool operator!=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(lhs == rhs); }
+        { return !(lhs == rhs); } 
 
         friend bool operator>(const AssocVector& lhs, const AssocVector& rhs)
         { return rhs < lhs; }
 
         friend bool operator>=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(lhs < rhs); }
+        { return !(lhs < rhs); } 
 
         friend bool operator<=(const AssocVector& lhs, const AssocVector& rhs)
         { return !(rhs < lhs); }
@@ -593,9 +321,7 @@ namespace Loki
     template <class K, class V, class C, class A>
     void swap(AssocVector<K, V, C, A>& lhs, AssocVector<K, V, C, A>& rhs)
     { lhs.swap(rhs); }
-
-#endif
-
+    
 } // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -604,8 +330,9 @@ namespace Loki
 // June    11, 2001: remove paren in equal_range - credit due to Cristoph Koegl
 // June    20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 22, 2002: fixed operator= - credit due to Tom Hyer
-// July    16, 2002: Ported by Terje Slettebø to BCC 5.6
+// June    25, 2002: fixed template insert() - credit due to Robert Minsk
+// June    27, 2002: fixed member swap() - credit due to David Brookman
+// July    16, 2002: Ported by Terje Slettebø and Pavel Vozenilek to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ASSOCVECTOR_INC_
-@

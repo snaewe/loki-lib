@@ -1,49 +1,28 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	2002.07.16.22.42.05;	author tslettebo;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial commit
-@
-text
-@////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Wesley Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// Last update: August 9, 2002
 
 #ifndef MULTIMETHODS_INC_
 #define MULTIMETHODS_INC_
 
 #include "Typelist.h"
-#include "TypeInfo.h"
+#include "Loki_TypeInfo.h" //### BCB
 #include "Functor.h"
 #include "AssocVector.h"
+#include <iostream> // ***
 
 ////////////////////////////////////////////////////////////////////////////////
 // IMPORTANT NOTE:
@@ -60,24 +39,49 @@ namespace Loki
 
     namespace Private
     {
-        template <class SomeLhs, class SomeRhs, 
-      class Executor, typename ResultType>
+/* ### BCB checks existence Fire(rhs, lhs) even when this function is not 
+needed, fails to compile
+        template <class SomeLhs, class SomeRhs,
+			class Executor, typename ResultType>
         struct InvocationTraits
         {
-            static ResultType 
-      DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
-      Executor& exec, Int2Type<false>)
+            static ResultType
+	    DoDispatch(SomeLhs& lhs, SomeRhs& rhs,
+			Executor& exec, Int2Type<false>)
             {
                 return exec.Fire(lhs, rhs);
             }
-            static ResultType 
-      DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
-      Executor& exec, Int2Type<true>)
+            static ResultType
+	    DoDispatch(SomeLhs& lhs, SomeRhs& rhs,
+			Executor& exec, Int2Type<true>)
+            {
+                return exec.Fire(rhs, lhs);
+            }
+        };
+*/
+        template <class SomeLhs, class SomeRhs, class Executor, typename
+ResultType>
+        struct NormalInvocation
+        {
+            static ResultType DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
+Executor& exec)
+            {
+                return exec.Fire(lhs, rhs);
+            }
+        };
+
+        template <class SomeLhs, class SomeRhs, class Executor, typename 
+ResultType>
+        struct SwappedInvocation
+        {
+            static ResultType DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
+Executor& exec)
             {
                 return exec.Fire(rhs, lhs);
             }
         };
     }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template StaticDispatcher
@@ -87,7 +91,7 @@ namespace Loki
     template
     <
         class Executor,
-        class BaseLhs, 
+        class BaseLhs,
         class TypesLhs,
         bool symmetric = true,
         class BaseRhs = BaseLhs,
@@ -100,39 +104,43 @@ namespace Loki
         static ResultType DispatchRhs(SomeLhs& lhs, BaseRhs& rhs,
             Executor exec, NullType)
         { return exec.OnError(lhs, rhs); }
-        
+
         template <class TList, class SomeLhs>
         static ResultType DispatchRhs(SomeLhs& lhs, BaseRhs& rhs,
             Executor exec, TList)
         {
             typedef typename TList::Head Head;
             typedef typename TList::Tail Tail;
-            
+
             if (Head* p2 = dynamic_cast<Head*>(&rhs))
             {
-                Int2Type<(symmetric &&
-                          int(TL::IndexOf<TypesRhs, Head>::value) <
-                          int(TL::IndexOf<TypesLhs, SomeLhs>::value))> i2t;
+                //### BCB - original statement was too complex for this compiler
+                enum { val1 = int(TL::IndexOf<TypesRhs, Head>::value) };
+                enum { val2 = int(TL::IndexOf<TypesLhs, SomeLhs>::value) };
+                enum { val3 = symmetric && (val1 < val2) };
+                // BCB doesn't properly converts enum to bool
+                enum { val4 = val3 != 0 };
+                const bool val5 = (val4 == 0) ? false : true; // it must be so clumsy
 
-                typedef Private::InvocationTraits< 
-                        SomeLhs, Head, Executor, ResultType> CallTraits;
-                    
-                return CallTraits::DoDispatch(lhs, *p2, exec, i2t);
+                typedef Private::NormalInvocation<SomeLhs, Head, Executor, ResultType> t1;
+                typedef Private::SwappedInvocation<SomeLhs, Head, Executor, ResultType> t2;
+                typedef Select<val4, t1, t2>::Result invocation_t;
+                return invocation_t::DoDispatch(lhs, *p2, exec);
             }
             return DispatchRhs(lhs, rhs, exec, Tail());
         }
-        
+
         static ResultType DispatchLhs(BaseLhs& lhs, BaseRhs& rhs,
             Executor exec, NullType)
         { return exec.OnError(lhs, rhs); }
-        
+
         template <class TList>
         static ResultType DispatchLhs(BaseLhs& lhs, BaseRhs& rhs,
             Executor exec, TList)
         {
             typedef typename TList::Head Head;
             typedef typename TList::Tail Tail;
-            
+
             if (Head* p1 = dynamic_cast<Head*>(&lhs))
             {
                 return DispatchRhs(*p1, rhs, exec, TypesRhs());
@@ -145,7 +153,7 @@ namespace Loki
             Executor exec)
         { return DispatchLhs(lhs, rhs, exec, TypesLhs()); }
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template BasicDispatcher
 // Implements a logarithmic double dispatcher for functors (or functions)
@@ -165,53 +173,55 @@ namespace Loki
         typedef CallbackType MappedType;
         typedef AssocVector<KeyType, MappedType> MapType;
         MapType callbackMap_;
-        
+
         void DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun);
         bool DoRemove(TypeInfo lhs, TypeInfo rhs);
-        
+
     public:
         template <class SomeLhs, class SomeRhs>
         void Add(CallbackType fun)
         {
             DoAdd(typeid(SomeLhs), typeid(SomeRhs), fun);
         }
-        
+
         template <class SomeLhs, class SomeRhs>
         bool Remove()
         {
             return DoRemove(typeid(SomeLhs), typeid(SomeRhs));
         }
-        
+
         ResultType Go(BaseLhs& lhs, BaseRhs& rhs);
     };
 
     // Non-inline to reduce compile time overhead...
-    template <class BaseLhs, class BaseRhs, 
-    typename ResultType, typename CallbackType>
+    template <class BaseLhs, class BaseRhs,
+		typename ResultType, typename CallbackType>
     void BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
-       ::DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
+    	 ::DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
     {
         callbackMap_[KeyType(lhs, rhs)] = fun;
     }
-        
-    template <class BaseLhs, class BaseRhs, 
-    typename ResultType, typename CallbackType>
+
+    template <class BaseLhs, class BaseRhs,
+		typename ResultType, typename CallbackType>
     bool BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
          ::DoRemove(TypeInfo lhs, TypeInfo rhs)
     {
         return callbackMap_.erase(KeyType(lhs, rhs)) == 1;
     }
 
-    template <class BaseLhs, class BaseRhs, 
-    typename ResultType, typename CallbackType>
+    template <class BaseLhs, class BaseRhs,
+		typename ResultType, typename CallbackType>
     ResultType BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
                ::Go(BaseLhs& lhs, BaseRhs& rhs)
     {
-      typename MapType::key_type k(typeid(lhs),typeid(rhs));
+    	typename MapType::key_type k(typeid(lhs),typeid(rhs));
         typename MapType::iterator i = callbackMap_.find(k);
         if (i == callbackMap_.end())
         {
-                throw std::runtime_error("Function not found");
+            std::cout << "Function not found\n";
+
+//                throw std::runtime_error("Function not found");
         }
         return (i->second)(lhs, rhs);
     }
@@ -252,7 +262,7 @@ namespace Loki
     namespace Private
     {
         template <class BaseLhs, class BaseRhs,
-      class SomeLhs, class SomeRhs,
+	    class SomeLhs, class SomeRhs,
             typename ResultType,
             class CastLhs, class CastRhs,
             ResultType (*Callback)(SomeLhs&, SomeRhs&)>
@@ -282,43 +292,45 @@ namespace Loki
               class DispatcherBackend = BasicDispatcher>
     class FnDispatcher
     {
-        DispatcherBackend<BaseLhs, BaseRhs, ResultType, 
+        DispatcherBackend<BaseLhs, BaseRhs, ResultType,
             ResultType (*)(BaseLhs&, BaseRhs&)> backEnd_;
-        
+
     public:
         template <class SomeLhs, class SomeRhs>
-        void Add(ResultType (*pFun)(BaseLhs&, BaseRhs&))
+        //### BCB - here it was probably buggy
+        void Add(ResultType (*pFun)(SomeLhs&, SomeRhs&))
         {
-            return backEnd_.Add<SomeLhs, SomeRhs>(pFun);
-        }        
-        
+            return backEnd_.Add<SomeLhs, SomeRhs>((ResultType (*)(BaseLhs&, 
+BaseRhs&))pFun);
+        }
+
         template <class SomeLhs, class SomeRhs,
             ResultType (*callback)(SomeLhs&, SomeRhs&)>
         void Add()
         {
-      typedef Private::FnDispatcherHelper<
-          BaseLhs, BaseRhs, 
-          SomeLhs, SomeRhs,
-          ResultType,
-          CastingPolicy<SomeLhs,BaseLhs>, 
-          CastingPolicy<SomeRhs,BaseRhs>, 
-          callback> Local;
+	    typedef Private::FnDispatcherHelper<
+					BaseLhs, BaseRhs,
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs,BaseLhs>,
+					CastingPolicy<SomeRhs,BaseRhs>,
+					callback> Local;
 
             Add<SomeLhs, SomeRhs>(&Local::Trampoline);
         }
-        
+
         template <class SomeLhs, class SomeRhs,
             ResultType (*callback)(SomeLhs&, SomeRhs&),
             bool symmetric>
         void Add()
         {
-      typedef Private::FnDispatcherHelper<
-          BaseLhs, BaseRhs, 
-          SomeLhs, SomeRhs,
-          ResultType,
-          CastingPolicy<SomeLhs,BaseLhs>, 
-          CastingPolicy<SomeRhs,BaseRhs>, 
-          callback> Local;
+	    typedef Private::FnDispatcherHelper<
+					BaseLhs, BaseRhs,
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs,BaseLhs>,
+					CastingPolicy<SomeRhs,BaseRhs>,
+					callback> Local;
 
             Add<SomeLhs, SomeRhs>(&Local::Trampoline);
             if (symmetric)
@@ -326,7 +338,7 @@ namespace Loki
                 Add<SomeRhs, SomeLhs>(&Local::TrampolineR);
             }
         }
-        
+
         template <class SomeLhs, class SomeRhs>
         void Remove()
         {
@@ -346,12 +358,12 @@ namespace Loki
 
     namespace Private
     {
-  template <class BaseLhs, class BaseRhs,
-      class SomeLhs, class SomeRhs,
-      typename ResultType,
-      class CastLhs, class CastRhs,
-      class Fun, bool SwapArgs>
-        class FunctorDispatcherHelper 
+	template <class BaseLhs, class BaseRhs,
+		  class SomeLhs, class SomeRhs,
+		  typename ResultType,
+		  class CastLhs, class CastRhs,
+		  class Fun, bool SwapArgs>
+        class FunctorDispatcherHelper
         {
             Fun fun_;
             ResultType Fire(BaseLhs& lhs, BaseRhs& rhs,Int2Type<false>)
@@ -380,50 +392,53 @@ namespace Loki
 
     template <class BaseLhs, class BaseRhs = BaseLhs,
               typename ResultType = void,
-              template <class, class> class CastingPolicy = DynamicCaster, 
+              template <class, class> class CastingPolicy = DynamicCaster,
               template <class, class, class, class>
               class DispatcherBackend = BasicDispatcher>
     class FunctorDispatcher
     {
         typedef TYPELIST_2(BaseLhs&, BaseRhs&) ArgsList;
-        typedef Functor<ResultType, ArgsList, DEFAULT_THREADING> FunctorType;
+        //### BCB - this causes compiler crash (even when only one parameter is used)
+        typedef Functor<ResultType, ArgsList, DEFAULT_THREADING> 
+FunctorType;
 
-        DispatcherBackend<BaseLhs, BaseRhs, ResultType, FunctorType> backEnd_;
+        DispatcherBackend<BaseLhs, BaseRhs, ResultType, FunctorType> 
+backEnd_;
 
     public:
         template <class SomeLhs, class SomeRhs, class Fun>
         void Add(const Fun& fun)
         {
             typedef Private::FunctorDispatcherHelper<
-          BaseLhs, BaseRhs,
-          SomeLhs, SomeRhs,
-          ResultType,
-          CastingPolicy<SomeLhs, BaseLhs>,
-          CastingPolicy<SomeRhs, BaseRhs>,
-          Fun, false> Adapter;
+					BaseLhs, BaseRhs,
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs, BaseLhs>,
+					CastingPolicy<SomeRhs, BaseRhs>,
+					Fun, false> Adapter;
 
             backEnd_.Add<SomeLhs, SomeRhs>(FunctorType(Adapter(fun)));
-  }
+	}
         template <class SomeLhs, class SomeRhs, bool symmetric, class Fun>
         void Add(const Fun& fun)
         {
-      Add<SomeLhs,SomeRhs>(fun);
+	    Add<SomeLhs,SomeRhs>(fun);
 
-      if (symmetric)
-      {
-    // Note: symmetry only makes sense where BaseLhs==BaseRhs
-              typedef Private::FunctorDispatcherHelper<
-          BaseLhs, BaseLhs,
-          SomeLhs, SomeRhs,
-          ResultType,
-          CastingPolicy<SomeLhs, BaseLhs>,
-          CastingPolicy<SomeRhs, BaseLhs>,
-          Fun, true> AdapterR;
+	    if (symmetric)
+	    {
+		// Note: symmetry only makes sense where BaseLhs==BaseRhs
+            	typedef Private::FunctorDispatcherHelper<
+					BaseLhs, BaseLhs,
+					SomeLhs, SomeRhs,
+					ResultType,
+					CastingPolicy<SomeLhs, BaseLhs>,
+					CastingPolicy<SomeRhs, BaseLhs>,
+					Fun, true> AdapterR;
 
-                backEnd_.Add<SomeRhs, SomeLhs>(FunctorType(AdapterR(fun)));
-      }
+               	backEnd_.Add<SomeRhs, SomeLhs>(FunctorType(AdapterR(fun)));
+	    }
         }
-        
+
         template <class SomeLhs, class SomeRhs>
         void Remove()
         {
@@ -440,8 +455,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// July 16, 2002: Ported by Terje Slettebø to BCC 5.6
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
-@
+
