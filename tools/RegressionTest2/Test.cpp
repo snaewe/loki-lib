@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef __INTEL_COMPILER
-# pragma warning(disable: 111 193 304 383 444 981 1418)
+# pragma warning(disable: 111 193 304 383 444 488 981 1418)
 #endif
 
 #include "LokiTest.h"

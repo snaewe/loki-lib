@@ -18,13 +18,13 @@
 #include "TypelistTest.h"
 #include "TypeManipTest.h"
 #include "TypeTraitsTest.h"
-#include "SmallObjectTest.h"
-#include "SingletonTest.h"
-#include "SmartPtrTest.h"
-#include "FactoryTest.h"
+//#include "SmallObjectTest.h"
+//#include "SingletonTest.h"
+//#include "SmartPtrTest.h"
+//#include "FactoryTest.h"
 #include "AbstractFactoryTest.h"
-#include "AssocVectorTest.h"
-#include "FunctorTest.h"
+//#include "AssocVectorTest.h"
+//#include "FunctorTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LokiTest
@@ -49,13 +49,13 @@ private:
 		tests.add(typelistTest);
 		tests.add(typeManipTest);
 		tests.add(typeTraitsTest);
-		tests.add(smallObjectTest);
-		tests.add(singletonTest);
-		tests.add(smartPtrTest);
-		tests.add(factoryTest);
+//		tests.add(smallObjectTest);
+//		tests.add(singletonTest);
+//		tests.add(smartPtrTest);
+//		tests.add(factoryTest);
 		tests.add(abstractFactoryTest);
-		tests.add(assocVectorTest);
-		tests.add(functorTest);
+//		tests.add(assocVectorTest);
+//		tests.add(functorTest);
 		}
 
 private:
@@ -65,13 +65,13 @@ private:
 	TypelistTest typelistTest;
 	TypeManipTest typeManipTest;
 	TypeTraitsTest typeTraitsTest;
-	SmallObjectTest smallObjectTest;
-	SingletonTest singletonTest;
-	SmartPtrTest smartPtrTest;
-	FactoryTest factoryTest;
+//	SmallObjectTest smallObjectTest;
+//	SingletonTest singletonTest;
+//	SmartPtrTest smartPtrTest;
+//	FactoryTest factoryTest;
 	AbstractFactoryTest abstractFactoryTest;
-	AssocVectorTest assocVectorTest;
-	FunctorTest functorTest;
+//	AssocVectorTest assocVectorTest;
+//	FunctorTest functorTest;
 };
 
 #endif

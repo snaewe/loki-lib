@@ -105,7 +105,7 @@ namespace Loki
     {
         typedef Private::ConversionHelper<T, U> H;
 #ifndef __MWERKS__
-        enum { exists = sizeof(typename H::Small) == sizeof(H::Test(H::MakeT())) };
+        enum { exists = sizeof(typename H::Small) == sizeof((H::Test(H::MakeT()))) };
 #else
         enum { exists = false };
 #endif
@@ -140,12 +140,29 @@ namespace Loki
 }   // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
+// class template SuperSubclass
+// Invocation: SuperSubclass<B, D>::value where B and D are types. 
+// Returns true if B is a public base of D, or if B and D are aliases of the 
+// same type.
+//
+// Caveat: might not work if T and U are in a private inheritance hierarchy.
+////////////////////////////////////////////////////////////////////////////////
+
+template <class T, class U>
+struct SuperSubclass
+{
+  enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS
 // Invocation: SUPERSUBCLASS(B, D) where B and D are types. 
 // Returns true if B is a public base of D, or if B and D are aliases of the 
 // same type.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
+// Deprecated: Use SuperSubclass class template instead.
 ////////////////////////////////////////////////////////////////////////////////
 
 #define SUPERSUBCLASS(T, U) \
@@ -153,11 +170,28 @@ namespace Loki
     !::Loki::Conversion<const volatile T*, const volatile void*>::sameType)
 
 ////////////////////////////////////////////////////////////////////////////////
-// macro SUPERSUBCLASS
+// class template SuperSubclassStrict
+// Invocation: SuperSubclassStrict<B, D>::value where B and D are types. 
+// Returns true if B is a public base of D.
+//
+// Caveat: might not work if T and U are in a private inheritance hierarchy.
+////////////////////////////////////////////////////////////////////////////////
+
+template<class T,class U>
+struct SuperSubclassStrict
+{
+  enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+                 !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
+                 !::Loki::Conversion<const volatile T*, const volatile U*>::sameType) };
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// macro SUPERSUBCLASS_STRICT
 // Invocation: SUPERSUBCLASS(B, D) where B and D are types. 
 // Returns true if B is a public base of D.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
+// Deprecated: Use SuperSubclassStrict class template instead.
 ////////////////////////////////////////////////////////////////////////////////
 
 #define SUPERSUBCLASS_STRICT(T, U) \
@@ -172,6 +206,12 @@ namespace Loki
 //      (credit due to Brad Town)
 // November 23, 2001: (well it's 12:01 am) fixed bug in SUPERSUBCLASS - added
 //      the volatile qualifier to be 100% politically correct
+// September 16, 2002: Changed "const volatile" to "const volatile *", to enable
+//     conversion to succeed. Done earlier by MKH.
+//     Added SuperSubclass and SuperSubclassStrict templates. The corresponding
+//     macros are deprecated.
+//     Added extra parenthesis in sizeof in Conversion, to disambiguate function
+//     call from function declaration. T.S.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_

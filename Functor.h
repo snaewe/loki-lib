@@ -1,25 +1,24 @@
-//////////////////////////////
-//Generated header: Functor.h
-//Forwards to the appropriate code
+///////////////////////////////
+// Generated header: Functor.h
+// Forwards to the appropriate code
 // that works on the detected compiler
-//Generated on Sun Sep 08 18:42:42 2002
-
+// Generated on Sun Sep 15 15:31:17 2002
+///////////////////////////////
 
 #ifdef LOKI_USE_REFERENCE
-#	include "./Reference/Functor.h"
+#	include "Reference/Functor.h"
 #else
-#	if (_MSC_VER >= 1300)
-#		include "./MSVC/1300/Functor.h"
-#	elif (_MSC_VER >= 1200)
-#		include "./MSVC/1200/Functor.h"
-#	elif (__BORLANDC__)
-#		include "./Borland/Functor.h"
+#	if (__INTEL_COMPILER)
+#		include "Reference/Functor.h"
 #	elif (__MWERKS__)
-#		include "./Reference/Functor.h"
-#	elif ( (__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ >= 95)) )
-#		include "./Reference/Functor.h"
+#		include "Reference/Functor.h"
+#	elif (__BORLANDC__ >= 0x560)
+#		include "Borland/Functor.h"
+#	elif (_MSC_VER >= 1300)
+#		include "MSVC/1300/Functor.h"
+#	elif (_MSC_VER >= 1200)
+#		include "MSVC/1200/Functor.h"
 #	else
-		//Define LOKI_USE_REFERENCE and get back to us on the results
-#		error Compiler not tested with Loki, #define LOKI_USE_REFERENCE
+#		include "Reference/Functor.h"
 #	endif
 #endif
