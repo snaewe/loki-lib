@@ -106,11 +106,11 @@ namespace Loki
                     sizeof(T) * (elements + 1)));
         if (!pNewArray) throw std::bad_alloc();
         
-        LifetimeTracker* p = new ConcreteLifetimeTracker<T, Destroyer>(
-            pDynObject, longevity, d);
-        
         // Delayed assignment for exception safety
         pTrackerArray = pNewArray;
+        
+        LifetimeTracker* p = new ConcreteLifetimeTracker<T, Destroyer>(
+            pDynObject, longevity, d);
         
         // Insert a pointer to the object into the queue
         TrackerArray pos = std::upper_bound(
@@ -439,6 +439,8 @@ namespace Loki
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // January 08, 2002: Fixed bug in call to realloc - credit due to Nigel Gent and
 //      Eike Petersen
+// March 08, 2002: moved the assignment to pTrackerArray in SetLongevity to fix
+//      exception safety issue. Credit due to Kari Hoijarvi
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SINGLETON_INC_
