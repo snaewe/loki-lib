@@ -137,6 +137,8 @@ namespace Private
 			return DispatchLhs(lhs, rhs, exec, Tail());
 		}
 
+	protected:
+		~StaticDispatcherBase() {}
 	public:
 		static ResultType Go(	BaseLhs& lhs, BaseRhs& rhs,
 								Executor exec)
@@ -189,6 +191,8 @@ namespace Private
 			DispatchLhs(lhs, rhs, exec, Tail());
 		}
 
+	protected:
+		~StaticDispatcherVoidBase() {}
 	public:
 		static ResultType Go(	BaseLhs& lhs, BaseRhs& rhs,
 								Executor exec)
@@ -209,8 +213,7 @@ namespace Private
         bool symmetric = true,
         class BaseRhs = BaseLhs,
         class TypesRhs = TypesLhs,
-        typename ResultType = Loki::Select<
-			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result
+        typename ResultType = Loki::Private::VoidWrap::type
     >
     class StaticDispatcher : public ::Loki::Select
 								<
@@ -255,6 +258,7 @@ namespace Private
 		typedef CallbackType MappedType;
 		typedef AssocVector<KeyType, MappedType> MapType;
 		MapType callbackMap_;
+		~BasicDispatcherCommonBase() {}
 	public:
 		template <class SomeLhs, class SomeRhs>
 		void Add(CallbackType fun, ::Loki::Type2Type<SomeLhs>,
@@ -295,6 +299,8 @@ namespace Private
 		typedef BasicDispatcherCommonBase<CallbackType> Base;
 
 		ResultType Go(BaseLhs& lhs, BaseRhs& rhs);
+	protected:
+		~BasicDispatcherBase() {}
 	};
 	template <class BaseLhs, class BaseRhs,
     typename ResultType, typename CallbackType>
@@ -320,6 +326,8 @@ namespace Private
 		typedef BasicDispatcherCommonBase<CallbackType> Base;
 
 		ResultType Go(BaseLhs& lhs, BaseRhs& rhs);
+	protected:
+		~BasicDispatcherVoidBase() {}
 	};
 	template <class BaseLhs, class BaseRhs, typename CallbackType>
 	typename BasicDispatcherVoidBase<BaseLhs,BaseRhs, CallbackType>::ResultType
@@ -346,8 +354,7 @@ namespace Private
     <
         class BaseLhs,
         class BaseRhs = BaseLhs,
-        typename ResultType = Loki::Select<
-			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result,
+        typename ResultType = Loki::Private::VoidWrap::type,
         typename CallbackType = ResultType (*)(BaseLhs&, BaseRhs&)
     >
     class BasicDispatcher : public ::Loki::Select
@@ -440,6 +447,8 @@ namespace Private
 			{
 				return backEnd_.Go(lhs, rhs);
 			}
+		protected:
+			~FnDispatcherBase() {}
 		};
 
 		template <class BaseLhs, class BaseRhs, class DispatcherBackend>
@@ -453,6 +462,8 @@ namespace Private
 			{
 				backEnd_.Go(lhs, rhs);
 			}
+		protected:
+			~FnDispatcherVoidBase() {}
 		};
 
 
@@ -470,6 +481,8 @@ namespace Private
             {
                 Trampoline(lhs, rhs);
             }
+		protected:
+			~FnDispatcherHelperVoidBase() {}
         };
 
 		template<typename ResultType, class BaseLhs, class BaseRhs,
@@ -486,6 +499,8 @@ namespace Private
             {
                 Trampoline(lhs, rhs);
             }
+		protected:
+			~FnDispatcherHelperBase() {}
         };
 
 		template
@@ -514,8 +529,7 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class BaseLhs, class BaseRhs = BaseLhs,
-              typename ResultType = Loki::Select<
-			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result,
+              typename ResultType = Loki::Private::VoidWrap::type,
               class CastingPolicy = DynamicCasterWrapper,
               class DispatcherBackend = BasicDispatcherWrapper>
 	class FnDispatcher : public ::Loki::Select
@@ -657,6 +671,7 @@ namespace Private
 
 			ApplyInnerType4<DispatcherBackend,BaseLhs, BaseRhs, ResultType, 
 				FunctorType>::type backEnd_;
+			~FunctorDispatcherCommonBase() {}
 		};
 		
 		template <typename ResultType, class BaseLhs, class BaseRhs, 
@@ -674,6 +689,8 @@ namespace Private
 			{
 				return Base::backEnd_.Go(lhs, rhs);
 			}
+		protected:
+			~FunctorDispatcherBase() {}
 		};
 		
 		template <class BaseLhs, class BaseRhs, class DispatcherBackend>
@@ -691,7 +708,8 @@ namespace Private
 			{
 				Base::backEnd_.Go(lhs, rhs);
 			}
-
+		protected:
+			~FunctorDispatcherVoidBase() {}
 		};
     }
 
@@ -702,8 +720,7 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class BaseLhs, class BaseRhs = BaseLhs,
-              typename ResultType = Loki::Select<
-			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result,
+              typename ResultType = Loki::Private::VoidWrap::type,
               class CastingPolicy = DynamicCasterWrapper, 
               class DispatcherBackend = BasicDispatcherWrapper>
 	class FunctorDispatcher : public ::Loki::Select
@@ -784,7 +801,8 @@ namespace Private
 // Oct  28, 2002: ported by Benjamin Kaufmann to MSVC 6
 // Feb	19, 2003: replaced pointer-Dummies with Type2Type-Parameters and added 
 //					support for return type void. B.K.
-// Mar	06, 2003: Changed default values for return types to void B.K.
+// Mar	06, 2003: Changed default values for return types to void.
+//				  Added protected destructors to private implementation classes B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif

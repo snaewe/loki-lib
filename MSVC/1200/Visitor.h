@@ -260,6 +260,8 @@ namespace Private
 		ASSERT_TYPELIST(TList);
 		virtual R Visit(typename TList::Head&)
         { return R(); }
+	protected:
+		~BaseVisitorImplBase() {}
 	};
 
 	template <class TList, class R>
@@ -270,6 +272,8 @@ namespace Private
 		ASSERT_TYPELIST(TList);
 		virtual R Visit(typename TList::Head&)
         {  }
+	protected:
+		~BaseVisitorImplVoidBase() {}
 	};
 }
 
@@ -292,10 +296,6 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 // class template DefaultCatchAll
 ////////////////////////////////////////////////////////////////////////////////
-namespace Private
-{
-
-}
 template <typename R, typename Visited>
 struct DefaultCatchAll
 {
@@ -376,36 +376,39 @@ namespace Private
 	class BaseVisitableBase
 	{
 		typedef R ReturnType;
-		protected:
-			template <class T>
-			static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
+	protected:
+		template <class T>
+		static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
+		{
+			typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
+			// Apply the Acyclic Visitor
+			if (Visitor<T, R>* p = dynamic_cast<Visitor<T, R>*>(&guest))
 			{
-				typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
-				// Apply the Acyclic Visitor
-				if (Visitor<T, R>* p = dynamic_cast<Visitor<T, R>*>(&guest))
-				{
-					return p->Visit(visited);
-				}
-				return CatchA::OnUnknownVisitor(visited, guest);
+				return p->Visit(visited);
 			}
+			return CatchA::OnUnknownVisitor(visited, guest);
+		}
+		~BaseVisitableBase() {}
+			
 	};
 	template <class R, class CatchAll>
 	class BaseVisitableVoidBase
 	{
 		typedef R ReturnType;
-		protected:
-			template <class T>
-			static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
+	protected:
+		template <class T>
+		static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
+		{
+			typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
+			// Apply the Acyclic Visitor
+			if (Visitor<T>* p = dynamic_cast<Visitor<T>*>(&guest))
 			{
-				typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
-				// Apply the Acyclic Visitor
-				if (Visitor<T>* p = dynamic_cast<Visitor<T>*>(&guest))
-				{
-					p->Visit(visited);
-					return;
-				}
-				CatchA::OnUnknownVisitor(visited, guest);
+				p->Visit(visited);
+				return;
 			}
+			CatchA::OnUnknownVisitor(visited, guest);
+		}
+		~BaseVisitableVoidBase() {}
 	};
 }
     template
@@ -456,6 +459,8 @@ namespace Private
             Visitor<Visited, ReturnType>& subObj = *this;
             return subObj.Visit(host);
         }
+	protected:
+		~CyclicVisitorBase() {}
 	};
 	template <class TList>
 	class CyclicVisitorVoidBase : public Visitor<TList, void>
@@ -467,6 +472,8 @@ namespace Private
             Visitor<Visited, ReturnType>& subObj = *this;
             subObj.Visit(host);
         }
+	protected:
+		~CyclicVisitorVoidBase() {}
 	};
 }
 
@@ -505,7 +512,8 @@ namespace Private
 // Oct  27, 2002: ported by Benjamin Kaufmann to MSVC 6.0
 // Feb	23, 2003: Removed special visitor classes for return type void.
 //		Added Loki:: qualification to Accept's Paramter (in the macro) B.K.
-// Mar	06, 2003: Changed default values for return types to void B.K.
+// Mar	06, 2003: Changed default values for return types to void.
+//				  Added protected destructors to private implementation classes B.K.				
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // VISITOR_INC_

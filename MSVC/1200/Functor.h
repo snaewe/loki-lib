@@ -743,7 +743,8 @@ namespace Private
             return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
                 p14, p15);
         }
-        
+	protected:
+		~FunctorHandlerBase() {}
     private:
         Fun f_;
     };
@@ -844,7 +845,8 @@ namespace Private
             f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
                 p14, p15);
         }
-        
+	protected:
+		~FunctorHandlerVoidBase() {}        
     private:
         Fun f_;
     };
@@ -1007,7 +1009,9 @@ namespace Private
                 p11, p12, p13, p14, p15);
         }
         
-    private:
+    protected:
+		~MemFunHandlerBase() {}
+	private:
         PointerToObj pObj_;
         PointerToMemFn pMemFn_;
     };
@@ -1118,7 +1122,8 @@ namespace Private
             ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
                 p11, p12, p13, p14, p15);
         }
-        
+	protected:
+		~MemFunHandlerVoidBase() {}
     private:
         PointerToObj pObj_;
         PointerToMemFn pMemFn_;
@@ -1306,6 +1311,7 @@ namespace Private
         }	
 		protected:
 			std::auto_ptr<Impl> spImpl_;
+			~FunctorBase() {}
 	};
 
 	// implementation class for Functor with return type = void
@@ -1426,6 +1432,7 @@ namespace Private
         }	
 		protected:
 			std::auto_ptr<Impl> spImpl_;
+			~FunctorVoidBase() {}
 	};
 }
 
@@ -1765,8 +1772,8 @@ namespace Private
                 p14);
         }
 
-        // VC7 BUG
-        virtual ~BinderFirstBase() {}
+	protected:
+		~BinderFirstBase() {}
     private:
         OriginalFunctor f_;
         BoundType b_;
@@ -1860,8 +1867,8 @@ namespace Private
                 p14);
         }
 
-        // VC7 BUG
-        virtual ~BinderFirstVoidBase() {}
+        protected:
+			~BinderFirstVoidBase() {}
     private:
         OriginalFunctor f_;
         BoundType b_;
@@ -1998,12 +2005,7 @@ namespace Private
         ChainerBase(const Fun1& fun1, const Fun2& fun2) 
 			: f1_(fun1), f2_(fun2) {}
 
-        //
-        // VC7 don't see this implicit constructor
-        //
-
-        virtual ~ChainerBase() {}
-		
+        
         // operator() implementations for up to 15 arguments
 
         ResultType operator()()
@@ -2102,6 +2104,7 @@ namespace Private
     protected:
         Fun1 f1_;
         Fun2 f2_;
+		~ChainerBase() {}
  
 	};
 	
@@ -2132,12 +2135,6 @@ namespace Private
         ChainerVoidBase(const Fun1& fun1, const Fun2& fun2) 
 			: f1_(fun1), f2_(fun2) {}
 
-        //
-        // VC7 don't see this implicit constructor
-        //
-
-        virtual ~ChainerVoidBase() {}
-		
         // operator() implementations for up to 15 arguments
 
         ResultType operator()()
@@ -2236,7 +2233,7 @@ namespace Private
     protected:
         Fun1 f1_;
         Fun2 f2_;
- 
+		~ChainerVoidBase() {}
 	};
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -2329,6 +2326,7 @@ namespace Private
 //					Replaced the void return workaround.
 //					B.K.
 // Feb	25, 2003: added conversion unspecified_bool_type. B.K.
+// Mar	06, 2003: added protected destructors to private implementation classes B.K.
 ////////////////////////////////////////////////////////////////////////////////
 #endif  // FUNCTOR_INC_
 #endif	// #ifdef USE_FUNCTOR_OLD_VERSION
