@@ -776,7 +776,7 @@ namespace Loki
         private:
             typedef typename MostDerived<Tail, Head>::Result
                 TheMostDerived;
-            typedef typename ReplaceAll<Tail, 
+            typedef typename Replace<Tail,
                 TheMostDerived, Head>::Result Temp;
             typedef typename DerivedToFront<Temp>::Result L;
         public:
@@ -801,7 +801,8 @@ namespace Loki
 // September 16, 2002: Changed MostDerived to use the new SuperSubclass template
 //     (rather than the SUPERSUBCLASS macro).
 //     Minor fix in Reverse, adding support for empty lists, like all the other
-//     algorithms. T.S.
+//     algorithms.
+//     Fixed DerivedToFront, to use Replace, rather than ReplaceAll. T.S.
 // Oct  10, 2002: added MakeTypelist (SGB/MKH)
 ////////////////////////////////////////////////////////////////////////////////
 
