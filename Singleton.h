@@ -43,7 +43,7 @@ namespace Loki
             static bool Compare(const LifetimeTracker* lhs,
                 const LifetimeTracker* rhs)
             {
-                return rhs->longevity_ > lhs->longevity_;
+                return lhs->longevity_ > rhs->longevity_;
             }
             
         private:
@@ -441,6 +441,8 @@ namespace Loki
 //      Eike Petersen
 // March 08, 2002: moved the assignment to pTrackerArray in SetLongevity to fix
 //      exception safety issue. Credit due to Kari Hoijarvi
+// May 09, 2002: Fixed bug in Compare that caused longevities to act backwards.
+//      Credit due to Scott McDonald.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SINGLETON_INC_
