@@ -13,8 +13,6 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
-
 #ifndef SMARTPTR_INC_
 #define SMARTPTR_INC_
 
@@ -45,12 +43,11 @@ namespace Loki
     template <class T>
     class DefaultSPStorage
     {
-    protected:
+    public:
         typedef T* StoredType;    // the type of the pointee_ object
         typedef T* PointerType;   // type returned by operator->
         typedef T& ReferenceType; // type returned by operator*
-        
-    public:
+
         DefaultSPStorage() : pointee_(Default()) 
         {}
 
@@ -410,7 +407,10 @@ namespace Loki
         
         static P Clone(const P&)
         {
-            STATIC_CHECK(false, This_Policy_Disallows_Value_Copying);
+            // Make it depended on template parameter
+            static const bool DependedFalse = sizeof(P*) == 0;
+
+            STATIC_CHECK(DependedFalse, This_Policy_Disallows_Value_Copying);
         }
         
         static bool Release(const P&)
@@ -601,8 +601,10 @@ namespace Loki
         
         static void OnDefault(const P&)
         {
-            STATIC_CHECK(false,
-                This_Policy_Does_Not_Allow_Default_Initialization);
+            // Make it depended on template parameter
+            static const bool DependedFalse = sizeof(P*) == 0;
+
+            STATIC_CHECK(DependedFalse, ERROR_This_Policy_Does_Not_Allow_Default_Initialization);
         }
         
         static void OnInit(const P& val)
@@ -1188,8 +1190,9 @@ namespace std
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// June 20,     2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // December 09, 2001: Included <cassert>
+// February 2,  2003: fixed dependent names - credit due to Rani Sharoni
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMARTPTR_INC_
