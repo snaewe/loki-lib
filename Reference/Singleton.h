@@ -51,7 +51,7 @@ namespace Loki
             static bool Compare(const LifetimeTracker* lhs,
                 const LifetimeTracker* rhs)
             {
-                return lhs->longevity_ > rhs->longevity_;
+                return lhs->longevity_ < rhs->longevity_;
             }
             
         private:
