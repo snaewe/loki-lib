@@ -15,7 +15,7 @@
 #ifndef TYPELISTTEST_H
 #define TYPELISTTEST_H
 
-#include <Loki/Typelist.h>
+#include <loki/Typelist.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // TypelistTest

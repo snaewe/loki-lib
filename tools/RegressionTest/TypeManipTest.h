@@ -15,7 +15,7 @@
 #ifndef TYPEMANIPTEST_H
 #define TYPEMANIPTEST_H
 
-#include <Loki/TypeManip.h>
+#include <loki/TypeManip.h>
 #include "UnitTest.h"
 
 ///////////////////////////////////////////////////////////////////////////////

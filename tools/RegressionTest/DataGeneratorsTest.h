@@ -5,7 +5,7 @@
 #define DATAGENERATORSTEST_H
 
 #include <typeinfo>
-#include <Loki/DataGenerators.h>
+#include <loki/DataGenerators.h>
 
 struct DataGeneratorsTest : public Test
   {
