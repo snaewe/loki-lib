@@ -13,12 +13,14 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef SINGLETON_INC_
 #define SINGLETON_INC_
 
 #include "Threads.h"
+#include <algorithm>
+#include <stdexcept>
 #include <cassert>
 #include <cstdlib>
 #include <new>
@@ -40,10 +42,10 @@ namespace Loki
             
             virtual ~LifetimeTracker() = 0;
             
-            friend inline bool Compare(unsigned int longevity,
-                const LifetimeTracker* p)
+            static bool Compare(const LifetimeTracker* lhs,
+                const LifetimeTracker* rhs)
             {
-                return p->longevity_ > longevity;
+                return rhs->longevity_ > lhs->longevity_;
             }
             
         private:
@@ -113,14 +115,19 @@ namespace Loki
         
         // Insert a pointer to the object into the queue
         TrackerArray pos = std::upper_bound(
-            pTrackerArray, pTrackerArray + elements, longevity, Compare);
-        std::copy_backward(pos, pTrackerArray + elements,
+            pTrackerArray, 
+            pTrackerArray + elements, 
+            p, 
+            LifetimeTracker::Compare);
+        std::copy_backward(
+            pos, 
+            pTrackerArray + elements,
             pTrackerArray + elements + 1);
         *pos = p;
         ++elements;
         
         // Register a call to AtExitFn
-        std::atexit(AtExitFn);
+        std::atexit(Private::AtExitFn);
     }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -252,6 +259,21 @@ namespace Loki
 #endif
         
 ////////////////////////////////////////////////////////////////////////////////
+// class template Adapter
+// Helper for SingletonWithLongevity below
+////////////////////////////////////////////////////////////////////////////////
+
+    namespace Private
+    {
+        template <class T>
+        struct Adapter
+        {
+            void operator()(T*) { return pFun_(); }
+            void (*pFun_)();
+        };
+    }
+
+////////////////////////////////////////////////////////////////////////////////
 // class template SingletonWithLongevity
 // Implementation of the LifetimePolicy used by SingletonHolder
 // Schedules an object's destruction in order of their longevities
@@ -265,13 +287,7 @@ namespace Loki
     public:
         static void ScheduleDestruction(T* pObj, void (*pFun)())
         {
-            struct Adapter
-            {
-                void operator()(T*) { return pFun_(); }
-                void (*pFun_)();
-            };
-        
-            Adapter adapter = { pFun };
+            Private::Adapter<T> adapter = { pFun };
             SetLongevity(pObj, GetLongevity(pObj), adapter);
         }
         
@@ -323,8 +339,8 @@ namespace Loki
         SingletonHolder();
         
         // Data
-        typedef ThreadingModel<T>::VolatileType InstanceType;
-        static InstanceType* pInstance_;
+        typedef typename ThreadingModel<T*>::VolatileType PtrInstanceType;
+        static PtrInstanceType pInstance_;
         static bool destroyed_;
     };
     
@@ -339,7 +355,7 @@ namespace Loki
         template <class> class L,
         template <class> class M
     >
-    typename SingletonHolder<T, C, L, M>::InstanceType*
+    typename SingletonHolder<T, C, L, M>::PtrInstanceType
         SingletonHolder<T, C, L, M>::pInstance_;
 
     template
@@ -387,7 +403,7 @@ namespace Loki
         LifetimePolicy, ThreadingModel>::MakeInstance()
     {
         typename ThreadingModel<T>::Lock guard;
-        guard;
+        (void)guard;
         
         if (!pInstance_)
         {
@@ -417,5 +433,11 @@ namespace Loki
         destroyed_ = true;
     }
 } // namespace Loki
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// May 21, 2001: Correct the volatile qualifier - credit due to Darin Adler
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // SINGLETON_INC_

@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef ABSTRACTFACTORY_INC_
 #define ABSTRACTFACTORY_INC_
@@ -76,7 +76,7 @@ namespace Loki
         typedef typename BaseProductList::Tail ProductList;
     
     public:
-        typedef BaseProductList::Head AbstractProduct;
+        typedef typename BaseProductList::Head AbstractProduct;
         ConcreteProduct* DoCreate(Type2Type<AbstractProduct>)
         {
             return new ConcreteProduct;
@@ -155,5 +155,10 @@ namespace Loki
     };
 
 } // namespace Loki
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // ABSTRACTFACTORY_INC_

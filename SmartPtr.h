@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef SMARTPTR_INC_
 #define SMARTPTR_INC_
@@ -155,11 +155,11 @@ namespace Loki
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Implements external reference counting for multithreaded programs
 ////////////////////////////////////////////////////////////////////////////////
-
     template <class P,
         template <class> class ThreadingModel>
-    class RefCountedMT : public ThreadingModel<RefCountedMT>
+    class RefCountedMT : public ThreadingModel< RefCountedMT<P, ThreadingModel> >
     {
+    public:
         RefCountedMT() 
         {
             pCount_ = static_cast<unsigned int*>(
@@ -176,7 +176,7 @@ namespace Loki
         // MWCW lacks template friends, hence the following kludge
         template <typename P1>
         RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs) 
-        : pCount_(reinterpret_cast<const RefCounted&>(rhs).pCount_)
+        : pCount_(reinterpret_cast<const RefCounted<P>&>(rhs).pCount_)
         {}
         
         P Clone(const P& val)
@@ -203,9 +203,9 @@ namespace Loki
 
     private:
         // Data
-        volatile ThreadingModel<RefCountedMT>::IntType* pCount_;
+        volatile unsigned int* pCount_;
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template COMRefCounted
 // Implementation of the OwnershipPolicy used by SmartPtr
@@ -564,6 +564,8 @@ namespace Loki
 
     struct NullPointerException : public std::runtime_error
     {
+        NullPointerException() : std::runtime_error("")
+        { }
         const char* what() const
         { return "Null Pointer Exception"; }
     };
@@ -598,8 +600,8 @@ namespace Loki
         
         static void OnDefault(const P&)
         {
-            STATIC_CHECK(false, 
-                This_Policy_Does_Not_Allow_Default_Initialization);
+            CompileTimeError<false>
+                ERROR_This_Policy_Does_Not_Allow_Default_Initialization;
         }
         
         static void OnInit(const P& val)
@@ -683,7 +685,8 @@ namespace Loki
     public:
         ByRef(T& v) : value_(v) {}
         operator T&() { return value_; }
-        operator const T&() const { return value_; }
+        // gcc doesn't like this:
+        // operator const T&() const { return value_; }
     private:
         T& value_;
     };
@@ -823,7 +826,7 @@ namespace Loki
     	
     	~SmartPtr()
     	{
-    	    if (OP::Release(GetImpl(*this)))
+    	    if (OP::Release(GetImpl(*static_cast<SP*>(this))))
     	    {
     	        SP::Destroy();
     	    }
@@ -919,8 +922,10 @@ namespace Loki
 
     private:
         // Helper for enabling 'if (sp)'
-        class Tester
+        struct Tester
         {
+            Tester() {}
+        private:
             void operator delete(void*);
         };
         
@@ -940,7 +945,7 @@ namespace Loki
             Insipid(PointerType) {}
         };
         
-        typedef Select<CP::allow, PointerType, Insipid>::Result
+        typedef typename Select<CP::allow, PointerType, Insipid>::Result
             AutomaticConversionResult;
     
     public:        
@@ -1179,5 +1184,10 @@ namespace std
         { return less<T*>()(GetImpl(lhs), GetImpl(rhs)); }
     };
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMARTPTR_INC_

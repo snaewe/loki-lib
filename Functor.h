@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef FUNCTOR_INC_
 #define FUNCTOR_INC_
@@ -22,6 +22,7 @@
 #include "EmptyType.h"
 #include "SmallObj.h"
 #include "TypeTraits.h"
+#include <typeinfo>
 #include <memory>
 
 namespace Loki
@@ -96,6 +97,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         virtual R operator()() = 0;
     };
 
@@ -109,6 +111,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         virtual R operator()(Parm1) = 0;
     };
@@ -124,6 +127,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         virtual R operator()(Parm1, Parm2) = 0;
@@ -140,6 +144,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -157,6 +162,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -176,6 +182,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -196,6 +203,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -217,6 +225,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -241,6 +250,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -266,6 +276,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -293,6 +304,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -322,6 +334,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -352,6 +365,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -383,6 +397,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -416,6 +431,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -450,6 +466,7 @@ namespace Loki
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
     public:
+        typedef R ResultType;
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
@@ -482,22 +499,22 @@ namespace Loki
         typedef typename ParentFunctor::Impl Base;
 
     public:
-        using typename Base::ResultType;
-        using typename Base::Parm1;
-        using typename Base::Parm2;
-        using typename Base::Parm3;
-        using typename Base::Parm4;
-        using typename Base::Parm5;
-        using typename Base::Parm6;
-        using typename Base::Parm7;
-        using typename Base::Parm8;
-        using typename Base::Parm9;
-        using typename Base::Parm10;
-        using typename Base::Parm11;
-        using typename Base::Parm12;
-        using typename Base::Parm13;
-        using typename Base::Parm14;
-        using typename Base::Parm15;
+        typedef typename Base::ResultType ResultType;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
         
         FunctorHandler(const Fun& fun) : f_(fun) {}
         
@@ -589,22 +606,22 @@ namespace Loki
         typedef typename ParentFunctor::Impl Base;
 
     public:
-        using typename Base::ResultType;
-        using typename Base::Parm1;
-        using typename Base::Parm2;
-        using typename Base::Parm3;
-        using typename Base::Parm4;
-        using typename Base::Parm5;
-        using typename Base::Parm6;
-        using typename Base::Parm7;
-        using typename Base::Parm8;
-        using typename Base::Parm9;
-        using typename Base::Parm10;
-        using typename Base::Parm11;
-        using typename Base::Parm12;
-        using typename Base::Parm13;
-        using typename Base::Parm14;
-        using typename Base::Parm15;
+        typedef typename Base::ResultType ResultType;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
 
         MemFunHandler(const PointerToObj& pObj, PointerToMemFn pMemFn) 
         : pObj_(pObj), pMemFn_(pMemFn)
@@ -840,7 +857,8 @@ namespace Loki
         template <typename R, class TList, template <class> class ThreadingModel>
         struct BinderFirstTraits< Functor<R, TList, ThreadingModel> >
         {
-            typedef TL::Erase<TList, typename TL::TypeAt<TList, 0>::Result>::Result
+            typedef typename TL::Erase<TList, 
+                    typename TL::TypeAt<TList, 0>::Result>::Result
                 ParmList;
             typedef Functor<R, ParmList, ThreadingModel> BoundFunctorType;
             typedef typename BoundFunctorType::Impl Impl;
@@ -980,22 +998,22 @@ namespace Loki
         typedef Fun2 Base;
 
     public:
-        using typename Base::ResultType;
-        using typename Base::Parm1;
-        using typename Base::Parm2;
-        using typename Base::Parm3;
-        using typename Base::Parm4;
-        using typename Base::Parm5;
-        using typename Base::Parm6;
-        using typename Base::Parm7;
-        using typename Base::Parm8;
-        using typename Base::Parm9;
-        using typename Base::Parm10;
-        using typename Base::Parm11;
-        using typename Base::Parm12;
-        using typename Base::Parm13;
-        using typename Base::Parm14;
-        using typename Base::Parm15;
+        typedef typename Base::ResultType ResultType;
+        typedef typename Base::Parm1 Parm1;
+        typedef typename Base::Parm2 Parm2;
+        typedef typename Base::Parm3 Parm3;
+        typedef typename Base::Parm4 Parm4;
+        typedef typename Base::Parm5 Parm5;
+        typedef typename Base::Parm6 Parm6;
+        typedef typename Base::Parm7 Parm7;
+        typedef typename Base::Parm8 Parm8;
+        typedef typename Base::Parm9 Parm9;
+        typedef typename Base::Parm10 Parm10;
+        typedef typename Base::Parm11 Parm11;
+        typedef typename Base::Parm12 Parm12;
+        typedef typename Base::Parm13 Parm13;
+        typedef typename Base::Parm14 Parm14;
+        typedef typename Base::Parm15 Parm15;
         
         Chainer(const Fun1& fun1, const Fun2& fun2) : f1_(fun1), f2_(fun2) {}
 
@@ -1112,10 +1130,15 @@ namespace Loki
         const Fun1& fun1,
         const Fun2& fun2)
     {
-        return Fun2(std::auto_ptr<Fun2::Impl>(
+        return Fun2(std::auto_ptr<typename Fun2::Impl>(
             new Chainer<Fun1, Fun2>(fun1, fun2)));
     }
 
 } // namespace Loki
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif  // FUNCTOR_INC_

@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef TYPEMANIP_INC_
 #define TYPEMANIP_INC_
@@ -73,8 +73,15 @@ namespace Loki
 
     namespace Private
     {
-        typedef char Small;
-        class Big { char dummy[2]; };
+        template <class T, class U>
+        struct ConversionHelper
+        {
+            typedef char Small;
+            struct Big { char dummy[2]; };
+            static Big   Test(...);
+            static Small Test(U);
+            static T MakeT();
+        };
     }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,37 +101,33 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class T, class U>
-    class Conversion
+    struct Conversion
     {
-        static Private::Big Test(...);
-        static Private::Small Test(U);
-        static T MakeT();
-
-    public:
-        enum { exists = sizeof(Test(MakeT())) == sizeof(Private::Small) };
-        enum { exists2Way = exists && 
-            Conversion<U, T>::exists };
+        typedef Private::ConversionHelper<T, U> H;
+#ifndef __MWERKS__
+        enum { exists = sizeof(typename H::Small) == sizeof(H::Test(H::MakeT())) };
+#else
+        enum { exists = false };
+#endif
+        enum { exists2Way = exists && Conversion<U, T>::exists };
         enum { sameType = false };
     };
     
     template <class T>
-    class Conversion<T, T>    
+    struct Conversion<T, T>    
     {
-    public:
         enum { exists = 1, exists2Way = 1,sameType = 1 };
     };
     
     template <class T>
-    class Conversion<void, T>    
+    struct Conversion<void, T>    
     {
-    public:
         enum { exists = 1, exists2Way = 0,sameType = 0 };
     };
     
     template <class T>
-    class Conversion<T, void>    
+    struct Conversion<T, void>    
     {
-    public:
         enum { exists = 1, exists2Way = 0,sameType = 0 };
     };
     
@@ -161,5 +164,9 @@ namespace Loki
     (SUPERSUBCLASS(T, U) && \
     !::Loki::Conversion<const T, const U>::sameType)
 
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_

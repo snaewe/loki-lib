@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef VISITOR_INC_
 #define VISITOR_INC_
@@ -66,20 +66,20 @@ namespace Loki
 
     template <class Head, class Tail, typename R>
     class Visitor<Typelist<Head, Tail>, R>
-        : public Visitor<Head>, public Visitor<Tail>
+        : public Visitor<Head, R>, public Visitor<Tail, R>
     {
     public:
         typedef R ReturnType;
-        using Visitor<Head>::Visit;
-        using Visitor<Tail>::Visit;
+       // using Visitor<Head, R>::Visit;
+       // using Visitor<Tail, R>::Visit;
     };
     
     template <class Head, typename R>
-    class Visitor<Typelist<Head, NullType>, R> : public Visitor<Head>
+    class Visitor<Typelist<Head, NullType>, R> : public Visitor<Head, R>
     {
     public:
         typedef R ReturnType;
-        using Visitor<Head>::Visit;
+        using Visitor<Head, R>::Visit;
     };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ namespace Loki
         , public BaseVisitorImpl<Tail, R>
     {
     public:
-        using BaseVisitorImpl<Tail, R>::Visit;
+       // using BaseVisitorImpl<Tail, R>::Visit;
 
         virtual R Visit(Head&)
         { return R(); }
@@ -126,7 +126,11 @@ struct DefaultCatchAll
 // class template BaseVisitable
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename R = void, template <typename, class> class CatchAll>
+    template 
+    <
+        typename R = void, 
+        template <typename, class> class CatchAll = DefaultCatchAll
+    >
     class BaseVisitable
     {
     public:
@@ -158,41 +162,22 @@ struct DefaultCatchAll
     { return AcceptImpl(*this, guest); }
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template VisitorBinder
-// Helper for CyclicVisitor below
-////////////////////////////////////////////////////////////////////////////////
-
-    namespace Private
-    {
-        template <typename R>
-        struct VisitorBinder
-        {
-            template <class T>
-            struct Result : public Visitor<T, R>
-            {
-            };
-        };
-    }
-    
-////////////////////////////////////////////////////////////////////////////////
 // class template CyclicVisitor
 // Put it in every class that you want to make visitable (in addition to 
 //     deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, class TList>
-    class CyclicVisitor
-        : public GenScatterHierarchy<TList, Private::VisitorBinder<R>::Result>
+    class CyclicVisitor : public Visitor<TList, R>
     {
     public:
         typedef R ReturnType;
+        // using Visitor<TList, R>::Visit;
         
-        // this is GenericVisit and not Visit to avoid the compiler warning 
-        // "Visit hides virtual function in base class" 
         template <class Visited>
         ReturnType GenericVisit(Visited& host)
         {
-            Visitor<Visited>& subObj = *this;
+            Visitor<Visited, ReturnType>& subObj = *this;
             return subObj.Visit(host);
         }
     };
@@ -208,4 +193,11 @@ struct DefaultCatchAll
 
 } // namespace Loki
 
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// March 20: add default argument DefaultCatchAll to BaseVisitable
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
+
 #endif // VISITOR_INC_
+

@@ -13,12 +13,12 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef TYPELIST_INC_
 #define TYPELIST_INC_
 
-#include "Nulltype.h"
+#include "NullType.h"
 #include "TypeManip.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,31 +113,31 @@
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22) >
 
 #define TYPELIST_23(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
-        T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T23) \
+        T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23) \
     ::Loki::Typelist<T1, TYPELIST_22(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23) >
 
 #define TYPELIST_24(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
-        T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T23, T24) \
+        T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24) \
     ::Loki::Typelist<T1, TYPELIST_23(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24) >
 
 #define TYPELIST_25(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
-        T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T23, T24, T25) \
+        T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25) \
     ::Loki::Typelist<T1, TYPELIST_24(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25) >
 
 #define TYPELIST_26(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
-        T21, T23, T24, T25, T26) \
+        T21, T22, T23, T24, T25, T26) \
     ::Loki::Typelist<T1, TYPELIST_25(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26) >
 
 #define TYPELIST_27(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
-        T21, T23, T24, T25, T26, T27) \
+        T21, T22, T23, T24, T25, T26, T27) \
     ::Loki::Typelist<T1, TYPELIST_26(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27) >
@@ -460,7 +460,7 @@ namespace Loki
             enum { value = -1 };
         };
         
-        template <class Tail, class T>
+        template <class T, class Tail>
         struct IndexOf<Typelist<T, Tail>, T>
         {
             enum { value = 0 };
@@ -472,7 +472,7 @@ namespace Loki
         private:
             enum { temp = IndexOf<Tail, T>::value };
         public:
-            enum { value = temp == -1 ? -1 : 1 + temp };
+            enum { value = (temp == -1 ? -1 : 1 + temp) };
         };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -524,11 +524,13 @@ namespace Loki
         {
             typedef NullType Result;
         };
+
         template <class T, class Tail>             // Specialization 2
         struct Erase<Typelist<T, Tail>, T>
         {
             typedef Tail Result;
         };
+
         template <class Head, class Tail, class T> // Specialization 3
         struct Erase<Typelist<Head, Tail>, T>
         {
@@ -731,4 +733,12 @@ namespace Loki
     }   // namespace TL
 }   // namespace Loki
 
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 09, 2001: Fix bug in parameter list of macros TYPELIST_23 to TYPELIST_27
+//      (credit due to Dave Taylor)
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
+
 #endif // TYPELIST_INC_
+

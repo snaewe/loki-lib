@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: March 05, 2001
 
 #ifndef HIERARCHYGENERATORS_INC_
 #define HIERARCHYGENERATORS_INC_
@@ -45,26 +45,30 @@ namespace Loki
         typedef Typelist<T1, T2> TList;
         typedef GenScatterHierarchy<T1, Unit> LeftBase;
         typedef GenScatterHierarchy<T2, Unit> RightBase;
-
-        template <class T> struct Rebind
-        { typedef Unit<T> Result; };   
+        template <typename T> struct Rebind
+        {
+            typedef Unit<T> Result;
+        };
     };
      
-     template <class AtomicType, template <class> class Unit>
-     class GenScatterHierarchy : public Unit<AtomicType>
-     {
+    template <class AtomicType, template <class> class Unit>
+    class GenScatterHierarchy : public Unit<AtomicType>
+    {
         typedef Unit<AtomicType> LeftBase;
-
-        template <class T> struct Rebind
-        { typedef Unit<T> Result; };   
-     };
-     
-     template <template <class> class Unit>
-     class GenScatterHierarchy<NullType, Unit>
-     {
-        template <class T> struct Rebind
-        { typedef Unit<T> Result; };
-     };
+        template <typename T> struct Rebind
+        {
+            typedef Unit<T> Result;
+        };
+    };
+    
+    template <template <class> class Unit>
+    class GenScatterHierarchy<NullType, Unit>
+    {
+        template <typename T> struct Rebind
+        {
+            typedef Unit<T> Result;
+        };
+    };
      
 ////////////////////////////////////////////////////////////////////////////////
 // function template Field
@@ -75,11 +79,17 @@ namespace Loki
 // returns a reference to Unit<T>, where Unit is the template used to generate H 
 ////////////////////////////////////////////////////////////////////////////////
 
-     template <class T, class H>
-     typename H::Rebind<T>::Result& Field(H& obj)
-     {
-         return obj;
-     }
+    template <class T, class H>
+    typename H::Rebind<T>::Result& Field(H& obj)
+    {
+        return obj;
+    }
+     
+    template <class T, class H>
+    const typename H::Rebind<T>::Result& Field(const H& obj)
+    {
+        return obj;
+    }
      
 ////////////////////////////////////////////////////////////////////////////////
 // function template TupleUnit
@@ -120,20 +130,20 @@ namespace Loki
         
         enum
         {
-            isTuple = 
-                Conversion<UnitType, TupleUnit<ElementType> >::sameType,
+            isTuple = Conversion<UnitType, TupleUnit<ElementType> >::sameType,
             isConst = TypeTraits<H>::isConst
         };
+
+        typedef const typename H::LeftBase ConstLeftBase;
         
-        typedef Select<isConst, const H::LeftBase, 
-            H::LeftBase>::Result LeftBase;
+        typedef typename Select<isConst, ConstLeftBase, 
+            typename H::LeftBase>::Result LeftBase;
             
-        typedef Select<isTuple, ElementType, UnitType>::Result 
-            UnqualifiedResultType;
-        typedef Select<isConst,
-                const UnqualifiedResultType,
-                UnqualifiedResultType>::Result
-            ResultType;
+        typedef typename Select<isTuple, ElementType, 
+            UnitType>::Result UnqualifiedResultType;
+
+        typedef typename Select<isConst, const UnqualifiedResultType,
+                		UnqualifiedResultType>::Result ResultType;
             
         static ResultType& Do(H& obj)
         {
@@ -150,25 +160,25 @@ namespace Loki
         
         enum
         {
-            isTuple = 
-                Conversion<UnitType, TupleUnit<ElementType> >::sameType,
+            isTuple = Conversion<UnitType, TupleUnit<ElementType> >::sameType,
             isConst = TypeTraits<H>::isConst
         };
-        
-        typedef Select<isConst, const H::RightBase, 
-            H::RightBase>::Result RightBase;
 
-        typedef Select<isTuple, ElementType, UnitType>::Result 
-            UnqualifiedResultType;
-        typedef Select<isConst,
-                const UnqualifiedResultType,
-                UnqualifiedResultType>::Result
-            ResultType;
+        typedef const typename H::RightBase ConstRightBase;
+        
+        typedef typename Select<isConst, ConstRightBase, 
+            typename H::RightBase>::Result RightBase;
+
+        typedef typename Select<isTuple, ElementType, 
+            UnitType>::Result UnqualifiedResultType;
+
+        typedef typename Select<isConst, const UnqualifiedResultType,
+                		UnqualifiedResultType>::Result ResultType;
             
         static ResultType& Do(H& obj)
         {
-            typename H::RightBase& rightBase = obj;
-            return FieldHelper<typename H::RightBase, i - 1>::Do(obj);
+            RightBase& rightBase = obj;
+            return FieldHelper<RightBase, i - 1>::Do(rightBase);
         }
     };
 
@@ -188,6 +198,13 @@ namespace Loki
     {
         return FieldHelper<H, i>::Do(obj);
     }
+        
+//    template <int i, class H>
+//    const typename FieldHelper<H, i>::ResultType&
+//    Field(const H& obj)
+//    {
+//        return FieldHelper<H, i>::Do(obj);
+//    }
         
 ////////////////////////////////////////////////////////////////////////////////
 // class template GenLinearHierarchy
@@ -222,12 +239,16 @@ namespace Loki
         template <class, class> class Unit,
         class Root
     >
-    class GenLinearHierarchy<TYPELIST_1(T), Unit, Root>
+    class GenLinearHierarchy<Typelist<T, NullType>, Unit, Root>
         : public Unit<T, Root>
     {
     };
 
 }   // namespace Loki
 
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // HIERARCHYGENERATORS_INC_

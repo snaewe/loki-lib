@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: June 20, 2001
 
 #ifndef ASSOCVECTOR_INC_
 #define ASSOCVECTOR_INC_
@@ -21,7 +21,6 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
-#include <utility>
 #include <utility>
 
 namespace Loki
@@ -140,7 +139,7 @@ namespace Loki
         }
         
         AssocVector& operator=(const AssocVector& rhs)
-        { AssocVector(*this).swap(*this); }
+        { AssocVector(rhs).swap(*this); }
 
         // iterators:
         // The following are here because MWCW gets 'using' wrong
@@ -286,7 +285,7 @@ namespace Loki
             const key_type& k) const
         {
             const MyCompare& me = *this;
-            return std::equal_range(begin(), end(), k, me));
+            return std::equal_range(begin(), end(), k, me);
         }
         
         friend bool operator==(const AssocVector& lhs, const AssocVector& rhs)
@@ -295,10 +294,11 @@ namespace Loki
             return me == rhs;
         } 
 
-        friend bool operator<(const AssocVector& lhs, const AssocVector& rhs)
+        bool operator<(const AssocVector& rhs) const
         {
-            const Base& me = lhs;
-            return me < rhs;
+            const Base& me = *this;
+            const Base& yo = rhs;
+            return me < yo;
         } 
 
         friend bool operator!=(const AssocVector& lhs, const AssocVector& rhs)
@@ -320,5 +320,12 @@ namespace Loki
     { lhs.swap(rhs); }
     
 } // namespace Loki
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// May 20, 2001: change operator= - credit due to Cristoph Koegl
+// June 11, 2001: remove paren in equal_range - credit due to Cristoph Koegl
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // ASSOCVECTOR_INC_

@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: February 19, 2001
+// Last update: March 20, 2001
 
 #include "SmallObj.h"
 #include <cassert>
@@ -119,8 +119,8 @@ void FixedAllocator::Chunk::Deallocate(void* p, std::size_t blockSize)
 
 FixedAllocator::FixedAllocator(std::size_t blockSize)
     : blockSize_(blockSize)
-    , deallocChunk_(0)
     , allocChunk_(0)
+    , deallocChunk_(0)
 {
     assert(blockSize_ > 0);
     
@@ -217,10 +217,11 @@ void* FixedAllocator::Allocate()
             if (i == chunks_.end())
             {
                 // Initialize
-                chunks_.push_back(Chunk());
-                Chunk& newChunk = chunks_.back();
+                chunks_.reserve(chunks_.size() + 1);
+                Chunk newChunk;
                 newChunk.Init(blockSize_, numBlocks_);
-                allocChunk_ = &newChunk;
+                chunks_.push_back(newChunk);
+                allocChunk_ = &chunks_.back();
                 deallocChunk_ = &chunks_.front();
                 break;
             }
@@ -406,3 +407,10 @@ void SmallObjAllocator::Deallocate(void* p, std::size_t numBytes)
     pLastDealloc_ = &*i;
     pLastDealloc_->Deallocate(p);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Change log:
+// March 20: fix exception safety issue in FixedAllocator::Allocate 
+//     (thanks to Chris Udazvinis for pointing that out)
+// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+////////////////////////////////////////////////////////////////////////////////
