@@ -8,11 +8,11 @@
 // affects only default template arguments
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Feb 20, 2003
+// Last update: Mar 26, 2003
 // note: In this VC 6 port all template policies become non-templates with
 // either member-template functions or a nested template struct named In
 
-// Changed wrong ctor/dtor names in ObjectLevelLockable. 
+// Changed wrong ctor/dtor names in ObjectLevelLockable.
 // Thanks to Adi Shavit for pointing that out
 
 #ifndef DEFAULT_THREADING
@@ -37,26 +37,26 @@ namespace Loki
 				Lock() {}
 				explicit Lock(const SingleThreaded&) {}
 			};
-        
+
 			typedef Host VolatileType;
 
-			typedef int IntType; 
+			typedef int IntType;
 
 			static IntType AtomicAdd(volatile IntType& lval, IntType val)
 			{ return lval += val; }
-        
+
 			static IntType AtomicSubtract(volatile IntType& lval, IntType val)
 			{ return lval -= val; }
 
 			static IntType AtomicMultiply(volatile IntType& lval, IntType val)
 			{ return lval *= val; }
-        
+
 			static IntType AtomicDivide(volatile IntType& lval, IntType val)
 			{ return lval /= val; }
-        
+
 			static IntType AtomicIncrement(volatile IntType& lval)
 			{ return ++lval; }
-        
+
 			static IntType AtomicDecrement(volatile IntType& lval)
 			{ return --lval; }
 
@@ -69,12 +69,12 @@ namespace Loki
 			*/
 			static void AtomicAssign(volatile IntType & lval, IntType val)
 			{ lval = val; }
-        
+
 			static void AtomicAssign(IntType & lval, volatile IntType & val)
 			{ lval = val; }
 		};
     };
-    
+
 #ifdef _WINDOWS_
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ namespace Loki
 // Implements a object-level locking scheme
 ////////////////////////////////////////////////////////////////////////////////
 
-    
+
     struct ObjectLevelLockable
     {
 		template <class Host>
@@ -105,11 +105,11 @@ namespace Loki
 
 			class Lock;
 			friend class Lock;
-        
+
 			class Lock
 			{
 				ObjectLevelLockable::In<Host>& host_;
-            
+
 				Lock(const Lock&);
 				Lock& operator=(const Lock&);
 				//Lock(); // buggy design
@@ -127,22 +127,22 @@ namespace Loki
 
 			typedef volatile Host VolatileType;
 
-			typedef LONG IntType; 
+			typedef LONG IntType;
 
 			static IntType AtomicIncrement(volatile IntType& lval)
 			{ return InterlockedIncrement(&const_cast<IntType&>(lval)); }
-        
+
 			static IntType AtomicDecrement(volatile IntType& lval)
 			{ return InterlockedDecrement(&const_cast<IntType&>(lval)); }
-        
+
 			static void AtomicAssign(volatile IntType& lval, IntType val)
 			{ InterlockedExchange(&const_cast<IntType&>(lval), val); }
-        
+
 			static void AtomicAssign(IntType& lval, volatile IntType& val)
 			{ InterlockedExchange(&lval, val); }
 		};
     };
-    
+
     struct ClassLevelLockable
     {
 		template <class Host>
@@ -152,8 +152,8 @@ namespace Loki
 			struct Initializer;
 			friend struct Initializer;
 			struct Initializer
-			{   
-				
+			{
+
 				CRITICAL_SECTION mtx_;
 
 				Initializer()
@@ -165,13 +165,13 @@ namespace Loki
 					::DeleteCriticalSection(&mtx_);
 				}
 			};
-        
+
 			static Initializer initializer_;
 
 		public:
 			class Lock;
 			friend class Lock;
-        
+
 			class Lock
 			{
 				Lock(const Lock&);
@@ -193,27 +193,27 @@ namespace Loki
 
 			typedef volatile Host VolatileType;
 
-			typedef LONG IntType; 
+			typedef LONG IntType;
 
 			static IntType AtomicIncrement(volatile IntType& lval)
 			{ return InterlockedIncrement(&const_cast<IntType&>(lval)); }
-        
+
 			static IntType AtomicDecrement(volatile IntType& lval)
 			{ return InterlockedDecrement(&const_cast<IntType&>(lval)); }
-        
+
 			static void AtomicAssign(volatile IntType& lval, IntType val)
 			{ InterlockedExchange(&const_cast<IntType&>(lval), val); }
-        
+
 			static void AtomicAssign(IntType& lval, volatile IntType& val)
 			{ InterlockedExchange(&lval, val); }
 		};
     };
-    
+
     template <class Host>
-	typename ClassLevelLockable::template In<Host>::Initializer 
-	ClassLevelLockable::template In<Host>::initializer_;
-    
-#endif    
+	typename Loki::ClassLevelLockable::template In<Host>::Initializer
+	Loki::ClassLevelLockable::template In<Host>::initializer_;
+
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,6 +221,8 @@ namespace Loki
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Oct	06,	2002: ported by Benjamin Kaufmann to MSVC 6.0
 // Feb	20, 2003: corrected constructor parameter in ObjectLevelLockable::Lock
+// Mar	26, 2003: added Loki-Namespace-Qualification to definition of
+//					ClassLevelLockable's static member.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
