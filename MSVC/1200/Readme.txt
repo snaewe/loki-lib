@@ -29,8 +29,8 @@ If you use Singletons with longevity you must add Singleton.cpp to your project/
 
 Fixes:
 ------
-	
-	Mar 08, 2003:
+
+	Mar 06, 2003:
     -------------
         * In SmartPointer.h: Added helper-macros for convenient specialization
         of std::less for Smart-Pointers.
@@ -43,21 +43,21 @@ Fixes:
 	---------
 		* created new versions of Functor.h, Visitor.h and MultiMethods.h that
 		now can handle void return types transparently.
-		
+
 		* ported SmartPtr's Ownership-Policy RefCountedMT
-		
+
 		* Added isFunctionPointer to TypeTraits.
-		
-		* Replaced all pointer-type dummy-parameters needed as a workaround 
+
+		* Replaced all pointer-type dummy-parameters needed as a workaround
 		for VC's 'explicit template argument specification'-bug with Typ2Type-dummy
 		parameters.
-		
+
 		* fixed the problems with BindFirst (Functor.h) that led to
 		C1001-Internal compiler errors.
-		
+
 		* fixed numerous other bugs.
-		
-    
+
+
     Jan 30, 2003:
     -------------
         * In TypeTraits.h: Fixed bugs in TypeTraits' scalar and array detection.
@@ -118,7 +118,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     B. One way to simulate template template parameters is to replace the template class with
     a normal class containing a nested template class. You then move the original functionality
     to the nested class.
-    The problem with this approach is MSVC's 'dependent template typedef bug'. 
+    The problem with this approach is MSVC's 'dependent template typedef bug'.
     MSVC 6.0 does not allow something like this:
 
     [code]
@@ -190,7 +190,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     template <class T, class R = void>
     struct Blub {};
     [/code]
-    
+
     Interestingly enough you can have void as default type by simply using another
     level of indirection:
     [code]
@@ -200,21 +200,21 @@ Unfortunately the MSVC 6.0 supports neither of them.
     };
 
     template <class T, class R = VoidWrap::type>
-    struct Blub 
+    struct Blub
     {};
     [/code]
-    
+
     F. To workaround void returns I did the following:
     From every original class I moved those functions that potentially
 	produce void returns to new classes. One for the general case and
 	one for the void case.
 	In the class for the general case I implemented the functions in the original way.
-	In the class for the void case I removed the return statements and therefore the 
+	In the class for the void case I removed the return statements and therefore the
 	potential void return.
 	Depending on the return type, the original class inherits from the
 	corresponding new class and thus gets the proper implementation of
-	the previously removed functions. 
-	
+	the previously removed functions.
+
 	For example:
 	[code]
 	template <class R> struct Foo
@@ -240,14 +240,14 @@ Unfortunately the MSVC 6.0 supports neither of them.
 	struct Foo	: public Select<IsVoid<R>::value, FooVoidBase, FooBase<R> >::Result
 	{};
 	[/code]
-	Please note that *all* new base classes are only meant as a hidden 
+	Please note that *all* new base classes are only meant as a hidden
 	implementation detail.
 	You should never use any of them directly or indirectly. In particular don't
-	make use of the possible derived-to-base conversion. 
-    
-    In the old version of Functor.h I changed a ResultType of type void to 
+	make use of the possible derived-to-base conversion.
+
+    In the old version of Functor.h I changed a ResultType of type void to
     VoidAsType (an udt). This change is transparent to the user of Functor.
-    
+
 Some words to template-ctors resp. template assignment operators:
 The MSVC 6.0 introduces an order-dependency for template ctor
 resp. template assignemt operators.
@@ -439,9 +439,9 @@ Interface changes:
    [code]
    #include <map>
    #include <loki/SmartPtr.h>
-   
+
    SMARTPTR_SPECIALIZE_LESS(Apple)
-   
+
    class Apple {};
 
     int main()
@@ -467,8 +467,8 @@ Interface changes:
 	However there are still two sets of macros. One for return type = void
 	(DEFINE_VISITABLE_VOID, DEFINE_CYCLIC_VISITABLE_VOID) and one for return
 	type != void (DEFINE_VISITABLE, DEFINE_CYCLIC_VISITABLE)
-	
-	
+
+
 10. MultiMethods.h
 
     * replaced all template template parameters with 'normal' parameters (see 7.
@@ -482,7 +482,7 @@ Interface changes:
 	Update:
 	-------
 	* The port now supports functions with return type void.
-	
+
 	Some words to BasicDispatcher:
 	------------------------------
 	You can't use a (namespace level) template function as callback-function
@@ -493,9 +493,9 @@ Interface changes:
 	[code]
 	template <class DerivedShape1, class DerivedShape2>
 	int HatchShapes(Shape&, Shape&) {...}
-	
+
 	typedef ::Loki::BasicDispatcher<Shape> Dispatcher;
-	
+
 	void Func(Dispatcher& x)
 	{
 		x.Add(&HatchShapes<Circle, Rectangle>);
@@ -504,7 +504,7 @@ Interface changes:
 	Using the VC 6.0 this is not possible, because there is no
 	way to specify the types for DerivedShape1 and DerivedShape2 (at least
 	I know of no way).
-	
+
 	As a workaround use a helper-template class in conjunction with
 	a static member function:
 	[code]
@@ -513,14 +513,14 @@ Interface changes:
 	{
 		int HatchShapes(Shape&, Shape&) {...}
 	};
-	
+
 	typedef ::Loki::BasicDispatcher<Shape> Dispatcher;
-	
+
 	void Func(Dispatcher& x)
 	{
 		x.Add(&Hatch_Helper<Circle, Rectangle>::HatchShapes);
 	}
-	
+
 More info:
 ----------
 The original Loki library can be found here: http://moderncppdesign.com
