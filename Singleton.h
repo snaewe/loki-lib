@@ -103,7 +103,7 @@ namespace Loki
         
         TrackerArray pNewArray = static_cast<TrackerArray>(
                 std::realloc(pTrackerArray, 
-                    sizeof(T) * (elements + 1)));
+                    sizeof(*pTrackerArray) * (elements + 1)));
         if (!pNewArray) throw std::bad_alloc();
         
         // Delayed assignment for exception safety
