@@ -14,7 +14,7 @@
 // Last update: Oct 10, 2002
 
 #pragma once
-#include "TypeList.h"
+#include "Typelist.h"
 
 //MSVC7 version
 namespace Loki
@@ -169,7 +169,7 @@ namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template IterateTypes
-// Iteratates a TypeList, and invokes the ctor of GenFunc<T>
+// Iteratates a Typelist, and invokes the ctor of GenFunc<T>
 // for each type in the list, passing a functor along the way.
 // The functor is designed to be an insertion iterator which GenFunc<T>
 // can use to output information about the types in the list.

@@ -14,13 +14,13 @@
 
 #ifndef DATAGENERATORS_H
 #define DATAGENERATORS_H
-#include "TypeList.h"
+#include "Typelist.h"
 
 //Reference version
 
 /************************************************************************************
 // class template GenData
-// Iteratates a TypeList, and invokes the functor GenFunc<T>
+// Iteratates a Typelist, and invokes the functor GenFunc<T>
 // for each type in the list, passing a functor along the way.
 // The functor is designed to be an insertion iterator which GenFunc<T>
 // can use to output information about the types in the list.
