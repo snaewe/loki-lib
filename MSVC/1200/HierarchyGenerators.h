@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Dec 08, 2002
+// Last update: Mar 08, 2003
 
 
 #ifndef HIERARCHYGENERATORS_INC_
@@ -211,14 +211,14 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 	template <class T, class TList, class UnitWrapper>
 	typename ApplyInnerType<UnitWrapper, T>::type&
-	Field(GenScatterHierarchy<TList, UnitWrapper>& obj)
+	Field(GenScatterHierarchy<TList, UnitWrapper>& obj,Type2Type<T>* = (Type2Type<T>*)0)
 	{
 		return obj;
 	}
 
 	template <class T, class TList, class UnitWrapper>
 	const typename ApplyInnerType<UnitWrapper, T>::type&
-	Field(const GenScatterHierarchy<TList, UnitWrapper>& obj)
+	Field(const GenScatterHierarchy<TList, UnitWrapper>& obj, Type2Type<T>* = (Type2Type<T>*)0)
 	{
 		return obj;
 	}
@@ -372,6 +372,7 @@ namespace Private
 // returns a reference to Unit<T>, where Unit is the template used to generate H
 //     and T is the i-th type in the typelist 
 ////////////////////////////////////////////////////////////////////////////////
+	/*
 	template <unsigned int i, class TList, class UnitWrapper>
     typename FieldHelper<i>::template In<GenScatterHierarchy<TList, UnitWrapper>,UnitWrapper>::ResultType&
     Field(GenScatterHierarchy<TList, UnitWrapper>& obj, Int2Type<i>)
@@ -379,7 +380,14 @@ namespace Private
 		typedef typename GenScatterHierarchy<TList, UnitWrapper> H;
 		return FieldHelper<i>::template In<H, UnitWrapper>::Do(obj, (int*)0);
     }
-	
+	*/
+	template <unsigned int i, class TList, class UnitWrapper>
+    typename FieldHelper<i>::template In<GenScatterHierarchy<TList, UnitWrapper>,UnitWrapper>::ResultType&
+    Field(GenScatterHierarchy<TList, UnitWrapper>& obj, Int2Type<i>* = (Int2Type<i>*)0)
+    {
+		typedef typename GenScatterHierarchy<TList, UnitWrapper> H;
+		return FieldHelper<i>::template In<H, UnitWrapper>::Do(obj, (int*)0);
+    }
 ////////////////////////////////////////////////////////////////////////////////
 // class template GenLinearHierarchy
 // Generates a linear hierarchy starting from a typelist and a template
@@ -487,7 +495,7 @@ namespace Private
 
 #if defined (_MSC_VER) && _MSC_VER <= 1300
 #define FIELD(Obj, Nr) \
-	Field(Obj, Int2Type<Nr>())
+	Field(Obj, (Int2Type<Nr>*)0)
 #else
 #define FIELD(Obj, Nr) \
 	Field<Nr>(Obj)
@@ -505,6 +513,8 @@ namespace Private
 //					work correctly due to the "Explicitly Specified Template 
 //					Functions Not Overloaded Correctly"-Bug 
 //					(Microsoft KB Article - 240871). B.K.
+// Mar	08, 2003: New transparent workaround for Field-Functions. The FIELD-Macro
+//					is no longer needed. B.K.
 ////////////////////////////////////////////////////////////////////////////////
 #undef IS_TYPELIST
 #endif // HIERARCHYGENERATORS_INC_
