@@ -2,32 +2,32 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Wesley Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Feb 23, 2003
+// Last update: Mar 06, 2003
+//
+// Like the original library, this port now uses void as 
+// default value for return types.
 //
 // This new of visitor.h handles void returns transparently. See
 // readme.txt for an explanation of the used technique.
 // However there are still two sets of macros. One for return type = void
 // (DEFINE_VISITABLE_VOID, DEFINE_CYCLIC_VISITABLE_VOID) and one for return
 // type != void (DEFINE_VISITABLE, DEFINE_CYCLIC_VISITABLE)
-// 
+//
 // If you prefer the old version of visitor.h which uses a different set of
-// visitor classes for the return type void, define the macro 
+// visitor classes for the return type void, define the macro
 // USE_VISITOR_OLD_VERSION.
-// 
-// The MSVC 6.0 does not allow void to be a default value for a template parameter.
-// I therefore changed all defaults to int.
-
+//
 #ifdef USE_VISITOR_OLD_VERSION
 #include "VisitorOld.h"
 #else
@@ -51,21 +51,21 @@ namespace Loki
     public:
         virtual ~BaseVisitor() {}
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template Visitor
 // The building block of Acyclic Visitor
 ////////////////////////////////////////////////////////////////////////////////
-	template <class T, typename R = int/* =  void */ >
+	template <class T, typename R = Loki::Private::VoidWrap::type >
     class Visitor;
 ////////////////////////////////////////////////////////////////////////////////
 // class template Visitor (specialization)
 // This specialization is not present in the book. It makes it easier to define
 // Visitors for multiple types in a shot by using a typelist. Example:
 //
-// class SomeVisitor : 
+// class SomeVisitor :
 //     public BaseVisitor // required
-//     public Visitor<TYPELIST_2(RasterBitmap, Paragraph)>, 
+//     public Visitor<TYPELIST_2(RasterBitmap, Paragraph)>,
 //     public Visitor<Paragraph>
 // {
 // public:
@@ -77,7 +77,7 @@ namespace Private
 {
 	// helper for Visitor's the left base class
 	template <unsigned int ListId>
-	struct VisitorImplLeft 
+	struct VisitorImplLeft
 	{
 		template <class TList, class R>
 		struct In
@@ -85,7 +85,7 @@ namespace Private
 			typedef typename TList::ERROR_WRONG_SPECIALIZATION_SELECTED Result;
 		};
 	};
-	
+
 	// helper for Visitor's the right base class
 	template <unsigned int ListId>
 	struct VisitorImplRight
@@ -97,7 +97,7 @@ namespace Private
 		};
 	};
 
-	// simulates specialization 
+	// simulates specialization
 	// class Visitor<Head, R>
 	template <>
 	struct VisitorImplLeft<TL::Private::NoneList_ID>
@@ -112,8 +112,8 @@ namespace Private
             };
 		};
 	};
-	
-	// simulates the left base class for the specialization 
+
+	// simulates the left base class for the specialization
 	// class Visitor<Typelist<Head, Tail>, R>
 	template <>
 	struct VisitorImplLeft<TL::Private::Typelist_ID>
@@ -134,8 +134,8 @@ namespace Private
 			struct Result {};
 		};
 	};
-	
-	// simulates the right base class for the specialization 
+
+	// simulates the right base class for the specialization
 	// class Visitor<Typelist<Head, Tail>, R>
 	template <>
 	struct VisitorImplRight<TL::Private::Typelist_ID>
@@ -146,7 +146,7 @@ namespace Private
             typedef Visitor<typename TList::Tail, R> Result;
 		};
 	};
-	
+
 	template <>
 	struct VisitorImplRight<TL::Private::AtomList_ID>
 	{
@@ -156,7 +156,7 @@ namespace Private
             struct Result {};
 		};
 	};
-	
+
 	// MSVC 6.0 will complain if we try to let Visitor inherit
 	// directly from VisitorImplLeft/VisitorImplRight
 	template <class T, class R>
@@ -166,14 +166,14 @@ namespace Private
 		typedef typename VisitorImplLeft
 		<
 			TL::Private::IsTypelist<T>::type_id == TL::Private::AtomList_ID ?
-			TL::Private::Typelist_ID : 
+			TL::Private::Typelist_ID :
 			TL::Private::IsTypelist<T>::type_id
 		>::template In<T, R>::Result TempType;
-		
+
 		typedef VC_Base_Workaround<TempType, Dummy> Workaround;
 		typedef Workaround::LeftBase Result;
 	};
-	
+
 	template <class T, class R>
 	struct VisitorImplRightWrap
 	{
@@ -182,70 +182,71 @@ namespace Private
 		<
 			TL::Private::IsTypelist<T>::type_id
 		>::template In<T, R>::Result TempType;
-		
+
 		typedef VC_Base_Workaround<TempType, Dummy> Workaround;
 		typedef Workaround::LeftBase Result;
 	};
 
-	
+
 }
 	template <class T, typename R>
-	class Visitor : public Private::VisitorImplLeftWrap<T, R>::Result, 
+	class Visitor : public Private::VisitorImplLeftWrap<T, R>::Result,
 					public Private::VisitorImplRightWrap<T, R>::Result
-					
+
 	{
 		public:
 			typedef R ReturnType;
 	};
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template BaseVisitorImpl
 // Implements non-strict visitation (you can implement only part of the Visit
 //     functions)
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <class TList, typename R = int /* =  void */ > class BaseVisitorImpl;
+    template <class TList, typename R = Loki::Private::VoidWrap::type > 
+	class BaseVisitorImpl;
 namespace Private
 {
 	template <unsigned int ListTag>
 	struct BaseVisitorImplHelper
 	{
 		template <typename T, typename R>
-        struct In 
-        { 
-            typedef typename T::ERROR_WRONG_SPECIALIZATION_SELECTED Result; 
+        struct In
+        {
+            typedef typename T::ERROR_WRONG_SPECIALIZATION_SELECTED Result;
         };
 	};
 
-	template<> 
+	template<>
 	struct BaseVisitorImplHelper<TL::Private::Typelist_ID>
     {
         template <typename TList, typename R>
-        struct In 
-        { 
-			typedef BaseVisitorImpl<TList, R> Result; 
+        struct In
+        {
+			typedef BaseVisitorImpl<TList, R> Result;
         };
     };
 
-    template<> 
+    template<>
 	struct BaseVisitorImplHelper<TL::Private::NullType_ID>
     {
         template <typename TList, typename R>
-        struct In 
-        { 
-            struct Result {}; 
+        struct In
+        {
+            struct Result {};
         };
     };
-	
-	template <class T, class R> 
+
+	template <class T, class R>
 	struct BaseVisitorImplWrap
-	{	
+	{
 		struct Dummy {};
 		typedef typename BaseVisitorImplHelper
 		<
 			TL::Private::IsTypelist<typename T::Tail>::
-			type_id == TL::Private::AtomList_ID ? 
-			TL::Private::Typelist_ID : 
+			type_id == TL::Private::AtomList_ID ?
+			TL::Private::Typelist_ID :
 			TL::Private::IsTypelist<typename T::Tail>::type_id
 		>::template In<typename T::Tail, R>::Result TempType;
 		typedef VC_Base_Workaround<TempType, Dummy> Workaround;
@@ -265,11 +266,11 @@ namespace Private
 	struct BaseVisitorImplVoidBase : public Visitor<typename TList::Head, R>,
 					public Private::BaseVisitorImplWrap<TList, R>::Result
 	{
-		
+
 		ASSERT_TYPELIST(TList);
 		virtual R Visit(typename TList::Head&)
         {  }
-	};	
+	};
 }
 
 
@@ -293,7 +294,7 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 namespace Private
 {
-	
+
 }
 template <typename R, typename Visited>
 struct DefaultCatchAll
@@ -343,7 +344,7 @@ struct DefaultCatchAllWrapper
         ReturnType Visit(T&)
         {}
     };
-    
+
 	struct NonStrictVisitorUnitWrapper
     {
         template <class T, class B>
@@ -358,18 +359,17 @@ struct DefaultCatchAllWrapper
     };
 
 
-    template <class TList, typename R = int /* =  void */> 
-    class NonStrictVisitor 
+    template <class TList, typename R = Loki::Private::VoidWrap::type>
+    class NonStrictVisitor
         : public GenLinearHierarchy<
-            TList, 
-            NonStrictVisitorUnitWrapper, 
+            TList,
+            NonStrictVisitorUnitWrapper,
             Visitor<TList, R> >
     {
     };
 ////////////////////////////////////////////////////////////////////////////////
 // class template BaseVisitable
 ////////////////////////////////////////////////////////////////////////////////
-#include <stdio.h>
 namespace Private
 {
 	template <class R, class CatchAll>
@@ -382,7 +382,7 @@ namespace Private
 			{
 				typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
 				// Apply the Acyclic Visitor
-				if (Visitor<T>* p = dynamic_cast<Visitor<T>*>(&guest))
+				if (Visitor<T, R>* p = dynamic_cast<Visitor<T, R>*>(&guest))
 				{
 					return p->Visit(visited);
 				}
@@ -392,14 +392,14 @@ namespace Private
 	template <class R, class CatchAll>
 	class BaseVisitableVoidBase
 	{
-		typedef R ReturnType;	
-		protected:	
+		typedef R ReturnType;
+		protected:
 			template <class T>
 			static ReturnType AcceptImpl(T& visited, BaseVisitor& guest)
 			{
 				typedef ApplyInnerType2<CatchAll, R, T>::type CatchA;
 				// Apply the Acyclic Visitor
-				if (Visitor<T, void>* p = dynamic_cast<Visitor<T, void>*>(&guest))
+				if (Visitor<T>* p = dynamic_cast<Visitor<T>*>(&guest))
 				{
 					p->Visit(visited);
 					return;
@@ -408,9 +408,9 @@ namespace Private
 			}
 	};
 }
-    template 
+    template
     <
-		typename R = int/* =  void */, 
+		typename R = Loki::Private::VoidWrap::type,
         class CatchAll = DefaultCatchAllWrapper
     >
     class BaseVisitable : public Select<Private::IsVoid<R>::value,
@@ -427,7 +427,7 @@ namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro DEFINE_VISITABLE
-// Put it in every class that you want to make visitable (in addition to 
+// Put it in every class that you want to make visitable (in addition to
 //     deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -441,7 +441,7 @@ namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template CyclicVisitor
-// Put it in every class that you want to make visitable (in addition to 
+// Put it in every class that you want to make visitable (in addition to
 //     deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
 namespace Private
@@ -479,10 +479,10 @@ namespace Private
     public:
         typedef R ReturnType;
         // using Visitor<TList, R>::Visit;
-        
-        
+
+
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // macro DEFINE_CYCLIC_VISITABLE
 // Put it in every class that you want to make visitable by a cyclic visitor
@@ -503,8 +503,9 @@ namespace Private
 // March 20: add default argument DefaultCatchAll to BaseVisitable
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Oct  27, 2002: ported by Benjamin Kaufmann to MSVC 6.0
-// Feb	23, 2003: Removed special visitor classes for return type void. 
+// Feb	23, 2003: Removed special visitor classes for return type void.
 //		Added Loki:: qualification to Accept's Paramter (in the macro) B.K.
+// Mar	06, 2003: Changed default values for return types to void B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // VISITOR_INC_
