@@ -147,7 +147,7 @@ bool is_sorted(const Vect& v) {
     ++it;
     while (it != v.end()) {
         typename Vect::key_type current = it->first;
-        if (!(Vect::key_compare()(previous, current))) return false;
+        if (!v.key_comp()(previous, current)) return false;
         previous = current;
         ++it;
     }
@@ -256,8 +256,12 @@ void test_vect2()
     assert(it->second == 3);
 
     std::pair<test_vect2_t::iterator, bool> aux = vec21.insert(std::make_pair("xyz", 99));
-    assert(aux.first); //TODOSGB was second meant, not first?  MSVC7 dies here (more errors follow)
+    assert(!aux.second);
+	assert(aux.first->first == "xyz");
+	assert(aux.first->second == 3);
+
     it = vec21.find("xyz");
+    assert(it != vec21.end());
     assert(it->second == 3);
 
     vec21.erase(it);
@@ -287,7 +291,7 @@ void test_vect3()
     C_Namespace::srand(111);
     // a stress test
     for (unsigned i = 0; i < 2 * 1000; ++i) {
-        char buffer[16];
+        char buffer[17];
         C_Namespace::sprintf(buffer, "string%d", C_Namespace::rand());
         std::string s(buffer);
         vec31.insert(std::make_pair(s, s));
