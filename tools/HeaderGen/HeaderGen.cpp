@@ -112,18 +112,23 @@ int main(int argc, char* argv[])
 			cv_t::iterator it=vendors.begin(), itEnd = vendors.end();
 			
 			header_file << "#ifdef LOKI_USE_REFERENCE\n";
-			header_file << "#\tinclude \".\\Reference\\" << header << "\"\n";
+			header_file << "#\tinclude \"./Reference/" << header << "\"\n";
+			//header_file << "#\tinclude \".\\Reference\\" << header << "\"\n";
 			header_file << "#else\n";
 
 			header_file << "#\tif " << it->version_test << endl;
-			header_file << "#\t\tinclude \".\\" << it->subdir;
-				header_file << "\\" << header << "\"\n";
+			//header_file << "#\t\tinclude \".\\" << it->subdir;
+			header_file << "#\t\tinclude \"./" << it->subdir;
+			//header_file << "\\" << header << "\"\n";
+			header_file << "/" << header << "\"\n";
 			++it;
 			for(; it!=itEnd; ++it)
 				{
 				header_file << "#\telif " << it->version_test << endl;
-				header_file << "#\t\tinclude \".\\" << it->subdir;
-				header_file << "\\" << header << "\"\n";
+				//header_file << "#\t\tinclude \".\\" << it->subdir;
+				header_file << "#\t\tinclude \"." << it->subdir;
+				//header_file << "\\" << header << "\"\n";
+				header_file << "/" << header << "\"\n";
 				}
 			header_file << "#\telse\n";
 			header_file << "\t\t//Define LOKI_USE_REFERENCE and get back to us on the results\n";
@@ -137,31 +142,3 @@ int main(int argc, char* argv[])
 #endif
 	return 0;
 	}
-	
-#include <vector>
-#include <algorithm>
-#include <functional>
-struct MyClass
-{
-typedef std::vector<int> vector_t;
-typedef std::vector<vector_t> vector2D_t;
-vector2D_t some_vector;
-
-void ResizeVector(int x, int y);
-};
-
-void MyClass::ResizeVector(int x, int y)
-{
-this->some_vector.resize(x);
-vector2D_t::iterator it, itEnd = this->some_vector.end();
-for(it = this->some_vector.begin(); it!=itEnd; ++it)
-   it->resize(y);
-
-//or
-std::for_each(this->some_vector.begin(), this->some_vector.end(),
-std::mem_fun_ref(&vector_t::size));
-
-std::mem_fun_ref(&vector_t::resize)(*this->some_vector.begin(), y);
-std::bind2nd(std::mem_fun_ref(&vector_t::resize), 5)(&*this->some_vector.begin());
-//std::for_each(this->some_vector.begin(), this->some_vector.end(),);
-}
