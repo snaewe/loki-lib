@@ -1,4 +1,5 @@
-// Last update: Dec 03, 2002
+// Last update: Mar 06, 2003
+// Added VoidWrap
 // Added qualification ::Loki::Private:: to types from the Private-Namespace
 // Thanks to Adi Shavit
 
@@ -7,6 +8,7 @@
 #if !defined (_MSC_VER) || _MSC_VER >= 1300
 #error "please use this header only with MSVC 6.0"
 #endif
+#include "TypeManip.h"
 namespace Loki
 {
 	namespace Private
@@ -29,7 +31,16 @@ namespace Loki
 		// type of cv void (6.6.3).
 		// Functor.h uses this Type as a workaround.
 		struct VoidAsType {};
-
+		
+		// workaround for error C2182: '__formal' illegal use of type 'void'
+		// when trying to use void as default value of a template parameter.
+		// Instead of template<class T = void> class bla {};
+		// simply write template <class T = VoidWrap::type> class bla {};
+		// and the VC 6.0 will be happy.
+		struct VoidWrap
+		{
+			typedef void type;
+		};
 		// workarounds for template template parameters
 ////////////////////////////////////////////////////////////////////////////////
 // class template AlwaysFalse
