@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <ctime>
 using namespace std;
 
 struct Compiler
@@ -68,11 +69,11 @@ int main(int argc, char* argv[])
 		}
 	else //if(vendors.empty())
 		{
-		cout << "No vendor file provided, using defaults" << endl;
+		cout << "No vendor file provided, using defaults\n";
 		vendors.reserve(10);
 		vendors.push_back(Compiler("(_MSC_VER >= 1300)", "MSVC\\1300"));
-		vendors.push_back(Compiler("(_MSC_VER >= 1200)", "MSVC\\1200"));
-		vendors.push_back(Compiler("( (__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ > 1)) )", "Reference"));
+		vendors.push_back(Compiler("(__BORLANDC__)", "Borland"));
+		vendors.push_back(Compiler("( (__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ > 95)) )", "Reference"));
 		}
 	
 	fstream header_list(argv[1]);
@@ -102,31 +103,33 @@ int main(int argc, char* argv[])
 				header_file << "/";
 			header_file << endl;
 			header_file << ss.str();
-			header_file << "//Forwards to the appropriate code" << endl;
-			header_file << "// that works on the detected compiler" << endl;
+			header_file << "//Forwards to the appropriate code\n";
+			header_file << "// that works on the detected compiler\n";
+			time_t rawtime; time(&rawtime);
+			header_file << "//Generated on " << ctime(&rawtime);
 			header_file << endl << endl;
 			
 			cv_t::iterator it=vendors.begin(), itEnd = vendors.end();
 			
-			header_file << "#ifdef LOKI_USE_REFERENCE" << endl;
-			header_file << "#\tinclude \".\\Reference\\" << header << "\"" << endl;
-			header_file << "#else" << endl;
+			header_file << "#ifdef LOKI_USE_REFERENCE\n";
+			header_file << "#\tinclude \".\\Reference\\" << header << "\"\n";
+			header_file << "#else\n";
 
 			header_file << "#\tif " << it->version_test << endl;
 			header_file << "#\t\tinclude \".\\" << it->subdir;
-				header_file << "\\" << header << "\""<< endl;
+				header_file << "\\" << header << "\"\n";
 			++it;
 			for(; it!=itEnd; ++it)
 				{
-				header_file << "#elif " << it->version_test << endl;
+				header_file << "#\telif " << it->version_test << endl;
 				header_file << "#\t\tinclude \".\\" << it->subdir;
-				header_file << "\\" << header << "\""<< endl;
+				header_file << "\\" << header << "\"\n";
 				}
-			header_file << "#\telse" << endl;
-			header_file << "\t\t//Define LOKI_USE_REFERENCE and get back to us on the results" << endl;
-			header_file << "#\t\terror Compiler not tested with Loki, #define LOKI_USE_REFERENCE" << endl;
-			header_file << "#\tendif" << endl;
-			header_file << "#endif" << endl;
+			header_file << "#\telse\n";
+			header_file << "\t\t//Define LOKI_USE_REFERENCE and get back to us on the results\n";
+			header_file << "#\t\terror Compiler not tested with Loki, #define LOKI_USE_REFERENCE\n";
+			header_file << "#\tendif\n";
+			header_file << "#endif\n";
 			}
 		}
 #ifdef _MSC_VER
@@ -134,3 +137,31 @@ int main(int argc, char* argv[])
 #endif
 	return 0;
 	}
+	
+#include <vector>
+#include <algorithm>
+#include <functional>
+struct MyClass
+{
+typedef std::vector<int> vector_t;
+typedef std::vector<vector_t> vector2D_t;
+vector2D_t some_vector;
+
+void ResizeVector(int x, int y);
+};
+
+void MyClass::ResizeVector(int x, int y)
+{
+this->some_vector.resize(x);
+vector2D_t::iterator it, itEnd = this->some_vector.end();
+for(it = this->some_vector.begin(); it!=itEnd; ++it)
+   it->resize(y);
+
+//or
+std::for_each(this->some_vector.begin(), this->some_vector.end(),
+std::mem_fun_ref(&vector_t::size));
+
+std::mem_fun_ref(&vector_t::resize)(*this->some_vector.begin(), y);
+std::bind2nd(std::mem_fun_ref(&vector_t::resize), 5)(&*this->some_vector.begin());
+//std::for_each(this->some_vector.begin(), this->some_vector.end(),);
+}
