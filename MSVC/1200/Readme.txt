@@ -29,6 +29,10 @@ If you use Singletons with longevity you must add Singleton.cpp to your project/
 
 Fixes:
 ------
+    Mar 20, 2003:
+    -------------
+        * In MultiMethods.h: Fixed bugs in FnDispatcher and FunctorDispatcher.
+        Fixing FnDispatcher lead to an Interface change (see section "Interface changes").
 
 	Mar 08, 2003:
     -------------
@@ -202,6 +206,69 @@ Unfortunately the MSVC 6.0 supports neither of them.
 	    BugDemonstration<2>(Bla);
     }
     [/code]
+
+    Unfortunately adding dummy-parameters does not always work. 
+    For example for one of FnDispatcher's Add-member-functions you have to explicitly
+    specify two type- and one non-type parameter.
+    [code]
+    template </*...*/typename ResultType/*...*/>
+    class FnDispatcher
+    {
+    public:
+	    //...
+	    template <class SomeLhs, class SomeRhs, 
+		    ResultType (*callback)(SomeLhs&, SomeRhs&)>
+	    void Add(){/*...*/}
+    };
+    //...
+    FnDispatcher<Shape> dis;
+    dis.Add<Poly, Poly, &AFunc>();
+    [/code]
+    Using dummy-parameters as workaround FnDispatcher::Add would become something
+    like this:
+    [code]
+    template<class S1, class S2, class R, R (*)(S1&,S2&)>
+    struct Helper {};
+
+    template </*...*/typename ResultType/*...*/>
+    class FnDispatcher
+    {
+    public:
+	    //...
+	    template <class SomeLhs, class SomeRhs, 
+		    ResultType (*callback)(SomeLhs&, SomeRhs&)>
+	    void Add(Helper<SomeLhs, SomeRhs, ResultType, callback>)
+	    {}
+    };
+    //...
+    FnDispatcher<void> f;
+	f.Add(Helper<Rectangle, Rectangle, void, &Func>());
+    [/code]
+    This compiles fine, but alas Add never gets called. I don't know what happens,
+    I only know that the MSVC 6.0 won't generate code for a function call.
+
+    In situations like that, instead of dummy-Parameters I used nested template-classes
+    with overloaded function-operator as a workaround.
+    [code]
+    template </*...*/typename ResultType/*...*/>
+    class FnDispatcher
+    {
+    public:
+	    // the member-function Add becomes a member-template-class
+	    // with overloaded function operator.
+	    template <class SomeLhs, class SomeRhs, 
+		    ResultType (*callback)(SomeLhs&, SomeRhs&)>
+	    struct AddI
+	    {
+		    void operator()(FnDispatcher<ResultType>& o)  {/*...*/}
+	    };
+    };
+    //...
+    FnDispatcher<void> f;
+	FnDispatcher<void>::AddI<Rectangle, Rectangle, &Func>()(f);
+    [/code]
+
+    If you know of a better workaround, please let me know.
 
     D. Virtual functions that use covariant return types (e.g. return a pointer to Derived)
     in the original library were changed so that they have exactly the
@@ -539,6 +606,21 @@ Interface changes:
 	{
 		x.Add(&Hatch_Helper<Circle, Rectangle>::HatchShapes);
 	}
+    
+    Some words to FnDispatcher:
+	---------------------------
+    The trampoline-Versions of FnDispatcher::Add differ
+    from the original library.
+    
+    Using the original library one writes:
+    typedef FnDispatcher<Shape> Dispatcher;
+    void Hatch(Rectangle& lhs, Poly& rhs) {...}
+
+    Dispatcher dis;
+    disp.Add<Rectangle, Poly, &Hatch>();
+    
+    Using this port the last line has to be:
+    Dispatcher::AddI<Rectangle, Poly, &Hatch>()(dis);
 
 More info:
 ----------
