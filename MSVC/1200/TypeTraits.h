@@ -173,7 +173,7 @@ namespace Loki
     class TypeTraits
     {
     private:	
-//		static T MakeT(...);
+		static T MakeT(...);
 		template <class U> struct Wrap{};
 		struct pointer_helper
 		{
@@ -232,8 +232,8 @@ namespace Loki
 		enum {isReference = sizeof(
             is_reference_helper2(
             is_reference_helper1(Wrap<T>()))) == sizeof(Private::YES)};
-//		enum {isPointer = sizeof(is_pointer(MakeT())) == sizeof(Private::YES)};
-//		enum {isMemberPointer = sizeof(is_pointer2member(MakeT())) == sizeof(Private::YES)};
+		enum {isPointer = sizeof(is_pointer(MakeT())) == sizeof(Private::YES)};
+		enum {isMemberPointer = sizeof(is_pointer2member(MakeT())) == sizeof(Private::YES)};
 		enum {isArray = sizeof(
 				is_array_helper1(
 				is_array_helper2(Wrap<T>()))) == sizeof(Private::YES)};
@@ -264,7 +264,7 @@ namespace Loki
             isVolatile = 
                 sizeof(is_volatile(Wrap<T>())) == sizeof(Private::YES)
         };
-		enum { isScalar = isStdArith /* || isPointer */ /* ||  isMemberPointer */ };
+		enum { isScalar = isStdArith || isPointer ||  isMemberPointer};
 	private:
         typedef typename Private::AdjReference<isReference || isVoid>::
                 template In<T>::Result AdjType;
