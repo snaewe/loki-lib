@@ -29,10 +29,15 @@ If you use Singletons with longevity you must add Singleton.cpp to your project/
 
 Fixes:
 ------
+    Mar 18, 2004:
+    -------------
+    	* In SmartPtr.h: Added operator=-workaround for pointer-assignment
+    	* In Functor.h:  Changed value parameter to referemce parameter
+    					 in FunctorBase and FunctorVoidBase Ctors.
     Mar 21, 2003:
     -------------
-        * In MultiMethods.h: Added a new explicit template argument specification (ETAS)-workaround 
-        for FnDispatcher::Add which is more compliant with other 
+        * In MultiMethods.h: Added a new explicit template argument specification (ETAS)-workaround
+        for FnDispatcher::Add which is more compliant with other
         ETAS-workarounds used in this port.
 
     Mar 20, 2003:
@@ -275,7 +280,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     [/code]
 
     If you know of a better workaround, please let me know.
-    
+
     Update:
     -------
     The problem in the example above is Add's nontype-function-pointer-Parameter.
@@ -288,11 +293,11 @@ Unfortunately the MSVC 6.0 supports neither of them.
     public:
 	    // Etas stands for explicit template argument specification.
         // Do whatever you need to do with callback in this class.
-        template <class SomeLhs, class SomeRhs, 
+        template <class SomeLhs, class SomeRhs,
 			ResultType (*callback)(SomeLhs&, SomeRhs&), bool symmetric = false>
 		struct Etas
 		{/*...*/};
-		
+
 		// EtasType has to be a template parameter. If one tries to use
 		// a parameter of type Etas the MSVC 6.0 won't generate correct
 		// code.
@@ -369,7 +374,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
 	struct Foo	: public Select<IsVoid<R>::value, FooVoidBase, FooBase<R> >::Result
 	{};
 	[/code]
-	
+
     The MSVC 6 allows explicit template specialization in class scope.
     In contrast the C++ Standards only allows explicit template specialization
     in namespace scope. Using the non-compliant feature, the implementation
@@ -379,15 +384,15 @@ Unfortunately the MSVC 6.0 supports neither of them.
     {
 	    struct FooBase
 	    {
-		    template <class R> 
+		    template <class R>
 		    struct In
 		    {
 			    R Func() {return R();}
 		    };
-		    template <> 
+		    template <>
 		    struct In<void>
 		    {;
-			    void Func() {}    
+			    void Func() {}
 		    };
 	    };
     }
@@ -395,7 +400,7 @@ Unfortunately the MSVC 6.0 supports neither of them.
     struct Foo	: Private::FooBase::In<R>
     {};
     [/code]
-    
+
     Please note that *all* new base classes are only meant as a hidden
 	implementation detail.
 	You should never use any of them directly or indirectly. In particular don't
@@ -686,7 +691,7 @@ Interface changes:
     Dispatcher dis;
     disp.Add<Rectangle, Poly, &Hatch>();
     [/code]
-    
+
     Using this port the last line either becomes:
     [code]
     disp.Add(Dispatcher::Etas<Rectangle, Poly, &Hatch>());
