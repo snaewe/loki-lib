@@ -53,7 +53,7 @@ namespace Loki
         { return ++lval; }
         
         static IntType AtomicDivide(volatile IntType& lval)
-        { return --lval; }
+        { return lval /= val; }
         
         static void AtomicAssign(volatile IntType & lval, IntType val)
         { lval = val; }
@@ -197,6 +197,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// January 10, 2002: Fixed bug in AtomicDivide - credit due to Jordi Guerrero
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
