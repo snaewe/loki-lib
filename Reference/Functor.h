@@ -779,51 +779,51 @@ namespace Loki
             return *this;
         }
         
-        ResultType operator()()
+        ResultType operator()() const
         { return (*spImpl_)(); }
 
-        ResultType operator()(Parm1 p1)
+        ResultType operator()(Parm1 p1) const
         { return (*spImpl_)(p1); }
         
-        ResultType operator()(Parm1 p1, Parm2 p2)
+        ResultType operator()(Parm1 p1, Parm2 p2) const
         { return (*spImpl_)(p1, p2); }
         
-        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3) const
         { return (*spImpl_)(p1, p2, p3); }
         
-        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4) const
         { return (*spImpl_)(p1, p2, p3, p4); }
         
-        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
+        ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5) const
         { return (*spImpl_)(p1, p2, p3, p4, p5); }
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6)
+            Parm6 p6) const
         { return (*spImpl_)(p1, p2, p3, p4, p5, p6); }
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7)
+            Parm6 p6, Parm7 p7) const
         { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7); }
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8)
+            Parm6 p6, Parm7 p7, Parm8 p8) const
         { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8); }
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9) const
         { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10) const
         { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
-            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
+            Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11) const
         { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12)
+            Parm12 p12) const
         {
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
                 p12);
@@ -831,7 +831,7 @@ namespace Loki
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13)
+            Parm12 p12, Parm13 p13) const
         {
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
             p12, p13);
@@ -839,7 +839,7 @@ namespace Loki
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13, Parm14 p14)
+            Parm12 p12, Parm13 p13, Parm14 p14) const
         {
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
                 p12, p13, p14);
@@ -847,7 +847,7 @@ namespace Loki
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
-            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
+            Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15) const
         {
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
                 p12, p13, p14, p15);
