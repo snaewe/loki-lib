@@ -25,8 +25,16 @@
 #include <cstdlib>
 #include <new>
 
+#ifdef _MSC_VER
+#define C_CALLING_CONVENTION_QUALIFIER __cdecl 
+#else
+#define C_CALLING_CONVENTION_QUALIFIER 
+#endif
+
 namespace Loki
 {
+    typedef void (C_CALLING_CONVENTION_QUALIFIER *atexit_pfn_t)();
+
     namespace Private
     {
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +95,7 @@ namespace Loki
             Destroyer destroyer_;
         };
 
-        void AtExitFn(); // declaration needed below
+        void C_CALLING_CONVENTION_QUALIFIER AtExitFn(); // declaration needed below
     
     } // namespace Private
 
@@ -223,7 +231,7 @@ namespace Loki
     template <class T>
     struct DefaultLifetime
     {
-        static void ScheduleDestruction(T*, void (*pFun)())
+        static void ScheduleDestruction(T*, atexit_pfn_t pFun)
         { std::atexit(pFun); }
         
         static void OnDeadReference()
@@ -241,7 +249,7 @@ namespace Loki
     class PhoenixSingleton
     {
     public:
-        static void ScheduleDestruction(T*, void (*pFun)())
+        static void ScheduleDestruction(T*, atexit_pfn_t pFun)
         {
 #ifndef ATEXIT_FIXED
             if (!destroyedOnce_)
@@ -277,7 +285,7 @@ namespace Loki
         struct Adapter
         {
             void operator()(T*) { return pFun_(); }
-            void (*pFun_)();
+            atexit_pfn_t pFun_;
         };
     }
 
@@ -293,7 +301,7 @@ namespace Loki
     class SingletonWithLongevity
     {
     public:
-        static void ScheduleDestruction(T* pObj, void (*pFun)())
+        static void ScheduleDestruction(T* pObj, atexit_pfn_t pFun)
         {
             Private::Adapter<T> adapter = { pFun };
             SetLongevity(pObj, GetLongevity(pObj), adapter);
@@ -312,7 +320,7 @@ namespace Loki
     template <class T>
     struct NoDestroy
     {
-        static void ScheduleDestruction(T*, void (*)())
+        static void ScheduleDestruction(T*, atexit_pfn_t)
         {}
         
         static void OnDeadReference()
@@ -399,7 +407,7 @@ namespace Loki
             }
         }
 
-        static void DestroySingleton()
+        static void C_CALLING_CONVENTION_QUALIFIER DestroySingleton()
         {
             assert(!destroyed_());
             CreationPolicy<T>::Destroy(pInstance_());
