@@ -899,6 +899,11 @@ namespace Loki
         : spImpl_(new MemFunHandler<Functor, PtrObj, MemFn>(p, memFn))
         {}
 
+        operator bool()
+        {
+            return spImpl_.get() ? true : false;
+        }
+
         Functor& operator=(const Functor& rhs)
         {
             Functor copy(rhs);
