@@ -169,7 +169,7 @@ namespace Loki
             SingletonHolder<MySmallObjAllocator, CreateStatic, 
                 PhoenixSingleton>::Instance().Deallocate(p, size);
 #else
-            ::operator delete(p, size);
+            ::operator delete(p);
 #endif
         }
         virtual ~SmallObject() {}
