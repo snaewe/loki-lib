@@ -2,25 +2,27 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Welsey Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Welsey Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-// 
-// Last update: Sept 29, 2002
 //
-// Rani Sharoni's VC 7 port is heavily based on explicit template specialization 
+// Last update: Feb 22, 2003
+//	
+// renamed MakeTypeList to MakeTypelist.
+//
+// Rani Sharoni's VC 7 port is heavily based on explicit template specialization
 // inside class templates.
 // This approach has two problems:
 // First: It does not seem to work correctly with VC 6
 // Second: The C++ Standard allows explicit specialization only in namespace-scope.
-// 
+//
 // In general my solutions need more template-classes. But I hope that they
 // are all conforming to the C++ Standard.
 
@@ -39,7 +41,7 @@ typedef ::Loki::Private::static_assert_test<sizeof(::Loki::TL::Private::TList_is
 ////////////////////////////////////////////////////////////////////////////////
 // macros TYPELIST_1, TYPELIST_2, ... TYPELIST_50
 // Each takes a number of arguments equal to its numeric suffix
-// The arguments are type names. TYPELIST_NN generates a typelist containing 
+// The arguments are type names. TYPELIST_NN generates a typelist containing
 //     all types passed as arguments, in that order.
 // Example: TYPELIST_2(char, int) generates a type containing char and int.
 ////////////////////////////////////////////////////////////////////////////////
@@ -381,24 +383,24 @@ namespace Loki
 
 	namespace TL
 	{
-	
+
 		namespace Private
 		{
 			template <bool x> struct TList_is_not_legal_Typelist;
 
 			template <> struct TList_is_not_legal_Typelist<true>{};
-			
+
 			struct Typelist_tag {};
 			struct NullType_tag {};
 			struct NoneList_tag {};
-        
-			enum 
+
+			enum
 			{
 				NoneList_ID = 0,
 				Typelist_ID = 1,
 				AtomList_ID	= 2,
 				NullType_ID = 4
-				
+
 			};
 ////////////////////////////////////////////////////////////////////////////////
 // class template IsTypelist
@@ -414,7 +416,7 @@ namespace Loki
 					typedef TypeTag<2>::X AtomList;
 					typedef TypeTag<3>::X NullList;
 					typedef TypeTag<4>::X NoList;
-					
+
 					// VC 6.0 does not allow overloads
 					// for check(Type2Type< Typelist<Head, Tail> >)
 					// and check(Type2Type<NullType>);
@@ -426,31 +428,31 @@ namespace Loki
 					template <class U>
 					static TypeTag<2>::X	check2(Type2Type< Typelist<U, NullType> >);
 					static TypeTag<4>::X	check2(...);
-					
+
 					static TypeTag<3>::X	check3(Type2Type<NullType>);
 					static TypeTag<4>::X	check3(...);
-					
-    
+
+
 				public:
-					enum 
-					{	
+					enum
+					{
 						temp1	= sizeof(check(Type2Type<T>())) == sizeof(TypeTag<1>::X) ? Typelist_ID : NoneList_ID,
 						temp2	= sizeof(check2(Type2Type<T>())) == sizeof(TypeTag<2>::X) ? AtomList_ID : NoneList_ID,
 						temp4	= temp2 ? Typelist_ID :NoneList_ID,
 						temp3	= sizeof(check3(Type2Type<T>())) == sizeof(TypeTag<3>::X) ? NullType_ID : NoneList_ID,
 						value	= temp1 || temp2 || temp3,
-						type_id	= (temp1 ^ temp4) | temp2 | temp3 
+						type_id	= (temp1 ^ temp4) | temp2 | temp3
 					};
 					typedef typename Select
 					<
-						type_id == Typelist_ID || type_id == AtomList_ID, 
+						type_id == Typelist_ID || type_id == AtomList_ID,
 						Typelist_tag,
 						typename Select<type_id == NullType_ID, NullType_tag, NoneList_tag>::Result
-					> 
+					>
 					::Result type_tag;
-					
 
-					
+
+
 			};
 
 		}	// end of namespace Private
@@ -462,24 +464,24 @@ namespace Loki
 // returns a typelist that is of T1, T2, ...
 ////////////////////////////////////////////////////////////////////////////////
 // MakeTypeList-Template from Rani Sharoni's VC 7 port.
-		template 
+		template
 		<	typename T1  = NullType, typename T2  = NullType, typename T3  = NullType,
 			typename T4  = NullType, typename T5  = NullType, typename T6  = NullType,
 			typename T7  = NullType, typename T8  = NullType, typename T9  = NullType,
 			typename T10 = NullType, typename T11 = NullType, typename T12 = NullType,
 			typename T13 = NullType, typename T14 = NullType, typename T15 = NullType,
 			typename T16 = NullType, typename T17 = NullType, typename T18 = NullType
-		> 
-		struct MakeTypeList
+		>
+		struct MakeTypelist
 		{
 			private:
-				typedef typename MakeTypeList
+				typedef typename MakeTypelist
 				<
-				T2 , T3 , T4 , 
-				T5 , T6 , T7 , 
-				T8 , T9 , T10, 
+				T2 , T3 , T4 ,
+				T5 , T6 , T7 ,
+				T8 , T9 , T10,
 				T11, T12, T13,
-				T14, T15, T16, 
+				T14, T15, T16,
 				T17, T18
 				>
 				::Result TailResult;
@@ -489,11 +491,11 @@ namespace Loki
 		};
 
 		template<>
-		struct MakeTypeList
+		struct MakeTypelist
 		<
-			NullType, NullType, NullType, 
-			NullType, NullType, NullType, 
-			NullType, NullType, NullType, 
+			NullType, NullType, NullType,
+			NullType, NullType, NullType,
+			NullType, NullType, NullType,
 			NullType, NullType, NullType,
 			NullType, NullType, NullType,
 			NullType, NullType, NullType
@@ -501,7 +503,7 @@ namespace Loki
 		{
 			typedef NullType Result;
 		};
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template Length
 // Computes the length of a typelist
@@ -518,7 +520,7 @@ namespace Loki
 				typedef typename TList::Head Head;
 				typedef typename TList::Tail Tail;
 			public:
-		
+
 			enum {value = 1 + Length<Tail>::value};
 		};
 
@@ -530,11 +532,11 @@ namespace Loki
 			enum {value = 0};
 		};
 
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template TypeAt
 // Finds the type at a given index in a typelist
-// Invocation (TList is a typelist and index is a compile-time integral 
+// Invocation (TList is a typelist and index is a compile-time integral
 //     constant):
 // TypeAt<TList, index>::Result
 // returns the type in position 'index' in TList
@@ -554,7 +556,7 @@ namespace Private
 			typedef typename TList::Tail Tail;
 			typedef typename TypeAtImpl<Index-1>::template In<Tail>::Result Result;
 		};
-		
+
 	};
 	// the border case is represented by an explicit specialization
 	// The type at Index 0 is the type of the head.
@@ -570,7 +572,7 @@ namespace Private
 		};
 	};
 }	// end of namespace Private
-	
+
 	template <class TList, unsigned int Index>
 	struct TypeAt
 	{
@@ -580,10 +582,10 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 // class template TypeAtNonStrict
 // Finds the type at a given index in a typelist
-// Invocations (TList is a typelist and index is a compile-time integral 
+// Invocations (TList is a typelist and index is a compile-time integral
 //     constant):
 // a) TypeAt<TList, index>::Result
-// returns the type in position 'index' in TList, or NullType if index is 
+// returns the type in position 'index' in TList, or NullType if index is
 //     out-of-bounds
 // b) TypeAt<TList, index, D>::Result
 // returns the type in position 'index' in TList, or D if index is out-of-bounds
@@ -591,7 +593,7 @@ namespace Private
 	template <class TList, unsigned int i, class DefType = NullType>
 	struct TypeAtNonStrict;
 namespace Private
-{	
+{
 	// if TList is not NullType, check if Index is 0.
 	// if Index is 0, the result is TList::Head
 	// if Index is > 0, the result is the result of appliying TypeAtNonStrict
@@ -622,15 +624,15 @@ namespace Private
 			typedef DefType Result;
 		};
 	};
-		
+
 }	// end of namespace Private
 	template <class TList, unsigned int i, class DefType>
 	struct TypeAtNonStrict
 	{
-		typedef typename 
+		typedef typename
 		Private::TypeAtNonStrictImpl<TList>::template In<DefType, i>::Result Result;
-	};	
-	
+	};
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template IndexOf
 // Finds the index of a type in a typelist
@@ -638,7 +640,7 @@ namespace Private
 // IndexOf<TList, T>::value
 // returns the position of T in TList, or -1 if T is not found in TList
 ////////////////////////////////////////////////////////////////////////////////
-	template <class TList, class T> 
+	template <class TList, class T>
 	struct IndexOf;
 namespace Private
 {
@@ -657,9 +659,9 @@ namespace Private
 			typedef typename TList::Head Head;
 			typedef typename TList::Tail Tail;
 			private:
-				enum {temp = IsEqualType<T, Head>::value != 0 ? 0 
+				enum {temp = IsEqualType<T, Head>::value != 0 ? 0
 							: IndexOf<Tail, T>::temp};
-			
+
 			public:
 				enum {value = temp == -1 ? -1 : 1 + temp};
 		};
@@ -678,10 +680,10 @@ namespace Private
 	};
 
 }	// end of namespace Private
-	
+
 	// The primary IndexOfImpl-Template is always one step ahead.
 	// Therefore if T is in list, we need to subtract one from the result.
-	template <class TList, class T> 
+	template <class TList, class T>
 	struct IndexOf
 	{
 		enum {temp = Private::IndexOfImpl<TList>::template In<T>::value};
@@ -708,10 +710,10 @@ namespace Private
 		template <class T>
 		struct In
 		{
-			typedef Typelist<typename TList::Head, 
+			typedef Typelist<typename TList::Head,
 				typename Append<typename TList::Tail, T>::Result> Result;
 		};
-			
+
 	};
 
 	template <>
@@ -732,7 +734,7 @@ namespace Private
 		{
 			typedef typename Select
 			<
-				IsEqualType<T, NullType>::value,	// is T == Nulltype?	
+				IsEqualType<T, NullType>::value,	// is T == Nulltype?
 				NullType,							// yes
 				typename Select						// no. check if T is a Typelist
 				<
@@ -765,7 +767,7 @@ namespace Private
 {
 	template <class TList>
 	struct EraseImpl
-	{	// TList is not NullType. 
+	{	// TList is not NullType.
 		// Check if TList::Head is equal to T
 		// if T is the same as TList::Head, then the Result is TList::Tail
 		//
@@ -801,7 +803,7 @@ namespace Private
 		};
 	};
 }	// end of namespace Private
-	
+
 	template <class TList, class T>
 	struct Erase
 	{
@@ -821,7 +823,7 @@ namespace Private
 {
 	template <class TList>
 	struct EraseAllImpl
-	{	// TList is not NullType. 
+	{	// TList is not NullType.
 		// Check if TList::Head is equal to T
 		// If T is equal to TLIst::Head the result is the result of EraseAll
 		// applied to TList::Tail
@@ -856,7 +858,7 @@ namespace Private
 		};
 	};
 }	// end of namespace Private
-	
+
 	template <class TList, class T>
 	struct EraseAll
 	{
@@ -870,13 +872,13 @@ namespace Private
 // NoDuplicates<TList, T>::Result
 ////////////////////////////////////////////////////////////////////////////////
 // NoDuplicates taken from Rani Sharoni's Loki VC7-Port.
-	template <class TList> 
+	template <class TList>
     struct NoDuplicates
     {
     private:
         typedef typename TList::Head Head;
         typedef typename TList::Tail Tail;
-    
+
         ASSERT_TYPELIST(TList);
 
         typedef typename NoDuplicates<Tail>::Result L1;
@@ -885,8 +887,8 @@ namespace Private
     public:
         typedef Typelist<Head, L2> Result;
     };
-    
-    template <> 
+
+    template <>
     struct NoDuplicates<NullType>
     {
         typedef NullType Result;
@@ -925,7 +927,7 @@ namespace Private
 			>::Result Result;
 		};
 	};
-	
+
 	// If TList is NullType the result is NullType
 	template <>
 	struct ReplaceImpl<NullType>
@@ -937,14 +939,14 @@ namespace Private
 		};
 	};
 }	// end of namespace Private
-	
+
 	template <class TList, class T, class U>
 	struct Replace
 	{
-		typedef typename 
+		typedef typename
 		Private::ReplaceImpl<TList>::template In<T, U>::Result Result;
 	};
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template ReplaceAll
 // Replaces all occurences of a type in a typelist, with another type
@@ -971,11 +973,11 @@ namespace Private
 			<
 				IsEqualType<T, Head>::value,							// Is T == Head?
 				Typelist<U, typename ReplaceAll<Tail, T, U>::Result>,	// yes
-				Typelist<Head, typename ReplaceAll<Tail, T, U>::Result>	
+				Typelist<Head, typename ReplaceAll<Tail, T, U>::Result>
 			>::Result Result;
 		};
 	};
-	
+
 	// If TList is NullType the result is NullType
 	template <>
 	struct ReplaceAllImpl<NullType>
@@ -990,7 +992,7 @@ namespace Private
 	template <class TList, class T, class U>
 	struct ReplaceAll
 	{
-		typedef typename 
+		typedef typename
 		Private::ReplaceAllImpl<TList>::template In<T, U>::Result Result;
 	};
 
@@ -1003,20 +1005,20 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 //	Reverse taken from Rani Sharoni's Loki VC7-Port.
 	template <class TList> struct Reverse;
-        
+
     template <>
     struct Reverse<NullType>
     {
         typedef NullType Result;
     };
-    
-    template <class TList> 
+
+    template <class TList>
     struct Reverse
     {
     private:
         typedef typename TList::Head Head;
         typedef typename TList::Tail Tail;
-    
+
         ASSERT_TYPELIST(TList);
 
     public:
@@ -1068,15 +1070,13 @@ namespace Private
 		typedef typename 
 		Private::MostDerivedImpl<TList>::template In<T>::Result Result;
 	};
-
 ////////////////////////////////////////////////////////////////////////////////
 // class template DerivedToFront
 // Arranges the types in a typelist so that the most derived types appear first
 // Invocation (TList is a typelist):
 // DerivedToFront<TList>::Result
-// returns the reordered TList 
+// returns the reordered TList
 ////////////////////////////////////////////////////////////////////////////////
-// DerivedToFront taken from Rani Sharoni's Loki VC7-Port.
 	template <class TList>
     struct DerivedToFront
     {
@@ -1085,15 +1085,15 @@ namespace Private
 
         typedef typename TList::Head Head;
         typedef typename TList::Tail Tail;
-    
+
         typedef typename MostDerived<Tail, Head>::Result TheMostDerived;
-        typedef typename ReplaceAll<Tail, TheMostDerived, Head>::Result Temp;
+        typedef typename Replace<Tail, TheMostDerived, Head>::Result Temp;
         typedef typename DerivedToFront<Temp>::Result L;
 
     public:
         typedef Typelist<TheMostDerived, L> Result;
     };
-        
+
 	template <>
 	struct DerivedToFront<NullType>
 	{
@@ -1105,7 +1105,7 @@ namespace Private
 // Arranges all the types in a typelist so that the most derived types appear first
 // Invocation (TList is a typelist):
 // DerivedToFront<TList>::Result
-// returns the reordered TList 
+// returns the reordered TList
 ////////////////////////////////////////////////////////////////////////////////
 // DerivedToFrontAll taken from Rani Sharoni's Loki VC7-Port.
 	template <class TList>
@@ -1116,23 +1116,23 @@ namespace Private
 
 			typedef typename TList::Head Head;
 			typedef typename TList::Tail Tail;
-    
+
 			typedef typename MostDerived<Tail, Head>::Result TheMostDerived;
 			typedef typename Replace<Tail, TheMostDerived, Head>::Result L;
-        
+
 			typedef typename DerivedToFrontAll<L>::Result TailResult;
 
 		public:
 			typedef Typelist<TheMostDerived, TailResult> Result;
     };
-    
+
     template <>
     struct DerivedToFrontAll<NullType>
     {
         typedef NullType Result;
     };
-    
-    
+
+
 	}	// end of namespace TL
 }	// end of namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
@@ -1142,5 +1142,7 @@ namespace Private
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 // Sept 29, 2002: ported by Benjamin Kaufmann to MSVC 6.0
+// Feb	24, 2003: renamed MakeTypeList to MakeTypelist. Fixed a bug in 
+//					DerivedToFront.
 ////////////////////////////////////////////////////////////////////////////////
 #endif // TYPELIST_INC_
