@@ -67,7 +67,7 @@ Test::tests_type Test::tests;
  *
  *               SmartPtrTest  FactoryTest  AbstractFactoryTest  AssocVectorTest  FunctorTest
  * gcc   2.95.3  ?             ?            ?                    ?                ?
- * gcc   3.2     FC            AP           AP                   FC               AP
+ * gcc   3.2     AP            AP           AP                   AP               AP
  * MSVC  6.0     FC            AP           FC                   FC               FC
  * MSVC  7.0     FC            AP           AP                   FC               AP
  * Intel 5.0     FC            FC           FC                   FC               FC
