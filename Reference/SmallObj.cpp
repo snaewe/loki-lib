@@ -18,6 +18,7 @@
 #include "SmallObj.h"
 #include <cassert>
 #include <algorithm>
+#include <functional>
 
 using namespace Loki;
 
@@ -365,6 +366,20 @@ SmallObjAllocator::SmallObjAllocator(
 {   
 }
 
+namespace { // anoymous 
+
+// See LWG DR #270
+struct CompareFixedAllocatorSize
+    : std::binary_function<const FixedAllocator &, std::size_t, bool>
+{
+    bool operator()(const FixedAllocator &x, std::size_t numBytes) const
+    {
+        return x.BlockSize() < numBytes;
+    }
+};
+
+} // anoymous namespace
+
 ////////////////////////////////////////////////////////////////////////////////
 // SmallObjAllocator::Allocate
 // Allocates 'numBytes' memory
@@ -379,7 +394,8 @@ void* SmallObjAllocator::Allocate(std::size_t numBytes)
     {
         return pLastAlloc_->Allocate();
     }
-    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes);
+    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes, 
+                                        CompareFixedAllocatorSize());
     if (i == pool_.end() || i->BlockSize() != numBytes)
     {
         i = pool_.insert(i, FixedAllocator(numBytes));
@@ -404,7 +420,8 @@ void SmallObjAllocator::Deallocate(void* p, std::size_t numBytes)
         pLastDealloc_->Deallocate(p);
         return;
     }
-    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes);
+    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes, 
+                                        CompareFixedAllocatorSize());
     assert(i != pool_.end());
     assert(i->BlockSize() == numBytes);
     pLastDealloc_ = &*i;

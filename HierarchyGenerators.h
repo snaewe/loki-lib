@@ -14,6 +14,8 @@
 #		include "Reference/HierarchyGenerators.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/HierarchyGenerators.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/HierarchyGenerators.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/HierarchyGenerators.h"
 #	elif (_MSC_VER >= 1200)

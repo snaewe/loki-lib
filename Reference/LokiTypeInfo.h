@@ -15,8 +15,8 @@
 
 // Last update: June 20, 2001
 
-#ifndef TYPEINFO_INC_
-#define TYPEINFO_INC_
+#ifndef LOKITYPEINFO_INC_
+#define LOKITYPEINFO_INC_
 
 #include <typeinfo>
 #include <cassert>
@@ -62,7 +62,8 @@ namespace Loki
     inline bool TypeInfo::before(const TypeInfo& rhs) const
     {
         assert(pInfo_);
-        return pInfo_->before(*rhs.pInfo_);
+        // type_info::before return type is int in some VC libraries 
+        return pInfo_->before(*rhs.pInfo_) != 0;
     }
 
     inline const std::type_info& TypeInfo::Get() const
@@ -80,7 +81,8 @@ namespace Loki
 // Comparison operators
     
     inline bool operator==(const TypeInfo& lhs, const TypeInfo& rhs)
-    { return lhs.Get() == rhs.Get(); }
+    // type_info::operator== return type is int in some VC libraries
+    { return (lhs.Get() == rhs.Get()) != 0; }
 
     inline bool operator<(const TypeInfo& lhs, const TypeInfo& rhs)
     { return lhs.before(rhs); }
@@ -103,4 +105,4 @@ namespace Loki
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // TYPEINFO_INC_
+#endif // LOKITYPEINFO_INC_

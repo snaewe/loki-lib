@@ -14,6 +14,8 @@
 #		include "Reference/DataGenerators.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/DataGenerators.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/DataGenerators.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/DataGenerators.h"
 #	elif (_MSC_VER >= 1200)

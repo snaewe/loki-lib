@@ -14,6 +14,8 @@
 #		include "Reference/Visitor.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/Visitor.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/Visitor.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/Visitor.h"
 #	elif (_MSC_VER >= 1200)

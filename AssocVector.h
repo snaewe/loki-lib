@@ -14,6 +14,8 @@
 #		include "Reference/AssocVector.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/AssocVector.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/AssocVector.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/AssocVector.h"
 #	elif (_MSC_VER >= 1200)

@@ -766,7 +766,7 @@ typedef char _type_##_is_not_a_Typelist[true]
             public:
                 typedef typename Select
                 <
-                    SameType<Head, T>::value,
+                    IsSameType<Head, T>::value,
                     TailResult,
                     Typelist<Head, TailResult>
                 >
@@ -885,7 +885,7 @@ typedef char _type_##_is_not_a_Typelist[true]
             public:
                 typedef typename Select
                 <
-                    SameType<Head, T>::value,
+                    IsSameType<Head, T>::value,
                     Typelist<U,    TailResult>,
                     Typelist<Head, TailResult>
                 >

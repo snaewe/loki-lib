@@ -30,7 +30,7 @@ namespace Loki
         struct Lock
         {
             Lock() {}
-            Lock(const Host&) {}
+            explicit Lock(const SingleThreaded&) {}
         };
         
         typedef Host VolatileType;
@@ -96,10 +96,12 @@ namespace Loki
             Lock(const Lock&);
             Lock& operator=(const Lock&);
         public:
-            Lock(Host& host) : host_(host)
+
+            explicit Lock(ObjectLevelLockable& host) : host_(host)
             {
                 ::EnterCriticalSection(&host_.mtx_);
             }
+
             ~Lock()
             {
                 ::LeaveCriticalSection(&host_.mtx_);
@@ -126,12 +128,10 @@ namespace Loki
     template <class Host>
     class ClassLevelLockable
     {
-        static CRITICAL_SECTION mtx_;
-
-        struct Initializer;
-        friend struct Initializer;
         struct Initializer
-        {
+        {   
+            CRITICAL_SECTION mtx_;
+
             Initializer()
             {
                 ::InitializeCriticalSection(&mtx_);
@@ -155,15 +155,15 @@ namespace Loki
         public:
             Lock()
             {
-                ::EnterCriticalSection(&mtx_);
+                ::EnterCriticalSection(&initializer_.mtx_);
             }
-            Lock(Host&)
+            explicit Lock(ClassLevelLockable&)
             {
-                ::EnterCriticalSection(&mtx_);
+                ::EnterCriticalSection(&initializer_.mtx_);
             }
             ~Lock()
             {
-                ::LeaveCriticalSection(&mtx_);
+                ::LeaveCriticalSection(&initializer_.mtx_);
             }
         };
 
@@ -185,9 +185,6 @@ namespace Loki
     };
     
     template <class Host>
-    CRITICAL_SECTION ClassLevelLockable<Host>::mtx_;
-    
-    template <class Host>
     typename ClassLevelLockable<Host>::Initializer 
     ClassLevelLockable<Host>::initializer_;
     
@@ -197,8 +194,6 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// January 10, 2002: Fixed bug in AtomicDivide - credit due to Jordi Guerrero
-// August 14, 2002: Changed some AtomicDivide's to AtomicDecrement's MKH
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif

@@ -14,6 +14,8 @@
 #		include "Reference/SmallObj.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/SmallObj.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/SmallObj.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/SmallObj.h"
 #	elif (_MSC_VER >= 1200)

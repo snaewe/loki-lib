@@ -407,15 +407,8 @@ namespace Loki
         };
 
         template<>
-        struct MakeTypelist
-        <
-            NullType, NullType, NullType, 
-            NullType, NullType, NullType, 
-            NullType, NullType, NullType, 
-            NullType, NullType, NullType,
-            NullType, NullType, NullType,
-            NullType, NullType, NullType
-        >{
+        struct MakeTypelist<>
+        {
             typedef NullType Result;
         };
 

@@ -13,7 +13,7 @@ SmartPtr.h
 static_check.h
 Threads.h
 Tuple.h
-TypeInfo.h
+LokiTypeInfo.h
 Typelist.h
 TypeManip.h
 TypeTraits.h

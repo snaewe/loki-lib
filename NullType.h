@@ -14,6 +14,8 @@
 #		include "Reference/NullType.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/NullType.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/NullType.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/NullType.h"
 #	elif (_MSC_VER >= 1200)

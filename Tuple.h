@@ -14,6 +14,8 @@
 #		include "Reference/Tuple.h"
 #	elif (__BORLANDC__ >= 0x560)
 #		include "Borland/Tuple.h"
+#	elif (_MSC_VER >= 1301)
+#		include "Reference/Tuple.h"
 #	elif (_MSC_VER >= 1300)
 #		include "MSVC/1300/Tuple.h"
 #	elif (_MSC_VER >= 1200)

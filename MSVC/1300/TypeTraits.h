@@ -226,10 +226,10 @@ namespace Loki
 
         enum { 
             isVoid = 
-                SameType<T, void>::value          ||
-                SameType<T, const void>::value    ||
-                SameType<T, volatile void>::value ||
-                SameType<T, const volatile void>::value
+                IsSameType<T, void>::value          ||
+                IsSameType<T, const void>::value    ||
+                IsSameType<T, volatile void>::value ||
+                IsSameType<T, const volatile void>::value
         };
 
         enum { isStdUnsignedInt = 

@@ -68,6 +68,27 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
+// class template IsSameType
+// Return true iff two given types are the same
+// Invocation: SameType<T, U>::value
+// where:
+// T and U are types
+// Result evaluates to true iff U == T (types equal)
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename T, typename U>
+    struct IsSameType
+    {
+        enum { value = false };
+    };
+    
+    template <typename T>
+    struct IsSameType<T,T>
+    {
+        enum { value = true };
+    };
+
+////////////////////////////////////////////////////////////////////////////////
 // Helper types Small and Big - guarantee that sizeof(Small) < sizeof(Big)
 ////////////////////////////////////////////////////////////////////////////////
 
