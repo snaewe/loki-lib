@@ -13,7 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Feb 19, 2003
+// Last update: Mar 06, 2003
+// All dispatchers now have void as default value for return types.
 // All dispatchers now support void as return type. 
 // 
 //
@@ -208,7 +209,8 @@ namespace Private
         bool symmetric = true,
         class BaseRhs = BaseLhs,
         class TypesRhs = TypesLhs,
-        typename ResultType = int
+        typename ResultType = Loki::Select<
+			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result
     >
     class StaticDispatcher : public ::Loki::Select
 								<
@@ -344,7 +346,8 @@ namespace Private
     <
         class BaseLhs,
         class BaseRhs = BaseLhs,
-        typename ResultType = int,
+        typename ResultType = Loki::Select<
+			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result,
         typename CallbackType = ResultType (*)(BaseLhs&, BaseRhs&)
     >
     class BasicDispatcher : public ::Loki::Select
@@ -511,7 +514,8 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class BaseLhs, class BaseRhs = BaseLhs,
-              typename ResultType = int/*void*/,
+              typename ResultType = Loki::Select<
+			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result,
               class CastingPolicy = DynamicCasterWrapper,
               class DispatcherBackend = BasicDispatcherWrapper>
 	class FnDispatcher : public ::Loki::Select
@@ -698,7 +702,8 @@ namespace Private
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class BaseLhs, class BaseRhs = BaseLhs,
-              typename ResultType = int/*void*/,
+              typename ResultType = Loki::Select<
+			Loki::Private::AlwaysFalse<BaseLhs>::value, void, void>::Result,
               class CastingPolicy = DynamicCasterWrapper, 
               class DispatcherBackend = BasicDispatcherWrapper>
 	class FunctorDispatcher : public ::Loki::Select
@@ -776,9 +781,10 @@ namespace Private
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
-// Oct  28, 2002: ported by Benjamin Kaufmann
+// Oct  28, 2002: ported by Benjamin Kaufmann to MSVC 6
 // Feb	19, 2003: replaced pointer-Dummies with Type2Type-Parameters and added 
-//					support for return type void.
+//					support for return type void. B.K.
+// Mar	06, 2003: Changed default values for return types to void B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
