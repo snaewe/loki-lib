@@ -926,21 +926,6 @@ namespace Loki
         bool operator!() const // Enables "if (!sp) ..."
         { return GetImpl(*this) == 0; }
         
-        inline friend bool operator==(const SmartPtr& lhs,
-            const T* rhs)
-        { return GetImpl(lhs) == rhs; }
-        
-        inline friend bool operator==(const T* lhs,
-            const SmartPtr& rhs)
-        { return rhs == lhs; }
-        
-        inline friend bool operator!=(const SmartPtr& lhs,
-            const T* rhs)
-        { return !(lhs == rhs); }
-        
-        inline friend bool operator!=(const T* lhs,
-            const SmartPtr& rhs)
-        { return rhs != lhs; }
 
         // Ambiguity buster
         template
@@ -952,7 +937,7 @@ namespace Loki
             template <class> class SP1
         >
         bool operator==(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs) const
-        { return *this == GetImpl(rhs); }
+        { return GetImpl(*this) == GetImpl(rhs); }
 
         // Ambiguity buster
         template
@@ -976,24 +961,26 @@ namespace Loki
             template <class> class SP1
         >
         bool operator<(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs) const
-        { return *this < GetImpl(rhs); }
+        { return GetImpl(*this) < GetImpl(rhs); }
 
     private:
         // Helper for enabling 'if (sp)'
         struct Tester
         {
-            Tester() {}
-        private:
-            void operator delete(void*);
+            Tester(int) {}
+            void dummy() {}
         };
         
+        typedef void (Tester::*unspecified_boolean_type_)();
+
+        typedef typename Select<CP::allow, Tester, unspecified_boolean_type_>::Result
+            unspecified_boolean_type;
+
     public:
         // enable 'if (sp)'
-        operator Tester*() const
+        operator unspecified_boolean_type() const
         {
-            if (!*this) return 0;
-            static Tester t;
-            return &t;
+            return !*this ? 0 : &Tester::dummy;
         }
 
     private:
@@ -1029,7 +1016,7 @@ namespace Loki
         typename U
     >
     inline bool operator==(const SmartPtr<T, OP, CP, KP, SP>& lhs,
-        const U* rhs)
+        U* rhs)
     { return GetImpl(lhs) == rhs; }
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -1045,7 +1032,7 @@ namespace Loki
         template <class> class SP,
         typename U
     >
-    inline bool operator==(const U* lhs,
+    inline bool operator==(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs)
     { return rhs == lhs; }
 
@@ -1063,7 +1050,7 @@ namespace Loki
         typename U
     >
     inline bool operator!=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
-        const U* rhs)
+        U* rhs)
     { return !(lhs == rhs); }
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -1079,7 +1066,7 @@ namespace Loki
         template <class> class SP,
         typename U
     >
-    inline bool operator!=(const U* lhs,
+    inline bool operator!=(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs)
     { return rhs != lhs; }
 
@@ -1097,7 +1084,7 @@ namespace Loki
         typename U
     >
     inline bool operator<(const SmartPtr<T, OP, CP, KP, SP>& lhs,
-        const U* rhs);
+        U* rhs);
         
 ////////////////////////////////////////////////////////////////////////////////
 // operator< for lhs = raw pointer, rhs = SmartPtr -- NOT DEFINED
@@ -1112,7 +1099,7 @@ namespace Loki
         template <class> class SP,
         typename U
     >
-    inline bool operator<(const U* lhs,
+    inline bool operator<(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs);
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -1129,7 +1116,7 @@ namespace Loki
         typename U
     >
     inline bool operator>(const SmartPtr<T, OP, CP, KP, SP>& lhs,
-        const U* rhs)
+        U* rhs)
     { return rhs < lhs; }
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -1145,7 +1132,7 @@ namespace Loki
         template <class> class SP,
         typename U
     >
-    inline bool operator>(const U* lhs,
+    inline bool operator>(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs)
     { return rhs < lhs; }
   
@@ -1163,7 +1150,7 @@ namespace Loki
         typename U
     >
     inline bool operator<=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
-        const U* rhs)
+        U* rhs)
     { return !(rhs < lhs); }
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -1179,7 +1166,7 @@ namespace Loki
         template <class> class SP,
         typename U
     >
-    inline bool operator<=(const U* lhs,
+    inline bool operator<=(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs)
     { return !(rhs < lhs); }
 
@@ -1197,7 +1184,7 @@ namespace Loki
         typename U
     >
     inline bool operator>=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
-        const U* rhs)
+        U* rhs)
     { return !(lhs < rhs); }
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -1213,7 +1200,7 @@ namespace Loki
         template <class> class SP,
         typename U
     >
-    inline bool operator>=(const U* lhs,
+    inline bool operator>=(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs)
     { return !(lhs < rhs); }
 
