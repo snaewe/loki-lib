@@ -13,23 +13,24 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Mar 20, 2003
-// Interface change for FnDispatcher::Add:
-// The trampoline-Version of FnDispatcher::Add needs explicit template
-// argument specification for type and non-type parameters. Unfortunately 
-// all workarounds used so far failed for this member-function. 
-// Therefore I need to use a new one which leads to another interface change:
-// Example (see "Modern C++ Design" Section 11.6)
-// ----------------------------------------------
-// Using the original one writes:
+// Last update: Mar 21, 2003
+// Added a new explicit template argument specification workaround for 
+// FnDispatcher::Add which is more compliant with other 
+// explicit template argument specification workarounds used in this port.
+//
+// Example usage:
+// --------------
+// Using the original library one writes:
 // typedef FnDispatcher<Shape> Dispatcher;
 // void Hatch(Rectangle& lhs, Poly& rhs) {...}
 // 
 // Dispatcher dis;
 // disp.Add<Rectangle, Poly, &Hatch>();
 //
-// Using this port the example becomes:
-// Dispatcher::AddI<Rectangle, Poly, &Hatch>()(dis);
+// Using this port the example either becomes:
+//	dis.Add(Dispatcher::Add<Rectangle, Poly, &Hatch>());
+// or alternatively
+//	Dispatcher::AddI<Rectangle, Poly, &Hatch>()(dis);
 // 
 // All dispatchers now have void as default value for return types.
 // All dispatchers now support void as return type. 
@@ -553,7 +554,52 @@ namespace Private
 				::Loki::Type2Type<SomeRhs>());
         }        
         
-        
+
+		// two different workarounds for FnDispatcher::Add
+		// Using the first one writes:
+		//	DisType dispatcher;
+		//	dispatcher.Add(DisType::Etas<SomeLhs, SomeRhs, &AFunc>());
+        // using the second workaround the call becomes:
+		//	DisType dispatcher;
+		//	DisTyp::AddI<SomeLhs, SomeRhs, &AFunc>()(dispatcher);
+
+		// Helper-class for the first workaround.
+		// When calling FnDispatcher::Add provide an object of this type
+		// as argument.
+		template <class SomeLhs, class SomeRhs, 
+			ResultType (*callback)(SomeLhs&, SomeRhs&), bool symmetric = false>
+		struct Etas
+		{
+			typedef Private::FnDispatcherHelper<
+                    BaseLhs, BaseRhs, SomeLhs, SomeRhs, ResultType,
+                    ApplyInnerType2<CastingPolicy, SomeLhs,BaseLhs>::type, 
+                    ApplyInnerType2<CastingPolicy,SomeRhs,BaseRhs>::type, 
+                    callback> Local;
+			enum {sym = symmetric};
+			typedef SomeLhs Lhs;
+			typedef SomeRhs Rhs;
+		};
+		
+		// EtasType has to be a template parameter. If one tries to use
+		// a parameter of type Etas the MSVC 6.0 won't generate correct
+		// code.
+		template <class EtasType>
+        void Add(EtasType EtasObj)
+        {
+			typedef typename EtasType::Local Local;	
+			typedef typename EtasType::Lhs SomeLhs;
+			typedef typename EtasType::Rhs SomeRhs;
+
+            Add(&Local::Trampoline, ::Loki::Type2Type<SomeLhs>(),
+				::Loki::Type2Type<SomeRhs>());
+            if (EtasType::sym)
+            {
+                Add(&Local::TrampolineR, ::Loki::Type2Type<SomeRhs>(),
+					::Loki::Type2Type<SomeLhs>());
+            }
+        }
+
+		// alternative workaround for FnDispatcher::Add
 		template <class SomeLhs, class SomeRhs, 
 			ResultType (*callback)(SomeLhs&, SomeRhs&), bool symmetric = false>
 		struct AddI
@@ -795,6 +841,8 @@ namespace Private
 // Mar	20. 2003: Fixed Bugs in FnDispatcherHelperBase, FnDispatcher::Add and
 //					FunctorDispatcher::Add.
 //					New Interface for FnDispatcher::Add.B.K.
+// Mar	21, 2003: Added new explicit template argument specification workaround
+//					for FnDispatcher::Add B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
