@@ -13,7 +13,10 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Oct 24, 2002
+// Last update: Feb 20, 2003
+// replaced pointer-dummy parameters with Type2Type-parameters.
+// See readme.txt (notes: C) if you don't know why the dummy parameters are needed
+//
 // replaced all template template parameters with 'normal' parameters
 // For each Factory-Unit there is now a wrapper-class (non template class) 
 // containing a nested template class called In which
@@ -32,7 +35,7 @@
 
 #include <cassert>
 
-#define  ETAS_HELPER(Type) ((Type*)0)
+#define  ETAS_HELPER(Type) (::Loki::Type2Type<Type>())
 
 namespace Loki
 {
@@ -65,12 +68,12 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 //	VC 6.0 changes:
 //	Because the VC 6.0 does not support explicit template argument specification (14.8.1)
-//	the member-function Create takes a dummy argument of type T* whose sole
+//	the member-function Create takes a dummy argument of type Type2Type<T> whose sole
 //	responsibility is to help the compiler in deducing the type of T.
 //	Using this port the call:
 //	ConcProduct* p = aFactory.Create<ConcProduct>();
 //	therefore becomes:
-//	ConcProduct* p = aFactory.Create((ConcProduct*)0);
+//	ConcProduct* p = aFactory.Create(Type2Type<ConcProduct>());
 
     template
     <
@@ -82,7 +85,7 @@ namespace Loki
     public:
         typedef TList ProductList;
         
-        template <class T> T* Create(T* DeduceHelper)
+        template <class T> T* Create(Type2Type<T>)
         {
             ApplyInnerType<Unit, T>::type& unit = *this;
             return unit.DoCreate(Type2Type<T>());
@@ -212,6 +215,7 @@ namespace Loki
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Oct  24, 2002: ported by Benjamin Kaufmann to MSVC 6.0
+// Feb	20, 2003: replaced pointer-dummy parameters with Type2Type-parameters. B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ABSTRACTFACTORY_INC_
