@@ -15,7 +15,7 @@
 #ifndef TYPETRAITSTEST_H
 #define TYPETRAITSTEST_H
 
-#include <Loki/TypeTraits.h>
+#include <loki/TypeTraits.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // TypeTraitsTest
