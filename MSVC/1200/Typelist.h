@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Last update: Feb 22, 2003
-//	
+//
 // renamed MakeTypeList to MakeTypelist.
 //
 // Rani Sharoni's VC 7 port is heavily based on explicit template specialization
@@ -916,7 +916,7 @@ namespace Private
 			// If T is not equal to TList::Head, the result is a typelist
 			// with TList::Head as its head and the result of applying
 			// Replace to TList::Tail, T, U as its tail
-			ASSERT_VALID(TList);
+			ASSERT_TYPELIST(TList);
 			typedef typename TList::Head Head;
 			typedef typename TList::Tail Tail;
 			typedef typename Select
@@ -966,7 +966,7 @@ namespace Private
 		template <class T, class U>
 		struct In
 		{
-			ASSERT_VALID(TList);
+			ASSERT_TYPELIST(TList);
 			typedef typename TList::Head Head;
 			typedef typename TList::Tail Tail;
 			typedef typename Select
@@ -1043,14 +1043,14 @@ namespace Private
 		struct In
 		{
 			private:
-				ASSERT_VALID(TList);
+				ASSERT_TYPELIST(TList);
 				typedef typename TList::Head Head;
 				typedef typename TList::Tail Tail;
 				typedef typename MostDerived<Tail, T>::Result Candidate;
 			public:
 				typedef typename Select
 				<
-					SUPERSUBCLASS(Candidate, Head),		
+					SUPERSUBCLASS(Candidate, Head),
 					Head,
 					Candidate
 				>::Result Result;
@@ -1061,13 +1061,13 @@ namespace Private
 	{
 		template <class T>
 		struct In {typedef T Result;};
-	};	
+	};
 }	// end of namespace Private
 
-	template <class TList, class T> 
+	template <class TList, class T>
 	struct MostDerived
 	{
-		typedef typename 
+		typedef typename
 		Private::MostDerivedImpl<TList>::template In<T>::Result Result;
 	};
 ////////////////////////////////////////////////////////////////////////////////
@@ -1142,7 +1142,7 @@ namespace Private
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
 // Sept 29, 2002: ported by Benjamin Kaufmann to MSVC 6.0
-// Feb	24, 2003: renamed MakeTypeList to MakeTypelist. Fixed a bug in 
+// Feb	24, 2003: renamed MakeTypeList to MakeTypelist. Fixed a bug in
 //					DerivedToFront.
 ////////////////////////////////////////////////////////////////////////////////
 #endif // TYPELIST_INC_
