@@ -12,8 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// Last update: Oct 24, 2002
+//
+// Last update: Feb 22, 2003
+//  
+// 
+// The default error policy is no longer a template-class
 
 #ifndef FACTORY_INC_
 #define FACTORY_INC_
@@ -38,9 +41,10 @@ namespace Loki
         };
         
         template <typename IdentifierType, class AbstractProduct>
-		static AbstractProduct* OnUnknownType(IdentifierType)
+		static AbstractProduct* OnUnknownType(IdentifierType s,Type2Type<AbstractProduct>)
         {
-            throw Exception();
+			throw Exception();
+			return (AbstractProduct*) 0;
         }
     };
 
@@ -78,7 +82,7 @@ namespace Loki
             {
                 return (i->second)();
             }
-            return OnUnknownType(id);
+			return OnUnknownType(id, Type2Type<AbstractProduct>());
         }
         
     private:
@@ -124,7 +128,7 @@ namespace Loki
             {
                 return (i->second)(model);
             }
-            return OnUnknownType(TypeInfo(typeid(*model)),(AbstractProduct*)0);
+            return OnUnknownType(TypeInfo(typeid(*model)),Type2Type<AbstractProduct>());
         }
         
     private:
@@ -141,6 +145,7 @@ namespace Loki
 //      Credit due to Jason Fischl.
 // Oct 24, 2002: ported to MSVC 6 by Benjamin Kaufmann.
 //				 Note: The default error policy is no longer a template-class.
+// Feb 22, 2003: Added missing parameter to OnUnknownType B.K.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // FACTORY_INC_
