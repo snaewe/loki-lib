@@ -1219,7 +1219,7 @@ namespace Private
 		FunctorBase() : spImpl_() {}
 		
 		template <class Fun, class MyFunctor>
-		FunctorBase(Fun fun, Loki::Type2Type<MyFunctor>) 
+		FunctorBase(const Fun& fun, Loki::Type2Type<MyFunctor>) 
 			: spImpl_(new FunctorHandler<MyFunctor, Fun>(fun))
 		{}
 
@@ -1339,7 +1339,7 @@ namespace Private
 		FunctorVoidBase() : spImpl_() {}
 		
 		template <class Fun, class MyFunctor>
-		FunctorVoidBase(Fun fun, Loki::Type2Type<MyFunctor>) 
+		FunctorVoidBase(const Fun& fun, Loki::Type2Type<MyFunctor>) 
 			: spImpl_(new FunctorHandler<MyFunctor, Fun>(fun))
 		{}
 
