@@ -1,0 +1,3 @@
+MSVC7
+Jonathan H. Lundquist
+Shannon G. Barber (aka Magmai Kai Holmlor)
