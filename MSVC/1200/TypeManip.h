@@ -232,7 +232,39 @@ public:
    enum { sameType = Chooser::sameType };
 };
 
-}  // namespace Loki
+////////////////////////////////////////////////////////////////////////////////
+// class template SuperSubclass
+// Invocation: SuperSubclass<B, D>::value where B and D are types. 
+// Returns true if B is a public base of D, or if B and D are aliases of the 
+// same type.
+//
+// Caveat: might not work if T and U are in a private inheritance hierarchy.
+////////////////////////////////////////////////////////////////////////////////
+
+template <class T, class U>
+struct SuperSubclass
+{
+  enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// class template SuperSubclassStrict
+// Invocation: SuperSubclassStrict<B, D>::value where B and D are types. 
+// Returns true if B is a public base of D.
+//
+// Caveat: might not work if T and U are in a private inheritance hierarchy.
+////////////////////////////////////////////////////////////////////////////////
+
+template<class T,class U>
+struct SuperSubclassStrict
+{
+  enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+                 !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
+                 !::Loki::Conversion<const volatile T*, const volatile U*>::sameType) };
+};
+
+}   // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS
@@ -241,28 +273,30 @@ public:
 // same type.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
+// Deprecated: Use SuperSubclass class template instead.
 ////////////////////////////////////////////////////////////////////////////////
 
 #define SUPERSUBCLASS(T, U) \
-    (::Loki::Conversion<const U*, const T*>::exists && \
-    !::Loki::Conversion<const T*, const void*>::sameType)
+    ::Loki::SuperSubclass<T,U>::value
 
 ////////////////////////////////////////////////////////////////////////////////
-// macro SUPERSUBCLASS
+// macro SUPERSUBCLASS_STRICT
 // Invocation: SUPERSUBCLASS(B, D) where B and D are types. 
 // Returns true if B is a public base of D.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
+// Deprecated: Use SuperSubclassStrict class template instead.
 ////////////////////////////////////////////////////////////////////////////////
 
 #define SUPERSUBCLASS_STRICT(T, U) \
-    (SUPERSUBCLASS(T, U) && \
-    !::Loki::Conversion<const T, const U>::sameType)
+    ::Loki::SuperSubclassStrict<T,U>::value
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// August 22, 2001: ported by Jonathan H Lundquist to MSVC
+// June    20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// August  22, 2001: ported by Jonathan H Lundquist to MSVC
+// October 12, 2002: Added SuperSubclass and SuperSubclassStrict templates.
+//                   The corresponding macros are deprecated. T.S.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_

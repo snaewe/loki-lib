@@ -38,49 +38,49 @@ class BadSuperMonster : public SuperMonster {};
 typedef Loki::AbstractFactory<TYPELIST_3(Soldier, Monster, SuperMonster)> AbstractEnemyFactory; 
 
 typedef Loki::ConcreteFactory<AbstractEnemyFactory, Loki::OpNewFactoryUnit,
-	TYPELIST_3(SillySoldier, SillyMonster, SillySuperMonster)> EasyLevelEnemyFactory;
+  TYPELIST_3(SillySoldier, SillyMonster, SillySuperMonster)> EasyLevelEnemyFactory;
 
 typedef Loki::ConcreteFactory<AbstractEnemyFactory, Loki::OpNewFactoryUnit,
-	TYPELIST_3(BadSoldier, BadMonster, BadSuperMonster)> HardLevelEnemyFactory;
+  TYPELIST_3(BadSoldier, BadMonster, BadSuperMonster)> HardLevelEnemyFactory;
 
 class AbstractFactoryTest : public Test
 {
 public:
-	AbstractFactoryTest() : Test("AbstractFactory.h") {}
+  AbstractFactoryTest() : Test("AbstractFactory.h") {}
 
-	virtual void execute(TestResult &result)
-		{
-		printName(result);
+  virtual void execute(TestResult &result)
+    {
+    printName(result);
 
-		using namespace Loki;
+    using namespace Loki;
 
-		bool r;
+    bool r;
 
-		std::auto_ptr<AbstractEnemyFactory> easyFactory(new EasyLevelEnemyFactory);
-		std::auto_ptr<AbstractEnemyFactory> hardFactory(new HardLevelEnemyFactory);
+    std::auto_ptr<AbstractEnemyFactory> easyFactory(new EasyLevelEnemyFactory);
+    std::auto_ptr<AbstractEnemyFactory> hardFactory(new HardLevelEnemyFactory);
 
-		Soldier *s;
+    Soldier *s;
 
-		s = easyFactory->Create<Soldier>();
-		
-		r= !!(typeid(*s)==typeid(SillySoldier)); //SGB !! eliminates bool-to-int performance warning
+    s = easyFactory->Create<Soldier>();
+    
+    r= !!(typeid(*s)==typeid(SillySoldier)); //SGB !! eliminates bool-to-int performance warning
 
-		delete s;
+    delete s;
 
 #ifndef __BORLANDC__
 
-		s = hardFactory->Create<Soldier>(); //BCB bug!!! - always creates SillySoldier
+    s = hardFactory->Create<Soldier>(); //BCB bug!!! - always creates SillySoldier
 
-		r=r && typeid(*s)==typeid(BadSoldier);
+    r=r && typeid(*s)==typeid(BadSoldier);
 
-		delete s;
+    delete s;
 
 #endif
 
-		testAssert("AbstractFactory",r,result);
+    testAssert("AbstractFactory",r,result);
 
-		std::cout << '\n';
-		}
+    std::cout << '\n';
+    }
 } abstractFactoryTest;
 
 #endif
