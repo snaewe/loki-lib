@@ -1,6 +1,6 @@
 Loki VC 6.0 Port or how to produce C1001 - Internal Compiler Errors
 -------------------------------------------------------------------
-Version: 0.5a
+Version: 0.5b
 
 Introduction/Compatibility:
 ---------------------------
@@ -30,7 +30,13 @@ If you use Singletons with longevity you must add Singleton.cpp to your project/
 Fixes:
 ------
 
-	Mar 06, 2003:
+	Mar 08, 2003:
+    -------------
+        * In HierarchyGenerators.h: implemented transparent workaround for
+        'explicit template argument specification for nonmeber functions'-bug.
+        The Field-Functions can now be called as in the original lib.
+
+    Mar 06, 2003:
     -------------
         * In SmartPointer.h: Added helper-macros for convenient specialization
         of std::less for Smart-Pointers.
@@ -178,7 +184,24 @@ Unfortunately the MSVC 6.0 supports neither of them.
     }
     [/code]
 
-    As a workaround i added dummy-parameters (of type Int2Type).
+    Fortunately there is a transparent workaround for this problem. Simply add
+    a dummy-parameter with a proper default value:
+    [code]
+    template <unsigned i, class T>
+    void BugDemonstration(T p, Int2Type<i>* = (Int2Type<i>*)0)
+    {
+	    printf("BugDemonstration called with i = %d\n", i);
+    }
+
+    int main()
+    {
+        GenScatterHierarchy<TYPELIST_3(int, int, int), TestUnitWrapper> Bla;
+	    // will now work correctly
+	    BugDemonstration<0>(Bla);
+	    BugDemonstration<1>(Bla);
+	    BugDemonstration<2>(Bla);
+    }
+    [/code]
 
     D. Virtual functions that use covariant return types (e.g. return a pointer to Derived)
     in the original library were changed so that they have exactly the
@@ -387,13 +410,9 @@ Interface changes:
 
     The fix also reveals the "Explicitly Specified Template Functions Not Overloaded Correctly"-Bug
     (Microsoft KB Article - 240871) in the Field-Function taking a nontype int Parameter.
+    See Notes (section C) for the description of the workaround.
 
-    This leads to an interface change:
-    Instead of: Field<0>(obj)
-    one now has to write
-    Field(obj, Int2Type<0>());
-
-    I added a macro FIELD. Using this macro one can write
+    I also added a macro FIELD. Using this macro one can write
     FIELD(obj, 0)
 
 
