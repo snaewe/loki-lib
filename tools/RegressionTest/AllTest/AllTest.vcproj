@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.00"
-	Name="LokiRegressionTest"
-	ProjectGUID="{E7FC3709-2BA7-4EAB-AF6B-B3ABC9BE493B}"
+	Name="AllTest"
+	ProjectGUID="{59800972-3512-4147-9E8F-F5239C241F77}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -23,20 +23,18 @@
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
-				ForceConformanceInForLoopScope="TRUE"
-				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
-				WarningLevel="4"
+				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/LokiTest.exe"
+				OutputFile="$(OutDir)/AllTest.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/LokiTest.pdb"
+				ProgramDatabaseFile="$(OutDir)/AllTest.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -69,8 +67,6 @@
 				StringPooling="TRUE"
 				RuntimeLibrary="4"
 				EnableFunctionLevelLinking="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
-				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -79,7 +75,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/LokiTest.exe"
+				OutputFile="$(OutDir)/AllTest.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
@@ -104,60 +100,34 @@
 	</Configurations>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Test"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
-				RelativePath="..\..\SDK\Engine\Loki\Loki.hpp">
+				RelativePath="AllTest.cpp">
 			</File>
 			<File
-				RelativePath="LokiTest.cpp">
+				RelativePath="..\Test_Singleton.cpp">
 			</File>
 			<File
-				RelativePath="LokiTest.h">
+				RelativePath="..\Test_SmartPtr.cpp">
 			</File>
 			<File
-				RelativePath="LokiTestTypes.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc">
-			<File
-				RelativePath="LokiTest_TypeList.h">
+				RelativePath="..\Test_Threads.cpp">
 			</File>
 			<File
-				RelativePath="LokiTest_TypeManip.h">
+				RelativePath="..\Test_TypeList.cpp">
 			</File>
-			<File
-				RelativePath="LokiTest_TypeTraits.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 		</Filter>
 		<Filter
 			Name="Loki"
 			Filter="">
 			<File
-				RelativePath="..\..\SDK\Loki\NullType.h">
+				RelativePath="..\..\..\Singleton.cpp">
 			</File>
 			<File
-				RelativePath="..\..\SDK\Loki\VC7\TypeInfo.h">
-			</File>
-			<File
-				RelativePath="..\..\SDK\Loki\VC7\TypeList.h">
-			</File>
-			<File
-				RelativePath="..\..\SDK\Loki\VC7\TypeManip.h">
-			</File>
-			<File
-				RelativePath="..\..\SDK\Loki\VC7\TypeTraits.h">
+				RelativePath="..\..\..\SmallObj.cpp">
 			</File>
 		</Filter>
-		<File
-			RelativePath="ReadMe.txt">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
