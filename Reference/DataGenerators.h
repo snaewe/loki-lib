@@ -40,7 +40,7 @@ namespace Loki
 	namespace TL
 		{
 		template<typename T>
-		struct name_from_type
+		struct nameof_type
 			{
 			const char* operator()()
 				{
@@ -66,7 +66,7 @@ namespace Loki
     typedef IterateTypes<T2, GenFunc> tail_t;
     tail_t tail;
     template<class II>
-    void operator()(II& ii)
+    void operator()(II ii)
         {
         head.operator()(ii);
 		tail.operator()(ii);
@@ -77,11 +77,11 @@ namespace Loki
     struct IterateTypes
     {
     template<class II>
-    void operator()(II& ii)
+    void operator()(II ii)
         {
         GenFunc<AtomicType> genfunc;
         *ii = genfunc();
-        ++ii;
+        ++ii; //Is this even needed?
         }
     };
     
@@ -89,12 +89,12 @@ namespace Loki
     struct IterateTypes<NullType, GenFunc>
     {
     template<class II>
-    void operator()(II& ii)
+    void operator()(II ii)
         {}
     };
     
 	template<typename Types, template <typename> class UnitFunc, typename II>
-	void iterate_types(II &ii)
+	void iterate_types(II ii)
 		{
 		Loki::TL::IterateTypes<Types, UnitFunc> it;
 		it(ii);
@@ -105,4 +105,5 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // 9/20/02 Named changed from GenData to IterateTypes
+// 10/8/02 insertion iterators are passed-by-value, not by-reference (oops)
 ////////////////////////////////////////////////////////////////////////////////

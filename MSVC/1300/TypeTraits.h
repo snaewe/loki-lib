@@ -193,7 +193,7 @@ namespace Loki
 
     public:        
         //
-        // VC7 BUG - will not detect refernce to function
+        // VC7 BUG - will not detect reference to function
         //
         enum { 
             isReference = 

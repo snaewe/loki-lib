@@ -19,7 +19,7 @@ namespace Loki
 	namespace TL
 		{
 		template<typename T>
-		struct name_from_type
+		struct nameof_type
 			{
 			const char* operator()()
 				{
@@ -92,14 +92,14 @@ namespace Loki
             {
 				typedef GenFunc<AtomicType> genfunc_t;
                 template<class II>
-                void operator()(II& ii)
+                void operator()(II ii)
                 {
                 genfunc_t gen;
 				*ii = gen();
 				++ii;
                 }
                 template<class II, class P1>
-                void operator()(II& ii, P1 p1)
+                void operator()(II ii, P1 p1)
                 {
                     genfunc_t gen;
 						  *ii = gen(p1);
@@ -117,8 +117,8 @@ namespace Loki
         { 
             struct Result 
             {
-                template<class II> void operator()(II&) {}
-				    template<class II, class P1> void operator()(II&, P1) {}
+                template<class II> void operator()(II) {}
+				    template<class II, class P1> void operator()(II, P1) {}
             }; 
         };        
     };
@@ -132,8 +132,8 @@ namespace Loki
         { 
             struct Result 
             {
-                template<class II> void operator()(II&) {}
-				    template<class II, class P1> void operator()(II&, P1) {}
+                template<class II> void operator()(II) {}
+				    template<class II, class P1> void operator()(II, P1) {}
 				}; 
         };        
     };
@@ -146,8 +146,8 @@ namespace Loki
         { 
             struct Result 
             {
-                template<class II> void operator()(II&) {}
-				    template<class II, class P1> void operator()(II&, P1) {}
+                template<class II> void operator()(II) {}
+				    template<class II, class P1> void operator()(II, P1) {}
             }; 
         };        
     };
@@ -185,13 +185,13 @@ namespace Loki
 		  tail_t tail;
 
 	     template<class II>
-        void operator()(II& ii)
+        void operator()(II ii)
         {
 		  this->head.operator()(ii);
 		  this->tail.operator()(ii);
 		  }
 	     template<class II, class P1>
-        void operator()(II& ii, P1 p1)
+        void operator()(II ii, P1 p1)
         {
 		  this->head.operator()(ii, p1);
 		  this->tail.operator()(ii, p1);
@@ -203,7 +203,7 @@ namespace Loki
 	// with the 'undecorated' template parameter declaraion!
 	//template <typename> class UnitFunc
 	template<typename Types, class UnitFunc, typename II>
-	void iterate_types(II &ii)
+	void iterate_types(II ii)
 		{
 		Loki::TL::IterateTypes<Types, UnitFunc> it;
 		it(ii);
@@ -214,6 +214,6 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // Aug 17, 2002:  Ported to MSVC7 by Rani Sharoni 
-// Aug 18, 2002:  Removed ctor(ii&), replaced with operator(ii&) Shannon Barber
+// Aug 18, 2002:  Removed ctor(II), replaced with operator(II) Shannon Barber
 ////////////////////////////////////////////////////////////////////////////////
 
