@@ -1,5 +1,6 @@
 AbstractFactory.h
 AssocVector.h
+DataGenerators.h
 EmptyType.h
 Factory.h
 Functor.h
