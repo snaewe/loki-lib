@@ -2,18 +2,17 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Wesley Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Mar 06, 2003
 
 // ported RefCountedMT
 // To create a SmartPtr with RefCountedMT as ownership policy
@@ -21,12 +20,12 @@
 // SmartPtr<Foo, RefCountedMTWrapper<ClassLevelLockable> > pointer;
 //
 // replaced all template template parameters with 'normal' parameters
-// For each Policy there is now a wrapper-class (non template class) 
+// For each Policy there is now a wrapper-class (non template class)
 // containing a nested template class called In which
 // provides a typedef (type) to the real Policy-class
-// 
-// VC special: The MSVC 6.0 introduces an order-dependency for template ctor 
-// resp. template assignemt operators. 
+//
+// VC special: The MSVC 6.0 introduces an order-dependency for template ctor
+// resp. template assignemt operators.
 // If you need both a copy-ctor and a template copy ctor (same for copy-assignment), then
 // you *must* write the templated version first.
 // So instead of
@@ -46,7 +45,7 @@
 //		template <class U>
 //		Foo(const Foo<U>& r)
 //		{}
-//		
+//
 //		Foo(const Foo& r)
 //		{}
 //	};
@@ -71,6 +70,7 @@
 #include "TypeManip.h"
 #include "MSVC6Helpers.h"
 #include "static_check.h"
+#include "NullType.h"
 #include <functional>
 #include <stdexcept>
 #include <cassert>
@@ -81,7 +81,7 @@ namespace Loki
 // class template DefaultSPStorage
 // Implementation of the StoragePolicy used by SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class T>
     class DefaultSPStorage
     {
@@ -89,14 +89,14 @@ namespace Loki
         typedef T* StoredType;    // the type of the pointee_ object
         typedef T* PointerType;   // type returned by operator->
         typedef T& ReferenceType; // type returned by operator*
-        
+
     public:
-        DefaultSPStorage() : pointee_(Default()) 
+        DefaultSPStorage() : pointee_(Default())
         {}
 
-        // The storage policy doesn't initialize the stored pointer 
+        // The storage policy doesn't initialize the stored pointer
         //     which will be initialized by the OwnershipPolicy's Clone fn
-		
+
 		// do not alter the order of the following two constructors
 		// otherwise the MSVC 6.0 will not compile the class.
 		template <class U>
@@ -106,18 +106,18 @@ namespace Loki
         {}
 
 		DefaultSPStorage(const StoredType& p) : pointee_(p) {}
-        
+
         PointerType operator->() const { return pointee_; }
-        
+
         ReferenceType operator*() const { return *pointee_; }
-        
+
         void Swap(DefaultSPStorage& rhs)
         { std::swap(pointee_, rhs.pointee_); }
-    
+
         // Accessors
         friend inline PointerType GetImpl(const DefaultSPStorage& sp)
         { return sp.pointee_; }
-        
+
     	friend inline const StoredType& GetImplRef(const DefaultSPStorage& sp)
     	{ return sp.pointee_; }
 
@@ -128,19 +128,19 @@ namespace Loki
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
         void Destroy()
-        { 
+        {
 			delete pointee_;
 		}
-        
+
         // Default value to initialize the pointer
         static StoredType Default()
         { return 0; }
-    
+
     private:
         // Data
         StoredType pointee_;
     };
-	
+
 	struct DefaultSPStorageWrapper
 	{
 		template <class T>
@@ -149,44 +149,44 @@ namespace Loki
 			typedef DefaultSPStorage<T> type;
 		};
 	};
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template RefCounted
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Provides a classic external reference counting implementation
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     class RefCounted
     {
     public:
-        RefCounted() 
+        RefCounted()
         {
             pCount_ = static_cast<unsigned int*>(
                 SmallObject<>::operator new(sizeof(unsigned int)));
             assert(pCount_);
             *pCount_ = 1;
         }
-        
+
 		// do not alter the order of the following two constructors
 		// otherwise the MSVC 6.0 will fail to compile the class.
 
 		// MWCW lacks template friends, hence the following kludge
         template <typename P1>
-        RefCounted(const RefCounted<P1>& rhs) 
+        RefCounted(const RefCounted<P1>& rhs)
         : pCount_(reinterpret_cast<const RefCounted&>(rhs).pCount_)
         {}
 
-		RefCounted(const RefCounted& rhs) 
+		RefCounted(const RefCounted& rhs)
         : pCount_(rhs.pCount_)
         {}
-        
+
         P Clone(const P& val)
         {
             ++*pCount_;
             return val;
         }
-        
+
         bool Release(const P&)
         {
             if (!--*pCount_)
@@ -196,17 +196,17 @@ namespace Loki
             }
             return false;
         }
-        
+
         void Swap(RefCounted& rhs)
         { std::swap(pCount_, rhs.pCount_); }
-    
+
         enum { destructiveCopy = false };
-		
+
     private:
         // Data
         unsigned int* pCount_;
     };
-    
+
 
 	struct RefCountedWrapper
 	{
@@ -221,7 +221,7 @@ namespace Loki
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Implements external reference counting for multithreaded programs
 ////////////////////////////////////////////////////////////////////////////////
-//	
+//
 
 	template <class P, class ThreadingModel>
 	class RefCountedMT : public Apply1<ThreadingModel, RefCountedMT<P, ThreadingModel> >
@@ -230,7 +230,7 @@ namespace Loki
 		typedef Apply1<ThreadingModel, RefCountedMT<P, ThreadingModel> > base_type;
 		typedef typename base_type::IntType       CountType;
         typedef volatile CountType               *CountPtrType;
-		RefCountedMT() 
+		RefCountedMT()
         {
             pCount_ = static_cast<CountPtrType>(
                 SmallObject<ThreadingModel>::operator new(
@@ -238,7 +238,7 @@ namespace Loki
             assert(pCount_);
             *pCount_ = 1;
         }
-        
+
 		// MWCW lacks template friends, hence the following kludge
         // BK: Without the dummy-Parameter, the VC 6.0 won't compile the
 		// copy ctor (error C2535: 'member function already defined or declared')
@@ -247,45 +247,45 @@ namespace Loki
 		// 2. The VC *always* calls the template-copy-ctor, whether *this and rhs
 		// have the same type or not.
 		template <typename P1>
-        RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs, int dummy=0) 
+        RefCountedMT(const RefCountedMT<P1, ThreadingModel>& rhs, int dummy=0)
         : pCount_(reinterpret_cast<const RefCountedMT<P, ThreadingModel>&>(rhs).pCount_)
         {}
-        
-		
-		RefCountedMT(const RefCountedMT& rhs) 
+
+
+		RefCountedMT(const RefCountedMT& rhs)
         : pCount_(rhs.pCount_)
         {}
-		
-        
-        
+
+
+
         P Clone(const P& val)
         {
 			ThreadingModel::template In<RefCountedMT>::AtomicIncrement(*pCount_);
             return val;
         }
-        
+
         bool Release(const P&)
         {
             if (!ThreadingModel::template In<RefCountedMT>::AtomicDecrement(*pCount_))
 			{
 				SmallObject<ThreadingModel>::operator delete(
-                        const_cast<CountType *>(pCount_), 
+                        const_cast<CountType *>(pCount_),
                         sizeof(*pCount_));
 				return true;
 			}
 			return false;
         }
-        
+
         void Swap(RefCountedMT& rhs)
         { std::swap(pCount_, rhs.pCount_); }
-    
+
         enum { destructiveCopy = false };
 
     private:
         // Data
         //volatile unsigned int* pCount_;
 		CountPtrType pCount_;
-    };	
+    };
 
 	template <class ThreadingModel>
 	struct RefCountedMTWrapper
@@ -301,33 +301,33 @@ namespace Loki
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Adapts COM intrusive reference counting to OwnershipPolicy-specific syntax
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     class COMRefCounted
     {
     public:
         COMRefCounted()
         {}
-        
+
         template <class U>
         COMRefCounted(const COMRefCounted<U>&)
         {}
-        
+
         static P Clone(const P& val)
         {
             val->AddRef();
             return val;
         }
-        
+
         static bool Release(const P& val)
         { val->Release(); return false; }
-        
+
         enum { destructiveCopy = false };
-        
+
         static void Swap(COMRefCounted&)
         {}
     };
-	
+
 	struct COMRefCountedWrapper
 	{
 		template <class T>
@@ -339,29 +339,29 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // class template DeepCopy
 // Implementation of the OwnershipPolicy used by SmartPtr
-// Implements deep copy semantics, assumes existence of a Clone() member 
+// Implements deep copy semantics, assumes existence of a Clone() member
 //     function of the pointee type
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     struct DeepCopy
     {
         DeepCopy()
         {}
-        
+
         template <class P1>
         DeepCopy(const DeepCopy<P1>&)
         {}
-        
+
         static P Clone(const P& val)
         { return val->Clone(); }
-        
+
         static bool Release(const P& val)
         { return true; }
-        
+
         static void Swap(DeepCopy&)
         {}
-        
+
         enum { destructiveCopy = false };
     };
 
@@ -384,21 +384,21 @@ namespace Loki
         class RefLinkedBase
         {
         public:
-            RefLinkedBase() 
+            RefLinkedBase()
             { prev_ = next_ = this; }
-            
-            RefLinkedBase(const RefLinkedBase& rhs) 
+
+            RefLinkedBase(const RefLinkedBase& rhs)
             {
                 prev_ = &rhs;
                 next_ = rhs.next_;
                 prev_->next_ = this;
                 next_->prev_ = this;
             }
-            
+
             bool Release()
             {
                 if (next_ == this)
-                {   
+                {
                     assert(prev_ == this);
                     return true;
                 }
@@ -406,7 +406,7 @@ namespace Loki
                 next_->prev_ = prev_;
                 return false;
             }
-            
+
             void Swap(RefLinkedBase& rhs)
             {
                 if (next_ == this)
@@ -434,7 +434,7 @@ namespace Loki
                 std::swap(prev_->next_, rhs.prev_->next_);
                 std::swap(next_->prev_, rhs.next_->prev_);
             }
-                
+
             enum { destructiveCopy = false };
 
         private:
@@ -442,17 +442,17 @@ namespace Loki
             mutable const RefLinkedBase* next_;
         };
     }
-    
-    
+
+
 	template <class P>
     class RefLinked : public Private::RefLinkedBase
     {
     public:
         RefLinked()
         {}
-        
+
         template <class P1>
-        RefLinked(const RefLinked<P1>& rhs) 
+        RefLinked(const RefLinked<P1>& rhs)
         : Private::RefLinkedBase(rhs)
         {}
 
@@ -461,10 +461,10 @@ namespace Loki
 
         bool Release(const P&)
         {	typedef Private::RefLinkedBase MyBase;
-			return this->MyBase::Release(); 
+			return this->MyBase::Release();
 		}
     };
-	
+
 	struct RefLinkedWrapper
 	{
 		template <class T>
@@ -485,11 +485,11 @@ namespace Loki
     public:
         DestructiveCopy()
         {}
-        
+
         template <class P1>
         DestructiveCopy(const DestructiveCopy<P1>&)
         {}
-        
+
         template <class P1>
         static P Clone(P1& val)
         {
@@ -497,13 +497,13 @@ namespace Loki
             val = P1();
             return result;
         }
-        
+
         static bool Release(const P&)
         { return true; }
-        
+
         static void Swap(DestructiveCopy&)
         {}
-        
+
         enum { destructiveCopy = true };
     };
     struct DestructiveCopyWrapper
@@ -519,32 +519,32 @@ namespace Loki
 // Implementation of the OwnershipPolicy used by SmartPtr
 // Implements a policy that doesn't allow copying objects
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     class NoCopy
     {
     public:
         NoCopy()
         {}
-        
+
         template <class P1>
         NoCopy(const NoCopy<P1>&)
         {}
-        
+
         static P Clone(const P&)
         {
             STATIC_CHECK(false, This_Policy_Disallows_Value_Copying);
         }
-        
+
         static bool Release(const P&)
         { return true; }
-        
+
         static void Swap(NoCopy&)
         {}
-        
+
         enum { destructiveCopy = false };
     };
-    
+
 	struct NoCopyWrapper
 	{
 		template <class T>
@@ -578,10 +578,10 @@ namespace Loki
     {
         DisallowConversion()
         {}
-        
+
         DisallowConversion(const AllowConversion&)
         {}
-        
+
         enum { allow = false };
 
         void Swap(DisallowConversion&)
@@ -593,17 +593,17 @@ namespace Loki
 // Implementation of the CheckingPolicy used by SmartPtr
 // Well, it's clear what it does :o)
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     struct NoCheck
     {
         NoCheck()
         {}
-        
+
         template <class P1>
         NoCheck(const NoCheck<P1>&)
         {}
-        
+
         static void OnDefault(const P&)
         {}
 
@@ -616,7 +616,7 @@ namespace Loki
         static void Swap(NoCheck&)
         {}
     };
-	
+
 	struct NoCheckWrapper
 	{
 		template <class T>
@@ -630,21 +630,21 @@ namespace Loki
 // Implementation of the CheckingPolicy used by SmartPtr
 // Checks the pointer before dereference
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     struct AssertCheck
     {
         AssertCheck()
         {}
-        
+
         template <class P1>
         AssertCheck(const AssertCheck<P1>&)
         {}
-        
+
         template <class P1>
         AssertCheck(const NoCheck<P1>&)
         {}
-        
+
         static void OnDefault(const P&)
         {}
 
@@ -657,7 +657,7 @@ namespace Loki
         static void Swap(AssertCheck&)
         {}
     };
-	
+
 	struct AssertCheckWrapper
 	{
 		template <class T>
@@ -667,7 +667,7 @@ namespace Loki
 // class template AssertCheckStrict
 // Implementation of the CheckingPolicy used by SmartPtr
 // Checks the pointer against zero upon initialization and before dereference
-// You can initialize an AssertCheckStrict with an AssertCheck 
+// You can initialize an AssertCheckStrict with an AssertCheck
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -675,28 +675,28 @@ namespace Loki
     {
         AssertCheckStrict()
         {}
-        
+
         template <class U>
         AssertCheckStrict(const AssertCheckStrict<U>&)
         {}
-        
+
         template <class U>
         AssertCheckStrict(const AssertCheck<U>&)
         {}
-        
+
         template <class P1>
         AssertCheckStrict(const NoCheck<P1>&)
         {}
-        
+
         static void OnDefault(P val)
         { assert(val); }
-        
+
         static void OnInit(P val)
         { assert(val); }
-        
+
         static void OnDereference(P val)
         { assert(val); }
-        
+
         static void Swap(AssertCheckStrict&)
         {}
     };
@@ -721,51 +721,51 @@ namespace Loki
         const char* what() const throw()
         { return "Null Pointer Exception"; }
     };
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template RejectNullStatic
 // Implementation of the CheckingPolicy used by SmartPtr
 // Checks the pointer upon initialization and before dereference
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     struct RejectNullStatic
     {
         RejectNullStatic()
         {}
-        
+
         template <class P1>
         RejectNullStatic(const RejectNullStatic<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStatic(const NoCheck<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStatic(const AssertCheck<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStatic(const AssertCheckStrict<P1>&)
         {}
-        
+
         static void OnDefault(const P&)
         {
             CompileTimeError<false>
                 ERROR_This_Policy_Does_Not_Allow_Default_Initialization;
         }
-        
+
         static void OnInit(const P& val)
         { if (!val) throw NullPointerException(); }
-        
+
         static void OnDereference(const P& val)
         { if (!val) throw NullPointerException(); }
-        
+
         static void Swap(RejectNullStatic&)
         {}
     };
-	
+
 	struct RejectNullStaticWrapper
 	{
 		template <class T>
@@ -779,30 +779,30 @@ namespace Loki
 // Implementation of the CheckingPolicy used by SmartPtr
 // Checks the pointer before dereference
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     struct RejectNull
     {
         RejectNull()
         {}
-        
+
         template <class P1>
         RejectNull(const RejectNull<P1>&)
         {}
-        
+
         static void OnInit(P val)
         { if (!val) throw NullPointerException(); }
 
         static void OnDefault(P val)
         { OnInit(val); }
-        
+
         void OnDereference(P val)
         { OnInit(val); }
-        
+
         void Swap(RejectNull&)
-        {}        
+        {}
     };
-	
+
 	struct RejectNullWrapper
 	{
 		template <class T>
@@ -817,31 +817,31 @@ namespace Loki
 // Implementation of the CheckingPolicy used by SmartPtr
 // Checks the pointer upon initialization and before dereference
 ////////////////////////////////////////////////////////////////////////////////
-	
+
     template <class P>
     struct RejectNullStrict
     {
         RejectNullStrict()
         {}
-        
+
         template <class P1>
         RejectNullStrict(const RejectNullStrict<P1>&)
         {}
-        
+
         template <class P1>
         RejectNullStrict(const RejectNull<P1>&)
         {}
-        
+
         static void OnInit(P val)
         { if (!val) throw NullPointerException(); }
 
         void OnDereference(P val)
         { OnInit(val); }
-        
+
         void Swap(RejectNullStrict&)
-        {}        
+        {}
     };
-	
+
 	struct RejectNullStrictWrapper
 	{
 		template <class T>
@@ -899,7 +899,7 @@ namespace Private
 		// VC 6.0 will emit an "Error C2516. : is not a legal base class"
 		// if one tries to use TempType as base class for SmartPtr.
 		// Don't know why the compiler is happy with this workaround
-		typedef sttype::LeftBase Storage; 
+		typedef sttype::LeftBase Storage;
 		typedef Storage::PointerType PointerType;
 		typedef Storage::StoredType StoredType;
 		typedef Storage::ReferenceType ReferenceType;
@@ -932,35 +932,41 @@ namespace Private
     {
     public:
         typedef typename Private::SmartPtrImpl
-		<	
+		<
 			T, OwnershipPolicy, ConversionPolicy, CheckingPolicy, StoragePolicy
 		>::Storage SP;
 		typedef SP::PointerType PointerType;
         typedef SP::StoredType StoredType;
         typedef SP::ReferenceType ReferenceType;
-        
+
 		typedef typename Private::SmartPtrImpl
-		<	
+		<
 			T, OwnershipPolicy, ConversionPolicy, CheckingPolicy, StoragePolicy
 		>::Owner OP;
         typedef typename Private::SmartPtrImpl
-		<	
+		<
 			T, OwnershipPolicy, ConversionPolicy, CheckingPolicy, StoragePolicy
 		>::Checking KP;
-		
+
 		typedef ConversionPolicy CP;
         typedef typename Select
 		<
-			OP::destructiveCopy, 
+			OP::destructiveCopy,
 			SmartPtr, const SmartPtr
 		>::Result CopyArg;
-    
+
+		typedef typename Select
+		<
+			OP::destructiveCopy,
+			NullType, StoredType
+		>::Result WorkaroundType;
+
         // i think the following two ctors have an exception-safety problem
 		// in the original version. If KP throws one can't release the resources
 		// which were possibly allocated by SP and/or OP.
 		// don't know if my solution works.
 		SmartPtr()
-        { 
+        {
 			try
 			{
 				KP::OnDefault(GetImpl(*this));
@@ -970,28 +976,32 @@ namespace Private
 				if (OP::Release(GetImpl(*static_cast<SP*>(this))))
     			{
     				SP::Destroy();
-    			}		
+    			}
 				throw;
 			}
 		}
-    	
+
         SmartPtr(const StoredType& p) : SP(p)
-        { 
+        {
 			try
 			{
-				KP::OnInit(GetImpl(*this)); 
+				KP::OnInit(GetImpl(*this));
 			}
 			catch(...)
 			{
 				if (OP::Release(GetImpl(*static_cast<SP*>(this))))
     			{
     				SP::Destroy();
-    			}		
+    			}
 				throw;
 			}
-		
+
 		}
-		
+
+		SmartPtr(ByRef<SmartPtr> rhs)
+    	: SP(rhs), OP(rhs), KP(rhs), CP(rhs)
+        {}
+
 		// do not alter the order of the following three constructors
 		// otherwise the MSVC 6.0 will fail to compile the class.
 		template
@@ -1021,10 +1031,11 @@ namespace Private
 		SmartPtr(CopyArg& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
 		{ GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
-        operator ByRef<SmartPtr>()
+
+		operator ByRef<SmartPtr>()
         { return ByRef<SmartPtr>(*this); }
 
-		
+
 		// do not alter the order of the following three copy-assignment operators
 		// otherwise the MSVC 6.0 will fail to compile the class.
 		template
@@ -1041,7 +1052,7 @@ namespace Private
     	    temp.Swap(*this);
     	    return *this;
     	}
-    	
+
         template
         <
             typename T1,
@@ -1052,7 +1063,7 @@ namespace Private
         >
     	SmartPtr& operator=(SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
     	{
-    		
+
 			SmartPtr temp(rhs);
     	    temp.Swap(*this);
     	    return *this;
@@ -1064,14 +1075,22 @@ namespace Private
     	    temp.Swap(*this);
     	    return *this;
     	}
-    	void Swap(SmartPtr& rhs)
+
+		SmartPtr& operator=(const WorkaroundType& arg)
+		{
+			SmartPtr temp(arg);
+			//return *this = const_cast<const SmartPtr&>(temp);
+			return *this = temp;
+		}
+
+		void Swap(SmartPtr& rhs)
     	{
     	    OP::Swap(rhs);
     	    CP::Swap(rhs);
     	    KP::Swap(rhs);
     	    SP::Swap(rhs);
     	}
-    	
+
     	~SmartPtr()
     	{
     	    if (OP::Release(GetImpl(*static_cast<SP*>(this))))
@@ -1079,13 +1098,13 @@ namespace Private
     	        SP::Destroy();
     	    }
     	}
-    	
+
     	friend inline void Release(SmartPtr& sp, StoredType& p)
     	{
     	    p = GetImplRef(sp);
     	    GetImplRef(sp) = SP::Default();
     	}
-    	
+
     	friend inline void Reset(SmartPtr& sp, StoredType p)
     	{ SmartPtr(p).Swap(sp); }
 
@@ -1106,28 +1125,28 @@ namespace Private
             KP::OnDereference(GetImplRef(*this));
             return SP::operator*();
         }
-    	
+
         ReferenceType operator*() const
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator*();
         }
-    	
+
         bool operator!() const // Enables "if (!sp) ..."
         { return GetImpl(*this) == 0; }
-        
+
         inline friend bool operator==(const SmartPtr& lhs,
             const T* rhs)
         { return GetImpl(lhs) == rhs; }
-        
+
         inline friend bool operator==(const T* lhs,
             const SmartPtr& rhs)
         { return rhs == lhs; }
-        
+
         inline friend bool operator!=(const SmartPtr& lhs,
             const T* rhs)
         { return !(lhs == rhs); }
-        
+
         inline friend bool operator!=(const T* lhs,
             const SmartPtr& rhs)
         { return rhs != lhs; }
@@ -1176,7 +1195,7 @@ namespace Private
         private:
             void operator delete(void*);
         };
-        
+
     public:
         // enable 'if (sp)'
         operator Tester*() const
@@ -1192,11 +1211,11 @@ namespace Private
         {
             Insipid(PointerType) {}
         };
-        
+
         typedef typename Select<CP::allow, PointerType, Insipid>::Result
             AutomaticConversionResult;
-    
-    public:        
+
+    public:
         operator AutomaticConversionResult() const
         { return GetImpl(*this); }
     };
@@ -1221,7 +1240,7 @@ namespace Private
     inline bool operator==(const SmartPtr<T, OP, CP, KP, SP>& lhs,
         const U* rhs)
     { return GetImpl(lhs) == rhs; }
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator== for lhs = raw pointer, rhs = SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
@@ -1255,7 +1274,7 @@ namespace Private
     inline bool operator!=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
         const U* rhs)
     { return !(lhs == rhs); }
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator!= for lhs = raw pointer, rhs = SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
@@ -1288,7 +1307,7 @@ namespace Private
     >
     inline bool operator<(const SmartPtr<T, OP, CP, KP, SP>& lhs,
         const U* rhs);
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator< for lhs = raw pointer, rhs = SmartPtr -- NOT DEFINED
 ////////////////////////////////////////////////////////////////////////////////
@@ -1304,7 +1323,7 @@ namespace Private
     >
     inline bool operator<(const U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs);
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator> for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
 ////////////////////////////////////////////////////////////////////////////////
@@ -1321,7 +1340,7 @@ namespace Private
     inline bool operator>(const SmartPtr<T, OP, CP, KP, SP>& lhs,
         const U* rhs)
     { return rhs < lhs; }
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator> for lhs = raw pointer, rhs = SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
@@ -1338,7 +1357,7 @@ namespace Private
     inline bool operator>(const U* lhs,
         const SmartPtr<T, OP, CP, KP, SP>& rhs)
     { return rhs < lhs; }
-  
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator<= for lhs = SmartPtr, rhs = raw pointer
 ////////////////////////////////////////////////////////////////////////////////
@@ -1355,7 +1374,7 @@ namespace Private
     inline bool operator<=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
         const U* rhs)
     { return !(rhs < lhs); }
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator<= for lhs = raw pointer, rhs = SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
@@ -1389,7 +1408,7 @@ namespace Private
     inline bool operator>=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
         const U* rhs)
     { return !(lhs < rhs); }
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // operator>= for lhs = raw pointer, rhs = SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
@@ -1471,7 +1490,7 @@ namespace std	\
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // December 09, 2001: Included <cassert>
 // Oct  26, 2002: ported by Benjamin Kaufmann to MSVC 6.0
-// Feb	24, 2003: ported RefCountedMT. In NoCopy replaced CT_ASSERT with 
+// Feb	24, 2003: ported RefCountedMT. In NoCopy replaced CT_ASSERT with
 //					STATIC_CHECK. B.K.
 // Mar	06, 2003: added helper-macros for specializing std::less for
 //					Smart-Pointers.
