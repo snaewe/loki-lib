@@ -8,12 +8,12 @@
 //     purpose is hereby granted without fee, provided that the above copyright 
 //     notice appear in all copies and that both that copyright notice and this 
 //     permission notice appear in supporting documentation.
-// The author or Addison-Welsey Longman make no representations about the 
+// The author or Addison-Wesley Longman make no representations about the 
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: May 19, 2002
+// Last update: Nov 26, 2004
 
 #ifndef SMALLOBJ_INC_
 #define SMALLOBJ_INC_
@@ -21,168 +21,145 @@
 #include "Threads.h"
 #include "Singleton.h"
 #include <cstddef>
-#include <vector>
+#include <new> // needed for std::nothrow_t parameter.
 
 #ifndef DEFAULT_CHUNK_SIZE
 #define DEFAULT_CHUNK_SIZE 4096
 #endif
 
 #ifndef MAX_SMALL_OBJECT_SIZE
-#define MAX_SMALL_OBJECT_SIZE 64
+#define MAX_SMALL_OBJECT_SIZE 256
 #endif
+
+#ifndef LOKI_DEFAULT_OBJECT_ALIGNMENT
+#define LOKI_DEFAULT_OBJECT_ALIGNMENT 4
+#endif
+
 
 namespace Loki
 {
-////////////////////////////////////////////////////////////////////////////////
-// class FixedAllocator
-// Offers services for allocating fixed-sized objects
-////////////////////////////////////////////////////////////////////////////////
-
-    class FixedAllocator
-    {
-    public: // VC7 access control BUG
-        class Chunk
-        {
-            friend FixedAllocator;
-
-            void Init(std::size_t blockSize, unsigned char blocks);
-            void* Allocate(std::size_t blockSize);
-            void Deallocate(void* p, std::size_t blockSize);
-            void Reset(std::size_t blockSize, unsigned char blocks);
-            void Release();
-            unsigned char* pData_;
-            unsigned char
-                firstAvailableBlock_,
-                blocksAvailable_;
-        };
-        
-    private:
-        // Internal functions        
-        void DoDeallocate(void* p);
-        Chunk* VicinityFind(void* p);
-        
-        // Data 
-        std::size_t blockSize_;
-        unsigned char numBlocks_;
-        typedef std::vector<Chunk> Chunks;
-        Chunks chunks_;
-        Chunk* allocChunk_;
-        Chunk* deallocChunk_;
-        // For ensuring proper copy semantics
-        mutable const FixedAllocator* prev_;
-        mutable const FixedAllocator* next_;
-        
-    public:
-        // Create a FixedAllocator able to manage blocks of 'blockSize' size
-        explicit FixedAllocator(std::size_t blockSize = 0);
-        FixedAllocator(const FixedAllocator&);
-        FixedAllocator& operator=(const FixedAllocator&);
-        ~FixedAllocator();
-        
-        void Swap(FixedAllocator& rhs);
-        
-        // Allocate a memory block
-        void* Allocate();
-        // Deallocate a memory block previously allocated with Allocate()
-        // (if that's not the case, the behavior is undefined)
-        void Deallocate(void* p);
-        // Returns the block size with which the FixedAllocator was initialized
-        std::size_t BlockSize() const
-        { return blockSize_; }
-        // Comparison operator for sorting 
-        bool operator<(std::size_t rhs) const
-        { return BlockSize() < rhs; }
-    };
-    
-////////////////////////////////////////////////////////////////////////////////
-// class SmallObjAllocator
-// Offers services for allocating small-sized objects
-////////////////////////////////////////////////////////////////////////////////
+    class FixedAllocator;
 
     class SmallObjAllocator
     {
     public:
-        SmallObjAllocator(
-            std::size_t chunkSize, 
-            std::size_t maxObjectSize);
-    
-        void* Allocate(std::size_t numBytes);
-        void Deallocate(void* p, std::size_t size);
-    
+        SmallObjAllocator( std::size_t pageSize, std::size_t maxObjectSize,
+            std::size_t objectAlignSize );
+
+        ~SmallObjAllocator( void );
+
+        void * Allocate( std::size_t size, bool doThrow );
+
+        void Deallocate( void * p, std::size_t size );
+
+        inline std::size_t GetMaxObjectSize() const { return maxSmallObjectSize_; }
+
+        inline std::size_t GetAlignment() const { return objectAlignSize_; }
+
     private:
-        SmallObjAllocator(const SmallObjAllocator&);
-        SmallObjAllocator& operator=(const SmallObjAllocator&);
-        
-        typedef std::vector<FixedAllocator> Pool;
-        Pool pool_;
-        FixedAllocator* pLastAlloc_;
-        FixedAllocator* pLastDealloc_;
-        std::size_t chunkSize_;
-        std::size_t maxObjectSize_;
+        Loki::FixedAllocator * pool_;
+
+        std::size_t maxSmallObjectSize_;
+
+        std::size_t objectAlignSize_;
     };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class SmallObject
-// Base class for polymorphic small objects, offers fast
-//     allocations/deallocations
+// Base class for polymorphic small objects, offers fast allocations &
+//     deallocations.  Destructor is virtual and public.
 ////////////////////////////////////////////////////////////////////////////////
 
     template
     <
         template <class> class ThreadingModel = DEFAULT_THREADING,
         std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
-        std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE
+        std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE,
+        std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT
     >
-    class SmallObject : public ThreadingModel< 
-        SmallObject<ThreadingModel, chunkSize, maxSmallObjectSize> >
+    class SmallObject : public ThreadingModel<
+        SmallObject< ThreadingModel, chunkSize, maxSmallObjectSize, objectAlignSize > >
     {
-        typedef ThreadingModel< SmallObject<ThreadingModel, 
-                chunkSize, maxSmallObjectSize> > MyThreadingModel;
-                
+
+    	typedef ThreadingModel< SmallObject<ThreadingModel,
+    			chunkSize, maxSmallObjectSize, objectAlignSize > > MyThreadingModel;
+
         struct MySmallObjAllocator : public SmallObjAllocator
         {
-            MySmallObjAllocator() 
-            : SmallObjAllocator(chunkSize, maxSmallObjectSize)
+            MySmallObjAllocator()
+            : SmallObjAllocator( chunkSize, maxSmallObjectSize, objectAlignSize )
             {}
         };
-        // The typedef below would make things much simpler, 
+        // The typedef below would make things much simpler,
         //     but MWCW won't like it
-        // typedef SingletonHolder<MySmallObjAllocator/*, CreateStatic, 
-        //        DefaultLifetime, ThreadingModel*/> MyAllocator;
-        
+        // typedef SingletonHolder<MySmallObjAllocator/*, CreateStatic,
+        //        NoDestroy, ThreadingModel*/> MyAllocator;
+
     public:
-        static void* operator new(std::size_t size)
+
+#if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
+
+        /// Throwing single-object new.
+        static void * operator new ( std::size_t size ) throw ( std::bad_alloc )
         {
-#if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
             typename MyThreadingModel::Lock lock;
             (void)lock; // get rid of warning
-            
-            return SingletonHolder<MySmallObjAllocator, CreateStatic, 
-                PhoenixSingleton>::Instance().Allocate(size);
-#else
-            return ::operator new(size);
-#endif
+            return SingletonHolder< MySmallObjAllocator, CreateStatic,
+                NoDestroy >::Instance().Allocate( size, true );
         }
-        static void operator delete(void* p, std::size_t size)
+
+        /// Non-throwing single-object new.
+        static void * operator new ( std::size_t size, const std::nothrow_t & ) throw ()
         {
-#if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
             typename MyThreadingModel::Lock lock;
             (void)lock; // get rid of warning
-            
-            SingletonHolder<MySmallObjAllocator, CreateStatic, 
-                PhoenixSingleton>::Instance().Deallocate(p, size);
-#else
-            ::operator delete(p, size);
-#endif
+            return SingletonHolder< MySmallObjAllocator, CreateStatic,
+                NoDestroy >::Instance().Allocate( size, false );
         }
+
+        /// Placement single-object new.
+        static void * operator new ( std::size_t size, void * place )
+        {
+            return ::operator new( size, place );
+        }
+
+        /// Single-object delete.
+        static void operator delete ( void * p, std::size_t size ) throw ()
+        {
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
+            SingletonHolder< MySmallObjAllocator, CreateStatic,
+                NoDestroy >::Instance().Deallocate( p, size );
+        }
+
+        /// Non-throwing single-object delete.
+        static void operator delete ( void * p, std::size_t size,
+            const std::nothrow_t & ) throw()
+        {
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
+            SingletonHolder< MySmallObjAllocator, CreateStatic,
+                NoDestroy >::Instance().Deallocate( p, size );
+        }
+
+        /// Placement single-object delete.
+        static void operator delete ( void * p, void * place )
+        {
+            ::operator delete ( p, place );
+        }
+
+#endif  // #if default template parameters are not zero
+
         virtual ~SmallObject() {}
-    };
+    }; // end class SmallObject
+
 } // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// May  10, 2002: ported by Rani Sharoni to VC7 (RTM - 9466)
+// Nov. 26, 2004: re-implemented by Rich Sposato.
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMALLOBJ_INC_
+
