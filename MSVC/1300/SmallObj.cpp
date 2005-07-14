@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Nov 26, 2004
+// Last update: Jun 22, 2005
 
 
 #include "SmallObj.h"
@@ -316,6 +316,8 @@ void * FixedAllocator::Allocate( void )
             }
         }
     }
+	else if ( allocChunk_ == emptyChunk_)
+		emptyChunk_ = NULL;
 
     assert( allocChunk_ != NULL );
     assert( !allocChunk_->IsFilled() );
@@ -591,6 +593,7 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Aug 02, 2002: Fix in VicinityFind sent by Pavel Vozenilek
 // Nov 26, 2004: Re-implemented by Rich Sposato.
+// Jun 22, 2005: Fix in FixedAllocator::Allocate by Chad Lehman
 ////////////////////////////////////////////////////////////////////////////////
 
 }; // end namespace Loki
