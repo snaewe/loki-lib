@@ -317,14 +317,19 @@ void * FixedAllocator::Allocate( void )
         }
     }
 	else if ( allocChunk_ == emptyChunk_)
+		// detach emptyChunk_ from allocChunk_, because after 
+		// calling allocChunk_->Allocate(blockSize_); the chunk 
+		// isn't any more empty
 		emptyChunk_ = NULL;
+
+	void *place = allocChunk_->Allocate(blockSize_);
 
     assert( allocChunk_ != NULL );
     assert( !allocChunk_->IsFilled() );
     // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
     assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
 
-    return allocChunk_->Allocate(blockSize_);
+    return place;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
