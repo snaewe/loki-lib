@@ -63,7 +63,7 @@ namespace Loki
         // Internal functions
         void DoDeallocate(void* p);
 
-		bool MakeNewChunk( void );
+        bool MakeNewChunk( void );
 
         Chunk * VicinityFind( void * p );
 
@@ -117,18 +117,18 @@ bool FixedAllocator::Chunk::Init( std::size_t blockSize, unsigned char blocks )
     assert( allocSize / blockSize == blocks);
 
 #ifdef USE_NEW_TO_ALLOCATE
-	// If this new operator fails, it will throw, and the exception will get
-	// caught one layer up.
+    // If this new operator fails, it will throw, and the exception will get
+    // caught one layer up.
     pData_ = new unsigned char[ allocSize ];
 #else
-	// malloc can't throw, so its only way to indicate an error is to return
-	// a NULL pointer, so we have to check for that.
+    // malloc can't throw, so its only way to indicate an error is to return
+    // a NULL pointer, so we have to check for that.
     pData_ = static_cast< unsigned char * >( ::malloc( allocSize ) );
     if ( NULL == pData_ ) return false;
 #endif
 
     Reset( blockSize, blocks );
-	return true;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ void FixedAllocator::Chunk::Reset(std::size_t blockSize, unsigned char blocks)
 
 void FixedAllocator::Chunk::Release()
 {
-	assert( NULL != pData_ );
+    assert( NULL != pData_ );
 #ifdef USE_NEW_TO_ALLOCATE
     delete [] pData_;
 #else
@@ -258,27 +258,27 @@ void FixedAllocator::Initialize( std::size_t blockSize, std::size_t pageSize )
 
 bool FixedAllocator::MakeNewChunk( void )
 {
-	bool allocated = false;
-	try
-	{
-		// Calling chunks_.reserve *before* creating and initializing the new
-		// Chunk means that nothing is leaked by this function in case an
-		// exception is thrown from reserve.
-		chunks_.reserve( chunks_.size() + 1 );
-		Chunk newChunk;
-		allocated = newChunk.Init( blockSize_, numBlocks_ );
-		if ( allocated )
-			chunks_.push_back( newChunk );
-	}
-	catch ( ... )
-	{
-		allocated = false;
-	}
-	if ( !allocated ) return false;
+    bool allocated = false;
+    try
+    {
+        // Calling chunks_.reserve *before* creating and initializing the new
+        // Chunk means that nothing is leaked by this function in case an
+        // exception is thrown from reserve.
+        chunks_.reserve( chunks_.size() + 1 );
+        Chunk newChunk;
+        allocated = newChunk.Init( blockSize_, numBlocks_ );
+        if ( allocated )
+            chunks_.push_back( newChunk );
+    }
+    catch ( ... )
+    {
+        allocated = false;
+    }
+    if ( !allocated ) return false;
 
     allocChunk_ = &chunks_.back();
     deallocChunk_ = &chunks_.front();
-	return true;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -304,8 +304,8 @@ void * FixedAllocator::Allocate( void )
             {
                 if ( chunks_.end() == i )
                 {
-					if ( !MakeNewChunk() )
-						return NULL;
+                    if ( !MakeNewChunk() )
+                        return NULL;
                     break;
                 }
                 if ( !i->IsFilled() )
@@ -316,13 +316,13 @@ void * FixedAllocator::Allocate( void )
             }
         }
     }
-	else if ( allocChunk_ == emptyChunk_)
-		// detach emptyChunk_ from allocChunk_, because after 
-		// calling allocChunk_->Allocate(blockSize_); the chunk 
-		// isn't any more empty
-		emptyChunk_ = NULL;
+    else if ( allocChunk_ == emptyChunk_)
+        // detach emptyChunk_ from allocChunk_, because after 
+        // calling allocChunk_->Allocate(blockSize_); the chunk 
+        // isn't any more empty
+        emptyChunk_ = NULL;
 
-	void *place = allocChunk_->Allocate(blockSize_);
+    void *place = allocChunk_->Allocate(blockSize_);
 
     assert( allocChunk_ != NULL );
     assert( !allocChunk_->IsFilled() );
@@ -389,10 +389,10 @@ FixedAllocator::Chunk * FixedAllocator::VicinityFind( void * p )
         {
             if ( lo->HasBlock( pc, chunkLength ) ) return lo;
             if ( lo == loBound )
-			{
-				lo = NULL;
-				if ( NULL == hi ) break;
-			}
+            {
+                lo = NULL;
+                if ( NULL == hi ) break;
+            }
             else --lo;
         }
 
@@ -400,10 +400,10 @@ FixedAllocator::Chunk * FixedAllocator::VicinityFind( void * p )
         {
             if ( hi->HasBlock( pc, chunkLength ) ) return hi;
             if ( ++hi == hiBound )
-			{
-				hi = NULL;
-				if ( NULL == lo ) break;
-			}
+            {
+                hi = NULL;
+                if ( NULL == lo ) break;
+            }
         }
     }
 
@@ -551,7 +551,7 @@ void * SmallObjAllocator::Allocate( std::size_t numBytes, bool doThrow )
     assert( allocator.BlockSize() >= numBytes );
     assert( allocator.BlockSize() < numBytes + GetAlignment() );
     void * place = allocator.Allocate();
-	if ( ( NULL == place ) && doThrow )
+    if ( ( NULL == place ) && doThrow )
     {
 #if _MSC_VER
         throw std::bad_alloc( "could not allocate small object" );
@@ -560,7 +560,7 @@ void * SmallObjAllocator::Allocate( std::size_t numBytes, bool doThrow )
         // so just throw the default-constructed exception.
         throw std::bad_alloc();
 #endif
-	}
+    }
     return place;
 }
 
