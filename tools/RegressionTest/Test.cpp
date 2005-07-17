@@ -18,6 +18,10 @@
 # pragma warning(disable: 4018 4097 4100 4213 4290 4512 4514 4700 4702 4710 4786 4800)
 #endif
 
+#ifdef _MSC_VER
+#include <Windows.h> // for threads, part of the sdk, disable if not found
+#endif
+
 // Some platforms might have difficulty with this
 // Need to ifdef around those cases.
 // TODO SGB
