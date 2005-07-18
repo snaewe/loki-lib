@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: Jun 22, 2005
+// Last update: July 18, 2005
 
 
 #include "SmallObj.h"
