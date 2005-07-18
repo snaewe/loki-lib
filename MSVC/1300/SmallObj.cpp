@@ -322,10 +322,10 @@ void * FixedAllocator::Allocate( void )
         // isn't any more empty
         emptyChunk_ = NULL;
 
-    void *place = allocChunk_->Allocate(blockSize_);
-
     assert( allocChunk_ != NULL );
     assert( !allocChunk_->IsFilled() );
+    void *place = allocChunk_->Allocate(blockSize_);
+
     // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
     assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
 
