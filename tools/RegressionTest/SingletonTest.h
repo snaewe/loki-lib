@@ -156,6 +156,6 @@ private:
   bool singletonTest;
 } singletonTest;
 
-#include "../../Singleton.cpp"
+#include "../../include/noncc/loki/Singleton.cpp"
 
 #endif

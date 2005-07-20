@@ -163,6 +163,6 @@ private:
 
 #ifndef SMALLOBJ_CPP
 # define SMALLOBJ_CPP
-# include "../../SmallObj.cpp"
+# include "../../include/noncc/loki/SmallObj.cpp"
 #endif
 #endif

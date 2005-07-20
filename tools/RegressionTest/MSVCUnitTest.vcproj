@@ -19,6 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="../../include/noncc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -65,6 +66,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				AdditionalIncludeDirectories="../../include/noncc"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
@@ -108,9 +110,6 @@
 		</File>
 		<File
 			RelativePath="Test.cpp">
-		</File>
-		<File
-			RelativePath="..\..\MSVC\1300\TypeTraits.h">
 		</File>
 		<File
 			RelativePath="UnitTest.h">
