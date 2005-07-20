@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: July 18, 2005
+// $Header$
 
 
 #include "SmallObj.h"
@@ -245,7 +245,7 @@ void FixedAllocator::Initialize( std::size_t blockSize, std::size_t pageSize )
 
     std::size_t numBlocks = pageSize / blockSize;
     if (numBlocks > UCHAR_MAX) numBlocks = UCHAR_MAX;
-    else if (numBlocks == 0) numBlocks = 8 * blockSize;
+    else if ( numBlocks < 8 ) numBlocks = 8;
 
     numBlocks_ = static_cast<unsigned char>(numBlocks);
     assert(numBlocks_ == numBlocks);
@@ -591,6 +591,8 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
     assert( found );
 }
 
+}; // end namespace Loki
+
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // March 20: fix exception safety issue in FixedAllocator::Allocate 
@@ -601,5 +603,7 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
 // Jun 22, 2005: Fix in FixedAllocator::Allocate by Chad Lehman
 ////////////////////////////////////////////////////////////////////////////////
 
-}; // end namespace Loki
-
+// $Log$
+// Revision 1.9  2005/07/20 00:34:15  rich_sposato
+// Fixed overflow bug in calculating number of blocks per Chunk.
+//
