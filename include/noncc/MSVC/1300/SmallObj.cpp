@@ -604,8 +604,8 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
-// Revision 1.1  2005/07/20 08:40:01  syntheticpp
-// move directory: MSVC->include/noncc
+// Revision 1.2  2005/07/20 08:44:19  syntheticpp
+// move MSVC
 //
 // Revision 1.9  2005/07/20 00:34:15  rich_sposato
 // Fixed overflow bug in calculating number of blocks per Chunk.
