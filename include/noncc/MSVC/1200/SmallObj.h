@@ -21,6 +21,7 @@
 
 #include "Threads.h"
 #include "Singleton.h"
+#include "MSVC6Helpers.h"		// for apply-template
 #include <cstddef>
 #include <new> // needed for std::nothrow_t parameter.
 
@@ -133,8 +134,9 @@ namespace Loki
             maxSmallObjectSize, objectAlignSize > MyAllocator;
 
         /// Defines type for thread-safety locking mechanism.
-    	typedef typename Apply1< ThreadingModel, AllocatorSingleton< ThreadingModel, 
-    			chunkSize, maxSmallObjectSize, objectAlignSize > > MyThreadingModel;
+        typedef typename Loki::Apply1< ThreadingModel, AllocatorSingleton<
+            ThreadingModel, chunkSize, maxSmallObjectSize, objectAlignSize > >
+                MyThreadingModel;
 
         /// Defines singleton made from allocator.
         typedef Loki::SingletonHolder< MyAllocator, Loki::CreateStatic,
@@ -266,6 +268,9 @@ namespace Loki
 #endif // SMALLOBJ_INC_
 
 // $Log$
+// Revision 1.3  2005/07/22 00:46:22  rich_sposato
+// Added include statement.  Qualified namespace for Apply1.
+//
 // Revision 1.2  2005/07/22 00:41:07  rich_sposato
 // Backported newer implementation of Small-Object Allocator back to VC6 since
 // it fixes several old bugs.
