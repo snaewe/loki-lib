@@ -13,27 +13,126 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: March 20, 2001
+// $Header$
+
 
 #include "SmallObj.h"
+
 #include <cassert>
+#include <vector>
 #include <algorithm>
+#include <functional>
+
+
 using namespace Loki;
+
+
+namespace Loki
+{
+
+////////////////////////////////////////////////////////////////////////////////
+// class FixedAllocator
+// Offers services for allocating fixed-sized objects
+////////////////////////////////////////////////////////////////////////////////
+
+    class FixedAllocator
+    {
+    private:
+        struct Chunk
+        {
+            bool Init( VC_BROKEN_STD::size_t blockSize, unsigned char blocks );
+            void * Allocate( VC_BROKEN_STD::size_t blockSize );
+            void Deallocate( void * p, VC_BROKEN_STD::size_t blockSize );
+            void Reset( VC_BROKEN_STD::size_t blockSize, unsigned char blocks );
+            void Release();
+            inline bool HasBlock( unsigned char * p,
+                VC_BROKEN_STD::size_t chunkLength ) const
+            { return ( pData_ <= p ) && ( p < pData_ + chunkLength ); }
+
+            inline bool HasAvailable( unsigned char numBlocks ) const
+            { return ( blocksAvailable_ == numBlocks ); }
+
+            inline bool IsFilled( void ) const
+            { return ( 0 == blocksAvailable_ ); }
+
+            unsigned char * pData_;
+            unsigned char
+                firstAvailableBlock_,
+                blocksAvailable_;
+        };
+
+        // Internal functions
+        void DoDeallocate( void * p );
+
+        bool MakeNewChunk( void );
+
+        Chunk * VicinityFind( void * p );
+
+        /// Not implemented.
+        FixedAllocator( const FixedAllocator & );
+        /// Not implemented.
+        FixedAllocator & operator = ( const FixedAllocator & );
+
+        // Data
+        VC_BROKEN_STD::size_t blockSize_;
+        unsigned char numBlocks_;
+        typedef std::vector< Chunk > Chunks;
+        typedef Chunks::iterator ChunkIter;
+        typedef Chunks::const_iterator ChunkCIter;
+        Chunks chunks_;
+        Chunk * allocChunk_;
+        Chunk * deallocChunk_;
+        Chunk * emptyChunk_;
+
+    public:
+        // Create a FixedAllocator able to manage blocks of 'blockSize' size
+        FixedAllocator();
+        ~FixedAllocator();
+
+        void Initialize( VC_BROKEN_STD::size_t blockSize,
+            VC_BROKEN_STD::size_t pageSize );
+
+        // Allocate a memory block
+        void * Allocate( void );
+
+        // Deallocate a memory block previously allocated with Allocate()
+        // (if that's not the case, the behavior is undefined)
+        bool Deallocate( void * p, bool doChecks );
+
+        // Returns the block size with which the FixedAllocator was initialized
+        inline VC_BROKEN_STD::size_t BlockSize( void ) const
+        { return blockSize_; }
+
+    };
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // FixedAllocator::Chunk::Init
 // Initializes a chunk object
 ////////////////////////////////////////////////////////////////////////////////
 
-void FixedAllocator::Chunk::Init(VC_BROKEN_STD::size_t blockSize, unsigned char blocks)
+bool FixedAllocator::Chunk::Init( VC_BROKEN_STD::size_t blockSize,
+    unsigned char blocks )
 {
-    assert(blockSize > 0);
-    assert(blocks > 0);
+    assert( blockSize > 0 );
+    assert( blocks > 0 );
     // Overflow check
-    assert((blockSize * blocks) / blockSize == blocks);
-    
-    pData_ = new unsigned char[blockSize * blocks];
-    Reset(blockSize, blocks);
+    const VC_BROKEN_STD::size_t allocSize = blockSize * blocks;
+    assert( allocSize / blockSize == blocks);
+
+#ifdef USE_NEW_TO_ALLOCATE
+    // If this new operator fails, it will throw, and the exception will get
+    // caught one layer up.
+    pData_ = new unsigned char[ allocSize ];
+#else
+    // malloc can't throw, so its only way to indicate an error is to return
+    // a NULL pointer, so we have to check for that.
+    pData_ = static_cast< unsigned char * >( ::malloc( allocSize ) );
+    if ( NULL == pData_ ) return false;
+#endif
+
+    Reset( blockSize, blocks );
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,19 +140,19 @@ void FixedAllocator::Chunk::Init(VC_BROKEN_STD::size_t blockSize, unsigned char 
 // Clears an already allocated chunk
 ////////////////////////////////////////////////////////////////////////////////
 
-void FixedAllocator::Chunk::Reset(VC_BROKEN_STD::size_t blockSize, unsigned char blocks)
+void FixedAllocator::Chunk::Reset( VC_BROKEN_STD::size_t blockSize,
+    unsigned char blocks )
 {
-    assert(blockSize > 0);
-    assert(blocks > 0);
+    assert( blockSize > 0 );
+    assert( blocks > 0 );
     // Overflow check
-    assert((blockSize * blocks) / blockSize == blocks);
+    assert( ( blockSize * blocks ) / blockSize == blocks );
 
     firstAvailableBlock_ = 0;
     blocksAvailable_ = blocks;
 
-    unsigned char i = 0;
-    unsigned char* p = pData_;
-    for (; i != blocks; p += blockSize)
+    unsigned char * p = pData_;
+    for ( unsigned char i = 0; i != blocks; p += blockSize )
     {
         *p = ++i;
     }
@@ -66,7 +165,12 @@ void FixedAllocator::Chunk::Reset(VC_BROKEN_STD::size_t blockSize, unsigned char
 
 void FixedAllocator::Chunk::Release()
 {
-    delete[] pData_;
+    assert( NULL != pData_ );
+#ifdef USE_NEW_TO_ALLOCATE
+    delete [] pData_;
+#else
+    ::free( static_cast< void * >( pData_ ) );
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -76,16 +180,14 @@ void FixedAllocator::Chunk::Release()
 
 void* FixedAllocator::Chunk::Allocate(VC_BROKEN_STD::size_t blockSize)
 {
-    if (!blocksAvailable_) return 0;
-    
-    assert((firstAvailableBlock_ * blockSize) / blockSize == 
-        firstAvailableBlock_);
+    if ( IsFilled() ) return NULL;
 
-    unsigned char* pResult =
-        pData_ + (firstAvailableBlock_ * blockSize);
+    assert( ( firstAvailableBlock_ * blockSize ) / blockSize == 
+        firstAvailableBlock_ );
+    unsigned char * pResult = pData_ + ( firstAvailableBlock_ * blockSize );
     firstAvailableBlock_ = *pResult;
     --blocksAvailable_;
-    
+
     return pResult;
 }
 
@@ -94,19 +196,19 @@ void* FixedAllocator::Chunk::Allocate(VC_BROKEN_STD::size_t blockSize)
 // Dellocates a block from a chunk
 ////////////////////////////////////////////////////////////////////////////////
 
-void FixedAllocator::Chunk::Deallocate(void* p, VC_BROKEN_STD::size_t blockSize)
+void FixedAllocator::Chunk::Deallocate( void * p, VC_BROKEN_STD::size_t blockSize )
 {
-    assert(p >= pData_);
+    assert( p >= pData_ );
 
-    unsigned char* toRelease = static_cast<unsigned char*>(p);
+    unsigned char * toRelease = static_cast< unsigned char * >( p );
     // Alignment check
-    assert((toRelease - pData_) % blockSize == 0);
+    assert( ( toRelease - pData_ ) % blockSize == 0 );
 
     *toRelease = firstAvailableBlock_;
     firstAvailableBlock_ = static_cast<unsigned char>(
-        (toRelease - pData_) / blockSize);
+        ( toRelease - pData_ ) / blockSize );
     // Truncation check
-    assert(firstAvailableBlock_ == (toRelease - pData_) / blockSize);
+    assert( firstAvailableBlock_ == ( toRelease - pData_ ) / blockSize );
 
     ++blocksAvailable_;
 }
@@ -116,52 +218,12 @@ void FixedAllocator::Chunk::Deallocate(void* p, VC_BROKEN_STD::size_t blockSize)
 // Creates a FixedAllocator object of a fixed block size
 ////////////////////////////////////////////////////////////////////////////////
 
-FixedAllocator::FixedAllocator(VC_BROKEN_STD::size_t blockSize)
-    : blockSize_(blockSize)
-    , allocChunk_(0)
-    , deallocChunk_(0)
+FixedAllocator::FixedAllocator()
+    : blockSize_( 0 )
+    , allocChunk_( NULL )
+    , deallocChunk_( NULL )
+    , emptyChunk_( NULL )
 {
-    assert(blockSize_ > 0);
-    
-    prev_ = next_ = this;
-
-    VC_BROKEN_STD::size_t numBlocks = DEFAULT_CHUNK_SIZE / blockSize;
-    if (numBlocks > UCHAR_MAX) numBlocks = UCHAR_MAX;
-    else if (numBlocks == 0) numBlocks = 8 * blockSize;
-    
-    numBlocks_ = static_cast<unsigned char>(numBlocks);
-    assert(numBlocks_ == numBlocks);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// FixedAllocator::FixedAllocator(const FixedAllocator&)
-// Creates a FixedAllocator object of a fixed block size
-////////////////////////////////////////////////////////////////////////////////
-
-FixedAllocator::FixedAllocator(const FixedAllocator& rhs)
-    : blockSize_(rhs.blockSize_)
-    , numBlocks_(rhs.numBlocks_)
-    , chunks_(rhs.chunks_)
-{
-    prev_ = &rhs;
-    next_ = rhs.next_;
-    rhs.next_->prev_ = this;
-    rhs.next_ = this;
-    
-    allocChunk_ = rhs.allocChunk_
-        ? &chunks_.front() + (rhs.allocChunk_ - &rhs.chunks_.front())
-        : 0;
-
-    deallocChunk_ = rhs.deallocChunk_
-        ? &chunks_.front() + (rhs.deallocChunk_ - &rhs.chunks_.front())
-        : 0;
-}
-
-FixedAllocator& FixedAllocator::operator=(const FixedAllocator& rhs)
-{
-    FixedAllocator copy(rhs);
-    copy.Swap(*this);
-    return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -170,35 +232,58 @@ FixedAllocator& FixedAllocator::operator=(const FixedAllocator& rhs)
 
 FixedAllocator::~FixedAllocator()
 {
-    if (prev_ != this)
-    {
-        prev_->next_ = next_;
-        next_->prev_ = prev_;
-        return;
-    }
-    
-    assert(prev_ == next_);
-    Chunks::iterator i = chunks_.begin();
-    for (; i != chunks_.end(); ++i)
-    {
-       assert(i->blocksAvailable_ == numBlocks_);
+    for ( ChunkIter i( chunks_.begin() ); i != chunks_.end(); ++i )
        i->Release();
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FixedAllocator::Swap
+// FixedAllocator::Initialize
+// Initializes the operational constraints for the FixedAllocator
 ////////////////////////////////////////////////////////////////////////////////
 
-void FixedAllocator::Swap(FixedAllocator& rhs)
+void FixedAllocator::Initialize( VC_BROKEN_STD::size_t blockSize,
+    VC_BROKEN_STD::size_t pageSize )
 {
-    using namespace std;
-    
-    swap(blockSize_, rhs.blockSize_);
-    swap(numBlocks_, rhs.numBlocks_);
-    chunks_.swap(rhs.chunks_);
-    swap(allocChunk_, rhs.allocChunk_);
-    swap(deallocChunk_, rhs.deallocChunk_);
+    assert( blockSize > 0 );
+    assert( pageSize >= blockSize );
+    blockSize_ = blockSize;
+
+    VC_BROKEN_STD::size_t numBlocks = pageSize / blockSize;
+    if ( numBlocks > UCHAR_MAX ) numBlocks = UCHAR_MAX;
+    else if ( numBlocks < 8 ) numBlocks = 8;
+
+    numBlocks_ = static_cast< unsigned char >( numBlocks );
+    assert( numBlocks_ == numBlocks );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FixedAllocator::MakeNewChunk
+// Allocates a new Chunk for a FixedAllocator.
+////////////////////////////////////////////////////////////////////////////////
+
+bool FixedAllocator::MakeNewChunk( void )
+{
+    bool allocated = false;
+    try
+    {
+        // Calling chunks_.reserve *before* creating and initializing the new
+        // Chunk means that nothing is leaked by this function in case an
+        // exception is thrown from reserve.
+        chunks_.reserve( chunks_.size() + 1 );
+        Chunk newChunk;
+        allocated = newChunk.Init( blockSize_, numBlocks_ );
+        if ( allocated )
+            chunks_.push_back( newChunk );
+    }
+    catch ( ... )
+    {
+        allocated = false;
+    }
+    if ( !allocated ) return false;
+
+    allocChunk_ = &chunks_.back();
+    deallocChunk_ = &chunks_.front();
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -206,35 +291,50 @@ void FixedAllocator::Swap(FixedAllocator& rhs)
 // Allocates a block of fixed size
 ////////////////////////////////////////////////////////////////////////////////
 
-void* FixedAllocator::Allocate()
+void * FixedAllocator::Allocate( void )
 {
-    if (allocChunk_ == 0 || allocChunk_->blocksAvailable_ == 0)
+    // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
+    assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
+
+    if ( ( NULL == allocChunk_ ) || allocChunk_->IsFilled() )
     {
-        Chunks::iterator i = chunks_.begin();
-        for (;; ++i)
+        if ( NULL != emptyChunk_ )
         {
-            if (i == chunks_.end())
+            allocChunk_ = emptyChunk_;
+            emptyChunk_ = NULL;
+        }
+        else
+        {
+            for ( ChunkIter i( chunks_.begin() ); ; ++i )
             {
-                // Initialize
-                chunks_.reserve(chunks_.size() + 1);
-                Chunk newChunk;
-                newChunk.Init(blockSize_, numBlocks_);
-                chunks_.push_back(newChunk);
-                allocChunk_ = &chunks_.back();
-                deallocChunk_ = &chunks_.front();
-                break;
-            }
-            if (i->blocksAvailable_ > 0)
-            {
-                allocChunk_ = &*i;
-                break;
+                if ( chunks_.end() == i )
+                {
+                    if ( !MakeNewChunk() )
+                        return NULL;
+                    break;
+                }
+                if ( !i->IsFilled() )
+                {
+                    allocChunk_ = &*i;
+                    break;
+                }
             }
         }
     }
-    assert(allocChunk_ != 0);
-    assert(allocChunk_->blocksAvailable_ > 0);
-    
-    return allocChunk_->Allocate(blockSize_);
+    else if ( allocChunk_ == emptyChunk_ )
+        // detach emptyChunk_ from allocChunk_, because after 
+        // calling allocChunk_->Allocate(blockSize_); the chunk 
+        // isn't any more empty
+        emptyChunk_ = NULL;
+
+    assert( allocChunk_ != NULL );
+    assert( !allocChunk_->IsFilled() );
+    void * place = allocChunk_->Allocate( blockSize_ );
+
+    // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
+    assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
+
+    return place;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -243,16 +343,28 @@ void* FixedAllocator::Allocate()
 // (undefined behavior if called with the wrong pointer)
 ////////////////////////////////////////////////////////////////////////////////
 
-void FixedAllocator::Deallocate(void* p)
+bool FixedAllocator::Deallocate( void * p, bool doChecks )
 {
-    assert(!chunks_.empty());
-    assert(&chunks_.front() <= deallocChunk_);
-    assert(&chunks_.back() >= deallocChunk_);
-    
-    deallocChunk_  = VicinityFind(p);
-    assert(deallocChunk_);
+    if ( doChecks )
+    {
+        assert( !chunks_.empty() );
+        assert( &chunks_.front() <= deallocChunk_ );
+        assert( &chunks_.back() >= deallocChunk_ );
+        assert( &chunks_.front() <= allocChunk_ );
+        assert( &chunks_.back() >= allocChunk_ );
+    }
 
-    DoDeallocate(p);
+    Chunk * foundChunk = VicinityFind( p );
+    if ( doChecks )
+    {
+        assert( NULL != foundChunk );
+    }
+    else if ( NULL == foundChunk )
+        return false;
+
+    deallocChunk_ = foundChunk;
+    DoDeallocate( p );
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -260,44 +372,47 @@ void FixedAllocator::Deallocate(void* p)
 // Finds the chunk corresponding to a pointer, using an efficient search
 ////////////////////////////////////////////////////////////////////////////////
 
-FixedAllocator::Chunk* FixedAllocator::VicinityFind(void* p)
+FixedAllocator::Chunk * FixedAllocator::VicinityFind( void * p )
 {
-    assert(!chunks_.empty());
-    assert(deallocChunk_);
+    if ( chunks_.empty() ) return NULL;
+    assert( deallocChunk_ );
 
+    unsigned char * pc = static_cast< unsigned char * >( p );
     const VC_BROKEN_STD::size_t chunkLength = numBlocks_ * blockSize_;
 
-    Chunk* lo = deallocChunk_;
-    Chunk* hi = deallocChunk_ + 1;
-    Chunk* loBound = &chunks_.front();
-    Chunk* hiBound = &chunks_.back() + 1;
-	
-	// Special case: deallocChunk_ is the last in the array
-	if (hi == hiBound) hi = 0;
+    Chunk * lo = deallocChunk_;
+    Chunk * hi = deallocChunk_ + 1;
+    Chunk * loBound = &chunks_.front();
+    Chunk * hiBound = &chunks_.back() + 1;
+    
+    // Special case: deallocChunk_ is the last in the array
+    if ( hi == hiBound ) hi = NULL;
 
-    for (;;)
+    for ( ; ; )
     {
-        if (lo)
+        if ( NULL != lo )
         {
-            if (p >= lo->pData_ && p < lo->pData_ + chunkLength)
+            if ( lo->HasBlock( pc, chunkLength ) ) return lo;
+            if ( lo == loBound )
             {
-                return lo;
+                lo = NULL;
+                if ( NULL == hi ) break;
             }
-            if (lo == loBound) lo = 0;
             else --lo;
         }
-        
-        if (hi)
+
+        if ( NULL != hi )
         {
-            if (p >= hi->pData_ && p < hi->pData_ + chunkLength)
+            if ( hi->HasBlock( pc, chunkLength ) ) return hi;
+            if ( ++hi == hiBound )
             {
-                return hi;
+                hi = NULL;
+                if ( NULL == lo ) break;
             }
-            if (++hi == hiBound) hi = 0;
         }
     }
-    assert(false);
-    return 0;
+
+    return NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -307,108 +422,185 @@ FixedAllocator::Chunk* FixedAllocator::VicinityFind(void* p)
 
 void FixedAllocator::DoDeallocate(void* p)
 {
-    assert(deallocChunk_->pData_ <= p);
-    assert(deallocChunk_->pData_ + numBlocks_ * blockSize_ > p);
+    assert( deallocChunk_->HasBlock( static_cast< unsigned char * >( p ),
+        numBlocks_ * blockSize_ ) );
+    // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
+    assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
 
     // call into the chunk, will adjust the inner list but won't release memory
-    deallocChunk_->Deallocate(p, blockSize_);
+    deallocChunk_->Deallocate( p, blockSize_ );
 
-    if (deallocChunk_->blocksAvailable_ == numBlocks_)
+    if ( deallocChunk_->HasAvailable( numBlocks_ ) )
     {
-        // deallocChunk_ is completely free, should we release it? 
-        
-        Chunk& lastChunk = chunks_.back();
-        
-        if (&lastChunk == deallocChunk_)
+        assert( emptyChunk_ != deallocChunk_ );
+        // deallocChunk_ is empty, but a Chunk is only released if there are 2
+        // empty chunks.  Since emptyChunk_ may only point to a previously
+        // cleared Chunk, if it points to something else besides deallocChunk_,
+        // then FixedAllocator currently has 2 empty Chunks.
+        if ( NULL != emptyChunk_ )
         {
-            // check if we have two last chunks empty
-            
-            if (chunks_.size() > 1 && 
-                deallocChunk_[-1].blocksAvailable_ == numBlocks_)
-            {
-                // Two free chunks, discard the last one
-                lastChunk.Release();
-                chunks_.pop_back();
-                allocChunk_ = deallocChunk_ = &chunks_.front();
-            }
-            return;
-        }
-        
-        if (lastChunk.blocksAvailable_ == numBlocks_)
-        {
-            // Two free blocks, discard one
-            lastChunk.Release();
+            // If last Chunk is empty, just change what deallocChunk_
+            // points to, and release the last.  Otherwise, swap an empty
+            // Chunk with the last, and then release it.
+            Chunk * lastChunk = &chunks_.back();
+            if ( lastChunk == deallocChunk_ )
+                deallocChunk_ = emptyChunk_;
+            else if ( lastChunk != emptyChunk_ )
+                std::swap( *emptyChunk_, *lastChunk );
+            assert( lastChunk->HasAvailable( numBlocks_ ) );
+            lastChunk->Release();
             chunks_.pop_back();
             allocChunk_ = deallocChunk_;
         }
-        else
-        {
-            // move the empty chunk to the end
-            std::swap(*deallocChunk_, lastChunk);
-            allocChunk_ = &chunks_.back();
-        }
+        emptyChunk_ = deallocChunk_;
     }
+
+    // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
+    assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// GetOffset
+// Calculates index into array where a FixedAllocator of numBytes is located.
+////////////////////////////////////////////////////////////////////////////////
+
+inline VC_BROKEN_STD::size_t GetOffset( VC_BROKEN_STD::size_t numBytes,
+    VC_BROKEN_STD::size_t alignment )
+{
+    const VC_BROKEN_STD::size_t alignExtra = alignment - 1;
+    return ( numBytes + alignExtra ) / alignment;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// DefaultAllocator
+// Call to default allocator when SmallObjAllocator decides not to handle request.
+////////////////////////////////////////////////////////////////////////////////
+
+void * DefaultAllocator( VC_BROKEN_STD::size_t numBytes, bool doThrow )
+{
+#ifdef USE_NEW_TO_ALLOCATE
+    return doThrow ? ::operator new( numBytes ) :
+        ::operator new( numBytes, std::nothrow_t() );
+#else
+    void * p = ::malloc( numBytes );
+    if ( doThrow && ( NULL == p ) )
+        throw std::bad_alloc();
+    return p;
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// DefaultDeallocator
+// Call to default deallocator when SmallObjAllocator decides not to handle request.
+////////////////////////////////////////////////////////////////////////////////
+
+void DefaultDeallocator( void * p )
+{
+#ifdef USE_NEW_TO_ALLOCATE
+    ::operator delete( p );
+#else
+    ::free( p );
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SmallObjAllocator::SmallObjAllocator
-// Creates an allocator for small objects given chunk size and maximum 'small'
-//     object size
+// Creates a SmallObjAllocator, and all the FixedAllocators within it.  Each
+// FixedAllocator is then initialized to use the correct Chunk size.
 ////////////////////////////////////////////////////////////////////////////////
 
-SmallObjAllocator::SmallObjAllocator(
-        VC_BROKEN_STD::size_t chunkSize, 
-        VC_BROKEN_STD::size_t maxObjectSize)
-    : pLastAlloc_(0), pLastDealloc_(0)
-    , chunkSize_(chunkSize), maxObjectSize_(maxObjectSize) 
-{   
+SmallObjAllocator::SmallObjAllocator( VC_BROKEN_STD::size_t pageSize,
+    VC_BROKEN_STD::size_t maxObjectSize, VC_BROKEN_STD::size_t objectAlignSize ) :
+    pool_( NULL ),
+    maxSmallObjectSize_( maxObjectSize ),
+    objectAlignSize_( objectAlignSize )
+{
+    assert( 0 != objectAlignSize );
+    const VC_BROKEN_STD::size_t allocCount =
+        GetOffset( maxObjectSize, objectAlignSize );
+    pool_ = new FixedAllocator[ allocCount ];
+    for ( VC_BROKEN_STD::size_t i = 0; i < allocCount; ++i )
+        pool_[ i ].Initialize( ( i+1 ) * objectAlignSize, pageSize );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SmallObjAllocator::~SmallObjAllocator
+// Deletes all memory consumed by SmallObjAllocator.
+// This deletes all the FixedAllocator's in the pool.
+////////////////////////////////////////////////////////////////////////////////
+
+SmallObjAllocator::~SmallObjAllocator( void )
+{
+    delete [] pool_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SmallObjAllocator::Allocate
-// Allocates 'numBytes' memory
-// Uses an internal pool of FixedAllocator objects for small objects  
+// Handles request to allocate numBytes for 1 object.
+// This acts in constant-time - except for the calls to DefaultAllocator
+// and sometimes FixedAllocator::Allocate.  It throws bad_alloc only if the
+// doThrow parameter is true and can't allocate another block.  Otherwise, it
+// provides the no-throw exception safety level.
 ////////////////////////////////////////////////////////////////////////////////
 
-void* SmallObjAllocator::Allocate(VC_BROKEN_STD::size_t numBytes)
+void * SmallObjAllocator::Allocate( VC_BROKEN_STD::size_t numBytes, bool doThrow )
 {
-    if (numBytes > maxObjectSize_) return operator new(numBytes);
-    
-    if (pLastAlloc_ && pLastAlloc_->BlockSize() == numBytes)
+    if ( numBytes > GetMaxObjectSize() )
+        return DefaultAllocator( numBytes, doThrow );
+
+    assert( NULL != pool_ );
+    if ( 0 == numBytes ) numBytes = 1;
+    const VC_BROKEN_STD::size_t index = GetOffset( numBytes, GetAlignment() ) - 1;
+    const VC_BROKEN_STD::size_t allocCount =
+        GetOffset( GetMaxObjectSize(), GetAlignment() );
+    assert( index < allocCount );
+
+    FixedAllocator & allocator = pool_[ index ];
+    assert( allocator.BlockSize() >= numBytes );
+    assert( allocator.BlockSize() < numBytes + GetAlignment() );
+    void * place = allocator.Allocate();
+    if ( ( NULL == place ) && doThrow )
     {
-        return pLastAlloc_->Allocate();
+#if _MSC_VER
+        throw std::bad_alloc( "could not allocate small object" );
+#else
+        // GCC did not like a literal string passed to std::bad_alloc.
+        // so just throw the default-constructed exception.
+        throw std::bad_alloc();
+#endif
     }
-    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes);
-    if (i == pool_.end() || i->BlockSize() != numBytes)
-    {
-        i = pool_.insert(i, FixedAllocator(numBytes));
-        pLastDealloc_ = &*pool_.begin();
-    }
-    pLastAlloc_ = &*i;
-    return pLastAlloc_->Allocate();
+    return place;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SmallObjAllocator::Deallocate
-// Deallocates memory previously allocated with Allocate
-// (undefined behavior if you pass any other pointer)
+// Handles request to deallocate numBytes for 1 object.
+// This will act in constant-time - except for the calls to DefaultDeallocator
+// and sometimes FixedAllocator::Deallocate.  It will never throw.
 ////////////////////////////////////////////////////////////////////////////////
 
-void SmallObjAllocator::Deallocate(void* p, VC_BROKEN_STD::size_t numBytes)
+void SmallObjAllocator::Deallocate( void * p, VC_BROKEN_STD::size_t numBytes )
 {
-    if (numBytes > maxObjectSize_) {operator delete(p); return;}
-
-    if (pLastDealloc_ && pLastDealloc_->BlockSize() == numBytes)
+    if ( NULL == p ) return;
+    if ( numBytes > GetMaxObjectSize() )
     {
-        pLastDealloc_->Deallocate(p);
+        DefaultDeallocator( p );
         return;
     }
-    Pool::iterator i = std::lower_bound(pool_.begin(), pool_.end(), numBytes);
-    assert(i != pool_.end());
-    assert(i->BlockSize() == numBytes);
-    pLastDealloc_ = &*i;
-    pLastDealloc_->Deallocate(p);
+    assert( NULL != pool_ );
+    if ( 0 == numBytes ) numBytes = 1;
+    const VC_BROKEN_STD::size_t index = GetOffset( numBytes, GetAlignment() ) - 1;
+    const VC_BROKEN_STD::size_t allocCount =
+        GetOffset( GetMaxObjectSize(), GetAlignment() );
+    assert( index < allocCount );
+    FixedAllocator & allocator = pool_[ index ];
+    assert( allocator.BlockSize() >= numBytes );
+    assert( allocator.BlockSize() < numBytes + GetAlignment() );
+    const bool found = allocator.Deallocate( p, true );
+    assert( found );
 }
+
+}; // end namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
@@ -416,5 +608,12 @@ void SmallObjAllocator::Deallocate(void* p, VC_BROKEN_STD::size_t numBytes)
 //     (thanks to Chris Udazvinis for pointing that out)
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Aug 02, 2002: Fix in VicinityFind sent by Pavel Vozenilek
-// Oct 11, 2002: ported by Benjamin Kaufmann to VC 6.0
+// Nov 26, 2004: Re-implemented by Rich Sposato.
+// Jun 22, 2005: Fix in FixedAllocator::Allocate by Chad Lehman
 ////////////////////////////////////////////////////////////////////////////////
+
+// $Log$
+// Revision 1.2  2005/07/22 00:41:07  rich_sposato
+// Backported newer implementation of Small-Object Allocator back to VC6 since
+// it fixes several old bugs.
+//
