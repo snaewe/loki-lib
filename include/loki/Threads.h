@@ -62,7 +62,7 @@ namespace Loki
         { lval = val; }
     };
     
-#ifdef _WINDOWS_
+#if defined(_WINDOWS_) && defined(_WINDOWS_H) // && defined(__WIN32)
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template ObjectLevelLockable
@@ -81,7 +81,7 @@ namespace Loki
             ::InitializeCriticalSection(&mtx_);
         }
         
-        ObjectLevelLockable( const ObjectLevelLockable& )
+        ObjectLevelLockable(const ObjectLevelLockable&)
         {
             ::InitializeCriticalSection(&mtx_);
         }
