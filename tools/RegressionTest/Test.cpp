@@ -18,7 +18,7 @@
 # pragma warning(disable: 4018 4097 4100 4213 4290 4512 4514 4700 4702 4710 4786 4800)
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #include <Windows.h> // for threads, part of the sdk, disable if not found
 #endif
 
