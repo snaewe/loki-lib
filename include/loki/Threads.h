@@ -80,6 +80,11 @@ namespace Loki
         {
             ::InitializeCriticalSection(&mtx_);
         }
+        
+        ObjectLevelLockable( const ObjectLevelLockable& )
+        {
+            ::InitializeCriticalSection(&mtx_);
+        }
 
         ~ObjectLevelLockable()
         {
