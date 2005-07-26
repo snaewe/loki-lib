@@ -257,8 +257,8 @@ void test_vect2()
 
     std::pair<test_vect2_t::iterator, bool> aux = vec21.insert(std::make_pair("xyz", 99));
     assert(!aux.second);
-	assert(aux.first->first == "xyz");
-	assert(aux.first->second == 3);
+    assert(aux.first->first == "xyz");
+    assert(aux.first->second == 3);
 
     it = vec21.find("xyz");
     assert(it != vec21.end());
@@ -339,7 +339,7 @@ void test_vect5()
     vec51.insert(std::make_pair(2, "XX"));
 
     test_vect5_t::const_iterator it = vec51.begin();
-	std::string::size_type count=1;
+    std::string::size_type count=1;
 
     while (it != vec51.end()) {
         assert(std::string(it->second).length()==count);
