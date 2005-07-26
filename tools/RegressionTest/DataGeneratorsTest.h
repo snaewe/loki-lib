@@ -24,7 +24,7 @@ struct DataGeneratorsTest : public Test
                          unsigned char,
                          signed char,
                          wchar_t>::Result char_types;
-    int n = Length<char_types>::value;
+    std::size_t n = Length<char_types>::value;
     
     std::vector<const char*> names;
     names.reserve(n);
@@ -43,7 +43,7 @@ struct DataGeneratorsTest : public Test
     iterate_types<some_types, sizeof_type>(std::back_inserter(sizes));
     size_t apriori_size[] = {sizeof(char), sizeof(short), sizeof(int), sizeof(double)};
     b = true;
-    for(int i=0; i<n; ++i)
+    for(std::size_t i=0; i<n; ++i)
       b &= sizes[i] == apriori_size[i];
     testAssert("iterate_types - Check Elements", b, result);
     

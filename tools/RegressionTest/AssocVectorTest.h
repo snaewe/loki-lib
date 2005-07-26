@@ -182,8 +182,8 @@ void check_insert1(test_vect1_t& v)
 template <class Vect>
 void check_swap(Vect& v1, Vect& v2)
 {
-    unsigned size1 = v1.size();
-    unsigned size2 = v2.size();
+    size_t size1 = v1.size();
+    size_t size2 = v2.size();
     v1.swap(v2);
     assert(v1.size() == size2);
     assert(v2.size() == size1);
@@ -339,7 +339,7 @@ void test_vect5()
     vec51.insert(std::make_pair(2, "XX"));
 
     test_vect5_t::const_iterator it = vec51.begin();
-    int count=1;
+	std::string::size_type count=1;
 
     while (it != vec51.end()) {
         assert(std::string(it->second).length()==count);
