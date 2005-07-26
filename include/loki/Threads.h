@@ -62,7 +62,7 @@ namespace Loki
         { lval = val; }
     };
     
-#if defined(_WINDOWS_) && defined(_WINDOWS_H) // && defined(__WIN32)
+#if defined(_WINDOWS_) || defined(_WINDOWS_H) // && defined(__WIN32)
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template ObjectLevelLockable
