@@ -138,16 +138,21 @@ namespace Loki
         struct Initializer
         {   
             CRITICAL_SECTION mtx_;
-			bool init;
+            bool init_;
+
             Initializer()
             {
-                ::InitializeCriticalSection(&mtx_);
-				init=true;
+                init();
             }
             ~Initializer()
             {
-				assert( init );
+                assert( init_ );
                 ::DeleteCriticalSection(&mtx_);
+            }
+            void init()
+            {
+                ::InitializeCriticalSection(&mtx_);
+                init_=true;
             }
         };
         
@@ -164,20 +169,18 @@ namespace Loki
         public:
             Lock()
             {
-				assert( initializer_.init );
-				/*if(!initializer_.init)
-					::InitializeCriticalSection(&initializer_.mtx_);
-				*/
+                assert( initializer_.init_ );
+                //if(!initializer_.init_) initializer_.init();
                 ::EnterCriticalSection(&initializer_.mtx_);
             }
             explicit Lock(const ClassLevelLockable&)
             {
-				assert( initializer_.init );
+                assert( initializer_.init_ );
                 ::EnterCriticalSection(&initializer_.mtx_);
             }
             ~Lock()
             {
-				assert( initializer_.init );
+                assert( initializer_.init_ );
                 ::LeaveCriticalSection(&initializer_.mtx_);
             }
         };
