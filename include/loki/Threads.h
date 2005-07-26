@@ -11,6 +11,8 @@
 
 // Last update: June 20, 2001
 
+#include <cassert>
+
 #ifndef DEFAULT_THREADING
 #define DEFAULT_THREADING /**/ ::Loki::SingleThreaded
 #endif
@@ -136,13 +138,15 @@ namespace Loki
         struct Initializer
         {   
             CRITICAL_SECTION mtx_;
-
+			bool init;
             Initializer()
             {
                 ::InitializeCriticalSection(&mtx_);
+				init=true;
             }
             ~Initializer()
             {
+				assert( init );
                 ::DeleteCriticalSection(&mtx_);
             }
         };
@@ -160,14 +164,20 @@ namespace Loki
         public:
             Lock()
             {
+				assert( initializer_.init );
+				/*if(!initializer_.init)
+					::InitializeCriticalSection(&initializer_.mtx_);
+				*/
                 ::EnterCriticalSection(&initializer_.mtx_);
             }
             explicit Lock(const ClassLevelLockable&)
             {
+				assert( initializer_.init );
                 ::EnterCriticalSection(&initializer_.mtx_);
             }
             ~Lock()
             {
+				assert( initializer_.init );
                 ::LeaveCriticalSection(&initializer_.mtx_);
             }
         };
@@ -199,6 +209,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// July 26, 2005: some asserts by Peter Kümmel
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
