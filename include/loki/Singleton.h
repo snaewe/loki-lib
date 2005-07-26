@@ -29,6 +29,10 @@
 #define C_CALLING_CONVENTION_QUALIFIER 
 #endif
 
+#ifndef SINGLETON_DEFAULT_THREADING
+#define SINGLETON_DEFAULT_THREADING ::Loki::SingleThreaded
+#endif
+
 namespace Loki
 {
     typedef void (C_CALLING_CONVENTION_QUALIFIER *atexit_pfn_t)();
@@ -337,7 +341,7 @@ namespace Loki
         typename T,
         template <class> class CreationPolicy = CreateUsingNew,
         template <class> class LifetimePolicy = DefaultLifetime,
-        template <class> class ThreadingModel = SingleThreaded
+        template <class> class ThreadingModel = SINGLETON_DEFAULT_THREADING
     >
     class SingletonHolder
     {
