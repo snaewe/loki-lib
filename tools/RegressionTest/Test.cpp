@@ -18,6 +18,9 @@
 # pragma warning(disable: 4018 4097 4100 4213 4290 4512 4514 4700 4702 4710 4786 4800)
 #endif
 
+//#define DEFAULT_THREADING ::Loki::ObjectLevelLockable
+//#define DEFAULT_THREADING ::Loki::ClassLevelLockable
+
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <Windows.h> // for threads, part of the sdk, disable if not found
 #endif
@@ -47,11 +50,12 @@ Test::tests_type Test::tests;
 #include "SingletonTest.h"
 #include "SmartPtrTest.h"
 #include "FactoryTest.h"
+//#include "FactoryParmTest.h"
 #include "AbstractFactoryTest.h"
 #include "AssocVectorTest.h"
 #include "FunctorTest.h"
 #include "DataGeneratorsTest.h"
-
+/* */
 /*
  * AP - All Pass
  * FC - Fails to Compile
