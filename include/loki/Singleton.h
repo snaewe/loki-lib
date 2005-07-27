@@ -420,7 +420,7 @@ namespace Loki
     void SingletonHolder<T, CreationPolicy, 
         LifetimePolicy, ThreadingModel>::MakeInstance()
     {
-        typename ThreadingModel<T>::Lock guard;
+        typename ThreadingModel<SingletonHolder>::Lock guard;
         (void)guard;
         
         if (!pInstance_)
