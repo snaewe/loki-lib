@@ -171,11 +171,11 @@ namespace Loki
 template <class T, class U>
 struct SuperSubclass
 {
-	enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+    enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
                   !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
-  	
-	// Dummy data member to make sure that both classes are fully defined.
-	char dummy[sizeof (T) + sizeof (U)];
+      
+    // Dummy data member to make sure that both classes are fully defined.
+    char dummy[sizeof (T) + sizeof (U)];
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -189,12 +189,12 @@ struct SuperSubclass
 template<class T,class U>
 struct SuperSubclassStrict
 {
-	enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+    enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
                  !::Loki::Conversion<const volatile T*, const volatile U*>::sameType) };
-	
-	// Dummy data member to make sure that both classes are fully defined.
-	char dummy[sizeof (T) + sizeof (U)];
+    
+    // Dummy data member to make sure that both classes are fully defined.
+    char dummy[sizeof (T) + sizeof (U)];
 };
 
 }   // namespace Loki
@@ -238,6 +238,8 @@ struct SuperSubclassStrict
 //     macros are deprecated.
 //     Added extra parenthesis in sizeof in Conversion, to disambiguate function
 //     call from function declaration. T.S.
+// July 27, 2005 : compiler error on using Sub/Super with incomplete types
+//                 (credit due to Mark Stevans)
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_
