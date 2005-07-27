@@ -171,8 +171,11 @@ namespace Loki
 template <class T, class U>
 struct SuperSubclass
 {
-  enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+	enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
                   !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
+  	
+	// Dummy data member to make sure that both classes are fully defined.
+	char dummy[sizeof (T) + sizeof (U)];
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,9 +189,12 @@ struct SuperSubclass
 template<class T,class U>
 struct SuperSubclassStrict
 {
-  enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
+	enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
                  !::Loki::Conversion<const volatile T*, const volatile U*>::sameType) };
+	
+	// Dummy data member to make sure that both classes are fully defined.
+	char dummy[sizeof (T) + sizeof (U)];
 };
 
 }   // namespace Loki
