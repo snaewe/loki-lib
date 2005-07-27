@@ -13,6 +13,8 @@
 
 #include <cassert>
 
+
+
 #ifndef DEFAULT_THREADING
 #define DEFAULT_THREADING /**/ ::Loki::SingleThreaded
 #endif
@@ -140,7 +142,7 @@ namespace Loki
             CRITICAL_SECTION mtx_;
             bool init_;
 
-			Initializer():init_(false)
+            Initializer():init_(false)
             {
                 ::InitializeCriticalSection(&mtx_);
                 init_=true;
@@ -166,7 +168,7 @@ namespace Loki
             Lock()
             {
                 assert(initializer_.init_);
-				::EnterCriticalSection(&initializer_.mtx_);
+                ::EnterCriticalSection(&initializer_.mtx_);
             }
             explicit Lock(const ClassLevelLockable&)
             {
@@ -211,3 +213,4 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
+
