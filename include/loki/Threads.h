@@ -140,19 +140,15 @@ namespace Loki
             CRITICAL_SECTION mtx_;
             bool init_;
 
-            Initializer()
-            {
-                init();
-            }
-            ~Initializer()
-            {
-                assert( init_ );
-                ::DeleteCriticalSection(&mtx_);
-            }
-            void init()
+			Initializer():init_(false)
             {
                 ::InitializeCriticalSection(&mtx_);
                 init_=true;
+            }
+            ~Initializer()
+            {
+                assert(init_);
+                ::DeleteCriticalSection(&mtx_);
             }
         };
         
@@ -169,18 +165,17 @@ namespace Loki
         public:
             Lock()
             {
-                assert( initializer_.init_ );
-                //if(!initializer_.init_) initializer_.init();
-                ::EnterCriticalSection(&initializer_.mtx_);
+                assert(initializer_.init_);
+				::EnterCriticalSection(&initializer_.mtx_);
             }
             explicit Lock(const ClassLevelLockable&)
             {
-                assert( initializer_.init_ );
+                assert(initializer_.init_);
                 ::EnterCriticalSection(&initializer_.mtx_);
             }
             ~Lock()
             {
-                assert( initializer_.init_ );
+                assert(initializer_.init_);
                 ::LeaveCriticalSection(&initializer_.mtx_);
             }
         };
