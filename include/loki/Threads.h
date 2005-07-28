@@ -9,15 +9,23 @@
 // affects only default template arguments
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// $Header:
+
+
+#if defined(CLASS_LEVEL_THREADING) || defined(OBJECT_LEVEL_THREADING)
+	// threads only on windows 
+    #include <windows.h> 
+	#define SINGLETON_DEFAULT_THREADING ::Loki::ClassLevelLockable
+	#if defined(CLASS_LEVEL_THREADING) 
+		#define DEFAULT_THREADING ::Loki::ClassLevelLockable
+	#else
+		#define DEFAULT_THREADING ::Loki::ObjectLevelLockable
+	#endif
+#else
+	#define DEFAULT_THREADING ::Loki::SingleThreaded
+#endif
 
 #include <cassert>
-
-
-
-#ifndef DEFAULT_THREADING
-#define DEFAULT_THREADING /**/ ::Loki::SingleThreaded
-#endif
 
 namespace Loki
 {
@@ -66,7 +74,7 @@ namespace Loki
         { lval = val; }
     };
     
-#if defined(_WINDOWS_) || defined(_WINDOWS_H) // && defined(__WIN32)
+#if defined(_WINDOWS_) || defined(_WINDOWS_H) 
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template ObjectLevelLockable
@@ -211,6 +219,8 @@ namespace Loki
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // July 26, 2005: some asserts by Peter Kümmel
 ////////////////////////////////////////////////////////////////////////////////
+
+// $Log:
 
 #endif
 
