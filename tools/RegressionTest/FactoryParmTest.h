@@ -418,4 +418,4 @@ public:
 #endif
 
 
-// $Log:@
+// $Log:
