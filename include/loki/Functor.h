@@ -54,6 +54,9 @@ namespace Loki
             typedef EmptyType Parm14;
             typedef EmptyType Parm15;
 
+            FunctorImplBase(){};
+            FunctorImplBase(const FunctorImplBase&){};
+
             virtual FunctorImplBase* DoClone() const = 0;
             template <class U>
             static U* Clone(U* pObj)
