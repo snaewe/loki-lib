@@ -174,8 +174,34 @@ struct SuperSubclass
     enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
                   !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
       
-    // Dummy data member to make sure that both classes are fully defined.
-    char dummy[sizeof (T) + sizeof (U)];
+    // Dummy enum to make sure that both classes are fully defined.
+    enum{ dontUseWithIncompleteTypes = ( sizeof (T) == sizeof (U) ) };
+};
+
+template <>
+struct SuperSubclass<void, void> 
+{
+    enum { value = false };
+};
+
+template <class U>
+struct SuperSubclass<void, U> 
+{
+    enum { value = (::Loki::Conversion<const volatile U*, const volatile void*>::exists &&
+                  !::Loki::Conversion<const volatile void*, const volatile void*>::sameType) };
+      
+    // Dummy enum to make sure that both classes are fully defined.
+    enum{ dontUseWithIncompleteTypes = ( 0 == sizeof (U) ) };
+};
+
+template <class T>
+struct SuperSubclass<T, void> 
+{
+    enum { value = (::Loki::Conversion<const volatile void*, const volatile T*>::exists &&
+                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
+      
+    // Dummy enum to make sure that both classes are fully defined.
+    enum{ dontUseWithIncompleteTypes = ( sizeof (T) == 0 ) };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,9 +219,38 @@ struct SuperSubclassStrict
                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
                  !::Loki::Conversion<const volatile T*, const volatile U*>::sameType) };
     
-    // Dummy data member to make sure that both classes are fully defined.
-    char dummy[sizeof (T) + sizeof (U)];
+    // Dummy enum to make sure that both classes are fully defined.
+    enum{ dontUseWithIncompleteTypes = ( sizeof (T) == sizeof (U) ) };
 };
+
+template<>
+struct SuperSubclassStrict<void, void> 
+{
+	enum { value = false };
+};
+
+template<class U>
+struct SuperSubclassStrict<void, U> 
+{
+    enum { value = (::Loki::Conversion<const volatile U*, const volatile void*>::exists &&
+                 !::Loki::Conversion<const volatile void*, const volatile void*>::sameType &&
+                 !::Loki::Conversion<const volatile void*, const volatile U*>::sameType) };
+    
+    // Dummy enum to make sure that both classes are fully defined.
+    enum{ dontUseWithIncompleteTypes = ( 0 == sizeof (U) ) };
+};
+
+template<class T>
+struct SuperSubclassStrict<T, void> 
+{
+    enum { value = (::Loki::Conversion<const volatile void*, const volatile T*>::exists &&
+                 !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
+                 !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
+    
+    // Dummy enum to make sure that both classes are fully defined.
+    enum{ dontUseWithIncompleteTypes = ( sizeof (T) == 0 ) };
+};
+
 
 }   // namespace Loki
 
@@ -238,7 +293,7 @@ struct SuperSubclassStrict
 //     macros are deprecated.
 //     Added extra parenthesis in sizeof in Conversion, to disambiguate function
 //     call from function declaration. T.S.
-// July 27, 2005 : compiler error on using Sub/Super with incomplete types
+// July 27, 2005 : compiler error on using SuperSubclass/Strict with incomplete types
 //                 (credit due to Mark Stevans)
 ////////////////////////////////////////////////////////////////////////////////
 
