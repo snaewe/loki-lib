@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: November 22, 2001
+// Last update, July 26, 2005
 
 #ifndef TYPEMANIP_INC_
 #define TYPEMANIP_INC_
@@ -294,7 +294,7 @@ struct SuperSubclassStrict<T, void>
 //     Added extra parenthesis in sizeof in Conversion, to disambiguate function
 //     call from function declaration. T.S.
 // July 27, 2005 : compiler error on using SuperSubclass/Strict with incomplete types
-//                 (credit due to Mark Stevans)
+//                 (credit due to Mark Stevans) by Peter Kümmel
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_
