@@ -11,7 +11,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 #ifdef __INTEL_COMPILER
 # pragma warning(disable: 111 193 304 383 444 488 981 1418)
@@ -107,5 +107,8 @@ return result;
 }
 
 
-// $Log:
+// $Log$
+// Revision 1.14  2005/07/28 14:26:10  syntheticpp
+// add cvs Header/Log
+//
 

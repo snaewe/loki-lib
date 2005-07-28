@@ -11,7 +11,7 @@
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 #ifndef FACTORYPARM_INC_
 #define FACTORYPARM_INC_
@@ -746,5 +746,8 @@ namespace Loki
 
 #endif // FACTORY_INC_
 
-// $Log:
+// $Log$
+// Revision 1.4  2005/07/28 14:26:09  syntheticpp
+// add cvs Header/Log
+//
 
