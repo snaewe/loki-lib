@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Header:
-	
+
 #ifndef FACTORYPARM_INC_
 #define FACTORYPARM_INC_
 
@@ -24,7 +24,7 @@
 
 namespace Loki
 {
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template DefaultFactoryError
 // Manages the "Unknown Type" error in an object factory
@@ -43,18 +43,18 @@ namespace Loki
             throw Exception();
         }
     };
-	
-	
+    
+    
 //#define ENABLE_FACTORY_BOOK_VERSION_ONLY
 #ifndef ENABLE_FACTORY_BOOK_VERSION_ONLY
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	class template Factory
-	Implements a generic object factory     
+    class template Factory
+    Implements a generic object factory     
     cretae functions with up to 15 parameters
-	
-	
+    
+    
     template
     <
         class AbstractProduct,
@@ -95,7 +95,7 @@ namespace Loki
 // class template FunctorImpl
 ////////////////////////////////////////////////////////////////////////////////
 
-	struct FactoryImplBase 
+    struct FactoryImplBase 
     {
         typedef EmptyType Parm1;
         typedef EmptyType Parm2;
@@ -441,14 +441,14 @@ namespace Loki
         typedef typename Impl::Parm14 Parm14;
         typedef typename Impl::Parm15 Parm15;
 
-		Factory()
-		{
-		}
+        Factory()
+        {
+        }
 
-		~Factory()
-		{
-			associations_.erase(associations_.begin(), associations_.end());
-		}
+        ~Factory()
+        {
+            associations_.erase(associations_.begin(), associations_.end());
+        }
 
         typedef typename IdToProductMap::iterator iterator;
         
@@ -472,7 +472,7 @@ namespace Loki
         {
             ProductCreator creator( p, fn );
             return associations_.insert(
-				typename IdToProductMap::value_type(id, creator)).second != 0;
+                typename IdToProductMap::value_type(id, creator)).second != 0;
 
         }
 
@@ -745,3 +745,6 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // FACTORY_INC_
+
+// $Log:
+

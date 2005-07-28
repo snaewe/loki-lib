@@ -13,16 +13,16 @@
 
 
 #if defined(CLASS_LEVEL_THREADING) || defined(OBJECT_LEVEL_THREADING)
-	// threads only on windows 
+    // threads only on windows 
     #include <windows.h> 
-	#define SINGLETON_DEFAULT_THREADING ::Loki::ClassLevelLockable
-	#if defined(CLASS_LEVEL_THREADING) 
-		#define DEFAULT_THREADING ::Loki::ClassLevelLockable
-	#else
-		#define DEFAULT_THREADING ::Loki::ObjectLevelLockable
-	#endif
+    #define SINGLETON_DEFAULT_THREADING ::Loki::ClassLevelLockable
+    #if defined(CLASS_LEVEL_THREADING) 
+        #define DEFAULT_THREADING ::Loki::ClassLevelLockable
+    #else
+        #define DEFAULT_THREADING ::Loki::ObjectLevelLockable
+    #endif
 #else
-	#define DEFAULT_THREADING ::Loki::SingleThreaded
+    #define DEFAULT_THREADING ::Loki::SingleThreaded
 #endif
 
 #include <cassert>
@@ -220,7 +220,8 @@ namespace Loki
 // July 26, 2005: some asserts by Peter Kümmel
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Log:
 
 #endif
+
+// $Log:
 
