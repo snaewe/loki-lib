@@ -295,7 +295,7 @@ namespace FactoryTestParmPrivate
         bool const o14 = Factory14::Instance().Register( 1, &creaClass, &CreatorClass<Product>::create14 );
         bool const o15 = Factory15::Instance().Register( 1, &creaClass, &CreatorClass<Product>::create15 );
         
-        return o0 && o1 && o2 && o3 && o4 && o5 && o6 && o7 && o8 && o9 && o10 && o11 && o13 && o14 && o15;
+        return o0 && o1 && o2 && o3 && o4 && o5 && o6 && o7 && o8 && o9 && o10 && o11 && o12 && o13 && o14 && o15;
     }
 
     bool testFactoryParm()
@@ -419,6 +419,9 @@ public:
 
 
 // $Log$
+// Revision 1.5  2005/07/28 14:59:17  syntheticpp
+// remove unreferenced parameter warning
+//
 // Revision 1.4  2005/07/28 14:26:10  syntheticpp
 // add cvs Header/Log
 //
