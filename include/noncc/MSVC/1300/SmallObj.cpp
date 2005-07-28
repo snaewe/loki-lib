@@ -591,7 +591,7 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
     assert( found );
 }
 
-}; // end namespace Loki
+} // end namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
@@ -604,6 +604,9 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.3  2005/07/28 07:02:58  syntheticpp
+// gcc -pedantic correction
+//
 // Revision 1.2  2005/07/20 08:44:19  syntheticpp
 // move MSVC
 //
