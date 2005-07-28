@@ -9,8 +9,9 @@
 //
 // This software is provided "as is" without express or implied warranty.
 //
-// Last update: October 12, 2002
 ///////////////////////////////////////////////////////////////////////////////
+
+// $Header:
 
 #ifdef __INTEL_COMPILER
 # pragma warning(disable: 111 193 304 383 444 488 981 1418)
@@ -18,15 +19,7 @@
 # pragma warning(disable: 4018 4097 4100 4213 4290 4512 4514 4700 4702 4710 4786 4800)
 #endif
 
-//#define TEST_THREADS
-#ifdef  TEST_THREADS
-#define DEFAULT_THREADING ::Loki::ClassLevelLockable
-#define SINGLETON_DEFAULT_THREADING ::Loki::ClassLevelLockable
-#endif
-
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#include <Windows.h> // for threads, part of the sdk, disable if not found
-#endif
+#define CLASS_LEVEL_THREADING
 
 // Some platforms might have difficulty with this
 // Need to ifdef around those cases.
@@ -53,7 +46,7 @@ Test::tests_type Test::tests;
 #include "SingletonTest.h"
 #include "SmartPtrTest.h"
 #include "FactoryTest.h"
-//#include "FactoryParmTest.h"
+#include "FactoryParmTest.h"
 #include "AbstractFactoryTest.h"
 #include "AssocVectorTest.h"
 #include "FunctorTest.h"
@@ -112,3 +105,6 @@ int result = Test::run("Loki Unit Test");
 
 return result;
 }
+
+
+// $Log:@
