@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 #ifndef FACTORYPARMTEST_H
 #define FACTORYPARMTEST_H
@@ -418,5 +418,8 @@ public:
 #endif
 
 
-// $Log:
+// $Log$
+// Revision 1.4  2005/07/28 14:26:10  syntheticpp
+// add cvs Header/Log
+//
 

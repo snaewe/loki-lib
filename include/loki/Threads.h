@@ -9,7 +9,7 @@
 // affects only default template arguments
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 
 #if defined(CLASS_LEVEL_THREADING) || defined(OBJECT_LEVEL_THREADING)
@@ -223,5 +223,8 @@ namespace Loki
 
 #endif
 
-// $Log:
+// $Log$
+// Revision 1.11  2005/07/28 14:26:09  syntheticpp
+// add cvs Header/Log
+//
 
