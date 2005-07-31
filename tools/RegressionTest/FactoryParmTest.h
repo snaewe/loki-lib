@@ -19,7 +19,7 @@
 #define FACTORYPARMTEST_H
 
 
-#ifndef ENABLE_FACTORY_BOOK_VERSION_ONLY
+#ifdef ENABLE_NEW_FACTORY_CODE
 
 #include <loki/Factory.h>
 
@@ -419,6 +419,9 @@ public:
 
 
 // $Log$
+// Revision 1.6  2005/07/31 15:06:22  syntheticpp
+// invert new factory code macro logic to be ReferenceTest more compatible with noncc code
+//
 // Revision 1.5  2005/07/28 14:59:17  syntheticpp
 // remove unreferenced parameter warning
 //
