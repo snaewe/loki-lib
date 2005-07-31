@@ -54,8 +54,8 @@ namespace Loki
             typedef EmptyType Parm14;
             typedef EmptyType Parm15;
 
-            FunctorImplBase(){};
-            FunctorImplBase(const FunctorImplBase&){};
+            inline FunctorImplBase(){};
+            inline FunctorImplBase(const FunctorImplBase&){};
 
             virtual FunctorImplBase* DoClone() const = 0;
             template <class U>
@@ -87,7 +87,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, class TList, 
-        template <class> class ThreadingModel = DEFAULT_THREADING>
+        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL>
     class FunctorImpl;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -720,7 +720,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
        
     template <typename R, class TList = NullType,
-        template<class> class ThreadingModel = DEFAULT_THREADING>
+        template<class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL>
     class Functor
     {
     public:

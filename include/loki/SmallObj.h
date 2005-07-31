@@ -204,7 +204,7 @@ namespace Loki
 
     template
     <
-        template <class> class ThreadingModel = DEFAULT_THREADING,
+        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL,
         std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
@@ -235,7 +235,7 @@ namespace Loki
 
     template
     <
-        template <class> class ThreadingModel = DEFAULT_THREADING,
+        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL,
         std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
@@ -262,6 +262,9 @@ namespace Loki
 #endif // SMALLOBJ_INC_
 
 // $Log$
+// Revision 1.3  2005/07/31 14:00:48  syntheticpp
+// make object level threading possible
+//
 // Revision 1.2  2005/07/31 13:51:31  syntheticpp
 // replace old implementation with the ingeious from Rich Sposato
 //
