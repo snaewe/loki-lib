@@ -45,8 +45,8 @@ namespace Loki
     };
     
     
-//#define ENABLE_FACTORY_BOOK_VERSION_ONLY
-#ifndef ENABLE_FACTORY_BOOK_VERSION_ONLY
+#define ENABLE_NEW_FACTORY_CODE
+#ifdef ENABLE_NEW_FACTORY_CODE
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -684,7 +684,7 @@ namespace Loki
     };
 
 
-#endif //#define ENABLE_FACTORY_BOOK_VERSION_ONLY
+#endif //#define ENABLE_NEW_FACTORY_CODE
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template CloneFactory
@@ -747,6 +747,9 @@ namespace Loki
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.5  2005/07/31 14:23:24  syntheticpp
+// invert new factory code macro logic to be ReferenceTest more compatible with noncc code
+//
 // Revision 1.4  2005/07/28 14:26:09  syntheticpp
 // add cvs Header/Log
 //
