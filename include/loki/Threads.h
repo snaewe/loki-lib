@@ -12,10 +12,10 @@
 // $Header$
 
 
-#if defined(CLASS_LEVEL_THREADING) || defined(OBJECT_LEVEL_THREADING)
-    // threads only on windows 
-    #include <windows.h> 
-    #define SINGLETON_DEFAULT_THREADING ::Loki::ClassLevelLockable
+#if defined(_WIN32) && (defined(CLASS_LEVEL_THREADING) || defined(OBJECT_LEVEL_THREADING))
+	// threads only on windows 
+	#include <windows.h> 
+    #define DEFAULT_THREADING_NO_OBJ_LEVEL ::Loki::ClassLevelLockable
     #if defined(CLASS_LEVEL_THREADING) 
         #define DEFAULT_THREADING ::Loki::ClassLevelLockable
     #else
@@ -23,6 +23,7 @@
     #endif
 #else
     #define DEFAULT_THREADING ::Loki::SingleThreaded
+	#define DEFAULT_THREADING_NO_OBJ_LEVEL ::Loki::SingleThreaded
 #endif
 
 #include <cassert>
@@ -75,6 +76,7 @@ namespace Loki
     };
     
 #if defined(_WINDOWS_) || defined(_WINDOWS_H) 
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template ObjectLevelLockable
@@ -224,6 +226,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.12  2005/07/31 14:00:48  syntheticpp
+// make object level threading possible
+//
 // Revision 1.11  2005/07/28 14:26:09  syntheticpp
 // add cvs Header/Log
 //
