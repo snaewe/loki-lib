@@ -20,7 +20,7 @@
 #endif
 
 //#define CLASS_LEVEL_THREADING
-#define OBJECT_LEVEL_THREADING
+//#define OBJECT_LEVEL_THREADING
 
 // Some platforms might have difficulty with this
 // Need to ifdef around those cases.
@@ -109,6 +109,9 @@ return result;
 
 
 // $Log$
+// Revision 1.16  2005/08/10 18:13:13  syntheticpp
+// change default to single threading
+//
 // Revision 1.15  2005/07/31 14:00:48  syntheticpp
 // make object level threading possible
 //
