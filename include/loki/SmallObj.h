@@ -120,7 +120,7 @@ namespace Loki
         std::size_t objectAlignSize,
         template <class> class LifetimePolicy
     >
-	class SmallObjectBase : public ThreadingModel<SmallObjectBase<ThreadingModel, chunkSize, 		maxSmallObjectSize, objectAlignSize, LifetimePolicy> >
+	class SmallObjectBase
     {
 
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
@@ -259,6 +259,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.5  2005/08/25 15:49:51  syntheticpp
+// small corrections
+//
 // Revision 1.4  2005/08/25 15:23:14  syntheticpp
 // small corrections
 //
