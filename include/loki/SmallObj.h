@@ -120,7 +120,7 @@ namespace Loki
         std::size_t objectAlignSize,
         template <class> class LifetimePolicy
     >
-    class SmallObjectBase
+	class SmallObjectBase : public ThreadingModel<SmallObjectBase<ThreadingModel, chunkSize, 		maxSmallObjectSize, objectAlignSize, LifetimePolicy> >
     {
 
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
@@ -135,7 +135,7 @@ namespace Loki
         /// Defines singleton made from allocator.
         typedef Loki::SingletonHolder< MyAllocator, Loki::CreateStatic,
             LifetimePolicy, ThreadingModel > MyAllocatorSingleton;
-
+		
     public:
 
         /** Throwing single-object new.
@@ -257,11 +257,11 @@ namespace Loki
 // Change log:
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // Nov. 26, 2004: re-implemented by Rich Sposato.
-////////////////////////////////////////////////////////////////////////////////
-
-#endif // SMALLOBJ_INC_
-
+//
 // $Log$
+// Revision 1.4  2005/08/25 15:23:14  syntheticpp
+// small corrections
+//
 // Revision 1.3  2005/07/31 14:00:48  syntheticpp
 // make object level threading possible
 //
@@ -271,3 +271,6 @@ namespace Loki
 // Revision 1.2  2005/07/22 00:22:38  rich_sposato
 // Added SmallValueObject, SmallObjectBase, and AllocatorSingleton classes.
 //
+////////////////////////////////////////////////////////////////////////////////
+
+#endif // SMALLOBJ_INC_
