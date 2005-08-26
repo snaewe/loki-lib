@@ -272,6 +272,16 @@ namespace Loki
     {
     };
 
+    template
+    <
+        template <class, class> class Unit,
+        class Root
+    >
+    class GenLinearHierarchy<NullType , Unit, Root>
+        : public Root // is this better: Unit<NullType, Root> ?
+    {
+    };
+
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning( pop ) 
 #endif
