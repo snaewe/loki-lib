@@ -64,12 +64,14 @@ namespace Loki
 
     namespace Private
     {
-        typedef TYPELIST_4(unsigned char, unsigned short int,
-           unsigned int, unsigned long int) StdUnsignedInts;
-        typedef TYPELIST_4(signed char, short int,
-           int, long int) StdSignedInts;
-        typedef TYPELIST_3(bool, char, wchar_t) StdOtherInts;
-        typedef TYPELIST_3(float, double, long double) StdFloats;
+        typedef TYPELIST_4(unsigned char, unsigned short int,unsigned int, unsigned long int) 
+            StdUnsignedInts;
+        typedef TYPELIST_4(signed char, short int,int, long int) 
+            StdSignedInts;
+        typedef TYPELIST_3(bool, char, wchar_t) 
+            StdOtherInts;
+        typedef TYPELIST_3(float, double, long double) 
+            StdFloats;
 
         template <class U> struct AddReference
         {
@@ -89,55 +91,38 @@ namespace Loki
         
 ////////////////////////////////////////////////////////////////////////////////
 // class template TypeTraits
-// Figures out various properties of any given type
-// Invocations (T is a type):
-// a) TypeTraits<T>::isPointer
-// returns (at compile time) true if T is a pointer type
-// b) TypeTraits<T>::PointeeType
-// returns the type to which T points is T is a pointer type, NullType otherwise
-// a) TypeTraits<T>::isReference
-// returns (at compile time) true if T is a reference type
-// b) TypeTraits<T>::ReferredType
-// returns the type to which T refers is T is a reference type, NullType
-// otherwise
-// c) TypeTraits<T>::isMemberPointer
-// returns (at compile time) true if T is a pointer to member type
-// d) TypeTraits<T>::isStdUnsignedInt
-// returns (at compile time) true if T is a standard unsigned integral type
-// e) TypeTraits<T>::isStdSignedInt
-// returns (at compile time) true if T is a standard signed integral type
-// f) TypeTraits<T>::isStdIntegral
-// returns (at compile time) true if T is a standard integral type
-// g) TypeTraits<T>::isStdFloat
-// returns (at compile time) true if T is a standard floating-point type
-// h) TypeTraits<T>::isStdArith
-// returns (at compile time) true if T is a standard arithmetic type
-// i) TypeTraits<T>::isStdFundamental
-// returns (at compile time) true if T is a standard fundamental type
-// j) TypeTraits<T>::isUnsignedInt
-// returns (at compile time) true if T is a unsigned integral type
-// k) TypeTraits<T>::isSignedInt
-// returns (at compile time) true if T is a signed integral type
-// l) TypeTraits<T>::isIntegral
-// returns (at compile time) true if T is a integral type
-// m) TypeTraits<T>::isFloat
-// returns (at compile time) true if T is a floating-point type
-// n) TypeTraits<T>::isArith
-// returns (at compile time) true if T is a arithmetic type
-// o) TypeTraits<T>::isFundamental
-// returns (at compile time) true if T is a fundamental type
-// p) TypeTraits<T>::ParameterType
-// returns the optimal type to be used as a parameter for functions that take Ts
-// q) TypeTraits<T>::isConst
-// returns (at compile time) true if T is a const-qualified type
-// r) TypeTraits<T>::NonConstType
-// removes the 'const' qualifier from T, if any
-// s) TypeTraits<T>::isVolatile
-// returns (at compile time) true if T is a volatile-qualified type
-// t) TypeTraits<T>::NonVolatileType
-// removes the 'volatile' qualifier from T, if any
-// u) TypeTraits<T>::UnqualifiedType
-// removes both the 'const' and 'volatile' qualifiers from T, if any
+//
+// Figures out at compile time various properties of any given type
+// Invocations (T is a type, TypeTraits<T>::Propertie):
+//
+// a) isPointer       : returns true if T is a pointer type
+// b) PointeeType     : returns the type to which T points if T is a pointer 
+//                      type, NullType otherwise
+// a) isReference     : returns true if T is a reference type
+// b) ReferredType    : returns the type to which T refers if T is a reference 
+//                      type, NullType otherwise
+// c) isMemberPointer : returns true if T is a pointer to member type
+// d) isStdUnsignedInt: returns true if T is a standard unsigned integral type
+// e) isStdSignedInt  : returns true if T is a standard signed integral type
+// f) isStdIntegral   : returns true if T is a standard integral type
+// g) isStdFloat      : returns true if T is a standard floating-point type
+// h) isStdArith      : returns true if T is a standard arithmetic type
+// i) isStdFundamental: returns true if T is a standard fundamental type
+// j) isUnsignedInt   : returns true if T is a unsigned integral type
+// k) isSignedInt     : returns true if T is a signed integral type
+// l) isIntegral      : returns true if T is a integral type
+// m) isFloat         : returns true if T is a floating-point type
+// n) isArith         : returns true if T is a arithmetic type
+// o) isFundamental   : returns true if T is a fundamental type
+// p) ParameterType   : returns the optimal type to be used as a parameter for 
+//                      functions that take Ts
+// q) isConst         : returns true if T is a const-qualified type
+// r) NonConstType    : Type with removed 'const' qualifier from T, if any
+// s) isVolatile      : returns true if T is a volatile-qualified type
+// t) NonVolatileType : Type with removed 'volatile' qualifier from T, if any
+// u) UnqualifiedType : Type with removed 'const' and 'volatile' qualifiers from 
+//                      T, if any
+//
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename T>
@@ -173,8 +158,7 @@ namespace Loki
             enum { result = false };
         };
         
-        template <class U, class V>
-        struct PToMTraits<U V::*>
+        template <class U, class V> struct PToMTraits<U V::*>
         {
             enum { result = true };
         };
@@ -191,6 +175,12 @@ namespace Loki
             enum { isConst = 1 };
         };
 
+        template <class U> struct UnConst<const U&>
+        {
+            typedef U& Result;
+            enum { isConst = 1 };
+        };
+
         template <class U> struct UnVolatile
         {
             typedef U Result;
@@ -203,50 +193,59 @@ namespace Loki
             enum { isVolatile = 1 };
         };
 
-    public:
-        enum { isPointer = PointerTraits<T>::result };
-        typedef typename PointerTraits<T>::PointeeType PointeeType;
+        template <class U> struct UnVolatile<volatile U&>
+        {
+            typedef U& Result;
+            enum { isVolatile = 1 };
+        };
 
-        enum { isReference = ReferenceTraits<T>::result };
-        typedef typename ReferenceTraits<T>::ReferredType ReferredType;
-        
-        enum { isMemberPointer = PToMTraits<T>::result };
-    
-        enum { isStdUnsignedInt = 
-            TL::IndexOf<Private::StdUnsignedInts, T>::value >= 0 };
-        enum { isStdSignedInt = 
-            TL::IndexOf<Private::StdSignedInts, T>::value >= 0 };
-        enum { isStdIntegral = isStdUnsignedInt || isStdSignedInt ||
-            TL::IndexOf<Private::StdOtherInts, T>::value >= 0 };
-        enum { isStdFloat = TL::IndexOf<Private::StdFloats, T>::value >= 0 };
-        enum { isStdArith = isStdIntegral || isStdFloat };
-        enum { isStdFundamental = isStdArith || isStdFloat || 
-            Conversion<T, void>::sameType };
-            
-        enum { isUnsignedInt = isStdUnsignedInt || IsCustomUnsignedInt<T>::value };
-        enum { isSignedInt = isStdSignedInt || IsCustomSignedInt<T>::value };
-        enum { isIntegral = isStdIntegral || isUnsignedInt || isSignedInt };
-        enum { isFloat = isStdFloat || IsCustomFloat<T>::value };
-        enum { isArith = isIntegral || isFloat };
-        enum { isFundamental = isStdFundamental || isArith || isFloat };
-        
-        typedef typename Select<isStdArith || isPointer || isMemberPointer,
-            T, typename Private::AddReference<T>::Result>::Result ParameterType;
-        
-        enum { isConst = UnConst<T>::isConst };
-        typedef typename UnConst<T>::Result NonConstType;
-        enum { isVolatile = UnVolatile<T>::isVolatile };
-        typedef typename UnVolatile<T>::Result NonVolatileType;
+    public:
+        typedef typename UnConst<T>::Result 
+            NonConstType;
+        typedef typename UnVolatile<T>::Result 
+            NonVolatileType;
         typedef typename UnVolatile<typename UnConst<T>::Result>::Result 
             UnqualifiedType;
+        typedef typename PointerTraits<T>::PointeeType 
+            PointeeType;
+        typedef typename ReferenceTraits<T>::ReferredType 
+            ReferredType;
+
+        enum { isConst          = UnConst<T>::isConst };
+        enum { isVolatile       = UnVolatile<T>::isVolatile };
+        enum { isPointer        = PointerTraits<UnqualifiedType>::result };
+        enum { isReference      = ReferenceTraits<UnqualifiedType>::result };
+        enum { isMemberPointer  = PToMTraits<UnqualifiedType>::result };
+
+        enum { isStdUnsignedInt = TL::IndexOf<Private::StdUnsignedInts, UnqualifiedType>::value>= 0 };
+        enum { isStdSignedInt   = TL::IndexOf<Private::StdSignedInts, UnqualifiedType>::value>= 0 };
+        enum { isStdIntegral    = isStdUnsignedInt || isStdSignedInt || TL::IndexOf<Private::StdOtherInts, 
+                                                                          UnqualifiedType>::value >= 0 };
+        enum { isStdFloat       = TL::IndexOf<Private::StdFloats, UnqualifiedType>::value>= 0 };
+        enum { isStdArith       = isStdIntegral || isStdFloat };
+        enum { isStdFundamental = isStdArith || isStdFloat || Conversion<T, void>::sameType };
+            
+        enum { isUnsignedInt    = isStdUnsignedInt || IsCustomUnsignedInt<UnqualifiedType>::value };
+        enum { isSignedInt      = isStdSignedInt || IsCustomSignedInt<UnqualifiedType>::value };
+        enum { isIntegral       = isStdIntegral || isUnsignedInt || isSignedInt };
+        enum { isFloat          = isStdFloat || IsCustomFloat<UnqualifiedType>::value };
+        enum { isArith          = isIntegral || isFloat };
+        enum { isFundamental    = isStdFundamental || isArith || isFloat };
+        
+        typedef typename Select<isStdArith || isPointer || isMemberPointer,T, 
+                                            typename Private::AddReference<T>::Result>::Result 
+            ParameterType;
+        
     };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// September 16, 2002: ParameterType fixed, as TypeTraits<void> made
-//     ParameterType give error about reference to void. T.S.
+// June 20,      2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// September 16, 2002: ParameterType fixed, as TypeTraits<void> made 
+//                     ParameterType give error about reference to void. T.S.
+// August 26,    2005: better support of types with const/volatile qualifiers,
+//                     thanks to Kalle Rutanen
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPETRAITS_INC_
