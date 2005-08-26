@@ -88,7 +88,7 @@ namespace Loki
             typedef NullType Result;
         };
 
-		template <class U> struct AddConstReference
+        template <class U> struct AddConstReference
         {
             typedef const U & Result;
         };
@@ -102,7 +102,7 @@ namespace Loki
         {
             typedef NullType Result;
         };
-		        
+                
     }
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -138,6 +138,8 @@ namespace Loki
 // t) NonVolatileType : Type with removed 'volatile' qualifier from T, if any
 // u) UnqualifiedType : Type with removed 'const' and 'volatile' qualifiers from 
 //                      T, if any
+// v)ConstParameterType: returns the optimal type to be used as a parameter 
+//                       for functions that take 'const T's
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -252,7 +254,7 @@ namespace Loki
                                             typename Private::AddReference<T>::Result>::Result 
             ParameterType;
 
-		typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
+        typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
                                             typename Private::AddConstReference<T>::Result>::Result 
             ConstParameterType;
         
