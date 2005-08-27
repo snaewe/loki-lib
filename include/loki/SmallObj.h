@@ -259,6 +259,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.6  2005/08/27 13:22:56  syntheticpp
+// samll fix
+//
 // Revision 1.5  2005/08/25 15:49:51  syntheticpp
 // small corrections
 //
@@ -277,3 +280,4 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMALLOBJ_INC_
+
