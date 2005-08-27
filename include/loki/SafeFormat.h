@@ -22,6 +22,8 @@
 #include <string>
 #include <stdexcept>
 #include <utility>
+#include <cassert>
+#include <locale>
 
 // Crude writing method: writes straight to the file, unbuffered
 // Must be combined with a buffer to work properly (and efficiently)
@@ -314,7 +316,7 @@ private:
         }
         memcpy(fmtBuf, fmt, (format_ - fmt) * sizeof(Char));
         fmtBuf[format_ - fmt] = 0;
-        const int stored = snprintf(resultBuf, 
+        const int stored = _snprintf(resultBuf, 
             sizeof(resultBuf) / sizeof(Char), fmtBuf, n);
         if (stored < 0) {
             result_ = -1;
@@ -402,14 +404,14 @@ private:
     }
     
     void ParseDecimalUInt(unsigned int& dest) {
-        if (!std::isdigit(*format_)) return;
+		if (!std::isdigit(*format_, std::locale())) return;
         unsigned int r = 0;
         do {
             // TODO: inefficient - rewrite
             r *= 10;
             r += *format_ - '0';
             ++format_;
-        } while (std::isdigit(*format_));
+		} while (std::isdigit(*format_, std::locale()));
         dest = r;
     }
     
@@ -444,7 +446,7 @@ private:
         blank = 4,
         alternateForm = 8,
         fillZeros = 16,
-        forceShort = 32,
+        forceShort = 32
     };
     
     bool LeftJustify() const { return (flags_ & leftJustify) != 0; }
