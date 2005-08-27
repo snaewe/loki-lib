@@ -6,7 +6,7 @@
 #include <iterator>
 #include <cassert>
 #include <stdexcept>
-#include <Loki/TypeManip.h>
+#include "../TypeManip.h"
 
 namespace yasli 
 {
