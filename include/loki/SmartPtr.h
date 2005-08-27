@@ -172,7 +172,8 @@ namespace Loki
                     SmallObject<ThreadingModel>::operator new(
                         sizeof(*pCount_)));
                 assert(pCount_);
-                *pCount_ = 1;
+                //*pCount_ = 1;
+                ThreadingModel<RefCountedMT>::AtomicAssign(*pCount_, 1);
             }
 
             RefCountedMT(const RefCountedMT& rhs) 
