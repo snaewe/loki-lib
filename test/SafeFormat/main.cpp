@@ -9,7 +9,7 @@
 //     warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "loki/SafeFormat.h"
+#include "SafeFormat.h"
 #include <iostream>
 #include <cassert>
 #include <utility>
@@ -55,7 +55,7 @@ void TestCase(const string& fmt, T value) {
     char buf[4096];
     std::string s;
     const int i1 = SPrintf(s, fmt.c_str())(value); 
-    const int i2 = snprintf(buf, sizeof(buf), fmt.c_str(), value); 
+    const int i2 = _snprintf(buf, sizeof(buf), fmt.c_str(), value); 
     if (i1 != i2 || s != buf) {
         cout << 
             "\nReference: " << i2 << 
