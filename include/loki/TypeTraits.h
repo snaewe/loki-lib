@@ -199,12 +199,18 @@ namespace Loki
             enum { isConst = 1 };
         };
 
+		template <class U, class V> struct UnConst<U V::* const>   
+		{
+            typedef U V::* Result;
+            enum { isConst = 1 };
+        };
+		
         template <class U> struct UnVolatile
         {
             typedef U Result;
             enum { isVolatile = 0 };
         };
-        
+       
         template <class U> struct UnVolatile<volatile U>
         {
             typedef U Result;
@@ -212,10 +218,17 @@ namespace Loki
         };
 
         template <class U> struct UnVolatile<volatile U&>
-        {
+		{
             typedef U& Result;
             enum { isVolatile = 1 };
         };
+
+		template <class U, class V> struct UnVolatile<U V::* volatile>   
+		{
+            typedef U V::* Result;
+            enum { isVolatile = 1 };
+        };
+
 
     public:
         typedef typename UnConst<T>::Result 
@@ -235,11 +248,15 @@ namespace Loki
         enum { isReference      = ReferenceTraits<UnqualifiedType>::result };
         enum { isMemberPointer  = PToMTraits<UnqualifiedType>::result };
 
-        enum { isStdUnsignedInt = TL::IndexOf<Private::StdUnsignedInts, UnqualifiedType>::value>= 0 };
-        enum { isStdSignedInt   = TL::IndexOf<Private::StdSignedInts, UnqualifiedType>::value>= 0 };
-        enum { isStdIntegral    = isStdUnsignedInt || isStdSignedInt || TL::IndexOf<Private::StdOtherInts, 
-                                                                          UnqualifiedType>::value >= 0 };
-        enum { isStdFloat       = TL::IndexOf<Private::StdFloats, UnqualifiedType>::value>= 0 };
+        enum { isStdUnsignedInt = TL::IndexOf<Private::StdUnsignedInts, UnqualifiedType>::value >= 0 ||
+								  TL::IndexOf<Private::StdUnsignedInts, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+        enum { isStdSignedInt   = TL::IndexOf<Private::StdSignedInts, UnqualifiedType>::value >= 0 ||
+								  TL::IndexOf<Private::StdSignedInts, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+        enum { isStdIntegral    = isStdUnsignedInt || isStdSignedInt ||
+								  TL::IndexOf<Private::StdOtherInts, UnqualifiedType>::value >= 0 ||
+								  TL::IndexOf<Private::StdOtherInts, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+        enum { isStdFloat       = TL::IndexOf<Private::StdFloats, UnqualifiedType>::value >= 0 ||
+								  TL::IndexOf<Private::StdFloats, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdArith       = isStdIntegral || isStdFloat };
         enum { isStdFundamental = isStdArith || isStdFloat || Conversion<T, void>::sameType };
             
