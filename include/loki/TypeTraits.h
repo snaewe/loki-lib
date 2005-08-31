@@ -111,34 +111,34 @@ namespace Loki
 // Figures out at compile time various properties of any given type
 // Invocations (T is a type, TypeTraits<T>::Propertie):
 //
-// a) isPointer       : returns true if T is a pointer type
-// b) PointeeType     : returns the type to which T points if T is a pointer 
-//                      type, NullType otherwise
-// a) isReference     : returns true if T is a reference type
-// b) ReferredType    : returns the type to which T refers if T is a reference 
-//                      type, NullType otherwise
-// c) isMemberPointer : returns true if T is a pointer to member type
-// d) isStdUnsignedInt: returns true if T is a standard unsigned integral type
-// e) isStdSignedInt  : returns true if T is a standard signed integral type
-// f) isStdIntegral   : returns true if T is a standard integral type
-// g) isStdFloat      : returns true if T is a standard floating-point type
-// h) isStdArith      : returns true if T is a standard arithmetic type
-// i) isStdFundamental: returns true if T is a standard fundamental type
-// j) isUnsignedInt   : returns true if T is a unsigned integral type
-// k) isSignedInt     : returns true if T is a signed integral type
-// l) isIntegral      : returns true if T is a integral type
-// m) isFloat         : returns true if T is a floating-point type
-// n) isArith         : returns true if T is a arithmetic type
-// o) isFundamental   : returns true if T is a fundamental type
-// p) ParameterType   : returns the optimal type to be used as a parameter for 
-//                      functions that take Ts
-// q) isConst         : returns true if T is a const-qualified type
-// r) NonConstType    : Type with removed 'const' qualifier from T, if any
-// s) isVolatile      : returns true if T is a volatile-qualified type
-// t) NonVolatileType : Type with removed 'volatile' qualifier from T, if any
-// u) UnqualifiedType : Type with removed 'const' and 'volatile' qualifiers from 
-//                      T, if any
-// v)ConstParameterType: returns the optimal type to be used as a parameter 
+// - isPointer       : returns true if T is a pointer type
+// - PointeeType     : returns the type to which T points if T is a pointer 
+//                     type, NullType otherwise
+// - isReference     : returns true if T is a reference type
+// - ReferredType    : returns the type to which T refers if T is a reference 
+//                     type, NullType otherwise
+// - isMemberPointer : returns true if T is a pointer to member type
+// - isStdUnsignedInt: returns true if T is a standard unsigned integral type
+// - isStdSignedInt  : returns true if T is a standard signed integral type
+// - isStdIntegral   : returns true if T is a standard integral type
+// - isStdFloat      : returns true if T is a standard floating-point type
+// - isStdArith      : returns true if T is a standard arithmetic type
+// - isStdFundamental: returns true if T is a standard fundamental type
+// - isUnsignedInt   : returns true if T is a unsigned integral type
+// - isSignedInt     : returns true if T is a signed integral type
+// - isIntegral      : returns true if T is a integral type
+// - isFloat         : returns true if T is a floating-point type
+// - isArith         : returns true if T is a arithmetic type
+// - isFundamental   : returns true if T is a fundamental type
+// - ParameterType   : returns the optimal type to be used as a parameter for 
+//                     functions that take Ts
+// - isConst         : returns true if T is a const-qualified type
+// - NonConstType    : Type with removed 'const' qualifier from T, if any
+// - isVolatile      : returns true if T is a volatile-qualified type
+// - NonVolatileType : Type with removed 'volatile' qualifier from T, if any
+// - UnqualifiedType : Type with removed 'const' and 'volatile' qualifiers from 
+//                     T, if any
+// - ConstParameterType: returns the optimal type to be used as a parameter 
 //                       for functions that take 'const T's
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -199,12 +199,12 @@ namespace Loki
             enum { isConst = 1 };
         };
 
-		template <class U, class V> struct UnConst<U V::* const>   
-		{
+        template <class U, class V> struct UnConst<U V::* const>   
+        {
             typedef U V::* Result;
             enum { isConst = 1 };
         };
-		
+        
         template <class U> struct UnVolatile
         {
             typedef U Result;
@@ -218,13 +218,13 @@ namespace Loki
         };
 
         template <class U> struct UnVolatile<volatile U&>
-		{
+        {
             typedef U& Result;
             enum { isVolatile = 1 };
         };
 
-		template <class U, class V> struct UnVolatile<U V::* volatile>   
-		{
+        template <class U, class V> struct UnVolatile<U V::* volatile>   
+        {
             typedef U V::* Result;
             enum { isVolatile = 1 };
         };
@@ -249,14 +249,18 @@ namespace Loki
         enum { isMemberPointer  = PToMTraits<UnqualifiedType>::result };
 
         enum { isStdUnsignedInt = TL::IndexOf<Private::StdUnsignedInts, UnqualifiedType>::value >= 0 ||
-								  TL::IndexOf<Private::StdUnsignedInts, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                  TL::IndexOf<Private::StdUnsignedInts, 
+                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdSignedInt   = TL::IndexOf<Private::StdSignedInts, UnqualifiedType>::value >= 0 ||
-								  TL::IndexOf<Private::StdSignedInts, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                  TL::IndexOf<Private::StdSignedInts, 
+                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdIntegral    = isStdUnsignedInt || isStdSignedInt ||
-								  TL::IndexOf<Private::StdOtherInts, UnqualifiedType>::value >= 0 ||
-								  TL::IndexOf<Private::StdOtherInts, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                  TL::IndexOf<Private::StdOtherInts, UnqualifiedType>::value >= 0 ||
+                                  TL::IndexOf<Private::StdOtherInts, 
+                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdFloat       = TL::IndexOf<Private::StdFloats, UnqualifiedType>::value >= 0 ||
-								  TL::IndexOf<Private::StdFloats, typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                  TL::IndexOf<Private::StdFloats, 
+                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdArith       = isStdIntegral || isStdFloat };
         enum { isStdFundamental = isStdArith || isStdFloat || Conversion<T, void>::sameType };
             
