@@ -138,11 +138,13 @@ namespace Loki
 		
     public:
 
-        /** Throwing single-object new.
-           @note The exception specification is commented to prevent warning
-           from MS compiler.
-         */
-        static void * operator new ( std::size_t size ) // throw ( std::bad_alloc )
+        /// Throwing single-object new.
+#ifdef _MSC_VER
+        /// @note MSVC complains about non-empty exception specification lists.
+        static void * operator new ( std::size_t size )
+#else
+        static void * operator new ( std::size_t size ) throw ( std::bad_alloc )
+#endif
         {
             typename MyThreadingModel::Lock lock;
             (void)lock; // get rid of warning
@@ -259,6 +261,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.7  2005/09/01 22:01:33  rich_sposato
+// Added #ifdef to deal with MSVC warning about exception specification lists.
+//
 // Revision 1.6  2005/08/27 13:22:56  syntheticpp
 // samll fix
 //
