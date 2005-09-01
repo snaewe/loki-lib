@@ -261,10 +261,15 @@ bool FixedAllocator::MakeNewChunk( void )
     bool allocated = false;
     try
     {
+        std::size_t size = chunks_.size();
         // Calling chunks_.reserve *before* creating and initializing the new
         // Chunk means that nothing is leaked by this function in case an
         // exception is thrown from reserve.
-        chunks_.reserve( chunks_.size() + 1 );
+        if ( chunks_.capacity() == size )
+        {
+            if ( 0 == size ) size = 4;
+            chunks_.reserve( size * 2 );
+        }
         Chunk newChunk;
         allocated = newChunk.Init( blockSize_, numBlocks_ );
         if ( allocated )
@@ -604,6 +609,11 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.3  2005/09/01 22:15:47  rich_sposato
+// Changed Chunk list to double in size when adding new chunks instead of
+// just incrementing by 1.  Changes linear operation into amortized constant
+// time operation.
+//
 // Revision 1.2  2005/07/31 13:51:31  syntheticpp
 // replace old implementation with the ingeious from Rich Sposato
 //
