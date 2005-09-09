@@ -130,6 +130,7 @@ int main()
 	run_new_delete<C>(loop,t,"new & delete C : ");
 	
 	cout << endl << endl;
+//    Loki::AllocatorSingleton<>::ClearExtraMemory();
 ////////////////////////////////////////////////////////////////////////////////
 	
 	int N = 100000;
@@ -152,6 +153,7 @@ int main()
 	run_new_delete(c,N,loop2,t,"new & delete C on array : ");
 
 	cout << endl << endl;
+//    Loki::AllocatorSingleton<>::ClearExtraMemory();
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -174,6 +176,7 @@ int main()
 	delete [] c;
 	
 	cout << endl << endl;
+//    Loki::AllocatorSingleton<>::ClearExtraMemory();
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -185,10 +188,9 @@ int main()
 	run_new_delete_array<C>(N,loop,t,"new & delete [] C : ");
 	
 	cout << endl << endl;
+    Loki::AllocatorSingleton<>::ClearExtraMemory();
 ////////////////////////////////////////////////////////////////////////////////
-	
 
-	
 
 	cout << endl;
 	system("PAUSE");
