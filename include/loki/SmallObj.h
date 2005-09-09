@@ -59,9 +59,13 @@ namespace Loki
 
         void Deallocate( void * p, std::size_t size );
 
+        void Deallocate( void * p );
+
         inline std::size_t GetMaxObjectSize() const { return maxSmallObjectSize_; }
 
         inline std::size_t GetAlignment() const { return objectAlignSize_; }
+
+        bool TrimExcessMemory( void );
 
     private:
         /// Copy-constructor is not implemented.
@@ -85,18 +89,38 @@ namespace Loki
 
     template
     <
-        template <class> class ThreadingModel,
-        std::size_t chunkSize,
-        std::size_t maxSmallObjectSize,
-        std::size_t objectAlignSize
+        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL,
+        std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
+        std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE,
+        std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
+        template <class> class LifetimePolicy = Loki::NoDestroy
     >
     class AllocatorSingleton : public SmallObjAllocator
     {
     public:
+
+        /// Defines type of allocator.
+        typedef AllocatorSingleton< ThreadingModel, chunkSize,
+            maxSmallObjectSize, objectAlignSize, LifetimePolicy > MyAllocator;
+
+        /// Defines type for thread-safety locking mechanism.
+        typedef ThreadingModel< MyAllocator > MyThreadingModel;
+
+        /// Defines singleton made from allocator.
+        typedef Loki::SingletonHolder< MyAllocator, Loki::CreateStatic,
+            LifetimePolicy, ThreadingModel > MyAllocatorSingleton;
+
+        inline static AllocatorSingleton & Instance( void )
+        {
+            return MyAllocatorSingleton::Instance();
+        }
+
         inline AllocatorSingleton() :
             SmallObjAllocator( chunkSize, maxSmallObjectSize, objectAlignSize )
             {}
         inline ~AllocatorSingleton( void ) {}
+
+        static void ClearExtraMemory( void );
 
     private:
         /// Copy-constructor is not implemented.
@@ -105,6 +129,20 @@ namespace Loki
         AllocatorSingleton & operator = ( const AllocatorSingleton & );
     };
 
+    template
+    <
+        template <class> class TM,
+        std::size_t CS,
+        std::size_t MSOS,
+        std::size_t OAS,
+        template <class> class LP
+    >
+    void AllocatorSingleton< TM, CS, MSOS, OAS, LP >::ClearExtraMemory( void )
+    {
+        typename MyThreadingModel::Lock lock;
+        (void)lock; // get rid of warning
+        Instance().TrimExcessMemory();
+    }
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -174,12 +212,11 @@ namespace Loki
         }
 
         /// Non-throwing single-object delete.
-        static void operator delete ( void * p, std::size_t size,
-            const std::nothrow_t & ) throw()
+        static void operator delete ( void * p, const std::nothrow_t & ) throw()
         {
             typename MyThreadingModel::Lock lock;
             (void)lock; // get rid of warning
-            MyAllocatorSingleton::Instance().Deallocate( p, size );
+            MyAllocatorSingleton::Instance().Deallocate( p );
         }
 
         /// Placement single-object delete.
@@ -261,6 +298,11 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.8  2005/09/09 00:24:59  rich_sposato
+// Added functions to trim extra memory within allocator.  Made a new_handler
+// function for allocator.  Added deallocator function for nothrow delete
+// operator to insure nothing is leaked when constructor throws.
+//
 // Revision 1.7  2005/09/01 22:01:33  rich_sposato
 // Added #ifdef to deal with MSVC warning about exception specification lists.
 //

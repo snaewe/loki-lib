@@ -100,6 +100,12 @@ namespace Loki
         inline std::size_t BlockSize() const
         { return blockSize_; }
 
+        bool TrimEmptyChunk( void );
+
+        std::size_t CountEmptyChunks( void ) const;
+
+        bool HasBlock( void * p ) const;
+
     };
 
 
@@ -251,6 +257,85 @@ void FixedAllocator::Initialize( std::size_t blockSize, std::size_t pageSize )
     assert(numBlocks_ == numBlocks);
 }
 
+// FixedAllocator::CountEmptyChunks -------------------------------------------
+/// Returns count of number of empty Chunks inside the chunk list.
+
+std::size_t FixedAllocator::CountEmptyChunks( void ) const
+{
+    std::size_t count = 0;
+    for ( ChunkCIter it( chunks_.begin() ); it != chunks_.end(); ++it )
+    {
+        const Chunk & chunk = *it;
+        if ( chunk.HasAvailable( numBlocks_ ) )
+            ++count;
+    }
+    return count;
+}
+
+// FixedAllocator::HasBlock ---------------------------------------------------
+/// Determines if any Chunk inside FixedAllocator has a block at address p.
+/// @return True if Chunk owned by this has the block, else false.
+
+bool FixedAllocator::HasBlock( void * p ) const
+{
+    const std::size_t chunkLength = numBlocks_ * blockSize_;
+    unsigned char * pc = static_cast< unsigned char * >( p );
+    for ( ChunkCIter it( chunks_.begin() ); it != chunks_.end(); ++it )
+    {
+        const Chunk & chunk = *it;
+        if ( chunk.HasBlock( pc, chunkLength ) )
+            return true;
+    }
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FixedAllocator::TrimEmptyChunk
+// Releases the memory used by the empty Chunk.
+////////////////////////////////////////////////////////////////////////////////
+
+bool FixedAllocator::TrimEmptyChunk( void )
+{
+    // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
+    assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
+    if ( NULL == emptyChunk_ ) return false;
+
+    // If emptyChunk_ points to valid Chunk, then chunk list is not empty.
+    assert( !chunks_.empty() );
+    // And there should be exactly 1 empty Chunk.
+    assert( 1 == CountEmptyChunks() );
+
+    Chunk * lastChunk = &chunks_.back();
+    if ( lastChunk != emptyChunk_ )
+        std::swap( *emptyChunk_, *lastChunk );
+    assert( lastChunk->HasAvailable( numBlocks_ ) );
+    lastChunk->Release();
+    chunks_.pop_back();
+
+    assert( 0 == CountEmptyChunks() );
+    if ( chunks_.empty() )
+    {
+        allocChunk_ = NULL;
+        deallocChunk_ = NULL;
+    }
+    else
+    {
+        if ( deallocChunk_ == emptyChunk_ )
+        {
+            deallocChunk_ = &chunks_.front();
+            assert( deallocChunk_->blocksAvailable_ < numBlocks_ );
+        }
+        if ( allocChunk_ == emptyChunk_ )
+        {
+            allocChunk_ = &chunks_.back();
+            assert( allocChunk_->blocksAvailable_ < numBlocks_ );
+        }
+    }
+    emptyChunk_ = NULL;
+
+    return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // FixedAllocator::MakeNewChunk
 // Allocates a new Chunk for a FixedAllocator.
@@ -295,6 +380,7 @@ void * FixedAllocator::Allocate( void )
 {
     // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
     assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
+    assert( CountEmptyChunks() < 2 );
 
     if ( ( NULL == allocChunk_ ) || allocChunk_->IsFilled() )
     {
@@ -331,8 +417,9 @@ void * FixedAllocator::Allocate( void )
     assert( !allocChunk_->IsFilled() );
     void *place = allocChunk_->Allocate(blockSize_);
 
-    // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
-    assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
+    // prove emptyChunk_ points nowhere.
+    assert( NULL == emptyChunk_ );
+    assert( 0 == CountEmptyChunks() );
 
     return place;
 }
@@ -352,6 +439,7 @@ bool FixedAllocator::Deallocate( void * p, bool doChecks )
         assert(&chunks_.back() >= deallocChunk_);
         assert( &chunks_.front() <= allocChunk_ );
         assert( &chunks_.back() >= allocChunk_ );
+        assert( CountEmptyChunks() < 2 );
     }
 
     Chunk * foundChunk = VicinityFind( p );
@@ -364,6 +452,8 @@ bool FixedAllocator::Deallocate( void * p, bool doChecks )
 
     deallocChunk_ = foundChunk;
     DoDeallocate(p);
+    assert( CountEmptyChunks() < 2 );
+
     return true;
 }
 
@@ -533,6 +623,23 @@ SmallObjAllocator::~SmallObjAllocator( void )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// SmallObjAllocator::TrimExcessMemory
+// Trims excess memory within all FixedAllocators.
+////////////////////////////////////////////////////////////////////////////////
+
+bool SmallObjAllocator::TrimExcessMemory( void )
+{
+    bool found = false;
+    const std::size_t allocCount = GetOffset( GetMaxObjectSize(), GetAlignment() );
+    for ( std::size_t i = 0; i < allocCount; ++i )
+    {
+        if ( pool_[ i ].TrimEmptyChunk() )
+            found = true;
+    }
+    return found;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // SmallObjAllocator::Allocate
 // Handles request to allocate numBytes for 1 object.
 // This acts in constant-time - except for the calls to DefaultAllocator
@@ -556,6 +663,10 @@ void * SmallObjAllocator::Allocate( std::size_t numBytes, bool doThrow )
     assert( allocator.BlockSize() >= numBytes );
     assert( allocator.BlockSize() < numBytes + GetAlignment() );
     void * place = allocator.Allocate();
+
+    if ( ( NULL == place ) && TrimExcessMemory() )
+        place = allocator.Allocate();
+
     if ( ( NULL == place ) && doThrow )
     {
 #if _MSC_VER
@@ -596,6 +707,37 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
     assert( found );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// SmallObjAllocator::Deallocate
+// Handles request to deallocate 1 object that was allocated by non-throwing
+// new operator.  This will act in linear-time.  It will never throw.
+////////////////////////////////////////////////////////////////////////////////
+
+void SmallObjAllocator::Deallocate( void * p )
+{
+    if ( NULL == p ) return;
+    assert( NULL != pool_ );
+    FixedAllocator * pAllocator = NULL;
+    const std::size_t allocCount = GetOffset( GetMaxObjectSize(), GetAlignment() );
+
+    for ( std::size_t ii = 0; ii < allocCount; ++ii )
+    {
+        if ( pool_[ ii ].HasBlock( p ) )
+        {
+            pAllocator = &pool_[ ii ];
+            break;
+        }
+    }
+    if ( NULL == pAllocator )
+    {
+        DefaultDeallocator( p );
+        return;
+    }
+
+    const bool found = pAllocator->Deallocate( p, true );
+    assert( found );
+}
+
 } // end namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -609,6 +751,11 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.4  2005/09/09 00:25:00  rich_sposato
+// Added functions to trim extra memory within allocator.  Made a new_handler
+// function for allocator.  Added deallocator function for nothrow delete
+// operator to insure nothing is leaked when constructor throws.
+//
 // Revision 1.3  2005/09/01 22:15:47  rich_sposato
 // Changed Chunk list to double in size when adding new chunks instead of
 // just incrementing by 1.  Changes linear operation into amortized constant
