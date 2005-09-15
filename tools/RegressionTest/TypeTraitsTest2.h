@@ -106,7 +106,7 @@
 #include <string>
 #include <typeinfo>
 
-//#define ENABLE_ADDITIONAL_TYPETRAITS
+#define ENABLE_ADDITIONAL_TYPETRAITS
 
 
 #include <typetraits.h>
@@ -383,13 +383,12 @@ inline void TypeTraitsTest2::testPointer()
     PASS(void (* const volatile)(int, float));
     PASS(void (* const volatile)(int, float, ...));
     
-    /*
-    // Pointer to member functions
+
     PASS(void (A::* const volatile)() const volatile);
     PASS(void (A::* const volatile)(int, float) const volatile);
     PASS(void (A::* const volatile)(int, float, ...) const volatile);
     PASS(int A::* const volatile);
-    */
+
     
     PASS(const volatile int** const volatile ** const * const volatile);
     PASS(int* const volatile&);
@@ -407,7 +406,7 @@ inline void TypeTraitsTest2::testMemberPointer()
     PASS(int A::* const volatile);
     PASS(const volatile int A::* const volatile);
     
-    /*
+    
     // Pointer to member functions
     PASS(int (A::* )() const);
     PASS(int (A::* const volatile)() const volatile);
@@ -415,7 +414,7 @@ inline void TypeTraitsTest2::testMemberPointer()
     PASS(int (A::* const volatile&)(int, float) const volatile);
     PASS(int (A::* const volatile)(int, float, ...) const volatile);
     PASS(int (A::* const volatile&)(int, float, ...) const volatile);
-    */
+    
     
     FAIL(int);
     FAIL(void);
@@ -429,6 +428,7 @@ inline void TypeTraitsTest2::testFunctionPointer()
 #undef CONDITION
 #define CONDITION isFunctionPointer
 
+ 	PASS(void (*)());
     FAIL(void (A::* const volatile)());
     FAIL(void (A::* const volatile)() const);
     FAIL(void (A::* const volatile)() volatile);
@@ -446,6 +446,7 @@ inline void TypeTraitsTest2::testFunctionPointer()
     FAIL(void);
     FAIL(void*);
     FAIL(int A::*);
+    
 #endif
 }
 
