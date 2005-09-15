@@ -159,6 +159,12 @@ namespace Loki
             typedef U PointeeType;
         };
         
+        template <class U> struct PointerTraits<U*&>
+        {
+            enum { result = true };
+            typedef U PointeeType;
+        };
+        
         template <class U> struct ReferenceTraits
         {
             enum { result = false };
@@ -180,7 +186,12 @@ namespace Loki
         {
             enum { result = true };
         };
-
+        
+        template <class U, class V> struct PToMTraits<U V::*&>
+        {
+            enum { result = true };
+        };
+        
         template <class U> struct UnConst
         {
             typedef U Result;
@@ -198,13 +209,7 @@ namespace Loki
             typedef U& Result;
             enum { isConst = 1 };
         };
-
-        template <class U, class V> struct UnConst<U V::* const>   
-        {
-            typedef U V::* Result;
-            enum { isConst = 1 };
-        };
-        
+  
         template <class U> struct UnVolatile
         {
             typedef U Result;
@@ -223,13 +228,7 @@ namespace Loki
             enum { isVolatile = 1 };
         };
 
-        template <class U, class V> struct UnVolatile<U V::* volatile>   
-        {
-            typedef U V::* Result;
-            enum { isVolatile = 1 };
-        };
-
-
+        
     public:
         typedef typename UnConst<T>::Result 
             NonConstType;
@@ -237,7 +236,7 @@ namespace Loki
             NonVolatileType;
         typedef typename UnVolatile<typename UnConst<T>::Result>::Result 
             UnqualifiedType;
-        typedef typename PointerTraits<T>::PointeeType 
+        typedef typename PointerTraits<UnqualifiedType>::PointeeType 
             PointeeType;
         typedef typename ReferenceTraits<T>::ReferredType 
             ReferredType;
