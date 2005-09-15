@@ -1,18 +1,20 @@
 
 CPP  = g++ 
 CC   = gcc 
-OBJ  = Singleton.o SmallObj.o 
-LINKOBJ  = Singleton.o SmallObj.o 
+OBJ  = tmp\Singleton.o tmp\SmallObj.o 
+LINKOBJ  = tmp\Singleton.o tmp\SmallObj.o 
 LIBS =  -L"C:/Programme/Dev-Cpp/lib"  -g3 
 CXXINCS = -I"..\include" -I"..\include\loki"
 BIN  = ../lib/libloki.a
-CXXFLAGS = $(CXXINCS) -Wall -pedantic   -g3
+CXXFLAGS = $(CXXINCS) -W0 -O2
 CFLAGS = $(INCS)   -g3
 RM = rm -f
+CHK_DIR_EXISTS= if not exist
+MKDIR         = mkdir
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before ../lib/libloki.a all-after
+all: all-before check_tmp check_lib ../lib/libloki.a all-after
 
 
 clean: clean-custom
@@ -22,8 +24,14 @@ $(BIN): $(LINKOBJ)
 	ar r $(BIN) $(LINKOBJ)
 	ranlib $(BIN)
 
-Singleton.o: Singleton.cpp
-	$(CPP) -c Singleton.cpp -o Singleton.o $(CXXFLAGS)
+check_tmp: 
+	@$(CHK_DIR_EXISTS) "tmp\" $(MKDIR) "tmp"
 
-SmallObj.o: SmallObj.cpp
-	$(CPP) -c SmallObj.cpp -o SmallObj.o $(CXXFLAGS)
+check_lib: 
+	@$(CHK_DIR_EXISTS) "..\lib\" $(MKDIR) "..\lib\"
+	
+tmp\Singleton.o: Singleton.cpp
+	$(CPP) -c Singleton.cpp -o tmp\Singleton.o $(CXXFLAGS)
+
+tmp\SmallObj.o: SmallObj.cpp
+	$(CPP) -c SmallObj.cpp -o tmp\SmallObj.o $(CXXFLAGS)

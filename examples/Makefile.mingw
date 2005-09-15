@@ -2,17 +2,19 @@
 
 CPP  = g++
 CC   = gcc
-OBJ  = Factory.o  
-LINKOBJ  = Factory.o
+OBJ  = tmp\Factory.o  
+LINKOBJ  = tmp\Factory.o
 CXXINCS =  -I./../include  -I./../include/loki 
 LIBS = -L../lib -lloki
 BIN  = main-mingw.exe
-CXXFLAGS = $(CXXINCS) -Wall -pedantic -funroll-loops   -fexpensive-optimizations -O2
+CXXFLAGS = $(CXXINCS) -W0 -O2
 RM = rm -f
+CHK_DIR_EXISTS= if not exist
+MKDIR         = mkdir
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before main-mingw.exe all-after
+all: all-before check_tmp main-mingw.exe all-after
 
 
 clean: clean-custom
@@ -21,6 +23,9 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o main-mingw.exe $(LIBS)
 
-Factory.o: Factory.cpp
-	$(CPP) -c Factory.cpp -o Factory.o $(CXXFLAGS)
+check_tmp: 
+	@$(CHK_DIR_EXISTS) "tmp\" $(MKDIR) "tmp"
+	
+tmp\Factory.o: Factory.cpp
+	$(CPP) -c Factory.cpp -o tmp\Factory.o $(CXXFLAGS)
 
