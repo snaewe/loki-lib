@@ -1,0 +1,25 @@
+
+MAKEFILE = Makefile.mingw
+
+SUBTARGETS	=  \
+		sub-RegressionTest 
+
+
+all: $(SUBTARGETS)
+
+sub-RegressionTest: FORCE
+	cd RegressionTest && \
+	$(MAKE) -f $(MAKEFILE)
+	@cd ..
+	
+	
+clean: 
+	cd RegressionTest && \
+	$(MAKE)  -f $(MAKEFILE) clean
+	@cd ..
+
+
+
+
+FORCE:
+
