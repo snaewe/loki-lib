@@ -1,6 +1,5 @@
 @ECHO OFF
 
-
 :: Toolkit 2003
 if defined VCToolkitInstallDir (
 	if exist "%VCToolkitInstallDir%\vcvars32.bat2" (
@@ -16,9 +15,10 @@ if defined VCToolkitInstallDir (
 if defined VCINSTALLDIR (
 	if exist "%VCINSTALLDIR%\vcvarsall.bat" (
 		echo -
-		echo - Visual C++ found.
+		echo - Visual C++ 8 found.
 		echo -
-		call "%VCINSTALLDIR%\vcvarsall.bat"
+		call "%VCINSTALLDIR%\vcvarsall.bat x86"
+		set MSVCDir=%VCINSTALLDIR%
 		goto STARTCOMPILING
 	)
 	if exist "%VCINSTALLDIR%\vcvars32.bat" (
@@ -47,7 +47,6 @@ goto ERROR
 
 :: loki buid process
 
-@ECHO ON
 
 cd src
 call make.msvc.bat
@@ -57,21 +56,14 @@ cd examples
 call make.msvc.bat
 cd ..
 
-cd test\flex_string
+cd test
 call make.msvc.bat
-cd ..\..
+cd ..
 
-cd test\SafeFormat
+cd tools
 call make.msvc.bat
-cd ..\..
+cd ..
 
-cd test\SmallObj
-call make.msvc.bat
-cd ..\..
-
-cd tools\RegressionTest
-call make.msvc.bat
-cd ..\..
 
 goto LEAVE
 
