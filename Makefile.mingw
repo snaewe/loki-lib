@@ -42,9 +42,7 @@ clean:
 	$(MAKE)  -f $(MAKEFILE) clean
 	@cd ..
 	cd tools && \
-	cd RegressionTest && \
 	$(MAKE)  -f $(MAKEFILE) clean
-	@cd ..
 	@cd ..
 
 
