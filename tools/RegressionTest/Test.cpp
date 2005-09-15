@@ -43,6 +43,7 @@ Test::tests_type Test::tests;
 #include "TypelistTest.h"
 #include "TypeManipTest.h"
 #include "TypeTraitsTest.h"
+#include "TypeTraitsTest2.h"
 #include "SmallObjectTest.h"
 #include "SingletonTest.h"
 #include "SmartPtrTest.h"
@@ -109,6 +110,9 @@ return result;
 
 
 // $Log$
+// Revision 1.17  2005/09/15 17:51:48  syntheticpp
+// add new TypeTraits test from Kalle Rutanen
+//
 // Revision 1.16  2005/08/10 18:13:13  syntheticpp
 // change default to single threading
 //
