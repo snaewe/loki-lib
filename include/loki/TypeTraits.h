@@ -72,6 +72,16 @@ namespace Loki
             StdOtherInts;
         typedef TYPELIST_3(float, double, long double) 
             StdFloats;
+            
+        template <typename U> struct AddPointer
+        {
+            typedef U* Result;
+        };
+
+        template <typename U> struct AddPointer<U&>
+        {
+            typedef U* Result;
+        };
 
         template <class U> struct AddReference
         {
@@ -102,8 +112,1883 @@ namespace Loki
         {
             typedef NullType Result;
         };
-                
-    }
+    
+        template <typename T>
+        struct IsFunctionPointerRaw
+        {enum{result = 0};};
+
+        template <typename T>
+        struct IsFunctionPointerRaw<T(*)()> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01>
+        struct IsFunctionPointerRaw<T(*)(P01)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20)> 
+        {enum {result = 1};};
+
+        template <typename T>
+        struct IsFunctionPointerRaw<T(*)(
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15,
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsFunctionPointerRaw<T(*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20,
+            ...)> 
+        {enum {result = 1};};
+        
+        
+        template <typename T>
+        struct IsMemberFunctionPointerRaw
+        {enum{result = 0};};
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)()> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(P01)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15,
+            ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, ...)> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20,
+            ...)> 
+        {enum {result = 1};};
+
+        // Const versions
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)() const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(P01) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15,
+            ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, ...) const> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20,
+            ...) const> 
+        {enum {result = 1};};
+
+        // Volatile versions
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)() volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(P01) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15,
+            ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, ...) volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20,
+            ...) volatile> 
+        {enum {result = 1};};
+
+        // Const volatile versions
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)() const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(P01) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05,
+            P06, P07, P08, P09, P10,
+            P11, P12, P13, P14, P15,
+            ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, ...) const volatile> 
+        {enum {result = 1};};
+
+        template <typename T, typename S, 
+            typename P01, typename P02, typename P03, typename P04, typename P05,
+            typename P06, typename P07, typename P08, typename P09, typename P10,
+            typename P11, typename P12, typename P13, typename P14, typename P15,
+            typename P16, typename P17, typename P18, typename P19, typename P20>
+        struct IsMemberFunctionPointerRaw<T (S::*)(
+            P01, P02, P03, P04, P05, 
+            P06, P07, P08, P09, P10, 
+            P11, P12, P13, P14, P15,
+            P16, P17, P18, P19, P20,
+            ...) const volatile> 
+        {enum {result = 1};};
+               
+      }// namespace Private
         
 ////////////////////////////////////////////////////////////////////////////////
 // class template TypeTraits
@@ -147,6 +2032,19 @@ namespace Loki
     class TypeTraits
     {
     private:
+    
+        template <class U> struct ReferenceTraits
+        {
+            enum { result = false };
+            typedef U ReferredType;
+        };
+        
+        template <class U> struct ReferenceTraits<U&>
+        {
+            enum { result = true };
+            typedef U ReferredType;
+        };
+        
         template <class U> struct PointerTraits
         {
             enum { result = false };
@@ -164,19 +2062,7 @@ namespace Loki
             enum { result = true };
             typedef U PointeeType;
         };
-        
-        template <class U> struct ReferenceTraits
-        {
-            enum { result = false };
-            typedef U ReferredType;
-        };
-        
-        template <class U> struct ReferenceTraits<U&>
-        {
-            enum { result = true };
-            typedef U ReferredType;
-        };
-        
+          
         template <class U> struct PToMTraits
         {
             enum { result = false };
@@ -192,6 +2078,16 @@ namespace Loki
             enum { result = true };
         };
         
+        template <class U> struct FunctionPointerTraits
+        {
+            enum{ result = Private::IsFunctionPointerRaw<U>::result };
+        };
+        
+        template <typename U> struct PToMFunctionTraits
+        {
+            enum{ result = Private::IsMemberFunctionPointerRaw<U>::result };
+        };
+         
         template <class U> struct UnConst
         {
             typedef U Result;
@@ -227,7 +2123,6 @@ namespace Loki
             typedef U& Result;
             enum { isVolatile = 1 };
         };
-
         
     public:
         typedef typename UnConst<T>::Result 
@@ -243,23 +2138,33 @@ namespace Loki
 
         enum { isConst          = UnConst<T>::isConst };
         enum { isVolatile       = UnVolatile<T>::isVolatile };
-        enum { isPointer        = PointerTraits<UnqualifiedType>::result };
         enum { isReference      = ReferenceTraits<UnqualifiedType>::result };
-        enum { isMemberPointer  = PToMTraits<UnqualifiedType>::result };
+        enum { isFunction       = FunctionPointerTraits<typename Private::AddPointer<T>::Result >::result };
+        enum { isFunctionPointer= FunctionPointerTraits<
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType >::result };
+        enum { isMemberFunctionPointer= PToMFunctionTraits<
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType >::result };
+        enum { isMemberPointer  = PToMTraits<
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType >::result ||
+                                  isMemberFunctionPointer };
+        enum { isPointer        = PointerTraits<
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType >::result ||
+                                  isFunctionPointer || isMemberPointer };
+        
 
         enum { isStdUnsignedInt = TL::IndexOf<Private::StdUnsignedInts, UnqualifiedType>::value >= 0 ||
                                   TL::IndexOf<Private::StdUnsignedInts, 
-                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdSignedInt   = TL::IndexOf<Private::StdSignedInts, UnqualifiedType>::value >= 0 ||
                                   TL::IndexOf<Private::StdSignedInts, 
-                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdIntegral    = isStdUnsignedInt || isStdSignedInt ||
                                   TL::IndexOf<Private::StdOtherInts, UnqualifiedType>::value >= 0 ||
                                   TL::IndexOf<Private::StdOtherInts, 
-                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdFloat       = TL::IndexOf<Private::StdFloats, UnqualifiedType>::value >= 0 ||
                                   TL::IndexOf<Private::StdFloats, 
-                                          typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
+                                        typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
         enum { isStdArith       = isStdIntegral || isStdFloat };
         enum { isStdFundamental = isStdArith || isStdFloat || Conversion<T, void>::sameType };
             
@@ -271,11 +2176,11 @@ namespace Loki
         enum { isFundamental    = isStdFundamental || isArith || isFloat };
         
         typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
-                                            typename Private::AddReference<T>::Result>::Result 
+                typename Private::AddReference<T>::Result>::Result 
             ParameterType;
 
         typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
-                                            typename Private::AddConstReference<T>::Result>::Result 
+                typename Private::AddConstReference<T>::Result>::Result 
             ConstParameterType;
         
     };
