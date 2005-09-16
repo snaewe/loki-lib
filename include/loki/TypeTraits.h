@@ -98,17 +98,17 @@ namespace Loki
             typedef NullType Result;
         };
 
-        template <class U> struct AddConstReference
+        template <class U> struct AddParameterType
         {
             typedef const U & Result;
         };
 
-        template <class U> struct AddConstReference<U &>
+        template <class U> struct AddParameterType<U &>
         {
-            typedef const U & Result;
+            typedef U & Result;
         };
 
-        template <> struct AddConstReference<void>
+        template <> struct AddParameterType<void>
         {
             typedef NullType Result;
         };
@@ -2044,7 +2044,7 @@ namespace Loki
             enum { result = true };
             typedef U ReferredType;
         };
-        
+               
         template <class U> struct PointerTraits
         {
             enum { result = false };
@@ -2176,13 +2176,8 @@ namespace Loki
         enum { isFundamental    = isStdFundamental || isArith || isFloat };
         
         typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
-                typename Private::AddReference<T>::Result>::Result 
+                typename Private::AddParameterType<T>::Result>::Result 
             ParameterType;
-
-        typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
-                typename Private::AddConstReference<T>::Result>::Result 
-            ConstParameterType;
-        
     };
 }
 

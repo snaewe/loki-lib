@@ -507,8 +507,7 @@ inline void TypeTraitsTest2::testParameterType()
     TEST_TYPE(const volatile A, const volatile A&);
     TEST_TYPE(A&, A&);
     
-    //TEST_TYPE(A, const A&); use ConstParameterType
-    
+    TEST_TYPE(A, const A&);  
 }
 
 inline void TypeTraitsTest2::testReferredType()
