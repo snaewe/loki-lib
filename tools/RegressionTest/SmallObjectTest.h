@@ -162,7 +162,14 @@ private:
 } smallObjectTest;
 
 #ifndef SMALLOBJ_CPP
-# define SMALLOBJ_CPP
-# include "../../include/noncc/loki/SmallObj.cpp"
+#	define SMALLOBJ_CPP
+#	ifdef LOKI_NONCC
+# 		include "../../include/noncc/loki/SmallObj.cpp"
+#	else
+# 		include "../../src/SmallObj.cpp"
+#	endif
 #endif
+
+
+
 #endif
