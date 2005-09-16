@@ -6,21 +6,21 @@ OBJ  = tmp\SmallObjBench.o tmp\SmallObj.o
 LINKOBJ  = tmp\SmallObjBench.o tmp\SmallObj.o
 CXXINCS =  -I./../../include  -I./../../include/loki 
 BIN  = main-mingw.exe
-CXXFLAGS = $(CXXINCS) -W0 -O2
+CXXFLAGS = $(CXXINCS) -Wall -Wextra -pedantic -DNDEBUG -fexpensive-optimizations -O3 
 RM = rm -f
 CHK_DIR_EXISTS= if not exist
 MKDIR         = mkdir
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before check_tmp main-mingw.exe all-after
+all: clean all-before check_tmp main-mingw.exe all-after
 
 
 clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CPP) $(LINKOBJ) -o main-mingw.exe $(LIBS)
+	$(CPP) $(LINKOBJ) -o main-mingw.exe $(LIBS) 
 	
 check_tmp: 
 	@$(CHK_DIR_EXISTS) "tmp\" $(MKDIR) "tmp"
