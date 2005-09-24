@@ -1,6 +1,6 @@
 // Loki TypeTraits test program
 // Kalle Rutanen
-// 9.9.2005
+// 25.9.2005
 //
 // Some type sets
 // --------------
@@ -104,12 +104,9 @@
 
 #include <iostream>
 #include <string>
-#include <typeinfo>
+#include <vector>
 
-#define ENABLE_ADDITIONAL_TYPETRAITS
-
-
-#include <loki/TypeTraits.h>
+#include "loki/TypeTraits.h"
 
 // Macros for testing isX variables
 
@@ -129,9 +126,9 @@
 
 #define TEST_TYPE_HELP2(type, rightType, cond) \
     { \
-    const std::type_info& info = typeid(Loki::TypeTraits<type>::cond); \
-    bool testResult = Loki::IsSameType<rightType, Loki::TypeTraits<type>::cond>::value; \
-    testType(testResult, #cond, #type, info.name(), #rightType); \
+    bool testResult = Loki::IsSameType<rightType, \
+                      Loki::TypeTraits<type>::cond>::value; \
+    testType(testResult, #cond, #type, #rightType); \
     }
 
 // This macro is needed as an intermediate step to print CONDITION right
@@ -146,13 +143,16 @@
 // TypeTraitsTest2
 ///////////////////////////////////////////////////////////////////////////////
 
-class TypeTraitsTest2: public Test
+class TypeTraitsTest2 : public Test
 {
 public:
     TypeTraitsTest2() 
         : Test("TypeTraits.h"),
         testedConditions_(0),
-        erroneousConditions_(0)
+        erroneousConditions_(0),
+        groupErrors_(0),
+        textBuffer_(),
+        groupName_()
     {
     }
 
@@ -161,10 +161,12 @@ public:
 private:
     class A{};
 
+    void testBegin(const std::string& groupName);
+    void testEnd();
+
     void testCount(bool result);
     void testType(bool result, std::string conditionText, 
         std::string typeText,
-        std::string deducedTypeText, 
         std::string rightTypeText);
     void testCondition(bool result, bool answer, std::string text);
 
@@ -175,21 +177,31 @@ private:
     void testPointer();
     void testReference();
     void testMemberPointer();
-    void testFunctionPointer();
-    void testMemberFunctionPointer();
+    
     void testFunction();
+    void testFunctionPointer();
+	void testMemberFunctionPointer();
 
     void testParameterType();
     void testReferredType();
     void testPointeeType();
+    void testNonConstType();
+    void testNonVolatileType();
+    void testUnqualifiedType();
 
     unsigned int testedConditions_;
     unsigned int erroneousConditions_;
+    unsigned int groupErrors_;
+    std::vector<std::string> textBuffer_;
+    std::string groupName_;
 
 } typeTraitsTest2;
 
 inline void TypeTraitsTest2::execute(TestResult &result)
 {
+    using std::cout;
+    using std::endl;
+
     printName(result);
 
     testIntegral();
@@ -199,22 +211,58 @@ inline void TypeTraitsTest2::execute(TestResult &result)
     testPointer();
     testReference();
     testMemberPointer();
-    testFunctionPointer();
-    testMemberFunctionPointer();
-    testFunction();
     testParameterType();
     testReferredType();
     testPointeeType();
+    testNonConstType();
+    testNonVolatileType();
+    testUnqualifiedType();
+    
+    testFunction();
+    testFunctionPointer();
+	testMemberFunctionPointer();
 
     bool r = erroneousConditions_ == 0;
 
-    std::cout << "Tested " << testedConditions_ 
+    cout << endl << "Tested " << testedConditions_ 
         << " conditions of which " << erroneousConditions_ 
-        << " were erroneous" << std::endl;
+        << " were erroneous" << endl;
 
-    testAssert("TypeTraits2",r,result);
+    testAssert("TypeTraits",r,result);
 
-    std::cout << std::endl;
+    cout << endl;
+}
+
+inline void TypeTraitsTest2::testBegin(const std::string& groupName)
+{
+    using std::string;
+
+    textBuffer_.clear();
+    groupErrors_ = 0;
+    groupName_ = groupName;
+}
+
+inline void TypeTraitsTest2::testEnd()
+{
+    using std::cout;
+    using std::endl;
+    using std::string;
+
+    if (groupErrors_ > 0)
+    {
+        cout << endl;
+        cout << groupName_ << ": " << groupErrors_ 
+            << " error(s) found." << endl;
+        cout << "---------------------------" 
+            << "-----------------------" << endl;
+
+        for (int i = 0;i < textBuffer_.size();++i)
+        {
+            cout << textBuffer_[i];
+        }
+    }
+
+    textBuffer_.clear();
 }
 
 inline void TypeTraitsTest2::testCount(bool result)
@@ -222,40 +270,74 @@ inline void TypeTraitsTest2::testCount(bool result)
     if (!result)
     {
         ++erroneousConditions_;
+        ++groupErrors_;
     }
 
     ++testedConditions_;
 }
 
-inline void TypeTraitsTest2::testType(bool result, std::string conditionText, 
-                              std::string typeText,
-                              std::string deducedTypeText, 
-                              std::string rightTypeText)
+inline void TypeTraitsTest2::testType(bool result, 
+                                     std::string conditionText, 
+                                     std::string typeText, 
+                                     std::string rightTypeText)
 {
+    using std::string;
+
     testCount(result);
+
+    string message;
 
     if (!result)
     {
-        std::cout << "TypeTraits<" << typeText << ">::" 
-            << conditionText << " -> " << deducedTypeText << std::endl;
-        std::cout << "    Expected " << rightTypeText << std::endl;
+        message = string("FAILED:\n");
     }
+    else
+    {
+        message = string("PASSED:\n");
+    }
+
+    message += string("    TypeTraits<") + typeText + string(">::") 
+        + conditionText + string("\n");
+    message += string("    Expected: ") + rightTypeText + string("\n");
+
+    textBuffer_.push_back(message);
 }
 
-inline void TypeTraitsTest2::testCondition(bool result, bool answer, std::string text)
+inline void TypeTraitsTest2::testCondition(
+    bool result, bool answer, std::string text)
 {
     testCount(result == answer);
 
+    using std::string;
+
+    string message;
+
     if (result != answer)
     {
-        std::cout << text << " == " << result << std::endl;
+        message = string("FAILED:\n");
     }
+    else
+    {
+        message = string("PASSED:\n");
+    }
+
+    message += string("    ") + text + string("\n");
+    message += 
+        string("    Result: ") + 
+        string(result ? "true" : "false") + string("\n");
+    message += 
+        string("    Expected: ") + 
+        string(answer ? "true" : "false") + string("\n");
+
+    textBuffer_.push_back(message);
 }
 
 inline void TypeTraitsTest2::testIntegral()
 {
 #undef CONDITION
 #define CONDITION isIntegral
+
+    testBegin("isIntegral");
 
     PASS(bool);
     PASS(char);
@@ -280,12 +362,16 @@ inline void TypeTraitsTest2::testIntegral()
     FAIL(int(*)(int, float, ...));
     FAIL(int (A::*)());
     FAIL(int (A::*)(int, float, ...));
+
+    testEnd();
 }
 
 inline void TypeTraitsTest2::testFloat()
 {
 #undef CONDITION
 #define CONDITION isFloat
+
+    testBegin("isFloat");
 
     PASS(float);
     PASS(double);
@@ -303,12 +389,16 @@ inline void TypeTraitsTest2::testFloat()
     FAIL(float(*)(int, float, ...));
     FAIL(float (A::*)());
     FAIL(float (A::*)(int, float, ...));
+
+    testEnd();
 }
 
 inline void TypeTraitsTest2::testConst()
 {
 #undef CONDITION
 #define CONDITION isConst
+
+    testBegin("isConst");
 
     PASS(const volatile int);
     PASS(int* const volatile);
@@ -328,12 +418,16 @@ inline void TypeTraitsTest2::testConst()
     FAIL(const int(*)(int, float, ...));
     FAIL(const int (A::*)() const);
     FAIL(const int (A::*)(int, float, ...) const);
+
+    testEnd();
 }
 
 inline void TypeTraitsTest2::testVolatile()
 {
 #undef CONDITION
 #define CONDITION isVolatile
+
+    testBegin("isVolatile");
 
     PASS(const volatile int);
     PASS(int* const volatile);
@@ -355,12 +449,16 @@ inline void TypeTraitsTest2::testVolatile()
     FAIL(volatile int (A::*)(int, float, ...) volatile);
     FAIL(volatile int(*)(int, float));
     FAIL(volatile int (A::*)(int, float) volatile);
+
+    testEnd();
 }
 
 inline void TypeTraitsTest2::testReference()
 {
 #undef CONDITION
 #define CONDITION isReference
+
+    testBegin("isReference");
 
     PASS(const volatile int&);
     PASS(void (*const volatile&)(int, float));
@@ -371,6 +469,8 @@ inline void TypeTraitsTest2::testReference()
 
     FAIL(int);
     FAIL(void);
+
+    testEnd();
 }
 
 inline void TypeTraitsTest2::testPointer()
@@ -378,24 +478,20 @@ inline void TypeTraitsTest2::testPointer()
 #undef CONDITION
 #define CONDITION isPointer
 
+    testBegin("isPointer");
+
     PASS(int* const volatile);
     PASS(void (* const volatile)());
     PASS(void (* const volatile)(int, float));
     PASS(void (* const volatile)(int, float, ...));
-    
-
-    PASS(void (A::* const volatile)() const volatile);
-    PASS(void (A::* const volatile)(int, float) const volatile);
-    PASS(void (A::* const volatile)(int, float, ...) const volatile);
-    PASS(int A::* const volatile);
-
-    
     PASS(const volatile int** const volatile ** const * const volatile);
     PASS(int* const volatile&);
 
     FAIL(int);
     FAIL(int&);
     FAIL(void);
+
+    testEnd();
 }
 
 inline void TypeTraitsTest2::testMemberPointer()
@@ -403,30 +499,105 @@ inline void TypeTraitsTest2::testMemberPointer()
 #undef CONDITION
 #define CONDITION isMemberPointer
 
+    testBegin("isMemberPointer");
+
     PASS(int A::* const volatile);
-    PASS(const volatile int A::* const volatile);
-    
-    
-    // Pointer to member functions
-    PASS(int (A::* )() const);
     PASS(int (A::* const volatile)() const volatile);
     PASS(int (A::* const volatile)(int, float) const volatile);
     PASS(int (A::* const volatile&)(int, float) const volatile);
     PASS(int (A::* const volatile)(int, float, ...) const volatile);
     PASS(int (A::* const volatile&)(int, float, ...) const volatile);
-    
-    
+
     FAIL(int);
     FAIL(void);
     FAIL(void*);
     FAIL(void(*)());
+
+    testEnd();
+}
+
+inline void TypeTraitsTest2::testParameterType()
+{
+#undef CONDITION
+#define CONDITION ParameterType
+
+    testBegin("ParameterType");
+
+    TEST_TYPE(int, int);
+    TEST_TYPE(const volatile int, const volatile int);
+    TEST_TYPE(const volatile int&, const volatile int&);
+    TEST_TYPE(void, Loki::NullType);
+    TEST_TYPE(void*, void*);
+    TEST_TYPE(void* const volatile, void* const volatile);
+    TEST_TYPE(void* const volatile&, void* const volatile&);
+    TEST_TYPE(const volatile A, const volatile A&);
+    TEST_TYPE(A, const A&);
+    TEST_TYPE(A&, A&);
+
+    testEnd();
+}
+
+inline void TypeTraitsTest2::testReferredType()
+{
+#undef CONDITION
+#define CONDITION ReferredType
+
+    testBegin("ReferredType");
+
+    TEST_TYPE(const volatile int&, const volatile int);
+    TEST_TYPE(void* const volatile&, void* const volatile);
+    TEST_TYPE(void (&)(), void());
+    TEST_TYPE(void (&)(int, float, ...), void(int, float, ...));
+    TEST_TYPE(int (*)(), int (*)());
+    TEST_TYPE(int (*&)(int, float, ...), int (*)(int, float, ...));
+    TEST_TYPE(int (A::*&)() const volatile, int (A::*)() const volatile);
+    TEST_TYPE(int (A::*&)(int, float, ...) const volatile, 
+        int (A::*)(int, float, ...) const volatile);
+
+    testEnd();
+}
+
+inline void TypeTraitsTest2::testPointeeType()
+{
+#undef CONDITION
+#define CONDITION PointeeType
+
+    testBegin("PointeeType");
+
+    TEST_TYPE(void, Loki::NullType);
+    TEST_TYPE(void*, void);
+    TEST_TYPE(const volatile int*, const volatile int);
+    TEST_TYPE(const volatile int* const volatile&, 
+        const volatile int);
+    TEST_TYPE(void(*)(int, float), void(int, float));
+    TEST_TYPE(void(int, float), Loki::NullType);
+    TEST_TYPE(void(*&)(int, float), void(int, float));
+
+    testEnd();
+}
+
+inline void TypeTraitsTest2::testFunction()
+{
+#undef CONDITION
+#define CONDITION isFunction
+
+	testBegin("isFunction");
+
+    PASS(void());
+    PASS(void(int, float, ...));
+    PASS(void(&)(int, float, ...));
+    PASS(void(int, float));
+    PASS(void(&)());
+    PASS(void(&)(int, float));
+    PASS(int(&)(int, float));
 }
 
 inline void TypeTraitsTest2::testFunctionPointer()
 {
-#ifdef ENABLE_ADDITIONAL_TYPETRAITS
 #undef CONDITION
 #define CONDITION isFunctionPointer
+
+	testBegin("isFunctionPointer");
 
  	PASS(void (*)());
     FAIL(void (A::* const volatile)());
@@ -446,15 +617,14 @@ inline void TypeTraitsTest2::testFunctionPointer()
     FAIL(void);
     FAIL(void*);
     FAIL(int A::*);
-    
-#endif
 }
 
 inline void TypeTraitsTest2::testMemberFunctionPointer()
 {
-#ifdef ENABLE_ADDITIONAL_TYPETRAITS
 #undef CONDITION
 #define CONDITION isMemberFunctionPointer
+
+	testBegin("isMemberFunctionPointer");
 
     PASS(void (A::* const volatile)());
     PASS(void (A::* const volatile)() const);
@@ -473,74 +643,97 @@ inline void TypeTraitsTest2::testMemberFunctionPointer()
     FAIL(void);
     FAIL(void*);
     FAIL(int A::*);
-#endif
 }
 
-inline void TypeTraitsTest2::testFunction()
-{
-#ifdef ENABLE_ADDITIONAL_TYPETRAITS
-#undef CONDITION
-#define CONDITION isFunction
-
-    PASS(void());
-    PASS(void(int, float, ...));
-    PASS(void(&)(int, float, ...));
-    PASS(void(int, float));
-    PASS(void(&)());
-    PASS(void(&)(int, float));
-    PASS(int(&)(int, float));
-#endif
-}
-
-inline void TypeTraitsTest2::testParameterType()
+inline void TypeTraitsTest2::testNonConstType()
 {
 #undef CONDITION
-#define CONDITION ParameterType
+#define CONDITION NonConstType
 
-    TEST_TYPE(int, int);
-    TEST_TYPE(const volatile int, const volatile int);
-    TEST_TYPE(const volatile int&, const volatile int&);
-    TEST_TYPE(void, Loki::NullType);
-    TEST_TYPE(void*, void*);
-    TEST_TYPE(void* const volatile, void* const volatile);
-    TEST_TYPE(void* const volatile&, void* const volatile&);
-    TEST_TYPE(const volatile A, const volatile A&);
-    TEST_TYPE(A&, A&);
+    testBegin("NonConstType");
+
+    TEST_TYPE(void, void);
+
+    TEST_TYPE(const int, int);
+    TEST_TYPE(const volatile int, volatile int);
+    TEST_TYPE(
+        const volatile int* const volatile, 
+        const volatile int* volatile);
+    TEST_TYPE(int(int, float,...), int(int, float, ...));
+    TEST_TYPE(
+        int(* const volatile)(int, float,...), 
+        int(* volatile)(int, float, ...));
+    TEST_TYPE(
+        int(A::* const volatile)(int, float,...), 
+        int(A::* volatile)(int, float, ...));
+
+    // Reference versions
     
-    TEST_TYPE(A, const A&);  
-}
-
-inline void TypeTraitsTest2::testReferredType()
-{
-#undef CONDITION
-#define CONDITION ReferredType
-
-    TEST_TYPE(const volatile int&, const volatile int);
-    TEST_TYPE(void* const volatile&, void* const volatile);
-    TEST_TYPE(void (&)(), void());
-    TEST_TYPE(void (&)(int, float, ...), void(int, float, ...));
-    TEST_TYPE(int (*)(), int (*)());
-    TEST_TYPE(int (*&)(int, float, ...), int (*)(int, float, ...));
-    TEST_TYPE(int (A::*&)() const volatile, int (A::*)() const volatile);
-    TEST_TYPE(int (A::*&)(int, float, ...) const volatile, int (A::*)(int, float, ...) const volatile);
-}
-
-inline void TypeTraitsTest2::testPointeeType()
-{
-#undef CONDITION
-#define CONDITION PointeeType
-
-    TEST_TYPE(void, Loki::NullType);
-    TEST_TYPE(void*, void);
-    TEST_TYPE(const volatile int*, const volatile int);
-      
+    TEST_TYPE(const int&, int&);
+    TEST_TYPE(const volatile int&, volatile int&);
+    TEST_TYPE(int&, int&);
     TEST_TYPE(
         const volatile int* const volatile&, 
-        const volatile int);
+        const volatile int* volatile&);
+    TEST_TYPE(int(&)(int, float,...), int(&)(int, float, ...));
+    TEST_TYPE(
+        int(* const volatile&)(int, float,...), 
+        int(* volatile&)(int, float, ...));
+    TEST_TYPE(
+        int(A::* const volatile&)(int, float,...), 
+        int(A::* volatile&)(int, float, ...));
+
+    testEnd();
+}
+
+inline void TypeTraitsTest2::testNonVolatileType()
+{
+#undef CONDITION
+#define CONDITION NonVolatileType
+
+    testBegin("NonVolatileType");
+
+    TEST_TYPE(void, void);
+
+    TEST_TYPE(volatile int, int);
+    TEST_TYPE(const volatile int, const int);
+    TEST_TYPE(
+        const volatile int* const volatile, 
+        const volatile int* const);
+    TEST_TYPE(int(int, float,...), int(int, float, ...));
+    TEST_TYPE(
+        int(* const volatile)(int, float,...), 
+        int(* const)(int, float, ...));
+    TEST_TYPE(
+        int(A::* const volatile)(int, float,...), 
+        int(A::* const)(int, float, ...));
+
+    // Reference versions
     
-    TEST_TYPE(void(*)(int, float), void(int, float));
-    TEST_TYPE(void(int, float), Loki::NullType);
-    TEST_TYPE(void(*&)(int, float), void(int, float));
+    TEST_TYPE(volatile int&, int&);
+    TEST_TYPE(const volatile int&, const int&);
+    TEST_TYPE(int&, int&);
+    TEST_TYPE(
+        const volatile int* const volatile&, 
+        const volatile int* const&);
+    TEST_TYPE(int(&)(int, float,...), int(&)(int, float, ...));
+    TEST_TYPE(
+        int(* const volatile&)(int, float,...), 
+        int(* const&)(int, float, ...));
+    TEST_TYPE(
+        int(A::* const volatile&)(int, float,...), 
+        int(A::* const&)(int, float, ...));
+
+    testEnd();
+}
+
+inline void TypeTraitsTest2::testUnqualifiedType()
+{
+#undef CONDITION
+#define CONDITION UnqualifiedType
+
+    testBegin("UnqualifiedType");
+    testEnd();
 }
 
 #endif
