@@ -24,7 +24,7 @@
 //#define NO_ITERATOR_TRAITS
 #endif
 
-#include "flex/flex_string.h"
+#include "loki/flex/flex_string.h"
 
 #include <iostream>
 #include <cstdio>

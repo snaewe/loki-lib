@@ -109,7 +109,7 @@
 #define ENABLE_ADDITIONAL_TYPETRAITS
 
 
-#include <typetraits.h>
+#include <loki/TypeTraits.h>
 
 // Macros for testing isX variables
 
