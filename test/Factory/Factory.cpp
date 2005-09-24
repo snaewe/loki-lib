@@ -226,6 +226,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.1  2005/09/24 16:10:14  syntheticpp
+// move Factory example
+//
 // Revision 1.1  2005/07/28 14:27:12  syntheticpp
 // add Factory example
 //
