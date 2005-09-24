@@ -4,8 +4,6 @@ MAKEFILE = Makefile.mingw
 SUBTARGETS	=  \
 		sub-src \
 		sub-test \
-		sub-examples \
-		sub-tools \
 
 all: $(SUBTARGETS)
 
@@ -19,16 +17,6 @@ sub-test: FORCE
 	$(MAKE) -f $(MAKEFILE)
 	@cd ..
 
-sub-examples: FORCE
-	cd examples && \
-	$(MAKE) -f $(MAKEFILE)
-	@cd ..
-	
-sub-tools: FORCE
-	cd tools && \
-	$(MAKE) -f $(MAKEFILE)
-	@cd ..
-	
 	
 	
 clean: 
@@ -36,12 +24,6 @@ clean:
 	$(MAKE)  -f $(MAKEFILE) clean
 	@cd ..
 	cd test && \
-	$(MAKE)  -f $(MAKEFILE) clean
-	@cd ..
-	cd examples && \
-	$(MAKE)  -f $(MAKEFILE) clean
-	@cd ..
-	cd tools && \
 	$(MAKE)  -f $(MAKEFILE) clean
 	@cd ..
 
