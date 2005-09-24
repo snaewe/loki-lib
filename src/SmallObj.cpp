@@ -16,7 +16,7 @@
 // $Header$
 
 
-#include "SmallObj.h"
+#include "loki/SmallObj.h"
 
 #include <cassert>
 #include <vector>
@@ -751,6 +751,9 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.5  2005/09/24 15:48:29  syntheticpp
+// include as loki/
+//
 // Revision 1.4  2005/09/09 00:25:00  rich_sposato
 // Added functions to trim extra memory within allocator.  Made a new_handler
 // function for allocator.  Added deallocator function for nothrow delete
