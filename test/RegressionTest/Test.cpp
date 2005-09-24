@@ -110,6 +110,9 @@ return result;
 
 
 // $Log$
+// Revision 1.1  2005/09/24 15:11:56  syntheticpp
+// move directory
+//
 // Revision 1.17  2005/09/15 17:51:48  syntheticpp
 // add new TypeTraits test from Kalle Rutanen
 //
