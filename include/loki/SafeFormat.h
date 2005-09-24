@@ -316,7 +316,11 @@ private:
         }
         memcpy(fmtBuf, fmt, (format_ - fmt) * sizeof(Char));
         fmtBuf[format_ - fmt] = 0;
+#ifdef _MSC_VER
         const int stored = _snprintf(resultBuf, 
+#else
+		const int stored = snprintf(resultBuf, 
+#endif        
             sizeof(resultBuf) / sizeof(Char), fmtBuf, n);
         if (stored < 0) {
             result_ = -1;
