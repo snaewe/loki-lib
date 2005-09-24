@@ -419,7 +419,7 @@ public:
 
 
 // $Log$
-// Revision 1.1  2005/09/24 15:11:56  syntheticpp
+// Revision 1.2  2005/09/24 15:19:39  syntheticpp
 // move directory
 //
 // Revision 1.6  2005/07/31 15:06:22  syntheticpp
