@@ -1,12 +1,13 @@
 
+
 CPP  = g++ 
 CC   = gcc 
 OBJ  = tmp\Singleton.o tmp\SmallObj.o 
 LINKOBJ  = tmp\Singleton.o tmp\SmallObj.o 
 LIBS =  -L"C:/Programme/Dev-Cpp/lib"  -g3 
-CXXINCS = -I"..\include" -I"..\include\loki"
+CXXINCS = -I"..\include" 
 BIN  = ../lib/libloki.a
-CXXFLAGS = $(CXXINCS) -W0 -O2
+CXXFLAGS = $(CXXINCS) -W0 -O2 -DNDEBUG
 CFLAGS = $(INCS)   -g3
 RM = rm -f
 CHK_DIR_EXISTS= if not exist
