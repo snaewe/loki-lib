@@ -26,6 +26,7 @@
 // Need to ifdef around those cases.
 // TODO SGB
 
+
 #include "UnitTest.h"
 
 // static variable defintion, do not remove
@@ -110,6 +111,9 @@ return result;
 
 
 // $Log$
+// Revision 1.5  2005/09/24 15:49:40  syntheticpp
+// is it really binary?
+//
 // Revision 1.4  2005/09/24 15:25:20  syntheticpp
 // ove RegressionTest
 //
