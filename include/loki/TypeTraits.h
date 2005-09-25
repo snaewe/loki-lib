@@ -2146,12 +2146,11 @@ namespace Loki
                                         typename ReferenceTraits<UnqualifiedType>::ReferredType >::result };
         enum { isMemberPointer  = PToMTraits<
                                         typename ReferenceTraits<UnqualifiedType>::ReferredType >::result ||
-                                  isMemberFunctionPointer };
+                                        isMemberFunctionPointer };
         enum { isPointer        = PointerTraits<
                                         typename ReferenceTraits<UnqualifiedType>::ReferredType >::result ||
-                                  isFunctionPointer || isMemberPointer };
+                                        isFunctionPointer };
         
-
         enum { isStdUnsignedInt = TL::IndexOf<Private::StdUnsignedInts, UnqualifiedType>::value >= 0 ||
                                   TL::IndexOf<Private::StdUnsignedInts, 
                                         typename ReferenceTraits<UnqualifiedType>::ReferredType>::value >= 0};
