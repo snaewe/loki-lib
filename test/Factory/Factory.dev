@@ -1,11 +1,11 @@
 [Project]
 FileName=Factory.dev
 Name=Factory
-UnitCount=3
+UnitCount=2
 Type=1
 Ver=1
 ObjFiles=
-Includes=..\include
+Includes=..\..\include
 Libs=
 PrivateResource=
 ResourceIncludes=
@@ -68,7 +68,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit1]
-FileName=..\src\SmallObj.cpp
+FileName=Factory.cpp
 CompileCpp=1
 Folder=Factory
 Compile=1
@@ -78,7 +78,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=..\include\loki\Factory.h
+FileName=..\..\src\SmallObj.cpp
 CompileCpp=1
 Folder=Factory
 Compile=1
