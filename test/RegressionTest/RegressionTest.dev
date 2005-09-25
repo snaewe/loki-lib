@@ -1,11 +1,11 @@
 [Project]
 FileName=RegressionTest.dev
 Name=RegressionTest
-UnitCount=34
+UnitCount=35
 Type=1
 Ver=1
 ObjFiles=
-Includes=.;..\..\include;..\..\include\loki
+Includes=.;..\..\include
 Libs=
 PrivateResource=
 ResourceIncludes=
@@ -20,7 +20,7 @@ ObjectOutput=
 OverrideOutput=0
 OverrideOutputName=RegressionTest.exe
 HostApplication=
-Folders=loki,src
+Folders=headers,headers/loki,src
 CommandLine=
 UseCustomMakefile=0
 CustomMakefile=Makefile.loki
@@ -60,7 +60,7 @@ BuildCmd=
 [Unit2]
 FileName=AbstractFactoryTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -70,7 +70,7 @@ BuildCmd=
 [Unit3]
 FileName=AssocVectorTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -80,7 +80,7 @@ BuildCmd=
 [Unit5]
 FileName=FactoryParmTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -90,7 +90,7 @@ BuildCmd=
 [Unit6]
 FileName=FactoryTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -100,7 +100,7 @@ BuildCmd=
 [Unit7]
 FileName=FunctorTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -110,7 +110,7 @@ BuildCmd=
 [Unit8]
 FileName=SingletonTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -120,7 +120,7 @@ BuildCmd=
 [Unit9]
 FileName=SmallObjectTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -130,7 +130,7 @@ BuildCmd=
 [Unit10]
 FileName=SmartPtrTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -140,7 +140,7 @@ BuildCmd=
 [Unit11]
 FileName=TypelistTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -150,7 +150,7 @@ BuildCmd=
 [Unit12]
 FileName=TypeManipTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -160,7 +160,7 @@ BuildCmd=
 [Unit13]
 FileName=TypeTraitsTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -170,7 +170,7 @@ BuildCmd=
 [Unit14]
 FileName=UnitTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -180,7 +180,7 @@ BuildCmd=
 [Unit15]
 FileName=..\..\include\loki\Visitor.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -190,7 +190,7 @@ BuildCmd=
 [Unit16]
 FileName=..\..\include\loki\AssocVector.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -200,7 +200,7 @@ BuildCmd=
 [Unit17]
 FileName=..\..\include\loki\DataGenerators.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -210,7 +210,7 @@ BuildCmd=
 [Unit18]
 FileName=..\..\include\loki\EmptyType.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -220,7 +220,7 @@ BuildCmd=
 [Unit19]
 FileName=..\..\include\loki\Factory.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -230,7 +230,7 @@ BuildCmd=
 [Unit20]
 FileName=..\..\include\loki\Functor.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -240,7 +240,7 @@ BuildCmd=
 [Unit21]
 FileName=..\..\include\loki\HierarchyGenerators.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -250,7 +250,7 @@ BuildCmd=
 [Unit22]
 FileName=..\..\include\loki\LokiTypeInfo.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -260,7 +260,7 @@ BuildCmd=
 [Unit23]
 FileName=..\..\include\loki\MultiMethods.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -270,7 +270,7 @@ BuildCmd=
 [Unit24]
 FileName=..\..\include\loki\NullType.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -280,7 +280,7 @@ BuildCmd=
 [Unit25]
 FileName=..\..\include\loki\Singleton.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -290,7 +290,7 @@ BuildCmd=
 [Unit26]
 FileName=..\..\include\loki\SmallObj.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -300,7 +300,7 @@ BuildCmd=
 [Unit27]
 FileName=..\..\include\loki\SmartPtr.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -310,7 +310,7 @@ BuildCmd=
 [Unit28]
 FileName=..\..\include\loki\static_check.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -320,7 +320,7 @@ BuildCmd=
 [Unit29]
 FileName=..\..\include\loki\Threads.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -330,7 +330,7 @@ BuildCmd=
 [Unit30]
 FileName=..\..\include\loki\Tuple.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -340,7 +340,7 @@ BuildCmd=
 [Unit31]
 FileName=..\..\include\loki\Typelist.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -350,7 +350,7 @@ BuildCmd=
 [Unit32]
 FileName=..\..\include\loki\TypeManip.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -360,7 +360,7 @@ BuildCmd=
 [Unit33]
 FileName=..\..\include\loki\TypeTraits.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -370,7 +370,7 @@ BuildCmd=
 [Unit34]
 FileName=..\..\include\loki\AbstractFactory.h
 CompileCpp=1
-Folder=loki
+Folder=headers/loki
 Compile=1
 Link=1
 Priority=1000
@@ -378,9 +378,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit35]
-FileName=..\..\include\loki\AbstractFactory.h
+FileName=TypeTraitsTest2.h
 CompileCpp=1
-Folder=loki
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
@@ -390,7 +390,7 @@ BuildCmd=
 [Unit4]
 FileName=DataGeneratorsTest.h
 CompileCpp=1
-Folder=
+Folder=headers
 Compile=1
 Link=1
 Priority=1000
