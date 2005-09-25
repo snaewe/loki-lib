@@ -1,18 +1,30 @@
 
-MAKEFILE = Makefile.mingw
+MAKEFILE = Makefile
 
-SUBTARGETS	=  \
+SUBTARGETS	= \
+		sub-Factory \
 		sub-flex_string \
+		sub-RegressionTest \
 		sub-SafeFormat \
-		sub-SmallObj
+		sub-SmallObj 
 
 all: $(SUBTARGETS)
 
+sub-Factory: FORCE
+	cd Factory && \
+	$(MAKE) -f $(MAKEFILE)
+	@cd ..
+	
 sub-flex_string: FORCE
 	cd flex_string && \
 	$(MAKE) -f $(MAKEFILE)
 	@cd ..
 
+sub-RegressionTest: FORCE
+	cd RegressionTest && \
+	$(MAKE) -f $(MAKEFILE)
+	@cd ..	
+	
 sub-SafeFormat: FORCE
 	cd SafeFormat && \
 	$(MAKE) -f $(MAKEFILE)
@@ -23,17 +35,21 @@ sub-SmallObj: FORCE
 	$(MAKE) -f $(MAKEFILE)
 	@cd ..
 	
-	
-	
 clean: 
+	cd Factory && \
+	$(MAKE) -f $(MAKEFILE) clean
+	@cd ..
 	cd flex_string && \
-	$(MAKE)  -f $(MAKEFILE) clean
+	$(MAKE) -f $(MAKEFILE) clean
+	@cd ..
+	cd RegressionTest && \
+	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
 	cd SafeFormat && \
-	$(MAKE)  -f $(MAKEFILE) clean
+	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
 	cd SmallObj && \
-	$(MAKE)  -f $(MAKEFILE) clean
+	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
 
 
