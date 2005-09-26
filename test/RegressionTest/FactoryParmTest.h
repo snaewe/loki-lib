@@ -185,90 +185,90 @@ namespace FactoryTestParmPrivate
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_1( int ) >
+    Factory< AbstractProduct, int, LOKI_TYPELIST_1( int ) >
     >Factory1;
 
     typedef SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_2( int, int ) >
+    Factory< AbstractProduct, int, LOKI_TYPELIST_2( int, int ) >
     >Factory2;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_3( int, int, int ) >
+    Factory< AbstractProduct, int, LOKI_TYPELIST_3( int, int, int ) >
     >Factory3;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_4( int, int, int, int ) >
+    Factory< AbstractProduct, int, LOKI_TYPELIST_4( int, int, int, int ) >
     >Factory4;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_5( int, int, int, int, int ) >
+    Factory< AbstractProduct, int, LOKI_TYPELIST_5( int, int, int, int, int ) >
     >Factory5;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_6(  int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_6(  int, int, int, int, int,
                                                 int ) >
     >Factory6;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_7(  int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_7(  int, int, int, int, int,
                                                 int, int ) >
     >Factory7;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_8(  int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_8(  int, int, int, int, int,
                                                 int, int, int ) >
     >Factory8;
 
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_9(  int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_9(  int, int, int, int, int,
                                                 int, int, int, int ) >
     >Factory9;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_10( int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_10( int, int, int, int, int,
                                                 int, int, int, int, int ) >
     >Factory10;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_11( int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_11( int, int, int, int, int,
                                                 int, int, int, int, int,
                                                 int ) >
     >Factory11;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_12( int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_12( int, int, int, int, int,
                                                 int, int, int, int, int,
                                                 int, int ) >
     >Factory12;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_13( int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_13( int, int, int, int, int,
                                                 int, int, int, int, int,
                                                 int, int, int ) >
     >Factory13;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_14( int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_14( int, int, int, int, int,
                                                 int, int, int, int, int,
                                                 int, int, int, int ) >
     >Factory14;
 
     typedef 
     SingletonHolder<
-    Factory< AbstractProduct, int, TYPELIST_15( int, int, int, int, int,
+    Factory< AbstractProduct, int, LOKI_TYPELIST_15( int, int, int, int, int,
                                                 int, int, int, int, int,
                                                 int, int, int, int, int ) >
     >Factory15;
@@ -419,6 +419,9 @@ public:
 
 
 // $Log$
+// Revision 1.5  2005/09/26 07:33:05  syntheticpp
+// move macros into LOKI_ namespace
+//
 // Revision 1.4  2005/09/24 15:25:20  syntheticpp
 // ove RegressionTest
 //

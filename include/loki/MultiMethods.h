@@ -13,8 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef MULTIMETHODS_INC_
-#define MULTIMETHODS_INC_
+#ifndef LOKI_MULTIMETHODS_INC_
+#define LOKI_MULTIMETHODS_INC_
 
 #include "Typelist.h"
 #include "LokiTypeInfo.h"
@@ -355,8 +355,8 @@ namespace Loki
               class DispatcherBackend = BasicDispatcher>
     class FunctorDispatcher
     {
-        typedef TYPELIST_2(BaseLhs&, BaseRhs&) ArgsList;
-        typedef Functor<ResultType, ArgsList, DEFAULT_THREADING> FunctorType;
+        typedef LOKI_TYPELIST_2(BaseLhs&, BaseRhs&) ArgsList;
+        typedef Functor<ResultType, ArgsList, LOKI_DEFAULT_THREADING> FunctorType;
 
         DispatcherBackend<BaseLhs, BaseRhs, ResultType, FunctorType> backEnd_;
 

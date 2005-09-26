@@ -15,8 +15,8 @@
 
 // Last update: November 22, 2001
 
-#ifndef NULLTYPE_INC_
-#define NULLTYPE_INC_
+#ifndef LOKI_NULLTYPE_INC_
+#define LOKI_NULLTYPE_INC_
 
 namespace Loki
 {

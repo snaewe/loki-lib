@@ -187,7 +187,7 @@ public:
 private:
   typedef SmartPtr<TestClass, DeepCopy, DisallowConversion, AssertCheck, DefaultSPStorage> p0;
   typedef SmartPtr<TestClass, RefCounted, DisallowConversion, AssertCheck, DefaultSPStorage> p1;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       DisallowConversion, AssertCheck, DefaultSPStorage> p2;
   typedef SmartPtr<TestClass, COMRefCounted, DisallowConversion, AssertCheck, DefaultSPStorage> p3;
   typedef SmartPtr<TestClass, RefLinked, DisallowConversion, AssertCheck, DefaultSPStorage> p4;
@@ -197,7 +197,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, AllowConversion, AssertCheck, DefaultSPStorage> p8;
   typedef SmartPtr<TestClass, RefCounted, AllowConversion, AssertCheck, DefaultSPStorage> p9;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       AllowConversion, AssertCheck, DefaultSPStorage> p10;
   typedef SmartPtr<TestClass, COMRefCounted, AllowConversion, AssertCheck, DefaultSPStorage> p11;
   typedef SmartPtr<TestClass, RefLinked, AllowConversion, AssertCheck, DefaultSPStorage> p12;
@@ -207,7 +207,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, DisallowConversion, AssertCheckStrict, DefaultSPStorage> p16;
   typedef SmartPtr<TestClass, RefCounted, DisallowConversion, AssertCheckStrict, DefaultSPStorage> p17;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       DisallowConversion, AssertCheckStrict, DefaultSPStorage> p18;
   typedef SmartPtr<TestClass, COMRefCounted, DisallowConversion, AssertCheckStrict, DefaultSPStorage> p19;
   typedef SmartPtr<TestClass, RefLinked, DisallowConversion, AssertCheckStrict, DefaultSPStorage> p20;
@@ -217,7 +217,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, AllowConversion, AssertCheckStrict, DefaultSPStorage> p24;
   typedef SmartPtr<TestClass, RefCounted, AllowConversion, AssertCheckStrict, DefaultSPStorage> p25;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       AllowConversion, AssertCheckStrict, DefaultSPStorage> p26;
   typedef SmartPtr<TestClass, COMRefCounted, AllowConversion, AssertCheckStrict, DefaultSPStorage> p27;
   typedef SmartPtr<TestClass, RefLinked, AllowConversion, AssertCheckStrict, DefaultSPStorage> p28;
@@ -227,7 +227,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, AllowConversion, RejectNullStatic, DefaultSPStorage> p40;
   typedef SmartPtr<TestClass, RefCounted, AllowConversion, RejectNullStatic, DefaultSPStorage> p41;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       AllowConversion, RejectNullStatic, DefaultSPStorage> p42;
   typedef SmartPtr<TestClass, COMRefCounted, AllowConversion, RejectNullStatic, DefaultSPStorage> p43;
   typedef SmartPtr<TestClass, RefLinked, AllowConversion, RejectNullStatic, DefaultSPStorage> p44;
@@ -237,7 +237,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, DisallowConversion, RejectNullStatic, DefaultSPStorage> p48;
   typedef SmartPtr<TestClass, RefCounted, DisallowConversion, RejectNullStatic, DefaultSPStorage> p49;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       DisallowConversion, RejectNullStatic, DefaultSPStorage> p50;
   typedef SmartPtr<TestClass, COMRefCounted, DisallowConversion, RejectNullStatic, DefaultSPStorage> p51;
   typedef SmartPtr<TestClass, RefLinked, DisallowConversion, RejectNullStatic, DefaultSPStorage> p52;
@@ -247,7 +247,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, AllowConversion, RejectNull, DefaultSPStorage> p56;
   typedef SmartPtr<TestClass, RefCounted, AllowConversion, RejectNull, DefaultSPStorage> p57;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       AllowConversion, RejectNull, DefaultSPStorage> p58;
   typedef SmartPtr<TestClass, COMRefCounted, AllowConversion, RejectNull, DefaultSPStorage> p59;
   typedef SmartPtr<TestClass, RefLinked, AllowConversion, RejectNull, DefaultSPStorage> p60;
@@ -257,7 +257,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, DisallowConversion, RejectNull,  DefaultSPStorage> p64;
   typedef SmartPtr<TestClass, RefCounted, DisallowConversion, RejectNull,  DefaultSPStorage> p65;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       DisallowConversion, RejectNull,  DefaultSPStorage> p66;
   typedef SmartPtr<TestClass, COMRefCounted, DisallowConversion, RejectNull,  DefaultSPStorage> p67;
   typedef SmartPtr<TestClass, RefLinked, DisallowConversion, RejectNull,  DefaultSPStorage> p68;
@@ -267,7 +267,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, AllowConversion, RejectNullStrict, DefaultSPStorage> p72;
   typedef SmartPtr<TestClass, RefCounted, AllowConversion, RejectNullStrict, DefaultSPStorage> p73;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       AllowConversion, RejectNullStrict, DefaultSPStorage> p74;
   typedef SmartPtr<TestClass, COMRefCounted, AllowConversion, RejectNullStrict, DefaultSPStorage> p75;
   typedef SmartPtr<TestClass, RefLinked, AllowConversion, RejectNullStrict, DefaultSPStorage> p76;
@@ -277,7 +277,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, DisallowConversion, RejectNullStrict, DefaultSPStorage> p80;
   typedef SmartPtr<TestClass, RefCounted, DisallowConversion, RejectNullStrict, DefaultSPStorage> p81;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       DisallowConversion, RejectNullStrict, DefaultSPStorage> p82;
   typedef SmartPtr<TestClass, COMRefCounted, DisallowConversion, RejectNullStrict, DefaultSPStorage> p83;
   typedef SmartPtr<TestClass, RefLinked, DisallowConversion, RejectNullStrict, DefaultSPStorage> p84;
@@ -287,7 +287,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, AllowConversion, NoCheck, DefaultSPStorage> p88;
   typedef SmartPtr<TestClass, RefCounted, AllowConversion, NoCheck, DefaultSPStorage> p89;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       AllowConversion, NoCheck, DefaultSPStorage> p90;
   typedef SmartPtr<TestClass, COMRefCounted, AllowConversion, NoCheck, DefaultSPStorage> p91;
   typedef SmartPtr<TestClass, RefLinked, AllowConversion, NoCheck, DefaultSPStorage> p92;
@@ -297,7 +297,7 @@ private:
 
   typedef SmartPtr<TestClass, DeepCopy, DisallowConversion, NoCheck, DefaultSPStorage> p96;
   typedef SmartPtr<TestClass, RefCounted, DisallowConversion, NoCheck, DefaultSPStorage> p97;
-  typedef SmartPtr<TestClass, RefCountedMTAdj<DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
+  typedef SmartPtr<TestClass, RefCountedMTAdj<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::RefCountedMT, 
       DisallowConversion, NoCheck, DefaultSPStorage> p98;
   typedef SmartPtr<TestClass, COMRefCounted, DisallowConversion, NoCheck, DefaultSPStorage> p99;
   typedef SmartPtr<TestClass, RefLinked, DisallowConversion, NoCheck, DefaultSPStorage> p100;

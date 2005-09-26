@@ -13,8 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SINGLETON_INC_
-#define SINGLETON_INC_
+#ifndef LOKI_SINGLETON_INC_
+#define LOKI_SINGLETON_INC_
 
 #include "Threads.h"
 #include <algorithm>
@@ -24,15 +24,15 @@
 #include <new>
 
 #ifdef _MSC_VER
-#define C_CALLING_CONVENTION_QUALIFIER __cdecl 
+#define LOKI_C_CALLING_CONVENTION_QUALIFIER __cdecl 
 #else
-#define C_CALLING_CONVENTION_QUALIFIER 
+#define LOKI_C_CALLING_CONVENTION_QUALIFIER 
 #endif
 
 
 namespace Loki
 {
-    typedef void (C_CALLING_CONVENTION_QUALIFIER *atexit_pfn_t)();
+    typedef void (LOKI_C_CALLING_CONVENTION_QUALIFIER *atexit_pfn_t)();
 
     namespace Private
     {
@@ -94,7 +94,7 @@ namespace Loki
             Destroyer destroyer_;
         };
 
-        void C_CALLING_CONVENTION_QUALIFIER AtExitFn(); // declaration needed below    
+        void LOKI_C_CALLING_CONVENTION_QUALIFIER AtExitFn(); // declaration needed below    
     } // namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -338,7 +338,7 @@ namespace Loki
         typename T,
         template <class> class CreationPolicy = CreateUsingNew,
         template <class> class LifetimePolicy = DefaultLifetime,
-        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL
+        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL
     >
     class SingletonHolder
     {
@@ -348,7 +348,7 @@ namespace Loki
     private:
         // Helpers
         static void MakeInstance();
-        static void C_CALLING_CONVENTION_QUALIFIER DestroySingleton();
+        static void LOKI_C_CALLING_CONVENTION_QUALIFIER DestroySingleton();
         
         // Protection
         SingletonHolder();
@@ -440,7 +440,7 @@ namespace Loki
         template <class> class L,
         template <class> class M
     >
-    void C_CALLING_CONVENTION_QUALIFIER 
+    void LOKI_C_CALLING_CONVENTION_QUALIFIER 
     SingletonHolder<T, CreationPolicy, L, M>::DestroySingleton()
     {
         assert(!destroyed_);

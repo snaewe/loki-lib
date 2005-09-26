@@ -37,10 +37,10 @@ public:
     TestFunctor testFunctor;
     TestClass testClass;
 
-    Functor<void,TYPELIST_1(bool &)> function(testFunction);
-    Functor<void,TYPELIST_1(bool &)> functor(testFunctor);
-    Functor<void,TYPELIST_1(bool &)> classFunctor(&testClass,&TestClass::member);
-    Functor<void,TYPELIST_1(bool &)> functorCopy(function);
+    Functor<void,LOKI_TYPELIST_1(bool &)> function(testFunction);
+    Functor<void,LOKI_TYPELIST_1(bool &)> functor(testFunctor);
+    Functor<void,LOKI_TYPELIST_1(bool &)> classFunctor(&testClass,&TestClass::member);
+    Functor<void,LOKI_TYPELIST_1(bool &)> functorCopy(function);
     Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
     Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
 

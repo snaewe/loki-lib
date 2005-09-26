@@ -1,6 +1,6 @@
 
-//#define CLASS_LEVEL_THREADING
-//#define OBJECT_LEVEL_THREADING
+//#define LOKI_CLASS_LEVEL_THREADING
+//#define LOKI_OBJECT_LEVEL_THREADING
 
 #include "SmallObj.h"
 #include "timer.h"

@@ -13,8 +13,8 @@
 
 // $Header$
 
-#ifndef FACTORYPARM_INC_
-#define FACTORYPARM_INC_
+#ifndef LOKI_FACTORYPARM_INC_
+#define LOKI_FACTORYPARM_INC_
 
 #include "LokiTypeInfo.h"
 #include "Functor.h"
@@ -45,8 +45,8 @@ namespace Loki
     };
     
     
-#define ENABLE_NEW_FACTORY_CODE
-#ifdef ENABLE_NEW_FACTORY_CODE
+#define LOKI_ENABLE_NEW_FACTORY_CODE
+#ifdef LOKI_ENABLE_NEW_FACTORY_CODE
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -125,7 +125,7 @@ namespace Loki
     };
 
     template <typename AP, typename Id, typename P1 >
-    struct FactoryImpl<AP,Id, TYPELIST_1( P1 )>
+    struct FactoryImpl<AP,Id, LOKI_TYPELIST_1( P1 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -133,7 +133,7 @@ namespace Loki
     };
 
     template<typename AP, typename Id, typename P1,typename P2 >
-    struct FactoryImpl<AP, Id, TYPELIST_2( P1, P2 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_2( P1, P2 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -142,7 +142,7 @@ namespace Loki
     };
 
     template<typename AP, typename Id, typename P1,typename P2,typename P3 >
-    struct FactoryImpl<AP, Id, TYPELIST_3( P1, P2, P3 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_3( P1, P2, P3 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -152,7 +152,7 @@ namespace Loki
     };
 
     template<typename AP, typename Id, typename P1,typename P2,typename P3,typename P4 >
-    struct FactoryImpl<AP, Id, TYPELIST_4( P1, P2, P3, P4 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_4( P1, P2, P3, P4 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -164,7 +164,7 @@ namespace Loki
 
     template<typename AP, typename Id,
     typename P1,typename P2,typename P3,typename P4,typename P5 >
-    struct FactoryImpl<AP, Id, TYPELIST_5( P1, P2, P3, P4, P5 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_5( P1, P2, P3, P4, P5 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -178,7 +178,7 @@ namespace Loki
     template<typename AP, typename Id,
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6>
-    struct FactoryImpl<AP, Id, TYPELIST_6( P1, P2, P3, P4, P5, P6 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_6( P1, P2, P3, P4, P5, P6 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -195,7 +195,7 @@ namespace Loki
     template<typename AP, typename Id,
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7>
-    struct FactoryImpl<AP, Id, TYPELIST_7( P1, P2, P3, P4, P5, P6, P7 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_7( P1, P2, P3, P4, P5, P6, P7 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -213,7 +213,7 @@ namespace Loki
     template<typename AP, typename Id,
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8>
-    struct FactoryImpl<AP, Id, TYPELIST_8( P1, P2, P3, P4, P5, P6, P7, P8 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_8( P1, P2, P3, P4, P5, P6, P7, P8 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -232,7 +232,7 @@ namespace Loki
     template<typename AP, typename Id,
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8,typename P9>
-    struct FactoryImpl<AP, Id, TYPELIST_9( P1, P2, P3, P4, P5, P6, P7, P8, P9 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_9( P1, P2, P3, P4, P5, P6, P7, P8, P9 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -252,7 +252,7 @@ namespace Loki
     template<typename AP, typename Id,
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8,typename P9,typename P10>
-    struct FactoryImpl<AP, Id, TYPELIST_10( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_10( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -274,7 +274,7 @@ namespace Loki
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8,typename P9,typename P10,
     typename P11>
-    struct FactoryImpl<AP, Id, TYPELIST_11( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_11( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -298,7 +298,7 @@ namespace Loki
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8,typename P9,typename P10,
     typename P11,typename P12>
-    struct FactoryImpl<AP, Id, TYPELIST_12( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_12( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -323,7 +323,7 @@ namespace Loki
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8,typename P9,typename P10,
     typename P11,typename P12,typename P13>
-    struct FactoryImpl<AP, Id, TYPELIST_13( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_13( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -349,7 +349,7 @@ namespace Loki
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8,typename P9,typename P10,
     typename P11,typename P12,typename P13,typename P14>
-    struct FactoryImpl<AP, Id, TYPELIST_14( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_14( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -376,7 +376,7 @@ namespace Loki
     typename P1,typename P2,typename P3,typename P4,typename P5,
     typename P6,typename P7,typename P8,typename P9,typename P10,
     typename P11,typename P12,typename P13,typename P14,typename P15 >
-    struct FactoryImpl<AP, Id, TYPELIST_15( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15 )>
+    struct FactoryImpl<AP, Id, LOKI_TYPELIST_15( P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15 )>
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
@@ -747,6 +747,9 @@ namespace Loki
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.6  2005/09/26 07:33:04  syntheticpp
+// move macros into LOKI_ namespace
+//
 // Revision 1.5  2005/07/31 14:23:24  syntheticpp
 // invert new factory code macro logic to be ReferenceTest more compatible with noncc code
 //

@@ -15,8 +15,8 @@
 
 // Last update: June 20, 2001
 
-#ifndef ABSTRACTFACTORY_INC_
-#define ABSTRACTFACTORY_INC_
+#ifndef LOKI_ABSTRACTFACTORY_INC_
+#define LOKI_ABSTRACTFACTORY_INC_
 
 #include "Typelist.h"
 #include "TypeManip.h"

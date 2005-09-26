@@ -1,5 +1,5 @@
-#ifndef TYPETRAITS_INC_
-#define TYPETRAITS_INC_
+#ifndef LOKI_TYPETRAITS_INC_
+#define LOKI_TYPETRAITS_INC_
 
 #include "Typelist.h"
 
@@ -64,13 +64,13 @@ namespace Loki
 
     namespace Private
     {
-        typedef TYPELIST_4(unsigned char, unsigned short int,unsigned int, unsigned long int) 
+        typedef LOKI_TYPELIST_4(unsigned char, unsigned short int,unsigned int, unsigned long int) 
             StdUnsignedInts;
-        typedef TYPELIST_4(signed char, short int,int, long int) 
+        typedef LOKI_TYPELIST_4(signed char, short int,int, long int) 
             StdSignedInts;
-        typedef TYPELIST_3(bool, char, wchar_t) 
+        typedef LOKI_TYPELIST_3(bool, char, wchar_t) 
             StdOtherInts;
-        typedef TYPELIST_3(float, double, long double) 
+        typedef LOKI_TYPELIST_3(float, double, long double) 
             StdFloats;
             
         template <typename U> struct AddPointer

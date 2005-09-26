@@ -1,29 +1,29 @@
-#ifndef THREADS_H_
-#define THREADS_H_
+#ifndef LOKI_THREADS_H_
+#define LOKI_THREADS_H_
 
 ////////////////////////////////////////////////////////////////////////////////
-// macro DEFAULT_THREADING
+// macro LOKI_DEFAULT_THREADING
 // Selects the default threading model for certain components of Loki
 // If you don't define it, it defaults to single-threaded
-// All classes in Loki have configurable threading model; DEFAULT_THREADING
+// All classes in Loki have configurable threading model; LOKI_DEFAULT_THREADING
 // affects only default template arguments
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Header$
 
 
-#if defined(_WIN32) && (defined(CLASS_LEVEL_THREADING) || defined(OBJECT_LEVEL_THREADING))
+#if defined(_WIN32) && (defined(LOKI_CLASS_LEVEL_THREADING) || defined(LOKI_OBJECT_LEVEL_THREADING))
 	// threads only on windows 
 	#include <windows.h> 
-    #define DEFAULT_THREADING_NO_OBJ_LEVEL ::Loki::ClassLevelLockable
-    #if defined(CLASS_LEVEL_THREADING) 
-        #define DEFAULT_THREADING ::Loki::ClassLevelLockable
+    #define LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL ::Loki::ClassLevelLockable
+    #if defined(LOKI_CLASS_LEVEL_THREADING) 
+        #define LOKI_DEFAULT_THREADING ::Loki::ClassLevelLockable
     #else
-        #define DEFAULT_THREADING ::Loki::ObjectLevelLockable
+        #define LOKI_DEFAULT_THREADING ::Loki::ObjectLevelLockable
     #endif
 #else
-    #define DEFAULT_THREADING ::Loki::SingleThreaded
-	#define DEFAULT_THREADING_NO_OBJ_LEVEL ::Loki::SingleThreaded
+    #define LOKI_DEFAULT_THREADING ::Loki::SingleThreaded
+	#define LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL ::Loki::SingleThreaded
 #endif
 
 #include <cassert>
@@ -226,6 +226,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.13  2005/09/26 07:33:04  syntheticpp
+// move macros into LOKI_ namespace
+//
 // Revision 1.12  2005/07/31 14:00:48  syntheticpp
 // make object level threading possible
 //

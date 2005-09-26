@@ -15,8 +15,8 @@
 
 // Last update: June 20, 2001
 
-#ifndef LOKITYPEINFO_INC_
-#define LOKITYPEINFO_INC_
+#ifndef LOKI_LOKITYPEINFO_INC_
+#define LOKI_LOKITYPEINFO_INC_
 
 #include <typeinfo>
 #include <cassert>

@@ -15,8 +15,8 @@
 
 // $Header:
 
-#ifndef HIERARCHYGENERATORS_INC_
-#define HIERARCHYGENERATORS_INC_
+#ifndef LOKI_HIERARCHYGENERATORS_INC_
+#define LOKI_HIERARCHYGENERATORS_INC_
 
 #include "Typelist.h"
 #include "TypeTraits.h"
@@ -44,10 +44,10 @@ namespace Loki
         // The following type helps to overcome subtle flaw in the original 
         // implementation of GenScatterHierarchy. 
         // The flaw is revealed when the input type list of GenScatterHierarchy 
-        // contains more then one element of the same type (e.g. TYPELIST_2(int, int)). 
+        // contains more then one element of the same type (e.g. LOKI_TYPELIST_2(int, int)). 
         // In this case GenScatterHierarchy will contain multiple bases of the same 
         // type and some of them will not be reachable (per 10.3).
-        // For example before the fix the first element of Tuple<TYPELIST_2(int, int)>
+        // For example before the fix the first element of Tuple<LOKI_TYPELIST_2(int, int)>
         // is not reachable in any way!
         template<class, class> 
         struct ScatterHierarchyTag;

@@ -16,20 +16,20 @@
 // $Header$
 
 
-#ifndef SMALLOBJ_INC_
-#define SMALLOBJ_INC_
+#ifndef LOKI_SMALLOBJ_INC_
+#define LOKI_SMALLOBJ_INC_
 
 #include "Threads.h"
 #include "Singleton.h"
 #include <cstddef>
 #include <new> // needed for std::nothrow_t parameter.
 
-#ifndef DEFAULT_CHUNK_SIZE
-#define DEFAULT_CHUNK_SIZE 4096
+#ifndef LOKI_DEFAULT_CHUNK_SIZE
+#define LOKI_DEFAULT_CHUNK_SIZE 4096
 #endif
 
-#ifndef MAX_SMALL_OBJECT_SIZE
-#define MAX_SMALL_OBJECT_SIZE 256
+#ifndef LOKI_MAX_SMALL_OBJECT_SIZE
+#define LOKI_MAX_SMALL_OBJECT_SIZE 256
 #endif
 
 #ifndef LOKI_DEFAULT_OBJECT_ALIGNMENT
@@ -89,9 +89,9 @@ namespace Loki
 
     template
     <
-        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL,
-        std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
-        std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE,
+        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+        std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
+        std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = Loki::NoDestroy
     >
@@ -161,7 +161,7 @@ namespace Loki
 	class SmallObjectBase
     {
 
-#if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
+#if (LOKI_MAX_SMALL_OBJECT_SIZE != 0) && (LOKI_DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
 
         /// Defines type of allocator.
         typedef AllocatorSingleton< ThreadingModel, chunkSize,
@@ -243,9 +243,9 @@ namespace Loki
 
     template
     <
-        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL,
-        std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
-        std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE,
+        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+        std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
+        std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = Loki::NoDestroy
     >
@@ -274,9 +274,9 @@ namespace Loki
 
     template
     <
-        template <class> class ThreadingModel = DEFAULT_THREADING_NO_OBJ_LEVEL,
-        std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
-        std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE,
+        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+        std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
+        std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = Loki::NoDestroy
     >
@@ -298,6 +298,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.9  2005/09/26 07:33:04  syntheticpp
+// move macros into LOKI_ namespace
+//
 // Revision 1.8  2005/09/09 00:24:59  rich_sposato
 // Added functions to trim extra memory within allocator.  Made a new_handler
 // function for allocator.  Added deallocator function for nothrow delete

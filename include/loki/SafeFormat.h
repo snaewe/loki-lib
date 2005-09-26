@@ -15,8 +15,8 @@
 // See Alexandrescu, Andrei: Type-safe Formatting, C/C++ Users Journal, Jul 2005
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SAFEFORMAT_H_
-#define SAFEFORMAT_H_
+#ifndef LOKI_SAFEFORMAT_H_
+#define LOKI_SAFEFORMAT_H_
 
 #include <cstdio>
 #include <string>
@@ -68,20 +68,20 @@ struct PrintfState {
     ~PrintfState() {
     }
 
-    #define PRINTF_STATE_FORWARD(type) \
+    #define LOKI_PRINTF_STATE_FORWARD(type) \
         PrintfState& operator()(type par) {\
             return (*this)(static_cast< unsigned long >(par)); \
         }
 
-    PRINTF_STATE_FORWARD(bool)
-    PRINTF_STATE_FORWARD(char)
-    PRINTF_STATE_FORWARD(signed char)
-    PRINTF_STATE_FORWARD(unsigned char)
-    PRINTF_STATE_FORWARD(short)
-    PRINTF_STATE_FORWARD(unsigned short)
-    PRINTF_STATE_FORWARD(int)
-    PRINTF_STATE_FORWARD(unsigned)
-    PRINTF_STATE_FORWARD(long)
+    LOKI_PRINTF_STATE_FORWARD(bool)
+    LOKI_PRINTF_STATE_FORWARD(char)
+    LOKI_PRINTF_STATE_FORWARD(signed char)
+    LOKI_PRINTF_STATE_FORWARD(unsigned char)
+    LOKI_PRINTF_STATE_FORWARD(short)
+    LOKI_PRINTF_STATE_FORWARD(unsigned short)
+    LOKI_PRINTF_STATE_FORWARD(int)
+    LOKI_PRINTF_STATE_FORWARD(unsigned)
+    LOKI_PRINTF_STATE_FORWARD(long)
 
     // Print (or gobble in case of the "*" specifier) an int
     PrintfState& operator()(unsigned long i) {
