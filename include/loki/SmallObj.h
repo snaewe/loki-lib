@@ -41,52 +41,121 @@ namespace Loki
 {
     class FixedAllocator;
 
-////////////////////////////////////////////////////////////////////////////////
-// class SmallObjAllocator
-// Manages pool of fixed-size allocators.
-////////////////////////////////////////////////////////////////////////////////
-
+    /** @class SmallObjAllocator Manages pool of fixed-size allocators.
+     Designed to be a non-templated base class of AllocatorSingleton so that
+     implementation details can be safely hidden in the source code file.
+     */
     class SmallObjAllocator
     {
     protected:
+        /** The only available constructor needs certain parameters in order to
+         initialize all the FixedAllocator's.  This throws only if
+         @param pageSize # of bytes in a page of memory.
+         @param maxObjectSize Max # of bytes which this may allocate.
+         @param objectAlignSize # of bytes between alignment boundaries.
+         */
         SmallObjAllocator( std::size_t pageSize, std::size_t maxObjectSize,
             std::size_t objectAlignSize );
 
+        /** Destructor releases all blocks, all Chunks, and FixedAllocator's.
+         Any outstanding blocks are unavailable, and should not be used after
+         this destructor is called.
+         */
         ~SmallObjAllocator( void );
 
     public:
+        /** Allocates a block of memory of requested size.  Complexity is often
+         constant-time, but might be O(C) where C is the number of Chunks in a
+         FixedAllocator. 
+
+         @par Exception Safety Level
+         Provides either strong-exception safety, or no-throw exception-safety
+         level depending upon doThrow parameter.  The reason it provides two
+         levels of exception safety is because it is used by both the nothrow
+         and throwing new operators.  The underlying implementation will never
+         throw of its own accord, but this can decide to throw if it does not
+         allocate.  The only exception it should emit is std::bad_alloc.
+
+         @par Allocation Failure
+         If it does not allocate, it will call TrimExcessMemory and attempt to
+         allocate again, before it decides to throw or return NULL.  Many
+         allocators loop through several new_handler functions, and terminate
+         if they can not allocate, but not this one.  It only makes one attempt
+         using its own implementation of the new_handler, and then returns NULL
+         or throws so that the program can decide what to do at a higher level.
+         (Side note: Even though the C++ Standard allows allocators and
+         new_handlers to terminate if they fail, the Loki allocator does not do
+         that since that policy is not polite to a host program.)
+
+         @param size # of bytes needed for allocation.
+         @param doThrow True if this should throw if unable to allocate, false
+          if it should provide no-throw exception safety level.
+         @return NULL if nothing allocated and doThrow is false.  Else the
+          pointer to an available block of memory.
+         */
         void * Allocate( std::size_t size, bool doThrow );
 
+        /** Deallocates a block of memory at a given place and of a specific
+        size.  Complexity is almost always constant-time, and is O(C) only if
+        it has to search for which Chunk deallocates.  This never throws.
+         */
         void Deallocate( void * p, std::size_t size );
 
+        /** Deallocates a block of memory at a given place but of unknown size
+        size.  Complexity is O(F + C) where F is the count of FixedAllocator's
+        in the pool, and C is the number of Chunks in all FixedAllocator's.  This
+        does not throw exceptions.  This overloaded version of Deallocate is
+        called by the nothow delete operator - which is called when the nothrow
+        new operator is used, but a constructor throws an exception.
+         */
         void Deallocate( void * p );
 
+        /// Returns max # of bytes which this can allocate.
         inline std::size_t GetMaxObjectSize() const { return maxSmallObjectSize_; }
 
+        /// Returns # of bytes between allocation boundaries.
         inline std::size_t GetAlignment() const { return objectAlignSize_; }
 
+        /** Releases empty Chunks from memory.  Complexity is O(F + C) where F
+        is the count of FixedAllocator's in the pool, and C is the number of
+        Chunks in all FixedAllocator's.  This will never throw.  This is called
+        by AllocatorSingleto::ClearExtraMemory, the new_handler function for
+        Loki's allocator, and is called internally when an allocation fails.
+        @return True if any memory released, or false if none released.
+         */
         bool TrimExcessMemory( void );
 
     private:
+        /// Default-constructor is not implemented.
+        SmallObjAllocator( void );
         /// Copy-constructor is not implemented.
         SmallObjAllocator( const SmallObjAllocator & );
         /// Copy-assignment operator is not implemented.
         SmallObjAllocator & operator = ( const SmallObjAllocator & );
 
+        /// Pointer to array of fixed-size allocators.
         Loki::FixedAllocator * pool_;
 
+        /// Largest object size supported by allocators.
         std::size_t maxSmallObjectSize_;
 
+        /// Size of alignment boundaries.
         std::size_t objectAlignSize_;
     };
 
-////////////////////////////////////////////////////////////////////////////////
-// class AllocatorSingleton
-// This template class is derived from SmallObjAllocator in order to pass template
-// arguments into SmallObjAllocator, and still have a default constructor for the
-// singleton.
-////////////////////////////////////////////////////////////////////////////////
-
+    /** @class AllocatorSingleton This template class is derived from
+    SmallObjAllocator in order to pass template arguments into it, and still
+    have a default constructor for the singleton.  Each instance is a unique
+    combination of all the template parameters, and hence is singleton only 
+    with respect to those parameters.  The template parameters have default
+    values and the class has typedefs identical to both SmallObject and
+    SmallValueObject so that this class can be used directly instead of going
+    through SmallObject or SmallValueObject.  That design feature allows
+    clients to use the new_handler without having the name of the new_handler
+    function show up in classes derived from SmallObject or SmallValueObject.
+    Thus, the only functions in the allocator which show up in SmallObject or
+    SmallValueObject inheritance heierarchies are the new and delete operators.
+    */
     template
     <
         template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
@@ -110,16 +179,28 @@ namespace Loki
         typedef Loki::SingletonHolder< MyAllocator, Loki::CreateStatic,
             LifetimePolicy, ThreadingModel > MyAllocatorSingleton;
 
+        /// Returns reference to the singleton.
         inline static AllocatorSingleton & Instance( void )
         {
             return MyAllocatorSingleton::Instance();
         }
 
+        /// The default constructor is not meant to be called directly.
         inline AllocatorSingleton() :
             SmallObjAllocator( chunkSize, maxSmallObjectSize, objectAlignSize )
             {}
+
+        /// The destructor is not meant to be called directly.
         inline ~AllocatorSingleton( void ) {}
 
+        /** Clears any excess memory used by the allocator.  Complexity is
+         O(F + C) where F is the count of FixedAllocator's in the pool, and C
+         is the number of Chunks in all FixedAllocator's.  This never throws.
+         @note This function can be used as a new_handler when Loki and other
+         memory allocators can no longer allocate.  Although the C++ Standard
+         allows new_handler functions to terminate the program when they can
+         not release any memory, this will not do so.
+         */
         static void ClearExtraMemory( void );
 
     private:
@@ -145,11 +226,12 @@ namespace Loki
     }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// class SmallObjectBase
-// Base class for small object allocation classes.
-////////////////////////////////////////////////////////////////////////////////
-
+    /** @class SmallObjectBase Base class for small object allocation classes.
+     The shared implementation of the new and delete operators are here instead
+     of being duplicated in both SmallObject or SmallValueObject.  This class
+     is not meant to be used directly by clients, or derived from by clients.
+     Class has no data members so compilers can use Empty-Base-Optimization.
+     */
     template
     <
         template <class> class ThreadingModel,
@@ -176,7 +258,7 @@ namespace Loki
 		
     public:
 
-        /// Throwing single-object new.
+        /// Throwing single-object new throws bad_alloc when allocation fails.
 #ifdef _MSC_VER
         /// @note MSVC complains about non-empty exception specification lists.
         static void * operator new ( std::size_t size )
@@ -189,7 +271,7 @@ namespace Loki
             return MyAllocatorSingleton::Instance().Allocate( size, true );
         }
 
-        /// Non-throwing single-object new.
+        /// Non-throwing single-object new returns NULL if allocation fails.
         static void * operator new ( std::size_t size, const std::nothrow_t & ) throw ()
         {
             typename MyThreadingModel::Lock lock;
@@ -197,7 +279,7 @@ namespace Loki
             return MyAllocatorSingleton::Instance().Allocate( size, false );
         }
 
-        /// Placement single-object new.
+        /// Placement single-object new merely calls global placement new.
         inline static void * operator new ( std::size_t size, void * place )
         {
             return ::operator new( size, place );
@@ -211,7 +293,9 @@ namespace Loki
             MyAllocatorSingleton::Instance().Deallocate( p, size );
         }
 
-        /// Non-throwing single-object delete.
+        /** Non-throwing single-object delete is only called when nothrow
+         new operator is used, and the constructor throws an exception.
+         */
         static void operator delete ( void * p, const std::nothrow_t & ) throw()
         {
             typename MyThreadingModel::Lock lock;
@@ -219,7 +303,7 @@ namespace Loki
             MyAllocatorSingleton::Instance().Deallocate( p );
         }
 
-        /// Placement single-object delete.
+        /// Placement single-object delete merely calls global placement delete.
         inline static void operator delete ( void * p, void * place )
         {
             ::operator delete ( p, place );
@@ -235,12 +319,13 @@ namespace Loki
     }; // end class SmallObjectBase
 
 
-////////////////////////////////////////////////////////////////////////////////
-// class SmallObject
-// Base class for polymorphic small objects, offers fast allocations &
-//     deallocations.  Destructor is virtual and public.
-////////////////////////////////////////////////////////////////////////////////
-
+    /** @class SmallObject Base class for polymorphic small objects, offers fast
+     allocations & deallocations.  Destructor is virtual and public.  Default
+     constructor is trivial.   Copy-constructor and copy-assignment operator are
+     not implemented since polymorphic classes almost always disable those
+     operations.  Class has no data members so compilers can use
+     Empty-Base-Optimization.
+     */
     template
     <
         template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
@@ -266,12 +351,14 @@ namespace Loki
     }; // end class SmallObject
 
 
-////////////////////////////////////////////////////////////////////////////////
-// class SmallValueObject
-// Base class for small objects with value semantics - offers fast allocations &
-//     deallocations.  Destructor is non-virtual, inline, and protected.
-////////////////////////////////////////////////////////////////////////////////
-
+    /** @class SmallValueObject Base class for small objects with value-type
+     semantics - offers fast allocations & deallocations.  Destructor is
+     non-virtual, inline, and protected to prevent unintentional destruction
+     through base class.  Default constructor is trivial.   Copy-constructor
+     and copy-assignment operator are trivial since value-types almost always
+     need those operations.  Class has no data members so compilers can use
+     Empty-Base-Optimization.
+     */
     template
     <
         template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
@@ -298,6 +385,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.10  2005/09/26 21:38:54  rich_sposato
+// Changed include path to be direct instead of relying upon project settings.
+//
 // Revision 1.9  2005/09/26 07:33:04  syntheticpp
 // move macros into LOKI_ namespace
 //

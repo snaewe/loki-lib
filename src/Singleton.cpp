@@ -15,7 +15,7 @@
 
 // Last update: June 20, 2001
 
-#include "loki/Singleton.h"
+#include "../include/loki/Singleton.h"
 
 using namespace Loki::Private;
 
