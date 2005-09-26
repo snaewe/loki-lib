@@ -13,8 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef ASSOCVECTOR_INC_
-#define ASSOCVECTOR_INC_
+#ifndef LOKI_ASSOCVECTOR_INC_
+#define LOKI_ASSOCVECTOR_INC_
 
 #include <algorithm>
 #include <functional>

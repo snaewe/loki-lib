@@ -15,8 +15,8 @@
 
 // Last update, July 26, 2005
 
-#ifndef TYPEMANIP_INC_
-#define TYPEMANIP_INC_
+#ifndef LOKI_TYPEMANIP_INC_
+#define LOKI_TYPEMANIP_INC_
 
 namespace Loki
 {
@@ -264,7 +264,7 @@ struct SuperSubclassStrict<T, void>
 // Deprecated: Use SuperSubclass class template instead.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define SUPERSUBCLASS(T, U) \
+#define LOKI_SUPERSUBCLASS(T, U) \
     ::Loki::SuperSubclass<T,U>::value
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +276,7 @@ struct SuperSubclassStrict<T, void>
 // Deprecated: Use SuperSubclassStrict class template instead.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define SUPERSUBCLASS_STRICT(T, U) \
+#define LOKI_SUPERSUBCLASS_STRICT(T, U) \
     ::Loki::SuperSubclassStrict<T,U>::value
 
 ////////////////////////////////////////////////////////////////////////////////

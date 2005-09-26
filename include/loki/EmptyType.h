@@ -15,8 +15,8 @@
 
 // Last update: June 20, 2001
 
-#ifndef EMPTYTYPE_INC_
-#define EMPTYTYPE_INC_
+#ifndef LOKI_EMPTYTYPE_INC_
+#define LOKI_EMPTYTYPE_INC_
 
 namespace Loki
 {

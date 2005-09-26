@@ -13,8 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SMARTPTR_INC_
-#define SMARTPTR_INC_
+#ifndef LOKI_SMARTPTR_INC_
+#define LOKI_SMARTPTR_INC_
 
 ////////////////////////////////////////////////////////////////////////////////
 // IMPORTANT NOTE
@@ -421,7 +421,7 @@ namespace Loki
             // Make it depended on template parameter
             static const bool DependedFalse = sizeof(P*) == 0;
 
-            STATIC_CHECK(DependedFalse, This_Policy_Disallows_Value_Copying);
+            LOKI_STATIC_CHECK(DependedFalse, This_Policy_Disallows_Value_Copying);
         }
         
         static bool Release(const P&)
@@ -615,7 +615,7 @@ namespace Loki
             // Make it depended on template parameter
             static const bool DependedFalse = sizeof(P*) == 0;
 
-            STATIC_CHECK(DependedFalse, ERROR_This_Policy_Does_Not_Allow_Default_Initialization);
+            LOKI_STATIC_CHECK(DependedFalse, ERROR_This_Policy_Does_Not_Allow_Default_Initialization);
         }
         
         static void OnInit(const P& val)

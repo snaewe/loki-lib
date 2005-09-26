@@ -35,13 +35,13 @@ class BadSoldier : public Soldier {};
 class BadMonster : public Monster {};
 class BadSuperMonster : public SuperMonster {};
 
-typedef Loki::AbstractFactory<TYPELIST_3(Soldier, Monster, SuperMonster)> AbstractEnemyFactory; 
+typedef Loki::AbstractFactory<LOKI_TYPELIST_3(Soldier, Monster, SuperMonster)> AbstractEnemyFactory; 
 
 typedef Loki::ConcreteFactory<AbstractEnemyFactory, Loki::OpNewFactoryUnit,
-  TYPELIST_3(SillySoldier, SillyMonster, SillySuperMonster)> EasyLevelEnemyFactory;
+  LOKI_TYPELIST_3(SillySoldier, SillyMonster, SillySuperMonster)> EasyLevelEnemyFactory;
 
 typedef Loki::ConcreteFactory<AbstractEnemyFactory, Loki::OpNewFactoryUnit,
-  TYPELIST_3(BadSoldier, BadMonster, BadSuperMonster)> HardLevelEnemyFactory;
+  LOKI_TYPELIST_3(BadSoldier, BadMonster, BadSuperMonster)> HardLevelEnemyFactory;
 
 class AbstractFactoryTest : public Test
 {

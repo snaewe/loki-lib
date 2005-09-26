@@ -16,333 +16,333 @@
 // Last update: October 10, 2002
 //Reference
 
-#ifndef TYPELIST_INC_
-#define TYPELIST_INC_
+#ifndef LOKI_TYPELIST_INC_
+#define LOKI_TYPELIST_INC_
 
 #include "NullType.h"
 #include "TypeManip.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// macros TYPELIST_1, TYPELIST_2, ... TYPELIST_50
+// macros LOKI_TYPELIST_1, LOKI_TYPELIST_2, ... LOKI_TYPELIST_50
 // Each takes a number of arguments equal to its numeric suffix
-// The arguments are type names. TYPELIST_NN generates a typelist containing 
+// The arguments are type names. LOKI_TYPELIST_NN generates a typelist containing 
 //     all types passed as arguments, in that order.
-// Example: TYPELIST_2(char, int) generates a type containing char and int.
+// Example: LOKI_TYPELIST_2(char, int) generates a type containing char and int.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TYPELIST_1(T1) ::Loki::Typelist<T1, ::Loki::NullType>
+#define LOKI_TYPELIST_1(T1) ::Loki::Typelist<T1, ::Loki::NullType>
 
-#define TYPELIST_2(T1, T2) ::Loki::Typelist<T1, TYPELIST_1(T2) >
+#define LOKI_TYPELIST_2(T1, T2) ::Loki::Typelist<T1, LOKI_TYPELIST_1(T2) >
 
-#define TYPELIST_3(T1, T2, T3) ::Loki::Typelist<T1, TYPELIST_2(T2, T3) >
+#define LOKI_TYPELIST_3(T1, T2, T3) ::Loki::Typelist<T1, LOKI_TYPELIST_2(T2, T3) >
 
-#define TYPELIST_4(T1, T2, T3, T4) \
-    ::Loki::Typelist<T1, TYPELIST_3(T2, T3, T4) >
+#define LOKI_TYPELIST_4(T1, T2, T3, T4) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_3(T2, T3, T4) >
 
-#define TYPELIST_5(T1, T2, T3, T4, T5) \
-    ::Loki::Typelist<T1, TYPELIST_4(T2, T3, T4, T5) >
+#define LOKI_TYPELIST_5(T1, T2, T3, T4, T5) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_4(T2, T3, T4, T5) >
 
-#define TYPELIST_6(T1, T2, T3, T4, T5, T6) \
-    ::Loki::Typelist<T1, TYPELIST_5(T2, T3, T4, T5, T6) >
+#define LOKI_TYPELIST_6(T1, T2, T3, T4, T5, T6) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_5(T2, T3, T4, T5, T6) >
 
-#define TYPELIST_7(T1, T2, T3, T4, T5, T6, T7) \
-    ::Loki::Typelist<T1, TYPELIST_6(T2, T3, T4, T5, T6, T7) >
+#define LOKI_TYPELIST_7(T1, T2, T3, T4, T5, T6, T7) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_6(T2, T3, T4, T5, T6, T7) >
 
-#define TYPELIST_8(T1, T2, T3, T4, T5, T6, T7, T8) \
-    ::Loki::Typelist<T1, TYPELIST_7(T2, T3, T4, T5, T6, T7, T8) >
+#define LOKI_TYPELIST_8(T1, T2, T3, T4, T5, T6, T7, T8) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_7(T2, T3, T4, T5, T6, T7, T8) >
 
-#define TYPELIST_9(T1, T2, T3, T4, T5, T6, T7, T8, T9) \
-    ::Loki::Typelist<T1, TYPELIST_8(T2, T3, T4, T5, T6, T7, T8, T9) >
+#define LOKI_TYPELIST_9(T1, T2, T3, T4, T5, T6, T7, T8, T9) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_8(T2, T3, T4, T5, T6, T7, T8, T9) >
 
-#define TYPELIST_10(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) \
-    ::Loki::Typelist<T1, TYPELIST_9(T2, T3, T4, T5, T6, T7, T8, T9, T10) >
+#define LOKI_TYPELIST_10(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_9(T2, T3, T4, T5, T6, T7, T8, T9, T10) >
 
-#define TYPELIST_11(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11) \
-    ::Loki::Typelist<T1, TYPELIST_10(T2, T3, T4, T5, T6, T7, T8, T9, T10, T11) >
+#define LOKI_TYPELIST_11(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_10(T2, T3, T4, T5, T6, T7, T8, T9, T10, T11) >
 
-#define TYPELIST_12(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12) \
-    ::Loki::Typelist<T1, TYPELIST_11(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_12(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_11(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12) >
 
-#define TYPELIST_13(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13) \
-    ::Loki::Typelist<T1, TYPELIST_12(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_13(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13) \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_12(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13) >
 
-#define TYPELIST_14(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_14(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14) \
-    ::Loki::Typelist<T1, TYPELIST_13(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_13(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14) >
 
-#define TYPELIST_15(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_15(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15) \
-    ::Loki::Typelist<T1, TYPELIST_14(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_14(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15) >
 
-#define TYPELIST_16(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_16(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16) \
-    ::Loki::Typelist<T1, TYPELIST_15(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_15(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16) >
 
-#define TYPELIST_17(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_17(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17) \
-    ::Loki::Typelist<T1, TYPELIST_16(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_16(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17) >
 
-#define TYPELIST_18(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_18(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18) \
-    ::Loki::Typelist<T1, TYPELIST_17(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_17(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18) >
 
-#define TYPELIST_19(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_19(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19) \
-    ::Loki::Typelist<T1, TYPELIST_18(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_18(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19) >
 
-#define TYPELIST_20(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_20(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20) \
-    ::Loki::Typelist<T1, TYPELIST_19(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_19(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20) >
 
-#define TYPELIST_21(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_21(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21) \
-    ::Loki::Typelist<T1, TYPELIST_20(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_20(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21) >
 
-#define TYPELIST_22(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_22(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22) \
-    ::Loki::Typelist<T1, TYPELIST_21(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_21(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22) >
 
-#define TYPELIST_23(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_23(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23) \
-    ::Loki::Typelist<T1, TYPELIST_22(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_22(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23) >
 
-#define TYPELIST_24(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_24(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24) \
-    ::Loki::Typelist<T1, TYPELIST_23(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_23(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24) >
 
-#define TYPELIST_25(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_25(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25) \
-    ::Loki::Typelist<T1, TYPELIST_24(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_24(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25) >
 
-#define TYPELIST_26(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_26(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26) \
-    ::Loki::Typelist<T1, TYPELIST_25(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_25(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26) >
 
-#define TYPELIST_27(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_27(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27) \
-    ::Loki::Typelist<T1, TYPELIST_26(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_26(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27) >
 
-#define TYPELIST_28(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_28(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28) \
-    ::Loki::Typelist<T1, TYPELIST_27(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_27(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28) >
 
-#define TYPELIST_29(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_29(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29) \
-    ::Loki::Typelist<T1, TYPELIST_28(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_28(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29) >
 
-#define TYPELIST_30(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_30(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30) \
-    ::Loki::Typelist<T1, TYPELIST_29(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_29(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30) >
 
-#define TYPELIST_31(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_31(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31) \
-    ::Loki::Typelist<T1, TYPELIST_30(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_30(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31) >
 
-#define TYPELIST_32(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_32(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32) \
-    ::Loki::Typelist<T1, TYPELIST_31(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_31(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32) >
 
-#define TYPELIST_33(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_33(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33) \
-    ::Loki::Typelist<T1, TYPELIST_32(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_32(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33) >
 
-#define TYPELIST_34(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_34(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34) \
-    ::Loki::Typelist<T1, TYPELIST_33(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_33(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34) >
 
-#define TYPELIST_35(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_35(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35) \
-    ::Loki::Typelist<T1, TYPELIST_34(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_34(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35) >
 
-#define TYPELIST_36(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_36(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36) \
-    ::Loki::Typelist<T1, TYPELIST_35(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_35(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36) >
 
-#define TYPELIST_37(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_37(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37) \
-    ::Loki::Typelist<T1, TYPELIST_36(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_36(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37) >
 
-#define TYPELIST_38(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_38(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38) \
-    ::Loki::Typelist<T1, TYPELIST_37(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_37(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38) >
 
-#define TYPELIST_39(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_39(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39) \
-    ::Loki::Typelist<T1, TYPELIST_38(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_38(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39) >
 
-#define TYPELIST_40(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_40(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40) \
-    ::Loki::Typelist<T1, TYPELIST_39(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_39(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40) >
 
-#define TYPELIST_41(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_41(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41) \
-    ::Loki::Typelist<T1, TYPELIST_40(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_40(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41) >
 
-#define TYPELIST_42(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_42(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42) \
-    ::Loki::Typelist<T1, TYPELIST_41(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_41(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42) >
 
-#define TYPELIST_43(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_43(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43) \
-    ::Loki::Typelist<T1, TYPELIST_42(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_42(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43) >
 
-#define TYPELIST_44(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_44(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44) \
-    ::Loki::Typelist<T1, TYPELIST_43(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_43(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44) >
 
-#define TYPELIST_45(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_45(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45) \
-    ::Loki::Typelist<T1, TYPELIST_44(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_44(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45) >
 
-#define TYPELIST_46(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_46(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46) \
-    ::Loki::Typelist<T1, TYPELIST_45(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_45(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46) >
 
-#define TYPELIST_47(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_47(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47) \
-    ::Loki::Typelist<T1, TYPELIST_46(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_46(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47) >
 
-#define TYPELIST_48(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_48(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47, T48) \
-    ::Loki::Typelist<T1, TYPELIST_47(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_47(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47, T48) >
 
-#define TYPELIST_49(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_49(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47, T48, T49) \
-    ::Loki::Typelist<T1, TYPELIST_48(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_48(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47, T48, T49) >
 
-#define TYPELIST_50(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+#define LOKI_TYPELIST_50(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
         T41, T42, T43, T44, T45, T46, T47, T48, T49, T50) \
-    ::Loki::Typelist<T1, TYPELIST_49(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
+    ::Loki::Typelist<T1, LOKI_TYPELIST_49(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, \
         T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, \
         T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, \
@@ -353,7 +353,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // class template Typelist
 // The building block of typelists of any length
-// Use it through the TYPELIST_NN macros
+// Use it through the LOKI_TYPELIST_NN macros
 // Defines nested types:
 //     Head (first element, a non-typelist type by convention)
 //     Tail (second element, can be another typelist)
@@ -537,7 +537,7 @@ namespace Loki
         
         template <class T> struct Append<NullType, T>
         {
-            typedef TYPELIST_1(T) Result;
+            typedef LOKI_TYPELIST_1(T) Result;
         };
         
         template <class Head, class Tail>
@@ -781,7 +781,7 @@ namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// June 09, 2001: Fix bug in parameter list of macros TYPELIST_23 to TYPELIST_27
+// June 09, 2001: Fix bug in parameter list of macros LOKI_TYPELIST_23 to LOKI_TYPELIST_27
 //      (credit due to Dave Taylor)
 // June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // November 22, 2001: fixed bug in DerivedToFront
@@ -789,7 +789,7 @@ namespace Loki
 //          Adam Wilkshire;
 //          Friedrik Hedman who fixed the bug but didn't send the fix;
 //          Kevin Cline who sent the first actual fix)
-// May 13, 2002: TYPELIST_46 called TYPELIST_45 with only 44 parameters.
+// May 13, 2002: LOKI_TYPELIST_46 called LOKI_TYPELIST_45 with only 44 parameters.
 //      Credit due to Robert Minsk     
 // September 16, 2002: Changed MostDerived to use the new SuperSubclass template
 //     (rather than the SUPERSUBCLASS macro).
@@ -799,4 +799,4 @@ namespace Loki
 // Oct  10, 2002: added MakeTypelist (SGB/MKH)
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // TYPELIST_INC_
+#endif // LOKI_TYPELIST_INC_

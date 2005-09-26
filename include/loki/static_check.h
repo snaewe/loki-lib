@@ -15,8 +15,8 @@
 
 // Last update: June 20, 2001
 
-#ifndef STATIC_CHECK_INC_
-#define STATIC_CHECK_INC_
+#ifndef LOKI_STATIC_CHECK_INC_
+#define LOKI_STATIC_CHECK_INC_
 
 namespace Loki
 {
@@ -37,7 +37,7 @@ namespace Loki
 // If expr is zero, id will appear in a compile-time error message.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define STATIC_CHECK(expr, msg) \
+#define LOKI_STATIC_CHECK(expr, msg) \
     { Loki::CompileTimeError<((expr) != 0)> ERROR_##msg; (void)ERROR_##msg; } 
 
 

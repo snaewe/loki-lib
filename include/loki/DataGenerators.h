@@ -12,8 +12,8 @@
 
 // Last update: Oct 10, 2002
 
-#ifndef DATAGENERATORS_H
-#define DATAGENERATORS_H
+#ifndef LOKI_DATAGENERATORS_H
+#define LOKI_DATAGENERATORS_H
 #include "Typelist.h"
 
 //Reference version

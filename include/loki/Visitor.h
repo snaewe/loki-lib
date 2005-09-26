@@ -15,8 +15,8 @@
 
 // Last update: June 20, 2001
 
-#ifndef VISITOR_INC_
-#define VISITOR_INC_
+#ifndef LOKI_VISITOR_INC_
+#define LOKI_VISITOR_INC_
 
 #include "Typelist.h"
 #include "HierarchyGenerators.h"
@@ -55,7 +55,7 @@ namespace Loki
 //
 // class SomeVisitor : 
 //     public BaseVisitor // required
-//     public Visitor<TYPELIST_2(RasterBitmap, Paragraph)>, 
+//     public Visitor<LOKI_TYPELIST_2(RasterBitmap, Paragraph)>, 
 //     public Visitor<Paragraph>
 // {
 // public:
@@ -157,7 +157,7 @@ struct DefaultCatchAll
 //     deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
 
-#define DEFINE_VISITABLE() \
+#define LOKI_DEFINE_VISITABLE() \
 	virtual ReturnType Accept(::Loki::BaseVisitor& guest) \
     { return AcceptImpl(*this, guest); }
 
@@ -183,11 +183,11 @@ struct DefaultCatchAll
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// macro DEFINE_CYCLIC_VISITABLE
+// macro LOKI_DEFINE_CYCLIC_VISITABLE
 // Put it in every class that you want to make visitable by a cyclic visitor
 ////////////////////////////////////////////////////////////////////////////////
 
-#define DEFINE_CYCLIC_VISITABLE(SomeVisitor) \
+#define LOKI_DEFINE_CYCLIC_VISITABLE(SomeVisitor) \
     virtual SomeVisitor::ReturnType Accept(SomeVisitor& guest) \
     { return guest.GenericVisit(*this); }
 

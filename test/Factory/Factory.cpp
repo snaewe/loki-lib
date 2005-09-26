@@ -52,7 +52,7 @@ PFactoryNull;
  
 typedef SingletonHolder
 <
-    Factory< AbstractProduct, int, TYPELIST_2( int, int ) >
+    Factory< AbstractProduct, int, LOKI_TYPELIST_2( int, int ) >
 >
 PFactory;
  
@@ -136,12 +136,12 @@ public:
 // get creator functions on runntime
 ///////////////////////////////////////////////////////////////
 
-typedef Functor<Product*,TYPELIST_2(int,int)> CreateFunctor;
+typedef Functor<Product*,LOKI_TYPELIST_2(int,int)> CreateFunctor;
 
 typedef 
 SingletonHolder
 <
-    Factory< AbstractProduct, int,TYPELIST_3(CreateFunctor,int,int) >
+    Factory< AbstractProduct, int,LOKI_TYPELIST_3(CreateFunctor,int,int) >
 >
 PFactoryFunctorParm;
 
@@ -226,6 +226,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.2  2005/09/26 07:33:05  syntheticpp
+// move macros into LOKI_ namespace
+//
 // Revision 1.1  2005/09/24 16:10:14  syntheticpp
 // move Factory example
 //

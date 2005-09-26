@@ -19,8 +19,8 @@
 # pragma warning(disable: 4018 4097 4100 4213 4290 4512 4514 4700 4702 4710 4786 4800)
 #endif
 
-//#define CLASS_LEVEL_THREADING
-//#define OBJECT_LEVEL_THREADING
+//#define LOKI_CLASS_LEVEL_THREADING
+#define LOKI_OBJECT_LEVEL_THREADING
 
 // Some platforms might have difficulty with this
 // Need to ifdef around those cases.
@@ -111,6 +111,9 @@ return result;
 
 
 // $Log$
+// Revision 1.6  2005/09/26 07:33:05  syntheticpp
+// move macros into LOKI_ namespace
+//
 // Revision 1.5  2005/09/24 15:49:40  syntheticpp
 // is it really binary?
 //

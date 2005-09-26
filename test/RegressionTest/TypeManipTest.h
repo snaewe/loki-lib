@@ -89,23 +89,23 @@ public:
 
     testAssert("SuperSubclassStrict",r,result);
 
-    r=SUPERSUBCLASS(Base,Derived1) &&
-      SUPERSUBCLASS(Base,Derived2) &&
-      SUPERSUBCLASS(Base,Base) &&
-      !SUPERSUBCLASS(Derived1,Base) &&
-      !SUPERSUBCLASS(Derived2,Base) &&
-      !SUPERSUBCLASS(void,Base);
+    r=LOKI_SUPERSUBCLASS(Base,Derived1) &&
+      LOKI_SUPERSUBCLASS(Base,Derived2) &&
+      LOKI_SUPERSUBCLASS(Base,Base) &&
+      !LOKI_SUPERSUBCLASS(Derived1,Base) &&
+      !LOKI_SUPERSUBCLASS(Derived2,Base) &&
+      !LOKI_SUPERSUBCLASS(void,Base);
 
-    testAssert("SUPERSUBCLASS",r,result);
+    testAssert("LOKI_SUPERSUBCLASS",r,result);
 
-    r=SUPERSUBCLASS_STRICT(Base,Derived1) &&
-      SUPERSUBCLASS_STRICT(Base,Derived2) &&
-      !SUPERSUBCLASS_STRICT(Base,Base) &&
-      !SUPERSUBCLASS_STRICT(Derived1,Base) &&
-      !SUPERSUBCLASS_STRICT(Derived2,Base) &&
-      !SUPERSUBCLASS_STRICT(void,Base);
+    r=LOKI_SUPERSUBCLASS_STRICT(Base,Derived1) &&
+      LOKI_SUPERSUBCLASS_STRICT(Base,Derived2) &&
+      !LOKI_SUPERSUBCLASS_STRICT(Base,Base) &&
+      !LOKI_SUPERSUBCLASS_STRICT(Derived1,Base) &&
+      !LOKI_SUPERSUBCLASS_STRICT(Derived2,Base) &&
+      !LOKI_SUPERSUBCLASS_STRICT(void,Base);
 
-    testAssert("SUPERSUBCLASS_STRICT",r,result);
+    testAssert("LOKI_SUPERSUBCLASS_STRICT",r,result);
 
     std::cout << '\n';
     }
