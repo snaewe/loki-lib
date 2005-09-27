@@ -30,6 +30,88 @@ using namespace Loki;
 namespace Loki
 {
 
+    /** @struct Chunk Contains info about each allocated Chunk.
+     This is a POD-style struct with value-semantics.
+
+     @par Minimal Interface
+     For the sake of runtime efficiency, no constructor, destructor, or
+     copy-assignment operator is defined. The inline functions made by the
+     compiler should be sufficient, and perhaps faster than hand-crafted
+     functions.  The lack of these functions allows vector to create and copy
+     Chunks as needed without overhead.  The Init and Release functions do
+     what the default constructor and destructor would do.  A Chunk is not in
+     a usable state after it is constructed and before calling Init.  Nor is
+     a Chunk usable after Release is called, but before the destructor.
+
+     @par Efficiency
+     Down near the lowest level of the allocator, runtime efficiencies trump
+     almost all other considerations.  Each function does the minimum required
+     of it.  All functions should execute in constant time to prevent higher-
+     level code from unwittingly using a version of Shlemiel the Painter's
+     Algorithm.
+
+     @par Stealth Indexes
+     The first char of each empty block contains the index of the next empty
+     block.  These stealth indexes form a singly-linked list within the blocks.
+     A Chunk is corrupt if this singly-linked list has a loop or is shorter
+     than blocksAvailable_.  Much of the allocator's time and space efficiency
+     comes from how these stealth indexes are implemented.
+     */
+    struct Chunk
+    {
+        /** Initializes a just-constructed Chunk.
+         @param blockSize Number of bytes per block.
+         @param blocks Number of blocks per Chunk.
+         @return True for success, false for failure.
+         */
+        bool Init( std::size_t blockSize, unsigned char blocks );
+
+        /** Allocate a block within the Chunk.  Complexity is always O(1), and
+         this will never throw.  Does not actually "allocate" by calling
+         malloc, new, or any other function, but merely adjusts some internal
+         indexes to indicate an already allocated block is no longer available.
+         @return Pointer to block within Chunk.
+         */
+        void * Allocate( std::size_t blockSize );
+
+        /** Deallocate a block within the Chunk. Complexity is always O(1), and
+         this will never throw.  For efficiency, this assumes the address is
+         within the block and aligned along the correct byte boundary.  An
+         assertion checks the alignment, and a call to HasBlock is done from
+         within VicinityFind.  Does not actually "deallocate" by calling free,
+         delete, or other function, but merely adjusts some internal indexes to
+         indicate a block is now available.
+         */
+        void Deallocate( void * p, std::size_t blockSize );
+
+        /** Resets the Chunk back to pristine values. The available count is
+         set back to zero, and the first available index is set to the zeroth
+         block.  The stealth indexes inside each block are set to point to the
+         next block. This assumes the Chunk's data was already using Init.
+         */
+        void Reset( std::size_t blockSize, unsigned char blocks );
+
+        /// Releases the allocated block of memory.
+        void Release();
+
+        /// Returns true if block at address P is inside this Chunk.
+        inline bool HasBlock( unsigned char * p, std::size_t chunkLength ) const
+        { return ( pData_ <= p ) && ( p < pData_ + chunkLength ); }
+
+        inline bool HasAvailable( unsigned char numBlocks ) const
+        { return ( blocksAvailable_ == numBlocks ); }
+
+        inline bool IsFilled( void ) const
+        { return ( 0 == blocksAvailable_ ); }
+
+        /// Pointer to array of allocated blocks.
+        unsigned char * pData_;
+        /// Index of first empty block.
+        unsigned char firstAvailableBlock_;
+        /// Count of empty blocks.
+        unsigned char blocksAvailable_;
+    };
+
     /** @class FixedAllocator
      Offers services for allocating fixed-sized objects.  It has a container
      of "containers" of fixed-size blocks.  The outer container has all the
@@ -50,91 +132,6 @@ namespace Loki
     class FixedAllocator
     {
     private:
-        /** @struct Chunk Contains info about each allocated Chunk.
-         This is a POD-style struct with value-semantics.
-
-         @par Minimal Interface
-         For the sake of runtime efficiency, no constructor, destructor, or
-         copy-assignment operator is defined. The inline functions made by the
-         compiler should be sufficient, and perhaps faster than hand-crafted
-         functions.  The lack of these functions allows vector to create and
-         copy Chunks as needed without overhead.  The Init and Release
-         functions do what the default constructor and destructor would do.  A
-         Chunk is not in a usable state after it is constructed and before
-         calling Init.  Nor is a Chunk usable after Release is called, but
-         before the destructor.
-
-         @par Efficiency
-         Down near the lowest level of the allocator, runtime efficiencies
-         trump almost all other considerations.  Each function does the minimum
-         required of it.  All functions should execute in constant time to
-         prevent higher-level code from unwittingly using a version of
-         Shlemiel the Painter's Algorithm.
-
-         @par Stealth Indexes
-         The first char of each empty block contains the index of the next
-         empty block.  These stealth indexes form a singly-linked list within
-         the blocks.  A Chunk is corrupt if this singly-linked list has a loop
-         or is shorter than blocksAvailable_.  Much of the allocator's time and
-         space efficiency comes from how these stealth indexes are implemented.
-         */
-        struct Chunk
-        {
-            /** Initializes a just-constructed Chunk.
-             @param blockSize Number of bytes per block.
-             @param blocks Number of blocks per Chunk.
-             @return True for success, false for failure.
-             */
-            bool Init( std::size_t blockSize, unsigned char blocks );
-
-            /** Allocate a block within the Chunk.  Complexity is always O(1),
-             and this will never throw.  Does not actually "allocate" by
-             calling malloc, new, or any other function, but merely adjusts
-             some internal indexes to indicate an already allocated block is
-             no longer available.
-             @return Pointer to block within Chunk.
-             */
-            void * Allocate( std::size_t blockSize );
-
-            /** Deallocate a block within the Chunk.  Complexity is always
-             O(1), and this will never throw.  For efficiency, this assumes
-             the address is within the block and aligned along the correct
-             byte boundary.  An assertion checks the alignment, and a call to
-             HasBlock is done from within VicinityFind.  Does not actually
-             "deallocate" by calling free, delete, or any other function, but
-             merely adjusts some internal indexes to indicate a block is no
-             longer available.
-             */
-            void Deallocate( void * p, std::size_t blockSize );
-
-            /** Resets the Chunk back to pristine values. The available count
-             is set back to zero, and the first available index is set to the
-             zeroth block.  The stealth indexes inside each block are set to
-             point to the next block. This assumes the Chunk's data was already
-             using Init.
-             */
-            void Reset( std::size_t blockSize, unsigned char blocks );
-
-            /// Releases the allocated block of memory.
-            void Release();
-
-            /// Returns true if block at address P is inside this Chunk.
-            inline bool HasBlock( unsigned char * p, std::size_t chunkLength ) const
-            { return ( pData_ <= p ) && ( p < pData_ + chunkLength ); }
-
-            inline bool HasAvailable( unsigned char numBlocks ) const
-            { return ( blocksAvailable_ == numBlocks ); }
-
-            inline bool IsFilled( void ) const
-            { return ( 0 == blocksAvailable_ ); }
-
-            /// Pointer to array of allocated blocks.
-            unsigned char * pData_;
-            /// Index of first empty block.
-            unsigned char firstAvailableBlock_;
-            /// Count of empty blocks.
-            unsigned char blocksAvailable_;
-        };
 
         /** Deallocates the block at address p, and then handles the internal
          bookkeeping needed to maintain class invariants.  This assumes that
@@ -209,7 +206,7 @@ namespace Loki
          that SmallObjAllocator can call the default deallocator.  If the
          block was found, this returns true.
          */
-        bool Deallocate( void * p, bool doChecks );
+        bool Deallocate( void * p, Chunk * hint );
 
         /// Returns block size with which the FixedAllocator was initialized.
         inline std::size_t BlockSize() const { return blockSize_; }
@@ -228,14 +225,19 @@ namespace Loki
          this FixedAllocator.  Complexity is O(C) where C is the total number
          of Chunks - empty or used.
          */
-        bool HasBlock( void * p ) const;
+        const Chunk * HasBlock( void * p ) const;
+        inline Chunk * HasBlock( void * p )
+        {
+            return const_cast< Chunk * >(
+                const_cast< const FixedAllocator * >( this )->HasBlock( p ) );
+        }
 
     };
 
 
-// FixedAllocator::Chunk::Init ------------------------------------------------
+// Chunk::Init ----------------------------------------------------------------
 
-bool FixedAllocator::Chunk::Init( std::size_t blockSize, unsigned char blocks )
+bool Chunk::Init( std::size_t blockSize, unsigned char blocks )
 {
     assert(blockSize > 0);
     assert(blocks > 0);
@@ -258,9 +260,9 @@ bool FixedAllocator::Chunk::Init( std::size_t blockSize, unsigned char blocks )
     return true;
 }
 
-// FixedAllocator::Chunk::Reset -----------------------------------------------
+// Chunk::Reset ---------------------------------------------------------------
 
-void FixedAllocator::Chunk::Reset(std::size_t blockSize, unsigned char blocks)
+void Chunk::Reset(std::size_t blockSize, unsigned char blocks)
 {
     assert(blockSize > 0);
     assert(blocks > 0);
@@ -277,9 +279,9 @@ void FixedAllocator::Chunk::Reset(std::size_t blockSize, unsigned char blocks)
     }
 }
 
-// FixedAllocator::Chunk::Release ---------------------------------------------
+// Chunk::Release -------------------------------------------------------------
 
-void FixedAllocator::Chunk::Release()
+void Chunk::Release()
 {
     assert( NULL != pData_ );
 #ifdef USE_NEW_TO_ALLOCATE
@@ -289,9 +291,9 @@ void FixedAllocator::Chunk::Release()
 #endif
 }
 
-// FixedAllocator::Chunk::Allocate --------------------------------------------
+// Chunk::Allocate ------------------------------------------------------------
 
-void* FixedAllocator::Chunk::Allocate(std::size_t blockSize)
+void* Chunk::Allocate(std::size_t blockSize)
 {
     if ( IsFilled() ) return NULL;
 
@@ -304,9 +306,9 @@ void* FixedAllocator::Chunk::Allocate(std::size_t blockSize)
     return pResult;
 }
 
-// FixedAllocator::Chunk::Deallocate ------------------------------------------
+// Chunk::Deallocate ----------------------------------------------------------
 
-void FixedAllocator::Chunk::Deallocate(void* p, std::size_t blockSize)
+void Chunk::Deallocate(void* p, std::size_t blockSize)
 {
     assert(p >= pData_);
 
@@ -380,7 +382,7 @@ std::size_t FixedAllocator::CountEmptyChunks( void ) const
 
 // FixedAllocator::HasBlock ---------------------------------------------------
 
-bool FixedAllocator::HasBlock( void * p ) const
+const Chunk * FixedAllocator::HasBlock( void * p ) const
 {
     const std::size_t chunkLength = numBlocks_ * blockSize_;
     unsigned char * pc = static_cast< unsigned char * >( p );
@@ -388,9 +390,9 @@ bool FixedAllocator::HasBlock( void * p ) const
     {
         const Chunk & chunk = *it;
         if ( chunk.HasBlock( pc, chunkLength ) )
-            return true;
+            return &chunk;
     }
-    return false;
+    return NULL;
 }
 
 // FixedAllocator::TrimEmptyChunk ---------------------------------------------
@@ -521,26 +523,21 @@ void * FixedAllocator::Allocate( void )
 
 // FixedAllocator::Deallocate -------------------------------------------------
 
-bool FixedAllocator::Deallocate( void * p, bool doChecks )
+bool FixedAllocator::Deallocate( void * p, Chunk * hint )
 {
-    if ( doChecks )
-    {
-        assert(!chunks_.empty());
-        assert(&chunks_.front() <= deallocChunk_);
-        assert(&chunks_.back() >= deallocChunk_);
-        assert( &chunks_.front() <= allocChunk_ );
-        assert( &chunks_.back() >= allocChunk_ );
-        assert( CountEmptyChunks() < 2 );
-    }
+    assert(!chunks_.empty());
+    assert(&chunks_.front() <= deallocChunk_);
+    assert(&chunks_.back() >= deallocChunk_);
+    assert( &chunks_.front() <= allocChunk_ );
+    assert( &chunks_.back() >= allocChunk_ );
+    assert( CountEmptyChunks() < 2 );
 
-    Chunk * foundChunk = VicinityFind( p );
-    if ( doChecks )
-    {
-        assert( NULL != foundChunk );
-    }
-    else if ( NULL == foundChunk )
+    Chunk * foundChunk = ( NULL == hint ) ? VicinityFind( p ) : hint;
+    if ( NULL == foundChunk )
         return false;
 
+    assert( foundChunk->HasBlock( static_cast< unsigned char * >( p ),
+        numBlocks_ * blockSize_ ) );
     deallocChunk_ = foundChunk;
     DoDeallocate(p);
     assert( CountEmptyChunks() < 2 );
@@ -550,7 +547,7 @@ bool FixedAllocator::Deallocate( void * p, bool doChecks )
 
 // FixedAllocator::VicinityFind -----------------------------------------------
 
-FixedAllocator::Chunk * FixedAllocator::VicinityFind( void * p ) const
+Chunk * FixedAllocator::VicinityFind( void * p ) const
 {
     if ( chunks_.empty() ) return NULL;
     assert(deallocChunk_);
@@ -767,7 +764,7 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
     FixedAllocator & allocator = pool_[ index ];
     assert( allocator.BlockSize() >= numBytes );
     assert( allocator.BlockSize() < numBytes + GetAlignment() );
-    const bool found = allocator.Deallocate( p, true );
+    const bool found = allocator.Deallocate( p, NULL );
     assert( found );
 }
 
@@ -779,10 +776,12 @@ void SmallObjAllocator::Deallocate( void * p )
     assert( NULL != pool_ );
     FixedAllocator * pAllocator = NULL;
     const std::size_t allocCount = GetOffset( GetMaxObjectSize(), GetAlignment() );
+    Chunk * chunk = NULL;
 
     for ( std::size_t ii = 0; ii < allocCount; ++ii )
     {
-        if ( pool_[ ii ].HasBlock( p ) )
+        chunk = pool_[ ii ].HasBlock( p );
+        if ( NULL != chunk )
         {
             pAllocator = &pool_[ ii ];
             break;
@@ -794,7 +793,8 @@ void SmallObjAllocator::Deallocate( void * p )
         return;
     }
 
-    const bool found = pAllocator->Deallocate( p, true );
+    assert( NULL != chunk );
+    const bool found = pAllocator->Deallocate( p, chunk );
     assert( found );
 }
 
@@ -811,6 +811,10 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.7  2005/09/27 00:40:30  rich_sposato
+// Moved Chunk out of FixedAllocator class so I could improve efficiency for
+// SmallObjAllocator::Deallocate.
+//
 // Revision 1.6  2005/09/26 21:38:54  rich_sposato
 // Changed include path to be direct instead of relying upon project settings.
 //
