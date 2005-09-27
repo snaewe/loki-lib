@@ -309,6 +309,63 @@ namespace Loki
             ::operator delete ( p, place );
         }
 
+#ifdef LOKI_SMALL_OBJECT_USE_NEW_ARRAY
+
+        /// Throwing array-object new throws bad_alloc when allocation fails.
+#ifdef _MSC_VER
+        /// @note MSVC complains about non-empty exception specification lists.
+        static void * operator new [] ( std::size_t size )
+#else
+        static void * operator new [] ( std::size_t size )
+            throw ( std::bad_alloc )
+#endif
+        {
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
+            return MyAllocatorSingleton::Instance().Allocate( size, true );
+        }
+
+        /// Non-throwing array-object new returns NULL if allocation fails.
+        static void * operator new [] ( std::size_t size,
+            const std::nothrow_t & ) throw ()
+        {
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
+            return MyAllocatorSingleton::Instance().Allocate( size, false );
+        }
+
+        /// Placement array-object new merely calls global placement new.
+        inline static void * operator new [] ( std::size_t size, void * place )
+        {
+            return ::operator new( size, place );
+        }
+
+        /// Array-object delete.
+        static void operator delete [] ( void * p, std::size_t size ) throw ()
+        {
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
+            MyAllocatorSingleton::Instance().Deallocate( p, size );
+        }
+
+        /** Non-throwing array-object delete is only called when nothrow
+         new operator is used, and the constructor throws an exception.
+         */
+        static void operator delete [] ( void * p,
+            const std::nothrow_t & ) throw()
+        {
+            typename MyThreadingModel::Lock lock;
+            (void)lock; // get rid of warning
+            MyAllocatorSingleton::Instance().Deallocate( p );
+        }
+
+        /// Placement array-object delete merely calls global placement delete.
+        inline static void operator delete [] ( void * p, void * place )
+        {
+            ::operator delete ( p, place );
+        }
+#endif  // #if use new array functions.
+
 #endif  // #if default template parameters are not zero
 
     protected:
@@ -385,6 +442,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.11  2005/09/27 00:41:13  rich_sposato
+// Added array forms of new and delete.
+//
 // Revision 1.10  2005/09/26 21:38:54  rich_sposato
 // Changed include path to be direct instead of relying upon project settings.
 //
