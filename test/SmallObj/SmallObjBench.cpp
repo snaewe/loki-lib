@@ -2,6 +2,9 @@
 //#define LOKI_CLASS_LEVEL_THREADING
 //#define LOKI_OBJECT_LEVEL_THREADING
 
+// Uncomment this to test new [] and delete [].
+// #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
+
 #include "SmallObj.h"
 #include "timer.h"
 
