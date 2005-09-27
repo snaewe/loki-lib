@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = Loki
 PROJECT_NUMBER         = 0.1.0
-OUTPUT_DIRECTORY       = D:/temp/loki/doc/doxygen
+OUTPUT_DIRECTORY       = ./doxygen
 CREATE_SUBDIRS         = YES
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = YES
@@ -81,8 +81,8 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = D:/temp/loki/include/loki \
-                         D:/temp/loki/src
+INPUT                  = ../include/loki \
+                         ../src
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
