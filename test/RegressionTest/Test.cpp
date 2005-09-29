@@ -20,7 +20,7 @@
 #endif
 
 //#define LOKI_CLASS_LEVEL_THREADING
-#define LOKI_OBJECT_LEVEL_THREADING
+//#define LOKI_OBJECT_LEVEL_THREADING
 
 // Some platforms might have difficulty with this
 // Need to ifdef around those cases.
@@ -111,6 +111,9 @@ return result;
 
 
 // $Log$
+// Revision 1.7  2005/09/29 08:09:17  syntheticpp
+// update msvc build process
+//
 // Revision 1.6  2005/09/26 07:33:05  syntheticpp
 // move macros into LOKI_ namespace
 //

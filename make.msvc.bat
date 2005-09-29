@@ -36,6 +36,7 @@ if defined VCToolkitInstallDir (
 		echo -
 		call "%VCToolkitInstallDir%\vcvars32.bat"
 		set LOKI_TMP=true
+		set LOKI_MSVC_NOLIB=true
 		goto STARTCOMPILING
 	)
 )
