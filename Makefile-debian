@@ -25,7 +25,7 @@ INSTALL  = $(LIBTOOL) --mode=install install -m644
 FINISH   = $(LIBTOOL) --mode=finish
 CLEAN    = $(LIBTOOL) --mode=clean $(RM)
 
-SOURCES = src/SmallObj.cpp src/Singleton.cpp
+SOURCES = src/SmallObj.cpp src/Singleton.cpp src/OrderedStatic.cpp
 
 libloki.la: $(patsubst %.cpp,%.lo,$(SOURCES))
 	$(LINK) -o $@ $^
