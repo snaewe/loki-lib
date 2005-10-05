@@ -194,11 +194,13 @@ namespace Loki
 
     template <class T> struct CreateStatic
     {
-#if defined(_MSC_VER) && _MSC_VER >= 1300
+    	
+#ifdef _MSC_VER
 #pragma warning( push ) 
- // alignment of a member was sensitive to packing
 #pragma warning( disable : 4121 )
+// alignment of a member was sensitive to packing
 #endif // _MSC_VER
+
         union MaxAlign
         {
             char t_[sizeof(T)];
@@ -212,7 +214,8 @@ namespace Loki
             int Test::* pMember_;
             int (Test::*pMemberFn_)(int);
         };
-#if defined(_MSC_VER) && _MSC_VER >= 1300
+        
+#ifdef _MSC_VER
 #pragma warning( pop )
 #endif // _MSC_VER
         
@@ -432,8 +435,8 @@ namespace Loki
         {
             if (destroyed_)
             {
+            	destroyed_ = false;
                 LifetimePolicy<T>::OnDeadReference();
-                destroyed_ = false;
             }
             pInstance_ = CreationPolicy<T>::Create();
             LifetimePolicy<T>::ScheduleDestruction(pInstance_, 

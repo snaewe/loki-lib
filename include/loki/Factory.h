@@ -21,6 +21,12 @@
 #include "AssocVector.h"
 #include "SmallObj.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4702)
+//unreachable code if OnUnknownType throws an exception
+#endif
+
 
 namespace Loki
 {
@@ -733,6 +739,10 @@ namespace Loki
     };
 } // namespace Loki
 
+#ifdef _MSC_VER
+#pragma warning( pop ) 
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20,    2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
@@ -747,6 +757,9 @@ namespace Loki
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.7  2005/10/05 09:57:37  syntheticpp
+// move unreachable code warnings
+//
 // Revision 1.6  2005/09/26 07:33:04  syntheticpp
 // move macros into LOKI_ namespace
 //
