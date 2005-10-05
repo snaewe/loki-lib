@@ -51,19 +51,19 @@ namespace Loki
 			}
 		}
 
-		void OrderedStaticManagerClass::registerObject(OrderedStaticCreatorFunc* o,Creator f, unsigned int l)
+		void OrderedStaticManagerClass::registerObject(unsigned int l, OrderedStaticCreatorFunc* o,Creator f)
 		{
-			staticObjects_.push_back(Data(o,f,l));
+			staticObjects_.push_back(Data(l,o,f));
 
-			if(l>max_longevity_)max_longevity_=l;
-			if(l<min_longevity_)min_longevity_=l;
+			if(l>max_longevity_) max_longevity_=l;
+			if(l<min_longevity_) min_longevity_=l;
 		}
 
-		OrderedStaticManagerClass::Data::Data(OrderedStaticCreatorFunc* o, Creator f, unsigned int l)
+		OrderedStaticManagerClass::Data::Data(unsigned int l, OrderedStaticCreatorFunc* o, Creator f)
 		{
+			longevity = l;
 			object = o;
 			creator = f;
-			longevity = l;
 		}
 
 	}//namespace Private

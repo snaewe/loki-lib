@@ -91,6 +91,9 @@ int main()
 	std::cout << "s1 = " << (*s1).c_str() << "\n";
 	std::cout << "s2 = " << (*s2).c_str() << "\n";
 	
+	std::string s("text11");
+	*s1=s;
+	std::cout << "s1 = " << (*s1).c_str() << "\n";
 	
 #else
 
