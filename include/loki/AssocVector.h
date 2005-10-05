@@ -208,11 +208,10 @@ namespace Loki
 
         void swap(AssocVector& other)
         {
-            using std::swap;
             Base::swap(other);
             MyCompare& me = *this;
             MyCompare& rhs = other;
-            swap(me, rhs);
+            std::swap(me, rhs);
         }
         
         void clear()
