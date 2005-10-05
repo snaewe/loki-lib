@@ -52,7 +52,7 @@ namespace Loki
             static bool Compare(const LifetimeTracker* lhs,
                 const LifetimeTracker* rhs)
             {
-                return lhs->longevity_ < rhs->longevity_;
+                return lhs->longevity_ > rhs->longevity_;
             }
             
         private:
@@ -71,6 +71,7 @@ namespace Loki
         template <typename T>
         struct Deleter
         {
+			typedef void (*Type)(T*);
             static void Delete(T* pObj)
             { delete pObj; }
         };
@@ -105,7 +106,7 @@ namespace Loki
 
     template <typename T, typename Destroyer>
     void SetLongevity(T* pDynObject, unsigned int longevity,
-        Destroyer d = Private::Deleter<T>::Delete)
+        Destroyer d)
     {
         using namespace Private;
         
@@ -137,6 +138,13 @@ namespace Loki
         std::atexit(Private::AtExitFn);
     }
 
+	template <typename T>
+    void SetLongevity(T* pDynObject, unsigned int longevity,
+		typename Private::Deleter<T>::Type d = Private::Deleter<T>::Delete)
+    {
+		SetLongevity<T, typename Private::Deleter<T>::Type>(pDynObject, longevity, d);
+	}
+	
 ////////////////////////////////////////////////////////////////////////////////
 // class template CreateUsingNew
 // Implementation of the CreationPolicy used by SingletonHolder
