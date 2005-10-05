@@ -7,6 +7,14 @@ cd flex_string
 call make.msvc.bat
 cd ..
 
+cd Longevity
+call make.msvc.bat
+cd ..
+
+cd OrderedStatic
+call make.msvc.bat
+cd ..
+
 cd RegressionTest
 call make.msvc.bat
 cd ..

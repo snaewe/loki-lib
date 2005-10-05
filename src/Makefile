@@ -2,8 +2,8 @@
 
 CPP = g++ 
 CC = gcc 
-OBJ = Singleton.o SmallObj.o 
-LINKOBJ = Singleton.o SmallObj.o 
+OBJ = Singleton.o SmallObj.o OrderedStatic.o
+LINKOBJ = Singleton.o SmallObj.o OrderedStatic.o
 LIBS = 
 CXXINCS = -I..\include 
 BIN = ../lib/libloki.a
@@ -36,4 +36,7 @@ Singleton.o: Singleton.cpp
 
 SmallObj.o: SmallObj.cpp
 	$(CPP) -c SmallObj.cpp -o SmallObj.o $(CXXFLAGS)
+	
+OrderedStatic.o: OrderedStatic.cpp
+	$(CPP) -c OrderedStatic.cpp -o OrderedStatic.o $(CXXFLAGS)
 	
