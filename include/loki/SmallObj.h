@@ -59,7 +59,8 @@ namespace Loki
 
         /** Destructor releases all blocks, all Chunks, and FixedAllocator's.
          Any outstanding blocks are unavailable, and should not be used after
-         this destructor is called.
+         this destructor is called.  The destructor is deliberately non-virtual
+         because it is protected, not public.
          */
         ~SmallObjAllocator( void );
 
@@ -442,6 +443,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.12  2005/10/06 00:19:56  rich_sposato
+// Added clarifying comment about destructor.
+//
 // Revision 1.11  2005/09/27 00:41:13  rich_sposato
 // Added array forms of new and delete.
 //
