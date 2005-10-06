@@ -11,9 +11,15 @@
 
 //#define CLASS_LEVEL_THERADING
 
+#define USE_SEQUENCE
+
 #include <iostream>
 #include "loki/Factory.h"
 #include "loki/Functor.h"
+#ifdef USE_SEQUENCE
+#include "loki/Sequence.h"
+using Loki::Seq;
+#endif
 
 using Loki::Functor;
 using Loki::Factory;
@@ -52,7 +58,11 @@ PFactoryNull;
  
 typedef SingletonHolder
 <
+#ifndef USE_SEQUENCE
     Factory< AbstractProduct, int, LOKI_TYPELIST_2( int, int ) >
+#else
+	Factory< AbstractProduct, int, Seq< int, int >::Type >
+#endif
 >
 PFactory;
  
@@ -136,12 +146,20 @@ public:
 // get creator functions on runntime
 ///////////////////////////////////////////////////////////////
 
+#ifndef USE_SEQUENCE
 typedef Functor<Product*,LOKI_TYPELIST_2(int,int)> CreateFunctor;
+#else
+typedef Functor<Product*,Seq<int,int>::Type> CreateFunctor;
+#endif
 
 typedef 
 SingletonHolder
 <
+#ifndef USE_SEQUENCE
     Factory< AbstractProduct, int,LOKI_TYPELIST_3(CreateFunctor,int,int) >
+#else
+	Factory< AbstractProduct, int,Seq<CreateFunctor,int,int>::Type >
+#endif
 >
 PFactoryFunctorParm;
 
@@ -226,6 +244,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.3  2005/10/06 17:50:14  syntheticpp
+// adding template based list/sequence implementation, should replace LOKI_TYPELIST_, update some files
+//
 // Revision 1.2  2005/09/26 07:33:05  syntheticpp
 // move macros into LOKI_ namespace
 //
