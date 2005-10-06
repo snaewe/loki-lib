@@ -3,7 +3,7 @@
 //#define LOKI_OBJECT_LEVEL_THREADING
 
 // Uncomment this to test new [] and delete [].
-// #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
+//#define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 
 #include "SmallObj.h"
 #include "timer.h"
@@ -119,6 +119,32 @@ int run_new_delete_array(int N, int loop, Timer& t, char* s)
 	return t.t();
 }
 
+template<class T>
+int run_new_array( int N, T** array, int loop, Timer& t, char* s)
+{
+	t.start();
+	/****************************************************************/
+	for (int i=0; i<loop; ++i)	
+		array[i] = new T[N];
+	/****************************************************************/
+	t.stop();
+	t.print(t.t(),s);
+	return t.t();
+}
+template<class T>
+int run_delete_array( T** array, int loop, Timer& t, char* s)
+{
+	t.start();
+	/****************************************************************/
+	for (int i=0; i<loop; ++i)	
+		delete [] array[i];
+	/****************************************************************/
+	t.stop();
+	t.print(t.t(),s);
+	return t.t();
+}
+
+
 
 int main()
 {	
@@ -173,11 +199,6 @@ int main()
 	run_delete(b,N,t,"delete B on array : ");
 	run_delete(c,N,t,"delete C on array : ");
 
-
-	delete [] a;
-	delete [] b;
-	delete [] c;
-	
 	cout << endl << endl;
 //    Loki::AllocatorSingleton<>::ClearExtraMemory();
 ////////////////////////////////////////////////////////////////////////////////
@@ -189,6 +210,29 @@ int main()
 	t.t100 = run_new_delete_array<A>(N,loop,t,"new & delete [] A : ");
 	run_new_delete_array<B>(N,loop,t,"new & delete [] B : ");
 	run_new_delete_array<C>(N,loop,t,"new & delete [] C : ");
+
+	cout << endl << endl;
+////////////////////////////////////////////////////////////////////////////////
+
+
+    int count = 1000;
+	t.t100 = 0;
+	t.t100 = run_new_array(N,a,count,t,"new [] A on array : ");
+	run_new_array(N,b,count,t,"new [] B on array : ");
+	run_new_array(N,c,count,t,"new [] C on array : ");
+
+	cout << endl;
+////////////////////////////////////////////////////////////////////////////////
+
+	t.t100 = 0;
+	t.t100 = run_delete_array(a,count,t,"delete [] A on array : ");
+	run_delete_array(b,count,t,"delete [] B on array : ");
+	run_delete_array(c,count,t,"delete [] C on array : ");
+
+
+	delete [] a;
+	delete [] b;
+	delete [] c;
 	
 	cout << endl << endl;
     Loki::AllocatorSingleton<>::ClearExtraMemory();
