@@ -42,6 +42,7 @@ Test::tests_type Test::tests;
 // unit test.
 
 #include "TypelistTest.h"
+#include "SequenceTest.h"
 #include "TypeManipTest.h"
 #include "TypeTraitsTest.h"
 #include "TypeTraitsTest2.h"
@@ -111,6 +112,9 @@ return result;
 
 
 // $Log$
+// Revision 1.8  2005/10/06 17:50:14  syntheticpp
+// adding template based list/sequence implementation, should replace LOKI_TYPELIST_, update some files
+//
 // Revision 1.7  2005/09/29 08:09:17  syntheticpp
 // update msvc build process
 //
