@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// The Loki Library
+// Copyright (c) 2005 Peter Kümmel
+// Copyright (c) 2005 Richard Sposato
+// Permission to use, copy, modify, distribute and sell this software for any 
+//     purpose is hereby granted without fee, provided that the above copyright 
+//     notice appear in all copies and that both that copyright notice and this 
+//     permission notice appear in supporting documentation.
+// The authors make no representations about the 
+//     suitability of this software for any purpose. It is provided "as is" 
+//     without express or implied warranty.
+////////////////////////////////////////////////////////////////////////////////
 
 //#define LOKI_CLASS_LEVEL_THREADING
 //#define LOKI_OBJECT_LEVEL_THREADING
@@ -151,6 +163,8 @@ int main()
 	int loop = 1000000
 	;
 	
+	std::cout << "\n";
+	
 	Timer t;
 
 	t.t100 = 0;
@@ -177,9 +191,9 @@ int main()
 	}
 	
 	t.t100 = 0;
-	t.t100 = run_new_delete(a,N,loop2,t,"new & delete A on array : ");
-	run_new_delete(b,N,loop2,t,"new & delete B on array : ");
-	run_new_delete(c,N,loop2,t,"new & delete C on array : ");
+	t.t100 = run_new_delete(a,N,loop2,t,"new & del. A on array: ");
+	run_new_delete(b,N,loop2,t,"new & del. B on array: ");
+	run_new_delete(c,N,loop2,t,"new & del. C on array: ");
 
 	cout << endl << endl;
 //    Loki::AllocatorSingleton<>::ClearExtraMemory();
