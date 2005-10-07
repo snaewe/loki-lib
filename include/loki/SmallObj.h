@@ -144,18 +144,33 @@ namespace Loki
         std::size_t objectAlignSize_;
     };
 
+
     /** @class AllocatorSingleton This template class is derived from
-    SmallObjAllocator in order to pass template arguments into it, and still
-    have a default constructor for the singleton.  Each instance is a unique
-    combination of all the template parameters, and hence is singleton only 
-    with respect to those parameters.  The template parameters have default
-    values and the class has typedefs identical to both SmallObject and
-    SmallValueObject so that this class can be used directly instead of going
-    through SmallObject or SmallValueObject.  That design feature allows
-    clients to use the new_handler without having the name of the new_handler
-    function show up in classes derived from SmallObject or SmallValueObject.
-    Thus, the only functions in the allocator which show up in SmallObject or
-    SmallValueObject inheritance heierarchies are the new and delete operators.
+     SmallObjAllocator in order to pass template arguments into it, and still
+     have a default constructor for the singleton.  Each instance is a unique
+     combination of all the template parameters, and hence is singleton only 
+     with respect to those parameters.  The template parameters have default
+     values and the class has typedefs identical to both SmallObject and
+     SmallValueObject so that this class can be used directly instead of going
+     through SmallObject or SmallValueObject.  That design feature allows
+     clients to use the new_handler without having the name of the new_handler
+     function show up in classes derived from SmallObject or SmallValueObject.
+     Thus, the only functions in the allocator which show up in SmallObject or
+     SmallValueObject inheritance heierarchies are the new and delete
+     operators.
+
+     @par Singleton Lifetime Policies and Small-Object Allocator
+     At this time, the only Singleton Lifetime policies recommended for
+     use with the Small-Object Allocator are Loki::SingletonWithLongevity and
+     Loki::NoDestroy.  The Loki::DefaultLifetime and Loki::PhoenixSingleton
+     policies are *not* recommended since they can cause the allocator to be
+     destroyed and release memory for singletons which inherit from either
+     SmallObject or SmallValueObject.  The default is Loki::NoDestroy to
+     insure that memory is never released before the object using that
+     memory is destroyed.  Loki::SingletonWithLongevity can also insure that
+     no memory is released before the owning object is destroyed, and also
+     insure that any memory controlled by a Small-Object Allocator is
+     released.
     */
     template
     <
@@ -224,6 +239,31 @@ namespace Loki
         typename MyThreadingModel::Lock lock;
         (void)lock; // get rid of warning
         Instance().TrimExcessMemory();
+    }
+
+
+    /** This standalone function provides the longevity level for Small-Object
+     Allocators which use the Loki::SingletonWithLongevity policy.  Since no
+     Small-Object Allocator depends on any other Small-Object allocator, this
+     does not need to calculate a dependency level, and so it returns just a
+     constant.  Since all allocators must live longer than the objects which
+     use the allocators, it must return a longevity level higher than any such
+     object.  The SingletonWithLongevity can find this function through
+     argument-dependent lookup.
+     */
+    template
+    <
+        template <class> class TM,
+        std::size_t CS,
+        std::size_t MSOS,
+        std::size_t OAS,
+        template <class> class LP
+    >
+    inline unsigned int GetLongevity(
+        AllocatorSingleton< TM, CS, MSOS, OAS, LP > * )
+    {
+        // Returns highest possible value.
+        return 0xFFFFFFFF;
     }
 
 
@@ -443,6 +483,10 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.13  2005/10/07 01:22:09  rich_sposato
+// Added GetLongevity function so allocator can work with a certain lifetime
+// policy class used with Loki::SingletonHolder.
+//
 // Revision 1.12  2005/10/06 00:19:56  rich_sposato
 // Added clarifying comment about destructor.
 //
