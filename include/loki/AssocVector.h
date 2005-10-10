@@ -175,13 +175,12 @@ namespace Loki
             }
             return std::make_pair(i, !found);
         }
-
+        //Section [23.1.2], Table 69
+        //http://developer.apple.com/documentation/DeveloperTools/gcc-3.3/libstdc++/23_containers/howto.html#4
         iterator insert(iterator pos, const value_type& val)
         {
-            if (pos != end() && this->operator()(*pos, val) &&
-                (pos == end() - 1 ||
-                    !this->operator()(val, pos[1]) &&
-                        this->operator()(pos[1], val)))
+            if( (pos == begin() || this->operator()(*(pos-1),val)) && 
+                (pos == end()    || this->operator()(val, *pos)) )
             {
                 return Base::insert(pos, val);
             }

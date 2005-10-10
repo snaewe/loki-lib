@@ -17,6 +17,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 #include <loki/AssocVector.h>
 #include "UnitTest.h"
 
@@ -350,6 +351,77 @@ void test_vect5()
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// test_vect6
+///////////////////////////////////////////////////////////////////////////////
+
+void test_vect6()
+{
+    srand( (unsigned int) time(NULL) );
+    typedef Loki::AssocVector<int, int> IntMap;
+
+    const unsigned int numTests = 20;
+    const unsigned int numSamples = 50;
+    for( unsigned int i = 0; i < numTests; ++i )
+    {
+        IntMap testVec;
+        for( unsigned int i = 0; i < numSamples; ++i )
+        {
+            std::pair<int, int> newValue(
+                rand() % numSamples,
+                rand() % numSamples );
+
+            IntMap backupVec( testVec );
+
+            // assuming the basic insert operator is correct:
+            testVec.insert( newValue );
+
+            // test the boundary cases:
+            {
+                IntMap newVec( backupVec );
+                newVec.insert( newVec.begin(), newValue );
+                assert( newVec == testVec );
+
+                // check to make sure repeated inserts do not
+                //   break anything
+                newVec.insert( newVec.begin(), newValue );
+                newVec.insert( newVec.end(), newValue );
+                newVec.insert( newVec.begin() + newVec.size()/2, newValue );
+                newVec.insert( newVec.begin() + rand() % newVec.size(), newValue );
+                assert( newVec == testVec );
+            }
+
+            {
+                IntMap newVec( backupVec );
+                newVec.insert( newVec.end(), newValue );
+                assert( newVec == testVec );
+            }
+
+            // try the middle:
+            {
+                IntMap newVec( backupVec );
+                IntMap::iterator itr = newVec.begin();
+                std::advance( itr, newVec.size()/2 );
+                newVec.insert( itr, newValue );
+                assert( newVec == testVec );
+            }
+
+            // try a random spot:
+            if( testVec.size() >= 2 )
+            {
+                IntMap newVec( backupVec );
+                IntMap::iterator itr = newVec.begin();
+                std::advance( itr, rand() % (testVec.size()-1) + 1 );
+                newVec.insert( itr, newValue );
+                assert( newVec == testVec );
+            }
+        }
+    }
+}
+
+
+
+
 class AssocVectorTest : public Test
 {
 public:
@@ -364,6 +436,7 @@ public:
     test_vect3();
     test_vect4();
     test_vect5();
+    test_vect6();
 
     testAssert("AssocVector",true,result),
 
