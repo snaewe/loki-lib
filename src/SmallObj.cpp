@@ -623,7 +623,7 @@ void FixedAllocator::DoDeallocate(void* p)
             assert( lastChunk->HasAvailable( numBlocks_ ) );
             lastChunk->Release();
             chunks_.pop_back();
-            if ( allocChunk_->IsFilled() ) 
+            if ( ( allocChunk_ == lastChunk ) || allocChunk_->IsFilled() ) 
                 allocChunk_ = deallocChunk_;
         }
         emptyChunk_ = deallocChunk_;
@@ -813,9 +813,8 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
-// Revision 1.8  2005/10/13 22:41:05  rich_sposato
-// Moved emptyChunk_ assignment because code depends upon it.  And added if
-// statement before line where allocChunk_ is assigned.
+// Revision 1.9  2005/10/13 22:55:46  rich_sposato
+// Added another condition to if statement for allocChunk_.
 //
 // Revision 1.7  2005/09/27 00:40:30  rich_sposato
 // Moved Chunk out of FixedAllocator class so I could improve efficiency for
