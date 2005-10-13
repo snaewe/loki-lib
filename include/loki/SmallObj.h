@@ -158,19 +158,6 @@ namespace Loki
      Thus, the only functions in the allocator which show up in SmallObject or
      SmallValueObject inheritance heierarchies are the new and delete
      operators.
-
-     @par Singleton Lifetime Policies and Small-Object Allocator
-     At this time, the only Singleton Lifetime policies recommended for
-     use with the Small-Object Allocator are Loki::SingletonWithLongevity and
-     Loki::NoDestroy.  The Loki::DefaultLifetime and Loki::PhoenixSingleton
-     policies are *not* recommended since they can cause the allocator to be
-     destroyed and release memory for singletons which inherit from either
-     SmallObject or SmallValueObject.  The default is Loki::NoDestroy to
-     insure that memory is never released before the object using that
-     memory is destroyed.  Loki::SingletonWithLongevity can also insure that
-     no memory is released before the owning object is destroyed, and also
-     insure that any memory controlled by a Small-Object Allocator is
-     released.
     */
     template
     <
@@ -243,13 +230,16 @@ namespace Loki
 
 
     /** This standalone function provides the longevity level for Small-Object
-     Allocators which use the Loki::SingletonWithLongevity policy.  Since no
-     Small-Object Allocator depends on any other Small-Object allocator, this
-     does not need to calculate a dependency level, and so it returns just a
-     constant.  Since all allocators must live longer than the objects which
-     use the allocators, it must return a longevity level higher than any such
-     object.  The SingletonWithLongevity can find this function through
-     argument-dependent lookup.
+     Allocators which use the Loki::SingletonWithLongevity policy.  The
+     SingletonWithLongevity class can find this function through argument-
+     dependent lookup.
+
+     @par Longevity Levels
+     No Small-Object Allocator depends on any other Small-Object allocator, so
+     this does not need to calculate dependency levels among allocators, and
+     it returns just a constant.  All allocators must live longer than the
+     objects which use the allocators, it must return a longevity level higher
+     than any such object.
      */
     template
     <
@@ -272,6 +262,36 @@ namespace Loki
      of being duplicated in both SmallObject or SmallValueObject.  This class
      is not meant to be used directly by clients, or derived from by clients.
      Class has no data members so compilers can use Empty-Base-Optimization.
+
+     @par Singleton Lifetime Policies and Small-Object Allocator
+     At this time, the only Singleton Lifetime policies recommended for
+     use with the Small-Object Allocator are Loki::SingletonWithLongevity and
+     Loki::NoDestroy.  The Loki::DefaultLifetime and Loki::PhoenixSingleton
+     policies are *not* recommended since they can cause the allocator to be
+     destroyed and release memory for singletons which inherit from either
+     SmallObject or SmallValueObject.  The default is Loki::NoDestroy to
+     insure that memory is never released before the object using that
+     memory is destroyed.  Loki::SingletonWithLongevity can also insure that
+     no memory is released before the owning object is destroyed, and also
+     insure that any memory controlled by a Small-Object Allocator is
+     released.
+
+     @par Small Singletons and Lifetime Policies
+     If you a singleton is derived from SmallValueObject or SmallObject, you
+     have to use compatible lifetime policies for both the singleton and the
+     allocator.  The 3 possible options are:
+     - They may both be Loki::NoDestroy.  Since neither is ever destroyed, the
+       destruction order does not matter.
+     - They may both be Loki::SingletonWithLongevity as long as the longevity
+       level for the singleton is lower than that for the allocator.  This is
+       why the allocator's GetLongevity function returns the highest value.
+     - The singleton may use Loki::SingletonWithLongevity, and the allocator
+       may use Loki::NoDestroy.  This is why the allocator's default policy is
+       Loki::NoDestroy.
+     You should *not* use Loki::NoDestroy for the singleton, and then use
+     Loki::SingletonWithLongevity for the allocator.  This causes the allocator
+     to be destroyed and release the memory for the singleton while the
+     singleton is still alive.
      */
     template
     <
@@ -483,6 +503,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.14  2005/10/13 22:43:03  rich_sposato
+// Added documentation comments about lifetime policies.
+//
 // Revision 1.13  2005/10/07 01:22:09  rich_sposato
 // Added GetLongevity function so allocator can work with a certain lifetime
 // policy class used with Loki::SingletonHolder.
