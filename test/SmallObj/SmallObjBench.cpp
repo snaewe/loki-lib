@@ -11,6 +11,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Header$
+
 //#define LOKI_CLASS_LEVEL_THREADING
 //#define LOKI_OBJECT_LEVEL_THREADING
 
@@ -20,7 +22,9 @@
 #include "SmallObj.h"
 #include "timer.h"
 
+#include <iostream>
 #include <string>
+
 
 using namespace std;
 	
@@ -258,3 +262,9 @@ int main()
 	return 0;
 }
 
+// ----------------------------------------------------------------------------
+
+// $Log$
+// Revision 1.7  2005/10/14 18:35:06  rich_sposato
+// Added cvs keywords.
+//
