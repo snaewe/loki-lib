@@ -31,7 +31,9 @@ namespace Loki
 {
 
     /** @struct Chunk Contains info about each allocated Chunk.
-     This is a POD-style struct with value-semantics.
+     This is a POD-style struct with value-semantics.  All functions and data
+     are private so that they can not be changed by anything other than the
+     FixedAllocator which owns the Chunk.
 
      @par Minimal Interface
      For the sake of runtime efficiency, no constructor, destructor, or
@@ -57,8 +59,11 @@ namespace Loki
      than blocksAvailable_.  Much of the allocator's time and space efficiency
      comes from how these stealth indexes are implemented.
      */
-    struct Chunk
+    class Chunk
     {
+    private:
+        friend FixedAllocator;
+
         /** Initializes a just-constructed Chunk.
          @param blockSize Number of bytes per block.
          @param blocks Number of blocks per Chunk.
@@ -315,6 +320,14 @@ void Chunk::Deallocate(void* p, std::size_t blockSize)
     unsigned char* toRelease = static_cast<unsigned char*>(p);
     // Alignment check
     assert((toRelease - pData_) % blockSize == 0);
+
+#if defined(DEBUG) || defined(_DEBUG)
+    // Check if block was already deleted.  Attempting to delete the same
+    // block more than once causes Chunk's linked-list of stealth indexes to
+    // become corrupt.  And causes count of blocksAvailable_ ) to be wrong.
+    if ( 0 < blocksAvailable_ )
+        assert( firstAvailableBlock_ != *toRelease );
+#endif
 
     *toRelease = firstAvailableBlock_;
     firstAvailableBlock_ = static_cast<unsigned char>(
@@ -813,6 +826,9 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.10  2005/10/14 23:16:23  rich_sposato
+// Added check for already deleted block.  Made Chunk members private.
+//
 // Revision 1.9  2005/10/13 22:55:46  rich_sposato
 // Added another condition to if statement for allocChunk_.
 //
