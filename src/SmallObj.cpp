@@ -23,6 +23,13 @@
 #include <algorithm>
 #include <functional>
 
+#define DO_EXTRA_LOKI_TESTS
+
+#ifdef DO_EXTRA_LOKI_TESTS
+    #include <iostream>
+    #include <bitset>
+#endif
+
 
 using namespace Loki;
 
@@ -98,6 +105,8 @@ namespace Loki
 
         /// Releases the allocated block of memory.
         void Release();
+
+        bool IsCorrupt( unsigned char numBlocks, std::size_t blockSize ) const;
 
         /// Returns true if block at address P is inside this Chunk.
         inline bool HasBlock( unsigned char * p, std::size_t chunkLength ) const
@@ -320,22 +329,61 @@ void Chunk::Deallocate(void* p, std::size_t blockSize)
     unsigned char* toRelease = static_cast<unsigned char*>(p);
     // Alignment check
     assert((toRelease - pData_) % blockSize == 0);
+    unsigned char index = static_cast< unsigned char >(
+        ( toRelease - pData_ ) / blockSize);
 
 #if defined(DEBUG) || defined(_DEBUG)
     // Check if block was already deleted.  Attempting to delete the same
     // block more than once causes Chunk's linked-list of stealth indexes to
     // become corrupt.  And causes count of blocksAvailable_ ) to be wrong.
     if ( 0 < blocksAvailable_ )
-        assert( firstAvailableBlock_ != *toRelease );
+        assert( firstAvailableBlock_ != index );
 #endif
 
     *toRelease = firstAvailableBlock_;
-    firstAvailableBlock_ = static_cast<unsigned char>(
-        (toRelease - pData_) / blockSize);
+    firstAvailableBlock_ = index;
     // Truncation check
     assert(firstAvailableBlock_ == (toRelease - pData_) / blockSize);
 
     ++blocksAvailable_;
+}
+
+// Chunk::IsCorrupt -----------------------------------------------------------
+
+bool Chunk::IsCorrupt( unsigned char numBlocks, std::size_t blockSize ) const
+{
+
+    if ( numBlocks < blocksAvailable_ ) return true;
+    unsigned char index = firstAvailableBlock_;
+    if ( numBlocks <= index ) return true;
+    if ( 0 == blocksAvailable_ ) return false;
+
+#ifdef DO_EXTRA_LOKI_TESTS
+    std::bitset< 256 > foundBlocks;
+    unsigned char * nextBlock = NULL;
+
+    unsigned char cc = 0;
+    for ( ;; )
+    {
+        nextBlock = pData_ + ( index * blockSize );
+        foundBlocks.set( index, true );
+        ++cc;
+        if ( cc >= blocksAvailable_ )
+            break;
+        index = *nextBlock;
+        if ( numBlocks <= index )
+            return true;
+        if ( foundBlocks.test( index ) )
+            return true;
+    }
+    if ( foundBlocks.count() != blocksAvailable_ )
+        return false;
+
+#else
+    (void)blockSize; // cast as void to make warning go away.
+#endif
+
+    return false;
 }
 
 // FixedAllocator::FixedAllocator ---------------------------------------------
@@ -552,6 +600,7 @@ bool FixedAllocator::Deallocate( void * p, Chunk * hint )
 
     assert( foundChunk->HasBlock( static_cast< unsigned char * >( p ),
         numBlocks_ * blockSize_ ) );
+    assert( !foundChunk->IsCorrupt( numBlocks_, blockSize_ ) );
     deallocChunk_ = foundChunk;
     DoDeallocate(p);
     assert( CountEmptyChunks() < 2 );
@@ -699,6 +748,7 @@ SmallObjAllocator::SmallObjAllocator( std::size_t pageSize,
     maxSmallObjectSize_( maxObjectSize ),
     objectAlignSize_( objectAlignSize )
 {
+    std::cout << "SmallObjAllocator " << this << std::endl;
     assert( 0 != objectAlignSize );
     const std::size_t allocCount = GetOffset( maxObjectSize, objectAlignSize );
     pool_ = new FixedAllocator[ allocCount ];
@@ -710,6 +760,7 @@ SmallObjAllocator::SmallObjAllocator( std::size_t pageSize,
 
 SmallObjAllocator::~SmallObjAllocator( void )
 {
+    std::cout << "~SmallObjAllocator " << this << std::endl;
     delete [] pool_;
 }
 
@@ -826,6 +877,10 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.11  2005/10/15 00:41:36  rich_sposato
+// Added tests for corrupt Chunk.  Added cout statements for debugging - and
+// these are inside a #ifdef block.
+//
 // Revision 1.10  2005/10/14 23:16:23  rich_sposato
 // Added check for already deleted block.  Made Chunk members private.
 //
