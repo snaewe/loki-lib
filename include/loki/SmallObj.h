@@ -308,7 +308,7 @@ namespace Loki
 
         /// Defines type of allocator.
         typedef AllocatorSingleton< ThreadingModel, chunkSize,
-            maxSmallObjectSize, objectAlignSize > MyAllocator;
+            maxSmallObjectSize, objectAlignSize, LifetimePolicy > MyAllocator;
 
         /// Defines type for thread-safety locking mechanism.
         typedef ThreadingModel< MyAllocator > MyThreadingModel;
@@ -503,6 +503,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.15  2005/10/15 19:41:23  syntheticpp
+// fix bug 1327060. Add missing template parameter to make different static variables possible
+//
 // Revision 1.14  2005/10/13 22:43:03  rich_sposato
 // Added documentation comments about lifetime policies.
 //
