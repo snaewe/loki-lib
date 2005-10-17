@@ -37,6 +37,18 @@ struct L2
 	~L2(){std::cout << "delete L2 \n";}
 };
 
+struct M1
+{
+	M1(){std::cout << "create M1 \n";}
+	~M1(){std::cout << "delete M1 \n";}
+};
+
+struct M2
+{
+	M2(){std::cout << "create M2 \n";}
+	~M2(){std::cout << "delete M2 \n";}
+};
+
 int f()
 {
 	std::cout << "f called \n";
@@ -48,6 +60,15 @@ std::string func();
 
 #ifdef TEST_ORDERED_STATIC
 
+struct MemberTest
+{
+	static Loki::OrderedStatic<1,M1> m1;
+	static Loki::OrderedStatic<2,M2> m2;
+};
+Loki::OrderedStatic<1,M1> MemberTest::m1;
+Loki::OrderedStatic<2,M2> MemberTest::m2;
+
+
 Loki::OrderedStatic<1,L1> l1;
 Loki::OrderedStatic<2,L2> l2;
 
@@ -57,6 +78,14 @@ Loki::OrderedStatic<2, std::string, LOKI_TYPELIST_1(char *) >	s2( "s2" );
 Loki::OrderedStatic<1, Loki::Functor<int>, LOKI_TYPELIST_1( int(*)() ) >  f1(f); 
 
 #else
+
+struct MemberTest
+{
+	static M1 m1;
+	static M2 m2;
+};
+M1 MemberTest::m1;
+M2 MemberTest::m2;
 
 L1 l1;
 L2 l2;
@@ -86,17 +115,20 @@ int main()
 
 	Loki::OrderedStaticManager::Instance().createObjects();
 	
+	std::cout << "\n";
+
 	(*f1)();
 
-	std::cout << "s1 = " << (*s1).c_str() << "\n";
-	std::cout << "s2 = " << (*s2).c_str() << "\n";
+	std::cout << "value of s1: " << (*s1).c_str() << "\n";
+	std::cout << "value of s2: " << (*s2).c_str() << "\n";
 	
 	std::string s("text11");
 	*s1=s;
-	std::cout << "s1 = " << (*s1).c_str() << "\n";
+	std::cout << "value of s1: " << (*s1).c_str() << "\n";
 	
 #else
-
+	
+	std::cout << "\n";
 	f1();
 	
 	std::cout << "s1 = " << s1.c_str() << "\n";
@@ -104,6 +136,7 @@ int main()
 
 #endif
 
+	std::cout << "\n";
 	return 0;
 }
 
