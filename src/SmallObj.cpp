@@ -69,7 +69,7 @@ namespace Loki
     class Chunk
     {
     private:
-        friend FixedAllocator;
+        friend class FixedAllocator;
 
         /** Initializes a just-constructed Chunk.
          @param blockSize Number of bytes per block.
@@ -877,6 +877,9 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.12  2005/10/17 08:07:23  syntheticpp
+// gcc patch
+//
 // Revision 1.11  2005/10/15 00:41:36  rich_sposato
 // Added tests for corrupt Chunk.  Added cout statements for debugging - and
 // these are inside a #ifdef block.
