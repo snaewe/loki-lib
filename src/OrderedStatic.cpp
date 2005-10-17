@@ -17,56 +17,57 @@
 
 namespace Loki
 {
-	namespace Private
-	{
+    namespace Private
+    {
 
-		OrderedStaticCreatorFunc::OrderedStaticCreatorFunc()
-		{
-		}
-		OrderedStaticCreatorFunc::~OrderedStaticCreatorFunc()
-		{
-		}
-	
+        OrderedStaticCreatorFunc::OrderedStaticCreatorFunc()
+        {
+        }
+        
+        OrderedStaticCreatorFunc::~OrderedStaticCreatorFunc()
+        {
+        }
+    
 
-		OrderedStaticManagerClass::OrderedStaticManagerClass() :
-					max_longevity_(std::numeric_limits<unsigned int>::min()),
-					min_longevity_(std::numeric_limits<unsigned int>::max())
-		{
-		}
+        OrderedStaticManagerClass::OrderedStaticManagerClass() :
+                    max_longevity_(std::numeric_limits<unsigned int>::min()),
+                    min_longevity_(std::numeric_limits<unsigned int>::max())
+        {
+        }
 
-		OrderedStaticManagerClass::~OrderedStaticManagerClass()
-		{
-		}
+        OrderedStaticManagerClass::~OrderedStaticManagerClass()
+        {
+        }
 
-		void OrderedStaticManagerClass::createObjects()
-		{
-			for(unsigned int longevity=max_longevity_; longevity>=min_longevity_; longevity--)
-			{
-				for(unsigned int i=0; i<staticObjects_.size(); i++)
-				{
-					Data cur = staticObjects_.at(i);
-					if(cur.longevity==longevity)
-						( (*cur.object).*cur.creator )();
-				}
-			}
-		}
+        void OrderedStaticManagerClass::createObjects()
+        {
+            for(unsigned int longevity=max_longevity_; longevity>=min_longevity_; longevity--)
+            {
+                for(unsigned int i=0; i<staticObjects_.size(); i++)
+                {
+                    Data cur = staticObjects_.at(i);
+                    if(cur.longevity==longevity)
+                        ( (*cur.object).*cur.creator )();
+                }
+            }
+        }
 
-		void OrderedStaticManagerClass::registerObject(unsigned int l, OrderedStaticCreatorFunc* o,Creator f)
-		{
-			staticObjects_.push_back(Data(l,o,f));
+        void OrderedStaticManagerClass::registerObject(unsigned int l, OrderedStaticCreatorFunc* o,Creator f)
+        {
+            staticObjects_.push_back(Data(l,o,f));
 
-			if(l>max_longevity_) max_longevity_=l;
-			if(l<min_longevity_) min_longevity_=l;
-		}
+            if(l>max_longevity_) max_longevity_=l;
+            if(l<min_longevity_) min_longevity_=l;
+        }
 
-		OrderedStaticManagerClass::Data::Data(unsigned int l, OrderedStaticCreatorFunc* o, Creator f)
-		{
-			longevity = l;
-			object = o;
-			creator = f;
-		}
+        OrderedStaticManagerClass::Data::Data(unsigned int l, OrderedStaticCreatorFunc* o, Creator f)
+        {
+            longevity = l;
+            object = o;
+            creator = f;
+        }
 
-	}//namespace Private
+    }//namespace Private
 
 }//namespace Loki
 
