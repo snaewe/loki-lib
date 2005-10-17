@@ -20,10 +20,8 @@
 
 #include <cassert>
 #include <vector>
-#include <algorithm>
-#include <functional>
 
-#define DO_EXTRA_LOKI_TESTS
+//#define DO_EXTRA_LOKI_TESTS
 
 #ifdef DO_EXTRA_LOKI_TESTS
     #include <iostream>
@@ -354,9 +352,9 @@ bool Chunk::IsCorrupt( unsigned char numBlocks, std::size_t blockSize ) const
 {
 
     if ( numBlocks < blocksAvailable_ ) return true;
+    if ( 0 == blocksAvailable_ ) return false;
     unsigned char index = firstAvailableBlock_;
     if ( numBlocks <= index ) return true;
-    if ( 0 == blocksAvailable_ ) return false;
 
 #ifdef DO_EXTRA_LOKI_TESTS
     std::bitset< 256 > foundBlocks;
@@ -569,16 +567,16 @@ void * FixedAllocator::Allocate( void )
     else if ( allocChunk_ == emptyChunk_)
         // detach emptyChunk_ from allocChunk_, because after 
         // calling allocChunk_->Allocate(blockSize_); the chunk 
-        // isn't any more empty
+        // is no longer empty.
         emptyChunk_ = NULL;
 
     assert( allocChunk_ != NULL );
     assert( !allocChunk_->IsFilled() );
-    void *place = allocChunk_->Allocate(blockSize_);
+    void * place = allocChunk_->Allocate( blockSize_ );
 
-    // prove emptyChunk_ points nowhere.
-    assert( NULL == emptyChunk_ );
-    assert( 0 == CountEmptyChunks() );
+    // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
+    assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
+    assert( CountEmptyChunks() < 2 );
 
     return place;
 }
@@ -748,6 +746,9 @@ SmallObjAllocator::SmallObjAllocator( std::size_t pageSize,
     maxSmallObjectSize_( maxObjectSize ),
     objectAlignSize_( objectAlignSize )
 {
+#ifdef DO_EXTRA_LOKI_TESTS
+    std::cout << "SmallObjAllocator " << this << std::endl;
+#endif
     assert( 0 != objectAlignSize );
     const std::size_t allocCount = GetOffset( maxObjectSize, objectAlignSize );
     pool_ = new FixedAllocator[ allocCount ];
@@ -759,7 +760,9 @@ SmallObjAllocator::SmallObjAllocator( std::size_t pageSize,
 
 SmallObjAllocator::~SmallObjAllocator( void )
 {
+#ifdef DO_EXTRA_LOKI_TESTS
     std::cout << "~SmallObjAllocator " << this << std::endl;
+#endif
     delete [] pool_;
 }
 
@@ -876,6 +879,10 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.14  2005/10/17 18:06:13  rich_sposato
+// Removed unneeded include statements.  Changed lines that check for corrupt
+// Chunk.  Changed assertions when allocating.
+//
 // Revision 1.13  2005/10/17 09:44:00  syntheticpp
 // remove debug code
 //
