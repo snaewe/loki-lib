@@ -1,0 +1,32 @@
+
+
+CPP = g++
+CC = gcc
+OBJ = Phoenix.o 
+LINKOBJ = Phoenix.o
+CXXINCS = -I./../../include
+LIBS = -L../../lib -lloki
+CXXFLAGS = $(CXXINCS) -O2 -DNDEBUG
+BIN = Phoenix-gcc.exe
+RM = rm -f
+CHK_DIR_EXISTS= if not exist
+MKDIR = mkdir
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o Phoenix-gcc.exe $(LIBS)
+
+check_tmp: 
+	@$(CHK_DIR_EXISTS) "" $(MKDIR) "tmp"
+	
+Factory.o: Factory.cpp
+	$(CPP) -c Phoenix.cpp -o Phoenix.o $(CXXFLAGS)
+
+
