@@ -748,7 +748,6 @@ SmallObjAllocator::SmallObjAllocator( std::size_t pageSize,
     maxSmallObjectSize_( maxObjectSize ),
     objectAlignSize_( objectAlignSize )
 {
-    std::cout << "SmallObjAllocator " << this << std::endl;
     assert( 0 != objectAlignSize );
     const std::size_t allocCount = GetOffset( maxObjectSize, objectAlignSize );
     pool_ = new FixedAllocator[ allocCount ];
@@ -877,6 +876,9 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.13  2005/10/17 09:44:00  syntheticpp
+// remove debug code
+//
 // Revision 1.12  2005/10/17 08:07:23  syntheticpp
 // gcc patch
 //
