@@ -44,7 +44,8 @@ sub-OrderedStatic: FORCE
 	
 sub-Longevity: FORCE
 	cd Longevity && \
-	$(MAKE) -f $(MAKEFILE)
+	$(MAKE) -f $(MAKEFILE) && \
+	$(MAKE) -f $(MAKEFILE)2
 	@cd ..
 	
 clean: 
