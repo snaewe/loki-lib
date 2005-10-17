@@ -41,7 +41,8 @@ sub-Singleton: FORCE
 	
 sub-SmallObj: FORCE
 	cd SmallObj && \
-	$(MAKE) -f $(MAKEFILE)
+	$(MAKE) -f $(MAKEFILE) && \
+	$(MAKE) -f $(MAKEFILE)-SmallSingleton
 	@cd ..
 	
 sub-OrderedStatic: FORCE
