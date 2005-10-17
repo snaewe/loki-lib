@@ -163,9 +163,6 @@
 						AdditionalIncludeDirectories="../../include/loki"/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\timer.h">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
