@@ -336,6 +336,8 @@ namespace Loki
                 std::swap(next_, rhs.next_);
                 std::swap(prev_->next_, rhs.prev_->next_);
                 std::swap(next_->prev_, rhs.next_->prev_);
+
+				assert( next_ == this ? prev_ == this : prev_ != this);
             }
                 
             enum { destructiveCopy = false };
