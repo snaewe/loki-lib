@@ -234,12 +234,17 @@ namespace Loki
         
         static P Clone(const P& val)
         {
-            val->AddRef();
+            if(val!=0)
+               val->AddRef();
             return val;
         }
         
         static bool Release(const P& val)
-        { val->Release(); return false; }
+        { 
+            if(val!=0) 
+                val->Release(); 
+            return false; 
+        }
         
         enum { destructiveCopy = false };
         
