@@ -308,6 +308,7 @@ namespace Loki
                 prev_->next_ = next_;
                 next_->prev_ = prev_;
                 return false;
+
             }
             
             void Swap(RefLinkedBase& rhs)
@@ -332,12 +333,22 @@ namespace Loki
                     rhs.Swap(*this);
                     return;
                 }
-                std::swap(prev_, rhs.prev_);
-                std::swap(next_, rhs.next_);
-                std::swap(prev_->next_, rhs.prev_->next_);
-                std::swap(next_->prev_, rhs.next_->prev_);
-
-				assert( next_ == this ? prev_ == this : prev_ != this);
+                if (next_ == &rhs ) // neighbours
+                {
+                    std::swap(prev_, next_);
+                    std::swap(rhs.prev_, rhs.next_);
+                    std::swap(rhs.prev_, next_);
+                    std::swap(rhs.prev_->next_,next_->prev_);
+                }
+                else                
+                {
+                    std::swap(prev_, rhs.prev_);
+                    std::swap(next_, rhs.next_);
+                    std::swap(prev_->next_, rhs.prev_->next_);
+                    std::swap(next_->prev_, rhs.next_->prev_);
+                }
+                
+                assert( next_ == this ? prev_ == this : prev_ != this);
             }
                 
             enum { destructiveCopy = false };
@@ -1245,7 +1256,7 @@ namespace std
 //  In case that the macro is defined and the conversion policy allow flag is off 
 //  (e.g. DisallowConversion) then the conversion from the "pointer" to the 
 //  SmartPtr must be explicit.
-
+// October 32, 2005: fix void Swap(RefLinkedBase& rhs). Peter Kümmel
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMARTPTR_INC_
