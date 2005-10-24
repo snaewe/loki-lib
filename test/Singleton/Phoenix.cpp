@@ -8,19 +8,19 @@
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// A singleton Log object that resurrects itself after
+// A singleton LogClass object that resurrects itself after
 // it has been automatically destroyed during program
-// termination.  When a dead-reference to the Log
+// termination.  When a dead-reference to the LogClass
 // singleton is detected, it is resurrected automatically.
 //
 // Expected output:
 //   Example c'tor
-//   Log c'tor
-//   Log now instantiated.
-//   Log d'tor
+//   LogClass c'tor
+//   LogClass now instantiated.
+//   LogClass d'tor
 //   Example d'tor starting
-//   Log c'tor
-//   Log: inside Example d'tor
+//   LogClass c'tor
+//   LogClass: inside Example d'tor
 //   Example d'tor finished
 //
 // The last line of the output only appears when this
@@ -34,16 +34,16 @@
 using namespace std;   // okay for small programs
 using namespace Loki;  // okay for small programs
 
-class Log
+class LogClass
 {
 public:
-    Log()
+    LogClass()
     {
-        echo("Log c'tor");
+        echo("LogClass c'tor");
     }
-    ~Log()
+    ~LogClass()
     {
-        echo("Log d'tor");
+        echo("LogClass d'tor");
     }
     void echo(const char *s)
     {
@@ -51,7 +51,7 @@ public:
     }
 };
 
-typedef SingletonHolder<Log, CreateUsingNew, PhoenixSingleton> log;
+typedef SingletonHolder<LogClass, CreateUsingNew, PhoenixSingleton> LogBook;
 
 
 // A generic example class that stores and echoes a const char.
@@ -66,7 +66,7 @@ public:
     ~Example()
     {
         echo("Example d'tor starting");
-        log::Instance().echo("Log: inside Example d'tor");
+        LogBook::Instance().echo("LogClass: inside Example d'tor");
         echo("Example d'tor finished");
     }
     void echo(const char *s)
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 {
     Example *example = new Example();
      SetLongevity<Example, void (*)(Example*)>(example, 1, &Loki::Private::Deleter<Example>::Delete);
-    log::Instance().echo("Log now instantiated.");
+    LogBook::Instance().echo("LogClass now instantiated.");
     
 #if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
     system("pause"); // Stop console window from closing if run from IDE.

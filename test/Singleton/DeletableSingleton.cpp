@@ -12,14 +12,14 @@
 //
 // Expected output:
 //
-//    Log::Log()
-//    Log singleton instantiated
-//    Going to manually delete log.
-//    Log::~Log()
-//    Log::Log()
-//    Log reinstantiated.
+//    LogClass::LogClass()
+//    LogClass singleton instantiated
+//    Going to manually delete LogBook.
+//    LogClass::~LogClass()
+//    LogClass::LogClass()
+//    LogClass reinstantiated.
 //    Going to terminate program now.
-//    Log::~Log()
+//    LogClass::~LogClass()
 //
 
 #include <iostream>
@@ -28,19 +28,19 @@
 using namespace std;   // okay for small programs
 using namespace Loki;  // okay for small programs
 
-// A singleton Log object derived from the Example class.
+// A singleton LogClass object derived from the Example class.
 // Its longevity is set by the user on the command line.
 //
-class Log
+class LogClass
 {
 public:
-    Log()
+    LogClass()
     {
-        print("Log::Log()");
+        print("LogClass::LogClass()");
     };
-    ~Log()
+    ~LogClass()
     {
-        print("Log::~Log()");
+        print("LogClass::~LogClass()");
     }
     void print(const char *s)
     {
@@ -48,7 +48,7 @@ public:
     }
 };
 
-typedef SingletonHolder<Log, CreateUsingNew, DeletableSingleton> log;
+typedef SingletonHolder<LogClass, CreateUsingNew, DeletableSingleton> LogBook;
 
 class Example
 {
@@ -63,13 +63,13 @@ public:
 int main(int argc, char *argv[])
 {
     // Instantiate both singletons by calling them...
-    log::Instance().print("Log singleton instantiated");
-    log::Instance().print("Going to manually delete log.");
+    LogBook::Instance().print("LogClass singleton instantiated");
+    LogBook::Instance().print("Going to manually delete LogBook.");
 
-    DeletableSingleton<Log>::GracefulDelete();
+    DeletableSingleton<LogClass>::GracefulDelete();
 
-    log::Instance().print("Log reinstantiated.");
-    log::Instance().print("Going to terminate program now.");
+    LogBook::Instance().print("LogClass reinstantiated.");
+    LogBook::Instance().print("Going to terminate program now.");
 
 #if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
     system("pause"); // Stop console window from closing if run from IDE.
