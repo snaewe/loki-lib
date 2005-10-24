@@ -57,7 +57,23 @@ Test::tests_type Test::tests;
 #include "FunctorTest.h"
 #include "DataGeneratorsTest.h"
 
+
+int main()
+{
+    int result = Test::run("Loki Unit Test");
+
+    #if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
+    // Stop console window from closing if run from IDE.
+    system("pause"); 
+    #endif
+
+    return result;
+}
+
+
 /*
+ * Table is out of date (24.10.2005)
+ *
  * AP - All Pass
  * FC - Fails to Compile
  * ?  - Unknown/Not Tested/Not Recorded
@@ -99,20 +115,11 @@ Test::tests_type Test::tests;
 
  */ 
 
-int main()
-{
-
-int result = Test::run("Loki Unit Test");
-
-#if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
-  system("pause"); // Stop console window from closing if run from IDE.
-#endif
-
-return result;
-}
-
 
 // $Log$
+// Revision 1.10  2005/10/24 20:51:38  syntheticpp
+// Table is out of date
+//
 // Revision 1.9  2005/10/24 20:35:12  syntheticpp
 // small changes for Threads; add compile test for Threads.h
 //
