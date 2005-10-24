@@ -715,10 +715,30 @@ namespace Loki
     };
         
 ////////////////////////////////////////////////////////////////////////////////
+// TR1 exception
+//////////////////////////////////////////////////////////////////////////////////
+
+#ifdef LOKI_ENABLE_FUNCTION
+
+	class bad_function_call : public std::runtime_error
+	{
+	public:
+		bad_function_call() : std::runtime_error("bad_function_call in Loki::Functor")
+		{}
+	};
+
+#define LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL if(empty()) throw bad_function_call();
+
+#else
+
+#define LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL 
+
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
 // class template Functor
 // A generalized functor implementation with value semantics
 ////////////////////////////////////////////////////////////////////////////////
-       
     template <typename R, class TList = NullType,
         template<class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
     class Functor
@@ -781,53 +801,103 @@ namespace Loki
             copy.spImpl_.reset(p);
             return *this;
         }
-        
+
+#ifdef LOKI_ENABLE_FUNCTION
+
+		bool empty() const
+		{
+			return spImpl_.get() == 0;
+		}
+
+		void clear()
+		{
+			spImpl_.reset(0);
+		}
+#endif
+
         ResultType operator()() const
-        { return (*spImpl_)(); }
+        {
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(); 
+		}
 
         ResultType operator()(Parm1 p1) const
-        { return (*spImpl_)(p1); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2) const
-        { return (*spImpl_)(p1, p2); }
+        {	
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3) const
-        { return (*spImpl_)(p1, p2, p3); }
+        {	
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4) const
-        { return (*spImpl_)(p1, p2, p3, p4); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5) const
-        { return (*spImpl_)(p1, p2, p3, p4, p5); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4, p5); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6) const
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4, p5, p6); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7) const
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8) const
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9) const
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10) const
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11) const
-        { return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
+        { 
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
+			return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); 
+		}
         
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12) const
         {
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
                 p12);
         }
@@ -836,6 +906,7 @@ namespace Loki
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13) const
         {
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
             p12, p13);
         }
@@ -844,6 +915,7 @@ namespace Loki
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14) const
         {
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
                 p12, p13, p14);
         }
@@ -852,6 +924,7 @@ namespace Loki
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15) const
         {
+			LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
                 p12, p13, p14, p15);
         }
