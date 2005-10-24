@@ -20,7 +20,7 @@
 #endif
 
 //#define LOKI_CLASS_LEVEL_THREADING
-//#define LOKI_OBJECT_LEVEL_THREADING
+#define LOKI_OBJECT_LEVEL_THREADING
 
 // Some platforms might have difficulty with this
 // Need to ifdef around those cases.
@@ -41,6 +41,7 @@ Test::tests_type Test::tests;
 // is the header inclusion to execute the correspond
 // unit test.
 
+#include "ThreadsTest.h"
 #include "TypelistTest.h"
 #include "SequenceTest.h"
 #include "TypeManipTest.h"
@@ -112,6 +113,9 @@ return result;
 
 
 // $Log$
+// Revision 1.9  2005/10/24 20:35:12  syntheticpp
+// small changes for Threads; add compile test for Threads.h
+//
 // Revision 1.8  2005/10/06 17:50:14  syntheticpp
 // adding template based list/sequence implementation, should replace LOKI_TYPELIST_, update some files
 //
