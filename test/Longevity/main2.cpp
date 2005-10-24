@@ -12,14 +12,14 @@
 // singletons and globally and locally defined dynamically allocated
 // objects.
 //
-// The program defines three classes:  Example, Keyboard and Log.
+// The program defines three classes:  Example, Keyboard and LogClass.
 //
 // The purpose of the Example class is to send a message to cout
 // when an Example object is being destroyed.
 //
 // The Keyboard class is a singleton.
 //
-// The Log class is also a singleton.
+// The LogClass class is also a singleton.
 //
 // The pGlobal object is deleted using an adapter functor to
 // customize Example's destruction (see destGlobal()).
@@ -41,7 +41,7 @@
 //  1)  The global object
 //  2)  The local object
 //  3)  The Keyboard singleton
-//  4)  The Log singleton
+//  4)  The LogClass singleton
 //
 // Examples:
 //    longevity 1 2 3 4
@@ -104,23 +104,23 @@ inline unsigned int GetLongevity(Keyboard *)
 typedef SingletonHolder<Keyboard, CreateUsingNew, SingletonWithLongevity> keyboard;
 
 
-// A singleton Log object derived from the Example class.
+// A singleton LogClass object derived from the Example class.
 // Its longevity is set by the user on the command line.
 //
-class Log : public Example
+class LogClass : public Example
 {
 public:
-    Log() : Example("Destroying Log")
+    LogClass() : Example("Destroying LogClass")
     {  }
 }
 ;
 
-inline unsigned int GetLongevity(Log *)
+inline unsigned int GetLongevity(LogClass *)
 {
     return logPriority;
 }
 
-typedef SingletonHolder<Log, CreateUsingNew, SingletonWithLongevity> log;
+typedef SingletonHolder<LogClass, CreateUsingNew, SingletonWithLongevity> LogBook;
 
 
 // Instantiate a global Example object.  It's not a singleton
@@ -146,7 +146,7 @@ void help(const char *s)
     cout << "    par1: global object\n";
     cout << "    par2: local object\n";
     cout << "    par3: keyboard singleton\n";
-    cout << "    par4: log singleton\n";
+    cout << "    par4: LogBook singleton\n";
     cout << "Example:  " << s << " 1 2 3 4" << endl;
 }
 
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
     pLocal->echo("pLocal created after main() started.");
 
     // Instantiate both singletons by calling them...
-    log::Instance().echo("Log singleton instantiated");
+    LogBook::Instance().echo("LogClass singleton instantiated");
     keyboard::Instance().echo("Keyboard singleton instantiated");
 
     return 0;

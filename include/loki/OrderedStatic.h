@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "loki/Singleton.h"
-#include "loki/TypeList.h"
+#include "loki/Typelist.h"
 
 
 namespace Loki
