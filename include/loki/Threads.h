@@ -53,6 +53,7 @@ namespace Loki
         {
             Lock() {}
             explicit Lock(const SingleThreaded&) {}
+			explicit Lock(const SingleThreaded*) {}
         };
         
         typedef Host VolatileType;
@@ -86,12 +87,12 @@ namespace Loki
     
 #if defined(_WINDOWS_) || defined(_WINDOWS_H) 
 
-#define LOKI_THREADS_MUTEX_DECLARATION(x)  CRITICAL_SECTION x
-#define LOKI_THREADS_MUTEX_INIT(x)         ::InitializeCriticalSection(x)
-#define LOKI_THREADS_MUTEX_DELETE(x)       ::DeleteCriticalSection(x)
-#define LOKI_THREADS_MUTEX_LOCK(x)         ::EnterCriticalSection(x)
-#define LOKI_THREADS_MUTEX_UNLOCK(x)       ::LeaveCriticalSection(x)
-#define LOKI_THREADS_LONG                  LONG
+#define LOKI_THREADS_MUTEX              CRITICAL_SECTION
+#define LOKI_THREADS_MUTEX_INIT         ::InitializeCriticalSection
+#define LOKI_THREADS_MUTEX_DELETE       ::DeleteCriticalSection
+#define LOKI_THREADS_MUTEX_LOCK         ::EnterCriticalSection
+#define LOKI_THREADS_MUTEX_UNLOCK       ::LeaveCriticalSection
+#define LOKI_THREADS_LONG               LONG
 
 #define LOKI_THREADS_ATOMIC_FUNCTIONS                                   \
         static IntType AtomicIncrement(volatile IntType& lval)          \
@@ -111,12 +112,12 @@ namespace Loki
 #elif defined(_PTHREAD_H) //POSIX threads (pthread.h)
 
 
-#define LOKI_THREADS_MUTEX_DECLARATION(x)  pthread_mutex_t x
-#define LOKI_THREADS_MUTEX_INIT(x)         ::pthread_mutex_init(x,0)
-#define LOKI_THREADS_MUTEX_DELETE(x)       ::pthread_mutex_destroy(x)
-#define LOKI_THREADS_MUTEX_LOCK(x)         ::pthread_mutex_lock(x)
-#define LOKI_THREADS_MUTEX_UNLOCK(x)       ::pthread_mutex_unlock(x)
-#define LOKI_THREADS_LONG                  long
+#define LOKI_THREADS_MUTEX              pthread_mutex_t
+#define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x,0)
+#define LOKI_THREADS_MUTEX_DELETE       ::pthread_mutex_destroy
+#define LOKI_THREADS_MUTEX_LOCK         ::pthread_mutex_lock
+#define LOKI_THREADS_MUTEX_UNLOCK       ::pthread_mutex_unlock
+#define LOKI_THREADS_LONG               long
 
 #define LOKI_THREADS_ATOMIC(x)                                           \
                 pthread_mutex_lock(&atomic_mutex_);                      \
@@ -124,6 +125,9 @@ namespace Loki
                 pthread_mutex_unlock(&atomic_mutex_)    
                 
 #define LOKI_THREADS_ATOMIC_FUNCTIONS                                    \
+		private:                                                         \
+			static pthread_mutex_t atomic_mutex_;                        \
+		public:                                                          \
         static IntType AtomicIncrement(volatile IntType& lval)           \
         { LOKI_THREADS_ATOMIC( lval++ ); return lval; }                  \
                                                                          \
@@ -135,9 +139,6 @@ namespace Loki
                                                                          \
         static void AtomicAssign(IntType& lval, volatile IntType& val)   \
         { LOKI_THREADS_ATOMIC( lval = val ); }            
-            
-
-    static pthread_mutex_t atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 
 #endif
 
@@ -153,7 +154,7 @@ namespace Loki
     template <class Host>
     class ObjectLevelLockable
     {
-        LOKI_THREADS_MUTEX_DECLARATION(mtx_);
+        mutable LOKI_THREADS_MUTEX mtx_;
 
     public:
         ObjectLevelLockable()
@@ -183,15 +184,21 @@ namespace Loki
                 LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
             }
 
+			explicit Lock(const ObjectLevelLockable* host) : host_(*host)
+            {
+                LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
+            }
+
             ~Lock()
             {
                 LOKI_THREADS_MUTEX_UNLOCK(&host_.mtx_);
             }
             
         private:
+			Lock();
             Lock(const Lock&);
             Lock& operator=(const Lock&);
-            ObjectLevelLockable const& host_;
+            const ObjectLevelLockable& host_;
         };
 
         typedef volatile Host VolatileType;
@@ -201,6 +208,11 @@ namespace Loki
         LOKI_THREADS_ATOMIC_FUNCTIONS   
         
     };
+
+#if defined(_PTHREAD_H) 
+	template <class Host>
+    pthread_mutex_t ObjectLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
+#endif
     
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +226,7 @@ namespace Loki
     {
         struct Initializer
         {   
-            LOKI_THREADS_MUTEX_DECLARATION(mtx_);
+            LOKI_THREADS_MUTEX mtx_;
             bool init_;
 
             Initializer() : init_(false)
@@ -251,6 +263,12 @@ namespace Loki
                 assert(initializer_.init_);
                 LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
             }
+
+			explicit Lock(const ClassLevelLockable*)
+            {
+                assert(initializer_.init_);
+                LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
+            }
             
             ~Lock()
             {
@@ -270,6 +288,11 @@ namespace Loki
         LOKI_THREADS_ATOMIC_FUNCTIONS
         
     };
+
+#if defined(_PTHREAD_H) 
+	template <class Host>
+    pthread_mutex_t ClassLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
+#endif
 
     template <class Host>
     typename ClassLevelLockable<Host>::Initializer 
@@ -291,6 +314,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.15  2005/10/24 20:35:12  syntheticpp
+// small changes for Threads; add compile test for Threads.h
+//
 // Revision 1.14  2005/10/24 15:05:24  syntheticpp
 // adding support for POSIX threads (pthreads.h), Thanks to Ilya Volvovski
 //
