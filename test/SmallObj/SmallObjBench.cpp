@@ -14,10 +14,10 @@
 // $Header$
 
 //#define LOKI_CLASS_LEVEL_THREADING
-//#define LOKI_OBJECT_LEVEL_THREADING
+#define LOKI_OBJECT_LEVEL_THREADING
 
 // Uncomment this to test new [] and delete [].
-//#define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
+#define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 
 #include "SmallObj.h"
 #include "timer.h"
@@ -25,41 +25,35 @@
 #include <iostream>
 #include <string>
 
+#define COMPARE_BOOST_POOL
 #ifdef COMPARE_BOOST_POOL
   #include <boost\pool\object_pool.hpp>
 #endif
 
 
 using namespace std;
-	
-	
-		
+    
+    
+template<unsigned int N>
 class ThisIsASmallObject
 {
-	int i;
-	double d;
-	//std::string s;
-};	
+  char data[N];
+};    
 
-template<class T>		
-struct Base : public ThisIsASmallObject, public T {};
-template<>		
-struct Base<void> : public ThisIsASmallObject {};
+template<unsigned int N, class T>        
+struct Base : public ThisIsASmallObject<N>, public T {};
 
-typedef Base<void> 
-A;
-typedef Base< Loki::SmallObject< Loki::SingleThreaded > > 
-B;
-typedef Base< Loki::SmallValueObject< Loki::SingleThreaded > > 
-C;
+template<unsigned int N>        
+struct Base<N, void> : public ThisIsASmallObject<N> {};
 
 
 #ifdef COMPARE_BOOST_POOL
 
-class BoostPoolNew
+template<unsigned int N>
+class BoostPoolNew : public Base<N,void>
 {
 private:
-    static boost::object_pool< BoostPoolNew > BoostPool;
+    static boost::object_pool< BoostPoolNew<N> > BoostPool;
 
 public:
     /// Throwing single-object new throws bad_alloc when allocation fails.
@@ -107,262 +101,307 @@ public:
 
 };
 
-boost::object_pool< BoostPoolNew > BoostPoolNew::BoostPool;
+template<unsigned int N>
+boost::object_pool< BoostPoolNew<N> > BoostPoolNew<N>::BoostPool;
 
-typedef Base< BoostPoolNew > D;
 #endif
 
-/*
-class A 
-{ int i; int* p;};
-class B : public Loki::SmallObject<>
-{ int i; int* p;};
-class C : public Loki::SmallValueObject<> 
-{ int i; int* p;};
-*/
 
+
+template<class T>
+int run_oneline_new_delete(int loop, Timer& t, const char* s)
+{
+    t.start();
+    /****************************************************************/     
+    for (int i=0; i<loop; ++i)
+    {        
+        delete new T;
+    }
+    /****************************************************************/     
+    t.stop();
+    t.print(t.t(),s);
+    return t.t();
+}
 
 template<class T>
 int run_new_delete(int loop, Timer& t, const char* s)
 {
-	t.start();
-	/****************************************************************/	 
-	for (int i=0; i<loop; ++i)
-	{		
-		T* p = new T;
-		delete p;
-	}
-	/****************************************************************/	 
-	t.stop();
-	t.print(t.t(),s);
-	return t.t();
+    t.start();
+    /****************************************************************/     
+    for (int i=0; i<loop; ++i)
+    {        
+        T* p = new T;
+        delete p;
+    }
+    /****************************************************************/     
+    t.stop();
+    t.print(t.t(),s);
+    return t.t();
 }
 
 template<class T>
 int run_new_delete(T** array, int N, int loop, Timer& t, const char* s)
 {
-	t.start();
-	/****************************************************************/	 
-	for (int i=0; i<loop; ++i)
-		for (int n=0; n<N; n++)
-		{	
-			array[n] = new T;
-			delete array[n];
-		}
-	/****************************************************************/	 
-	t.stop();	
-	t.print(t.t(),s);
-	return t.t();
+    t.start();
+    /****************************************************************/     
+    for (int i=0; i<loop; ++i)
+        for (int n=0; n<N; n++)
+        {    
+            array[n] = new T;
+            delete array[n];
+        }
+    /****************************************************************/     
+    t.stop();    
+    t.print(t.t(),s);
+    return t.t();
 }
 
 template<class T>
 int run_new(T** array, int loop, Timer& t, const char* s)
 {
-	t.start();
-	/****************************************************************/	 
-	for (int i=0; i<loop; ++i)	
-		array[i] = new T;
-	/****************************************************************/	 
-	t.stop();	
-	t.print(t.t(),s);
-	return t.t();
+    t.start();
+    /****************************************************************/     
+    for (int i=0; i<loop; ++i)    
+        array[i] = new T;
+    /****************************************************************/     
+    t.stop();    
+    t.print(t.t(),s);
+    return t.t();
 }
 template<class T>
 int run_delete(T** array, int loop, Timer& t, const char* s)
 {
-	t.start();
-	/****************************************************************/	 
-	for (int i=0; i<loop; ++i)	
-		delete array[i];
-	/****************************************************************/	 
-	t.stop();	
-	t.print(t.t(),s);
-	return t.t();
+    t.start();
+    /****************************************************************/     
+    for (int i=0; i<loop; ++i)    
+        delete array[i];
+    /****************************************************************/     
+    t.stop();    
+    t.print(t.t(),s);
+    return t.t();
 }
 
 
 template<class T>
 int run_new_delete_array(int N, int loop, Timer& t, const char* s)
 {
-	t.start();
-	/****************************************************************/	 
-	for (int i=0; i<loop; ++i)
-	{		
-		T* p = new T[N];
-		delete [] p;
-	}
-	/****************************************************************/	 
-	t.stop();
-	t.print(t.t(),s);
-	return t.t();
+    t.start();
+    /****************************************************************/     
+    for (int i=0; i<loop; ++i)
+    {        
+        T* p = new T[N];
+        delete [] p;
+    }
+    /****************************************************************/     
+    t.stop();
+    t.print(t.t(),s);
+    return t.t();
 }
 
 template<class T>
 int run_new_array( int N, T** array, int loop, Timer& t, const char* s)
 {
-	t.start();
-	/****************************************************************/
-	for (int i=0; i<loop; ++i)	
-		array[i] = new T[N];
-	/****************************************************************/
-	t.stop();
-	t.print(t.t(),s);
-	return t.t();
+    t.start();
+    /****************************************************************/
+    for (int i=0; i<loop; ++i)    
+        array[i] = new T[N];
+    /****************************************************************/
+    t.stop();
+    t.print(t.t(),s);
+    return t.t();
 }
 template<class T>
 int run_delete_array( T** array, int loop, Timer& t, const char* s)
 {
-	t.start();
-	/****************************************************************/
-	for (int i=0; i<loop; ++i)	
-		delete [] array[i];
-	/****************************************************************/
-	t.stop();
-	t.print(t.t(),s);
-	return t.t();
+    t.start();
+    /****************************************************************/
+    for (int i=0; i<loop; ++i)    
+        delete [] array[i];
+    /****************************************************************/
+    t.stop();
+    t.print(t.t(),s);
+    return t.t();
 }
 
 
 
-int main()
+template<unsigned int N, int loop>
+void testSize()
 {
-	int loop = 1000000;
+    typedef Base<N, void> 
+    A;
+    typedef Base<N, Loki::SmallObject< Loki::SingleThreaded > > 
+    B;
+    typedef Base<N, Loki::SmallValueObject< Loki::SingleThreaded > > 
+    C;
+#ifdef COMPARE_BOOST_POOL
+    typedef BoostPoolNew<N> 
+    D;
+#endif
 
-	cout << "Small-Object Benchmark Tests" << endl;
+    cout << "Small-Object Benchmark Tests \n" << endl;
     cout << "A = global new and delete \tsizeof(A) =" << sizeof(A) << endl;
     cout << "B = Loki::SmallObject     \tsizeof(B) =" << sizeof(B) << endl;
     cout << "C = Loki::SmallValueObject\tsizeof(C) =" << sizeof(C) << endl;
 #ifdef COMPARE_BOOST_POOL
     cout << "D = boost::object_pool    \tsizeof(D) =" << sizeof(D) << endl;
 #endif
-	cout << endl << endl;
+    cout << endl << endl;
 
-	Timer t;
+    Timer t;
 
-	t.t100 = 0;
-	t.t100 = run_new_delete<A>(loop,t,"new & delete A : ");
-	run_new_delete<B>(loop,t,"new & delete B : ");
-	run_new_delete<C>(loop,t,"new & delete C : ");
+    t.t100 = 0;
+    t.t100 = run_oneline_new_delete<A>(loop,t,"'delete new A' : ");
+    run_new_delete<B>(loop,t,"'delete new B' : ");
+    run_new_delete<C>(loop,t,"'delete new C' : ");
 #ifdef COMPARE_BOOST_POOL
-	run_new_delete<D>(loop,t,"new & delete D : ");
+    run_new_delete<D>(loop,t,"'delete new D' : ");
 #endif
 
-	cout << endl << endl;
+    cout << endl << endl;
 ////////////////////////////////////////////////////////////////////////////////
-	
-	int N = 100000;
-	int loop2 = loop/N*10;
-	
-	A** a = new A*[N];
-	B** b = new B*[N];
-	C** c = new C*[N];
+
+    t.t100 = 0;
+    t.t100 = run_new_delete<A>(loop,t,"new & delete A : ");
+    run_new_delete<B>(loop,t,"new & delete B : ");
+    run_new_delete<C>(loop,t,"new & delete C : ");
 #ifdef COMPARE_BOOST_POOL
-	D** d = new D*[N];
+    run_new_delete<D>(loop,t,"new & delete D : ");
 #endif
-	
-	for(int i=0; i<N; i++)
-	{
-		a[i]=0;
-		b[i]=0;
-		c[i]=0;
+
+    cout << endl << endl;
+////////////////////////////////////////////////////////////////////////////////
+    
+    int N = 10000;
+    int loop2 = loop/N*10;
+    
+    A** a = new A*[N];
+    B** b = new B*[N];
+    C** c = new C*[N];
+#ifdef COMPARE_BOOST_POOL
+    D** d = new D*[N];
+#endif
+    
+    for(int i=0; i<N; i++)
+    {
+        a[i]=0;
+        b[i]=0;
+        c[i]=0;
 #ifdef COMPARE_BOOST_POOL
         d[i]=0;
 #endif
-	}
-	
-	t.t100 = 0;
-	t.t100 = run_new_delete(a,N,loop2,t,"new & del. A on array: ");
-	run_new_delete(b,N,loop2,t,"new & del. B on array: ");
-	run_new_delete(c,N,loop2,t,"new & del. C on array: ");
+    }
+    
+    t.t100 = 0;
+    t.t100 = run_new_delete(a,N,loop2,t,"new & del. A on array: ");
+    run_new_delete(b,N,loop2,t,"new & del. B on array: ");
+    run_new_delete(c,N,loop2,t,"new & del. C on array: ");
 #ifdef COMPARE_BOOST_POOL
-	run_new_delete(d,N,loop2,t,"new & del. D on array: ");
+    run_new_delete(d,N,loop2,t,"new & del. D on array: ");
 #endif
 
-	cout << endl << endl;
+    cout << endl << endl;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-	t.t100 = 0;
-	t.t100 = run_new(a,N,t,"new A on array : ");
-	run_new(b,N,t,"new B on array : ");
-	run_new(c,N,t,"new C on array : ");
+    t.t100 = 0;
+    t.t100 = run_new(a,N,t,"new A on array : ");
+    run_new(b,N,t,"new B on array : ");
+    run_new(c,N,t,"new C on array : ");
 #ifdef COMPARE_BOOST_POOL
     run_new(d,N,t,"new D on array : ");
 #endif
 
-	cout << endl;
+    cout << endl;
 ////////////////////////////////////////////////////////////////////////////////
 
-	t.t100 = 0;
-	t.t100 = run_delete(a,N,t,"delete A on array : ");
-	run_delete(b,N,t,"delete B on array : ");
-	run_delete(c,N,t,"delete C on array : ");
+    t.t100 = 0;
+    t.t100 = run_delete(a,N,t,"delete A on array : ");
+    run_delete(b,N,t,"delete B on array : ");
+    run_delete(c,N,t,"delete C on array : ");
 #ifdef COMPARE_BOOST_POOL
     run_delete(d,N,t,"delete D on array : ");
 #endif
 
-	cout << endl << endl;
+    cout << endl << endl;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-	N = 5;
-	
-	t.t100 = 0;
-	t.t100 = run_new_delete_array<A>(N,loop,t,"new & delete [] A : ");
-	run_new_delete_array<B>(N,loop,t,"new & delete [] B : ");
-	run_new_delete_array<C>(N,loop,t,"new & delete [] C : ");
+    N = 5;
+    
+    t.t100 = 0;
+    t.t100 = run_new_delete_array<A>(N,loop,t,"new & delete [] A : ");
+    run_new_delete_array<B>(N,loop,t,"new & delete [] B : ");
+    run_new_delete_array<C>(N,loop,t,"new & delete [] C : ");
 #ifdef COMPARE_BOOST_POOL
     run_new_delete_array<D>(N,loop,t,"new & delete [] D : ");
 #endif
 
-	cout << endl << endl;
+    cout << endl << endl;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-    int count = 1000;
-	t.t100 = 0;
-	t.t100 = run_new_array(N,a,count,t,"new [] A on array : ");
-	run_new_array(N,b,count,t,"new [] B on array : ");
-	run_new_array(N,c,count,t,"new [] C on array : ");
+    int count = 100;
+    t.t100 = 0;
+    t.t100 = run_new_array(N,a,count,t,"new [] A on array : ");
+    run_new_array(N,b,count,t,"new [] B on array : ");
+    run_new_array(N,c,count,t,"new [] C on array : ");
 #ifdef COMPARE_BOOST_POOL
     run_new_array(N,d,count,t,"new [] D on array : ");
 #endif
 
-	cout << endl;
+    cout << endl;
 ////////////////////////////////////////////////////////////////////////////////
 
-	t.t100 = 0;
-	t.t100 = run_delete_array(a,count,t,"delete [] A on array : ");
-	run_delete_array(b,count,t,"delete [] B on array : ");
-	run_delete_array(c,count,t,"delete [] C on array : ");
+    t.t100 = 0;
+    t.t100 = run_delete_array(a,count,t,"delete [] A on array : ");
+    run_delete_array(b,count,t,"delete [] B on array : ");
+    run_delete_array(c,count,t,"delete [] C on array : ");
 #ifdef COMPARE_BOOST_POOL
     run_delete_array(d,count,t,"delete [] D on array : ");
 #endif
 
 
-	delete [] a;
-	delete [] b;
-	delete [] c;
+    delete [] a;
+    delete [] b;
+    delete [] c;
 #ifdef COMPARE_BOOST_POOL
     delete [] d;
 #endif
-	
-	cout << endl << endl;
+    
+    cout << endl << endl;
     Loki::AllocatorSingleton<>::ClearExtraMemory();
 ////////////////////////////////////////////////////////////////////////////////
+}
 
 
-	cout << endl;
-	system("PAUSE");
-	return 0;
+int main()
+{
+    cout << endl;
+
+    const int loop = 700000;
+
+    testSize<8,loop>();
+    testSize<64,loop>();
+    //testSize<256,loop>();
+    //testSize<1024,loop>();
+
+    system("PAUSE");
+
+    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.9  2005/10/26 23:30:06  syntheticpp
+// make object size more flexible
+//
 // Revision 1.8  2005/10/26 00:41:00  rich_sposato
 // Added comparison to boost::pool memory allocator.
 //
 // Revision 1.7  2005/10/14 18:35:06  rich_sposato
 // Added cvs keywords.
 //
+
+
