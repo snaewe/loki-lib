@@ -47,7 +47,7 @@ public:
 
 	void print(int t, const char* s)
 	{
-		std::cout << s <<"\trelative time: " << rel(t) << "%\tspeed-up factor: " << speedup(t) << "" << std::endl;
+        std::cout << s << "\tseconds: " << sec(t) << "\trelative time: " << rel(t) << "%\tspeed-up factor: " << speedup(t) << "" << std::endl;
 	}
 private:
     int t0;
