@@ -1,3 +1,21 @@
+////////////////////////////////////////////////////////////////////////////////
+// The Loki Library
+// Copyright (c) 2005 Peter Kümmel
+// Permission to use, copy, modify, distribute and sell this software for any 
+//     purpose is hereby granted without fee, provided that the above copyright 
+//     notice appear in all copies and that both that copyright notice and this 
+//     permission notice appear in supporting documentation.
+// The authors make no representations about the 
+//     suitability of this software for any purpose. It is provided "as is" 
+//     without express or implied warranty.
+////////////////////////////////////////////////////////////////////////////////
+
+// $Header$
+
+#ifndef LOKI_TEST_TIMER_H
+#define LOKI_TEST_TIMER_H
+
+
 #include <ctime>
 #include <iostream>
 #include <stdlib.h>
@@ -53,3 +71,10 @@ private:
     int t0;
 	int t1;
 };
+
+#endif
+
+// $Log$
+// Revision 1.4  2005/10/26 00:38:49  rich_sposato
+// Added CVS keywords and header lines.
+//
