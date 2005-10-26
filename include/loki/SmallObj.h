@@ -41,7 +41,8 @@ namespace Loki
 {
     class FixedAllocator;
 
-    /** @class SmallObjAllocator Manages pool of fixed-size allocators.
+    /** @class SmallObjAllocator
+     Manages pool of fixed-size allocators.
      Designed to be a non-templated base class of AllocatorSingleton so that
      implementation details can be safely hidden in the source code file.
      */
@@ -145,7 +146,8 @@ namespace Loki
     };
 
 
-    /** @class AllocatorSingleton This template class is derived from
+    /** @class AllocatorSingleton
+     This template class is derived from
      SmallObjAllocator in order to pass template arguments into it, and still
      have a default constructor for the singleton.  Each instance is a unique
      combination of all the template parameters, and hence is singleton only 
@@ -257,7 +259,8 @@ namespace Loki
     }
 
 
-    /** @class SmallObjectBase Base class for small object allocation classes.
+    /** @class SmallObjectBase
+     Base class for small object allocation classes.
      The shared implementation of the new and delete operators are here instead
      of being duplicated in both SmallObject or SmallValueObject.  This class
      is not meant to be used directly by clients, or derived from by clients.
@@ -437,7 +440,8 @@ namespace Loki
     }; // end class SmallObjectBase
 
 
-    /** @class SmallObject Base class for polymorphic small objects, offers fast
+    /** @class
+     SmallObject Base class for polymorphic small objects, offers fast
      allocations & deallocations.  Destructor is virtual and public.  Default
      constructor is trivial.   Copy-constructor and copy-assignment operator are
      not implemented since polymorphic classes almost always disable those
@@ -469,7 +473,8 @@ namespace Loki
     }; // end class SmallObject
 
 
-    /** @class SmallValueObject Base class for small objects with value-type
+    /** @class
+     SmallValueObject Base class for small objects with value-type
      semantics - offers fast allocations & deallocations.  Destructor is
      non-virtual, inline, and protected to prevent unintentional destruction
      through base class.  Default constructor is trivial.   Copy-constructor
@@ -503,6 +508,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.16  2005/10/26 00:50:44  rich_sposato
+// Minor changes to documentation comments.
+//
 // Revision 1.15  2005/10/15 19:41:23  syntheticpp
 // fix bug 1327060. Add missing template parameter to make different static variables possible
 //
