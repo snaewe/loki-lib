@@ -35,7 +35,10 @@ using namespace Loki;
 namespace Loki
 {
 
-    /** @struct Chunk Contains info about each allocated Chunk.
+    /** @struct Chunk
+     Contains info about each allocated Chunk - which is a collection of
+     contiguous blocks.  Each block is the same size, as specified by the
+     FixedAllocator.  The number of blocks in a Chunk depends upon page size.
      This is a POD-style struct with value-semantics.  All functions and data
      are private so that they can not be changed by anything other than the
      FixedAllocator which owns the Chunk.
@@ -879,6 +882,9 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.15  2005/10/26 00:50:44  rich_sposato
+// Minor changes to documentation comments.
+//
 // Revision 1.14  2005/10/17 18:06:13  rich_sposato
 // Removed unneeded include statements.  Changed lines that check for corrupt
 // Chunk.  Changed assertions when allocating.
