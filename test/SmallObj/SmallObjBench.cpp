@@ -14,7 +14,7 @@
 // $Header$
 
 //#define LOKI_CLASS_LEVEL_THREADING
-#define LOKI_OBJECT_LEVEL_THREADING
+//#define LOKI_OBJECT_LEVEL_THREADING
 
 // Uncomment this to test new [] and delete [].
 #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
@@ -25,7 +25,7 @@
 #include <iostream>
 #include <string>
 
-#define COMPARE_BOOST_POOL
+//#define COMPARE_BOOST_POOL
 #ifdef COMPARE_BOOST_POOL
   #include <boost\pool\object_pool.hpp>
 #endif
@@ -225,17 +225,17 @@ int run_delete_array( T** array, int loop, Timer& t, const char* s)
 
 
 
-template<unsigned int N, int loop>
+template<unsigned int Size, int loop>
 void testSize()
 {
-    typedef Base<N, void> 
+    typedef Base<Size, void> 
     A;
-    typedef Base<N, Loki::SmallObject< Loki::SingleThreaded > > 
+    typedef Base<Size, Loki::SmallObject< Loki::SingleThreaded > > 
     B;
-    typedef Base<N, Loki::SmallValueObject< Loki::SingleThreaded > > 
+    typedef Base<Size, Loki::SmallValueObject< Loki::SingleThreaded > > 
     C;
 #ifdef COMPARE_BOOST_POOL
-    typedef BoostPoolNew<N> 
+    typedef BoostPoolNew<Size> 
     D;
 #endif
 
@@ -394,6 +394,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.10  2005/10/27 19:10:32  syntheticpp
+// gcc fix
+//
 // Revision 1.9  2005/10/26 23:30:06  syntheticpp
 // make object size more flexible
 //
