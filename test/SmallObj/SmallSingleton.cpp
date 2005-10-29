@@ -13,8 +13,8 @@
 // $Header$
 
 
-#include "SmallObj.h"
-#include "Singleton.h"
+#include "../../include/loki/SmallObj.h"
+#include "../../include/loki/Singleton.h"
 #include <iostream>
 
 
@@ -172,6 +172,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.2  2005/10/29 10:21:46  syntheticpp
+// find loki include files without a correct sreach pathand some small fixes
+//
 // Revision 1.1  2005/10/14 18:48:10  rich_sposato
 // Adding SmallSingleton test project to CVS.
 //

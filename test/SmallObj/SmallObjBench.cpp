@@ -19,7 +19,7 @@
 // Uncomment this to test new [] and delete [].
 #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 
-#include "SmallObj.h"
+#include "../../include/loki/SmallObj.h"
 #include "timer.h"
 
 #include <iostream>
@@ -394,6 +394,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.11  2005/10/29 10:21:46  syntheticpp
+// find loki include files without a correct sreach pathand some small fixes
+//
 // Revision 1.10  2005/10/27 19:10:32  syntheticpp
 // gcc fix
 //

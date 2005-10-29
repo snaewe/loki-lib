@@ -1,4 +1,3 @@
-#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2005 Peter Kümmel
@@ -20,7 +19,7 @@
 // Uncomment this to test new [] and delete [].
 #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 
-#include "SmallObj.h"
+#include "../../include/loki/SmallObj.h"
 #include "timer.h"
 
 #include <iostream>
@@ -240,7 +239,7 @@ void testSize()
 	typedef BoostPoolNew<Size> D;
 #endif
 
-	cout << "Small-Object Benchmark Tests \n" << endl;
+	cout << "Allocator Benchmark Tests \n" << endl;
 	cout << "A = global new and delete \tsizeof(A) =" << sizeof(A) << endl;
 	cout << "B = Loki::SmallObject	 \tsizeof(B) =" << sizeof(B) << endl;
 	cout << "C = Loki::SmallValueObject\tsizeof(C) =" << sizeof(C) << endl;
@@ -280,10 +279,11 @@ int main()
 
 	const int loop = 1000*1000;
 
-	//testSize<8,loop>();
+	testSize<4,loop>();
+	testSize<8,loop>();
+	testSize<16,loop>();
+	testSize<32,loop>();
 	testSize<64,loop>();
-	//testSize<256,loop>();
-	//testSize<1024,loop>();
 	
 
 	system("PAUSE");
@@ -294,5 +294,4 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log:
-        
-#endif
+     
