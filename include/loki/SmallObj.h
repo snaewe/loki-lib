@@ -36,6 +36,11 @@
 #define LOKI_DEFAULT_OBJECT_ALIGNMENT 4
 #endif
 
+#if defined(LOKI_SMALL_OBJECT_USE_NEW_ARRAY) && defined(_MSC_VER)
+#pragma message("Don't define LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a Microsoft compiler to prevet memory leaks.")
+#pragma message("now calling '#undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY'")
+#undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY
+#endif
 
 namespace Loki
 {
@@ -508,6 +513,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.17  2005/10/29 08:10:13  syntheticpp
+// #undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a Microsoft compiler
+//
 // Revision 1.16  2005/10/26 00:50:44  rich_sposato
 // Minor changes to documentation comments.
 //
