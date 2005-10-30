@@ -20,6 +20,7 @@
 #include "Functor.h"
 #include "AssocVector.h"
 #include "SmallObj.h"
+#include "Sequence.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -129,6 +130,283 @@ namespace Loki
     {
         virtual AP* CreateObject(const Id & id ) = 0;
     };
+template <typename AP, typename Id, typename P1 >
+    struct FactoryImpl<AP,Id, Seq<P1> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        virtual AP* CreateObject(const Id& id,Parm1 ) = 0;
+    };
+
+    template<typename AP, typename Id, typename P1,typename P2 >
+    struct FactoryImpl<AP, Id, Seq<P1, P2> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2 ) = 0;
+    };
+
+    template<typename AP, typename Id, typename P1,typename P2,typename P3 >
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3 ) = 0;
+    };
+
+    template<typename AP, typename Id, typename P1,typename P2,typename P3,typename P4 >
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4 ) = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5 >
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5 ) = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6 )
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7 )
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8)
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8,typename P9>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8, Parm9)
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8,typename P9,typename P10>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8, Parm9,Parm10)
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8,typename P9,typename P10,
+    typename P11>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8, Parm9,Parm10,
+                                Parm11)
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8,typename P9,typename P10,
+    typename P11,typename P12>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8, Parm9,Parm10,
+                                Parm11,Parm12)
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8,typename P9,typename P10,
+    typename P11,typename P12,typename P13>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        typedef typename TypeTraits<P13>::ParameterType Parm13;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8, Parm9,Parm10,
+                                Parm11,Parm12,Parm13)
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8,typename P9,typename P10,
+    typename P11,typename P12,typename P13,typename P14>
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        typedef typename TypeTraits<P13>::ParameterType Parm13;
+        typedef typename TypeTraits<P14>::ParameterType Parm14;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8, Parm8,Parm10,
+                                Parm11,Parm12,Parm13,Parm14)
+        = 0;
+    };
+
+    template<typename AP, typename Id,
+    typename P1,typename P2,typename P3,typename P4,typename P5,
+    typename P6,typename P7,typename P8,typename P9,typename P10,
+    typename P11,typename P12,typename P13,typename P14,typename P15 >
+    struct FactoryImpl<AP, Id, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15> >
+                : public FactoryImplBase
+    {
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        typedef typename TypeTraits<P13>::ParameterType Parm13;
+        typedef typename TypeTraits<P14>::ParameterType Parm14;
+        typedef typename TypeTraits<P15>::ParameterType Parm15;
+        virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
+                                Parm6, Parm7, Parm8, Parm9,Parm10,
+                                Parm11,Parm12,Parm13,Parm14,Parm15 )
+        = 0;
+    };
+
+#ifndef LOKI_DISABLE_TYPELIST_MACROS
 
     template <typename AP, typename Id, typename P1 >
     struct FactoryImpl<AP,Id, LOKI_TYPELIST_1( P1 )>
@@ -404,8 +682,9 @@ namespace Loki
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12,Parm13,Parm14,Parm15 )
         = 0;
-    };
+	};
 
+#endif //LOKI_DISABLE_TYPELIST_MACROS
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -757,6 +1036,9 @@ namespace Loki
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.8  2005/10/30 13:49:44  syntheticpp
+// make disabling the TYPELIST macros possible
+//
 // Revision 1.7  2005/10/05 09:57:37  syntheticpp
 // move unreachable code warnings
 //

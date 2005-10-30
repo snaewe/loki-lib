@@ -16,6 +16,11 @@
 #include <iostream>
 #include "loki/Factory.h"
 #include "loki/Functor.h"
+
+#ifdef LOKI_DISABLE_TYPELIST_MACROS
+#define USE_WQUENCE
+#endif
+
 #ifdef USE_SEQUENCE
 #include "loki/Sequence.h"
 using Loki::Seq;
@@ -61,7 +66,7 @@ typedef SingletonHolder
 #ifndef USE_SEQUENCE
     Factory< AbstractProduct, int, LOKI_TYPELIST_2( int, int ) >
 #else
-	Factory< AbstractProduct, int, Seq< int, int >::Type >
+	Factory< AbstractProduct, int, Seq< int, int > >
 #endif
 >
 PFactory;
@@ -149,7 +154,7 @@ public:
 #ifndef USE_SEQUENCE
 typedef Functor<Product*,LOKI_TYPELIST_2(int,int)> CreateFunctor;
 #else
-typedef Functor<Product*,Seq<int,int>::Type> CreateFunctor;
+typedef Functor<Product*,Seq<int,int> > CreateFunctor;
 #endif
 
 typedef 
@@ -158,7 +163,7 @@ SingletonHolder
 #ifndef USE_SEQUENCE
     Factory< AbstractProduct, int,LOKI_TYPELIST_3(CreateFunctor,int,int) >
 #else
-	Factory< AbstractProduct, int,Seq<CreateFunctor,int,int>::Type >
+	Factory< AbstractProduct, int,Seq<CreateFunctor,int,int> >
 #endif
 >
 PFactoryFunctorParm;
@@ -244,6 +249,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.4  2005/10/30 13:49:44  syntheticpp
+// make disabling the TYPELIST macros possible
+//
 // Revision 1.3  2005/10/06 17:50:14  syntheticpp
 // adding template based list/sequence implementation, should replace LOKI_TYPELIST_, update some files
 //

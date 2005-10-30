@@ -2,6 +2,7 @@
 #define LOKI_TYPETRAITS_INC_
 
 #include "Typelist.h"
+#include "Sequence.h"
 
 namespace Loki
 {
@@ -64,6 +65,7 @@ namespace Loki
 
     namespace Private
     {
+#ifndef LOKI_DISABLE_TYPELIST_MACROS	
         typedef LOKI_TYPELIST_4(unsigned char, unsigned short int,unsigned int, unsigned long int) 
             StdUnsignedInts;
         typedef LOKI_TYPELIST_4(signed char, short int,int, long int) 
@@ -72,7 +74,17 @@ namespace Loki
             StdOtherInts;
         typedef LOKI_TYPELIST_3(float, double, long double) 
             StdFloats;
-            
+#else
+		typedef Loki::Seq<unsigned char, unsigned short int,unsigned int, unsigned long int>::Type
+            StdUnsignedInts;
+        typedef Loki::Seq<signed char, short int,int, long int>::Type
+            StdSignedInts;
+        typedef Loki::Seq<bool, char, wchar_t>::Type
+            StdOtherInts;
+        typedef Loki::Seq<float, double, long double>::Type
+            StdFloats;
+
+#endif            
         template <typename U> struct AddPointer
         {
             typedef U* Result;

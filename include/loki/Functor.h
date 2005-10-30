@@ -13,12 +13,13 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// $Header:
 
 #ifndef LOKI_FUNCTOR_INC_
 #define LOKI_FUNCTOR_INC_
 
 #include "Typelist.h"
+#include "Sequence.h"
 #include "EmptyType.h"
 #include "SmallObj.h"
 #include "TypeTraits.h"
@@ -103,6 +104,394 @@ namespace Loki
         typedef R ResultType;
         virtual R operator()() = 0;
     };
+
+	////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 1 parameter
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, template <class> class ThreadingModel>
+        class FunctorImpl<R, Seq<P1>, ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        virtual R operator()(Parm1) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 2 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, 
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2>, ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        virtual R operator()(Parm1, Parm2) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 3 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3>, ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        virtual R operator()(Parm1, Parm2, Parm3) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 4 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3, P4>, ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 5 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3, P4, P5>, ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 6 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6>, ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 7 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7>, ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 8 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7, P8>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 9 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8, typename P9,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8, Parm9) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 10 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8, typename P9,
+        typename P10,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8, Parm9, Parm10) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 11 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8, typename P9,
+        typename P10, typename P11,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R,
+            Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8, Parm9, Parm10, Parm11) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 12 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8, typename P9,
+        typename P10, typename P11, typename P12,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R,
+            Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8, Parm9, Parm10, Parm11, Parm12) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 13 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8, typename P9,
+        typename P10, typename P11, typename P12, typename P13,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R,
+            Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        typedef typename TypeTraits<P13>::ParameterType Parm13;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 14 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8, typename P9,
+        typename P10, typename P11, typename P12, typename P13, typename P14,
+        template <class> class ThreadingModel>
+    class FunctorImpl<R,
+            Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13,
+                P14>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        typedef typename TypeTraits<P13>::ParameterType Parm13;
+        typedef typename TypeTraits<P14>::ParameterType Parm14;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14) = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
+// class template FunctorImpl
+// Specialization for 15 parameters
+////////////////////////////////////////////////////////////////////////////////
+
+    template <typename R, typename P1, typename P2, typename P3, typename P4,
+        typename P5, typename P6, typename P7, typename P8, typename P9,
+        typename P10, typename P11, typename P12, typename P13, typename P14,
+        typename P15, template <class> class ThreadingModel>
+    class FunctorImpl<R,
+            Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13,
+                P14, P15>,
+            ThreadingModel>
+        : public Private::FunctorImplBase<R, ThreadingModel>
+    {
+    public:
+        typedef R ResultType;
+        typedef typename TypeTraits<P1>::ParameterType Parm1;
+        typedef typename TypeTraits<P2>::ParameterType Parm2;
+        typedef typename TypeTraits<P3>::ParameterType Parm3;
+        typedef typename TypeTraits<P4>::ParameterType Parm4;
+        typedef typename TypeTraits<P5>::ParameterType Parm5;
+        typedef typename TypeTraits<P6>::ParameterType Parm6;
+        typedef typename TypeTraits<P7>::ParameterType Parm7;
+        typedef typename TypeTraits<P8>::ParameterType Parm8;
+        typedef typename TypeTraits<P9>::ParameterType Parm9;
+        typedef typename TypeTraits<P10>::ParameterType Parm10;
+        typedef typename TypeTraits<P11>::ParameterType Parm11;
+        typedef typename TypeTraits<P12>::ParameterType Parm12;
+        typedef typename TypeTraits<P13>::ParameterType Parm13;
+        typedef typename TypeTraits<P14>::ParameterType Parm14;
+        typedef typename TypeTraits<P15>::ParameterType Parm15;
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+            Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14,
+            Parm15) = 0;
+    };
+
+#ifndef LOKI_DISABLE_TYPELIST_MACROS
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template FunctorImpl
@@ -489,6 +878,8 @@ namespace Loki
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14,
             Parm15) = 0;
     };
+
+#endif //LOKI_DISABLE_TYPELIST_MACROS
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template FunctorHandler
