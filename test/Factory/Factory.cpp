@@ -66,7 +66,7 @@ typedef SingletonHolder
 #ifndef USE_SEQUENCE
     Factory< AbstractProduct, int, LOKI_TYPELIST_2( int, int ) >
 #else
-	Factory< AbstractProduct, int, Seq< int, int > >
+    Factory< AbstractProduct, int, Seq< int, int > >
 #endif
 >
 PFactory;
@@ -163,7 +163,7 @@ SingletonHolder
 #ifndef USE_SEQUENCE
     Factory< AbstractProduct, int,LOKI_TYPELIST_3(CreateFunctor,int,int) >
 #else
-	Factory< AbstractProduct, int,Seq<CreateFunctor,int,int> >
+    Factory< AbstractProduct, int,Seq<CreateFunctor,int,int> >
 #endif
 >
 PFactoryFunctorParm;
@@ -249,6 +249,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.5  2005/10/30 14:03:23  syntheticpp
+// replace tabs space
+//
 // Revision 1.4  2005/10/30 13:49:44  syntheticpp
 // make disabling the TYPELIST macros possible
 //

@@ -211,7 +211,7 @@ namespace Loki
             typedef NullType Result;
         };
         
-		template <class T> struct Append<NullType, T>
+        template <class T> struct Append<NullType, T>
         {
             typedef Typelist<T,NullType> Result;
         };

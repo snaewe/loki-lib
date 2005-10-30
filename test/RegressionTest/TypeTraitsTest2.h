@@ -180,7 +180,7 @@ private:
     
     void testFunction();
     void testFunctionPointer();
-	void testMemberFunctionPointer();
+    void testMemberFunctionPointer();
 
     void testParameterType();
     void testReferredType();
@@ -220,7 +220,7 @@ inline void TypeTraitsTest2::execute(TestResult &result)
     
     testFunction();
     testFunctionPointer();
-	testMemberFunctionPointer();
+    testMemberFunctionPointer();
 
     bool r = erroneousConditions_ == 0;
 
@@ -581,7 +581,7 @@ inline void TypeTraitsTest2::testFunction()
 #undef CONDITION
 #define CONDITION isFunction
 
-	testBegin("isFunction");
+    testBegin("isFunction");
 
     PASS(void());
     PASS(void(int, float, ...));
@@ -597,9 +597,9 @@ inline void TypeTraitsTest2::testFunctionPointer()
 #undef CONDITION
 #define CONDITION isFunctionPointer
 
-	testBegin("isFunctionPointer");
+    testBegin("isFunctionPointer");
 
- 	PASS(void (*)());
+     PASS(void (*)());
     FAIL(void (A::* const volatile)());
     FAIL(void (A::* const volatile)() const);
     FAIL(void (A::* const volatile)() volatile);
@@ -624,7 +624,7 @@ inline void TypeTraitsTest2::testMemberFunctionPointer()
 #undef CONDITION
 #define CONDITION isMemberFunctionPointer
 
-	testBegin("isMemberFunctionPointer");
+    testBegin("isMemberFunctionPointer");
 
     PASS(void (A::* const volatile)());
     PASS(void (A::* const volatile)() const);

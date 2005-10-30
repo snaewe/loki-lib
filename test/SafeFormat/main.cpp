@@ -58,7 +58,7 @@ void TestCase(const string& fmt, T value) {
 #ifdef _MSC_VER    
     const int i2 = _snprintf(buf, sizeof(buf), fmt.c_str(), value); 
 #else
-	const int i2 = snprintf(buf, sizeof(buf), fmt.c_str(), value); 
+    const int i2 = snprintf(buf, sizeof(buf), fmt.c_str(), value); 
 #endif
     
     if (i1 != i2 || s != buf) {

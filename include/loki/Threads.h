@@ -53,7 +53,7 @@ namespace Loki
         {
             Lock() {}
             explicit Lock(const SingleThreaded&) {}
-			explicit Lock(const SingleThreaded*) {}
+            explicit Lock(const SingleThreaded*) {}
         };
         
         typedef Host VolatileType;
@@ -125,9 +125,9 @@ namespace Loki
                 pthread_mutex_unlock(&atomic_mutex_)    
                 
 #define LOKI_THREADS_ATOMIC_FUNCTIONS                                    \
-		private:                                                         \
-			static pthread_mutex_t atomic_mutex_;                        \
-		public:                                                          \
+        private:                                                         \
+            static pthread_mutex_t atomic_mutex_;                        \
+        public:                                                          \
         static IntType AtomicIncrement(volatile IntType& lval)           \
         { LOKI_THREADS_ATOMIC( lval++ ); return lval; }                  \
                                                                          \
@@ -184,7 +184,7 @@ namespace Loki
                 LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
             }
 
-			explicit Lock(const ObjectLevelLockable* host) : host_(*host)
+            explicit Lock(const ObjectLevelLockable* host) : host_(*host)
             {
                 LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
             }
@@ -195,7 +195,7 @@ namespace Loki
             }
             
         private:
-			Lock();
+            Lock();
             Lock(const Lock&);
             Lock& operator=(const Lock&);
             const ObjectLevelLockable& host_;
@@ -210,7 +210,7 @@ namespace Loki
     };
 
 #if defined(_PTHREAD_H) 
-	template <class Host>
+    template <class Host>
     pthread_mutex_t ObjectLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
 #endif
     
@@ -264,7 +264,7 @@ namespace Loki
                 LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
             }
 
-			explicit Lock(const ClassLevelLockable*)
+            explicit Lock(const ClassLevelLockable*)
             {
                 assert(initializer_.init_);
                 LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
@@ -290,7 +290,7 @@ namespace Loki
     };
 
 #if defined(_PTHREAD_H) 
-	template <class Host>
+    template <class Host>
     pthread_mutex_t ClassLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
 #endif
 
@@ -314,6 +314,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.16  2005/10/30 14:03:23  syntheticpp
+// replace tabs space
+//
 // Revision 1.15  2005/10/24 20:35:12  syntheticpp
 // small changes for Threads; add compile test for Threads.h
 //

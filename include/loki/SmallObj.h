@@ -309,7 +309,7 @@ namespace Loki
         std::size_t objectAlignSize,
         template <class> class LifetimePolicy
     >
-	class SmallObjectBase
+    class SmallObjectBase
     {
 
 #if (LOKI_MAX_SMALL_OBJECT_SIZE != 0) && (LOKI_DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
@@ -324,7 +324,7 @@ namespace Loki
         /// Defines singleton made from allocator.
         typedef Loki::SingletonHolder< MyAllocator, Loki::CreateStatic,
             LifetimePolicy, ThreadingModel > MyAllocatorSingleton;
-		
+        
     public:
 
         /// Throwing single-object new throws bad_alloc when allocation fails.
@@ -513,6 +513,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.18  2005/10/30 14:03:23  syntheticpp
+// replace tabs space
+//
 // Revision 1.17  2005/10/29 08:10:13  syntheticpp
 // #undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a Microsoft compiler
 //

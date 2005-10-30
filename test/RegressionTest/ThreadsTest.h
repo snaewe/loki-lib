@@ -19,44 +19,44 @@
 
 namespace ThreadsTestPrivate
 {
-	class SingleLevel : public Loki::SingleThreaded<SingleLevel>
-	{
-		int i;
-	public:
-		void test()
-		{
-			Lock lock0;
-			Lock lock(*this);
-			Lock lockThis(this);
-			i++;
-		}
-	};
+    class SingleLevel : public Loki::SingleThreaded<SingleLevel>
+    {
+        int i;
+    public:
+        void test()
+        {
+            Lock lock0;
+            Lock lock(*this);
+            Lock lockThis(this);
+            i++;
+        }
+    };
 
-	class ClassLevel : public Loki::ClassLevelLockable<ClassLevel>
-	{
-		int i;
-	public:
-		void test()
-		{
-			Lock lock0;
-			Lock lock(*this);
-			Lock lockThis(this);
-			i++;
-		}
-	};
+    class ClassLevel : public Loki::ClassLevelLockable<ClassLevel>
+    {
+        int i;
+    public:
+        void test()
+        {
+            Lock lock0;
+            Lock lock(*this);
+            Lock lockThis(this);
+            i++;
+        }
+    };
 
-	class ObjectLevel : public Loki::ObjectLevelLockable<ObjectLevel>
-	{
-		int i;
-	public:
-		void test()
-		{
-			//Lock lock0_must_not_compile;
-			Lock lock(*this);
-			Lock lockThis(this);
-			i++;
-		}
-	};
+    class ObjectLevel : public Loki::ObjectLevelLockable<ObjectLevel>
+    {
+        int i;
+    public:
+        void test()
+        {
+            //Lock lock0_must_not_compile;
+            Lock lock(*this);
+            Lock lockThis(this);
+            i++;
+        }
+    };
 }
 
 class ThreadsTest : public Test
@@ -68,7 +68,7 @@ public:
     {
     printName(result);
 
-	bool r = true; // TODO some tests
+    bool r = true; // TODO some tests
 
     testAssert("Threads",r,result);
 

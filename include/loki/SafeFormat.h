@@ -319,7 +319,7 @@ private:
 #ifdef _MSC_VER
         const int stored = _snprintf(resultBuf, 
 #else
-		const int stored = snprintf(resultBuf, 
+        const int stored = snprintf(resultBuf, 
 #endif        
             sizeof(resultBuf) / sizeof(Char), fmtBuf, n);
         if (stored < 0) {
@@ -408,14 +408,14 @@ private:
     }
     
     void ParseDecimalUInt(unsigned int& dest) {
-		if (!std::isdigit(*format_, std::locale())) return;
+        if (!std::isdigit(*format_, std::locale())) return;
         unsigned int r = 0;
         do {
             // TODO: inefficient - rewrite
             r *= 10;
             r += *format_ - '0';
             ++format_;
-		} while (std::isdigit(*format_, std::locale()));
+        } while (std::isdigit(*format_, std::locale()));
         dest = r;
     }
     

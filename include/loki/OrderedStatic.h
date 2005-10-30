@@ -165,7 +165,7 @@ namespace Loki
     };
 
     template<unsigned int L, class T, typename P1>
-	class OrderedStatic<L, T, Loki::Seq<P1> > : public Private::OrderedStaticBase<T>
+    class OrderedStatic<L, T, Loki::Seq<P1> > : public Private::OrderedStaticBase<T>
     {
     public:
         OrderedStatic(P1 p) : Private::OrderedStaticBase<T>(L), para_(p)

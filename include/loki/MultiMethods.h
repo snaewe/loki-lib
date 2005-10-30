@@ -37,18 +37,18 @@ namespace Loki
     namespace Private
     {
         template <class SomeLhs, class SomeRhs, 
-			class Executor, typename ResultType>
+            class Executor, typename ResultType>
         struct InvocationTraits
         {
             static ResultType 
-	    DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
-			Executor& exec, Int2Type<false>)
+        DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
+            Executor& exec, Int2Type<false>)
             {
                 return exec.Fire(lhs, rhs);
             }
             static ResultType 
-	    DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
-			Executor& exec, Int2Type<true>)
+        DoDispatch(SomeLhs& lhs, SomeRhs& rhs, 
+            Executor& exec, Int2Type<true>)
             {
                 return exec.Fire(rhs, lhs);
             }
@@ -157,15 +157,15 @@ namespace Loki
 
     // Non-inline to reduce compile time overhead...
     template <class BaseLhs, class BaseRhs, 
-		typename ResultType, typename CallbackType>
+        typename ResultType, typename CallbackType>
     void BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
-    	 ::DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
+         ::DoAdd(TypeInfo lhs, TypeInfo rhs, CallbackType fun)
     {
         callbackMap_[KeyType(lhs, rhs)] = fun;
     }
         
     template <class BaseLhs, class BaseRhs, 
-		typename ResultType, typename CallbackType>
+        typename ResultType, typename CallbackType>
     bool BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
          ::DoRemove(TypeInfo lhs, TypeInfo rhs)
     {
@@ -173,11 +173,11 @@ namespace Loki
     }
 
     template <class BaseLhs, class BaseRhs, 
-		typename ResultType, typename CallbackType>
+        typename ResultType, typename CallbackType>
     ResultType BasicDispatcher<BaseLhs,BaseRhs,ResultType,CallbackType>
                ::Go(BaseLhs& lhs, BaseRhs& rhs)
     {
-    	typename MapType::key_type k(typeid(lhs),typeid(rhs));
+        typename MapType::key_type k(typeid(lhs),typeid(rhs));
         typename MapType::iterator i = callbackMap_.find(k);
         if (i == callbackMap_.end())
         {
@@ -222,7 +222,7 @@ namespace Loki
     namespace Private
     {
         template <class BaseLhs, class BaseRhs,
-	    class SomeLhs, class SomeRhs,
+        class SomeLhs, class SomeRhs,
             typename ResultType,
             class CastLhs, class CastRhs,
             ResultType (*Callback)(SomeLhs&, SomeRhs&)>
@@ -266,13 +266,13 @@ namespace Loki
             ResultType (*callback)(SomeLhs&, SomeRhs&)>
         void Add()
         {
-	    typedef Private::FnDispatcherHelper<
-					BaseLhs, BaseRhs, 
-					SomeLhs, SomeRhs,
-					ResultType,
-					CastingPolicy<SomeLhs,BaseLhs>, 
-					CastingPolicy<SomeRhs,BaseRhs>, 
-					callback> Local;
+        typedef Private::FnDispatcherHelper<
+                    BaseLhs, BaseRhs, 
+                    SomeLhs, SomeRhs,
+                    ResultType,
+                    CastingPolicy<SomeLhs,BaseLhs>, 
+                    CastingPolicy<SomeRhs,BaseRhs>, 
+                    callback> Local;
 
             Add<SomeLhs, SomeRhs>(&Local::Trampoline);
         }
@@ -282,13 +282,13 @@ namespace Loki
             bool symmetric>
         void Add(bool = true) // [gcc] dummy bool
         {
-	    typedef Private::FnDispatcherHelper<
-					BaseLhs, BaseRhs, 
-					SomeLhs, SomeRhs,
-					ResultType,
-					CastingPolicy<SomeLhs,BaseLhs>, 
-					CastingPolicy<SomeRhs,BaseRhs>, 
-					callback> Local;
+        typedef Private::FnDispatcherHelper<
+                    BaseLhs, BaseRhs, 
+                    SomeLhs, SomeRhs,
+                    ResultType,
+                    CastingPolicy<SomeLhs,BaseLhs>, 
+                    CastingPolicy<SomeRhs,BaseRhs>, 
+                    callback> Local;
 
             Add<SomeLhs, SomeRhs>(&Local::Trampoline);
             if (symmetric)
@@ -316,11 +316,11 @@ namespace Loki
 
     namespace Private
     {
-	template <class BaseLhs, class BaseRhs,
-		  class SomeLhs, class SomeRhs,
-		  typename ResultType,
-		  class CastLhs, class CastRhs,
-		  class Fun, bool SwapArgs>
+    template <class BaseLhs, class BaseRhs,
+          class SomeLhs, class SomeRhs,
+          typename ResultType,
+          class CastLhs, class CastRhs,
+          class Fun, bool SwapArgs>
         class FunctorDispatcherHelper 
         {
             Fun fun_;
@@ -365,33 +365,33 @@ namespace Loki
         void Add(const Fun& fun)
         {
             typedef Private::FunctorDispatcherHelper<
-					BaseLhs, BaseRhs,
-					SomeLhs, SomeRhs,
-					ResultType,
-					CastingPolicy<SomeLhs, BaseLhs>,
-					CastingPolicy<SomeRhs, BaseRhs>,
-					Fun, false> Adapter;
+                    BaseLhs, BaseRhs,
+                    SomeLhs, SomeRhs,
+                    ResultType,
+                    CastingPolicy<SomeLhs, BaseLhs>,
+                    CastingPolicy<SomeRhs, BaseRhs>,
+                    Fun, false> Adapter;
 
             backEnd_.template Add<SomeLhs, SomeRhs>(FunctorType(Adapter(fun)));
-	}
+    }
         template <class SomeLhs, class SomeRhs, bool symmetric, class Fun>
         void Add(const Fun& fun)
         {
-	    Add<SomeLhs,SomeRhs>(fun);
+        Add<SomeLhs,SomeRhs>(fun);
 
-	    if (symmetric)
-	    {
-		// Note: symmetry only makes sense where BaseLhs==BaseRhs
-            	typedef Private::FunctorDispatcherHelper<
-					BaseLhs, BaseLhs,
-					SomeLhs, SomeRhs,
-					ResultType,
-					CastingPolicy<SomeLhs, BaseLhs>,
-					CastingPolicy<SomeRhs, BaseLhs>,
-					Fun, true> AdapterR;
+        if (symmetric)
+        {
+        // Note: symmetry only makes sense where BaseLhs==BaseRhs
+                typedef Private::FunctorDispatcherHelper<
+                    BaseLhs, BaseLhs,
+                    SomeLhs, SomeRhs,
+                    ResultType,
+                    CastingPolicy<SomeLhs, BaseLhs>,
+                    CastingPolicy<SomeRhs, BaseLhs>,
+                    Fun, true> AdapterR;
 
                 backEnd_.template Add<SomeRhs, SomeLhs>(FunctorType(AdapterR(fun)));
-	    }
+        }
         }
         
         template <class SomeLhs, class SomeRhs>

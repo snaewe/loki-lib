@@ -33,7 +33,7 @@ public:
     using namespace Loki;
     using namespace Loki::TL;
 
-	typedef Seq<char>::Type CharList;
+    typedef Seq<char>::Type CharList;
     typedef Seq<char,int,double>::Type CharIntDoubleList;
     typedef Seq<char,int,double,char>::Type CharIntDoubleCharList;
     typedef Seq<Base,Derived1,Derived2>::Type BaseDerived1Derived2List;

@@ -39,18 +39,18 @@ public:
 
 
 #ifndef LOKI_DISABLE_TYPELIST_MACROS
-	Functor<void,LOKI_TYPELIST_1(bool &)> function(testFunction);
+    Functor<void,LOKI_TYPELIST_1(bool &)> function(testFunction);
     Functor<void,LOKI_TYPELIST_1(bool &)> functor(testFunctor);
     Functor<void,LOKI_TYPELIST_1(bool &)> classFunctor(&testClass,&TestClass::member);
     Functor<void,LOKI_TYPELIST_1(bool &)> functorCopy(function);
     Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
     Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
 #else
-	Functor<void,Seq<bool &> > function(testFunction);
+    Functor<void,Seq<bool &> > function(testFunction);
     Functor<void,Seq<bool &> > functor(testFunctor);
     Functor<void,Seq<bool &> > classFunctor(&testClass,&TestClass::member);
     Functor<void,Seq<bool &> > functorCopy(function);
-	//TODO:
+    //TODO:
     //Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
     //Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
 #endif
@@ -83,8 +83,8 @@ public:
     r=functionResult && functorResult && classFunctorResult && functorCopyResult && bindFunctorResult &&
       chainFunctorResult;
 #else
-	//TODO!
-	 r=functionResult && functorResult && classFunctorResult && functorCopyResult;
+    //TODO!
+     r=functionResult && functorResult && classFunctorResult && functorCopyResult;
 #endif
 
     testAssert("Functor",r,result);
