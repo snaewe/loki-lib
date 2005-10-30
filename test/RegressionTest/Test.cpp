@@ -20,7 +20,7 @@
 #endif
 
 //#define LOKI_CLASS_LEVEL_THREADING
-#define LOKI_OBJECT_LEVEL_THREADING
+//#define LOKI_OBJECT_LEVEL_THREADING
 
 // Some platforms might have difficulty with this
 // Need to ifdef around those cases.
@@ -56,7 +56,7 @@ Test::tests_type Test::tests;
 #include "AbstractFactoryTest.h"
 #include "FunctorTest.h"
 #include "DataGeneratorsTest.h"
-//#include "AssocVectorTest.h"
+#include "AssocVectorTest.h"
 
 int main()
 {
@@ -117,6 +117,9 @@ int main()
 
 
 // $Log$
+// Revision 1.12  2005/10/30 14:22:31  syntheticpp
+// disable threading because the sdk (windows.h) is not detected automatically by the batch scripts
+//
 // Revision 1.11  2005/10/30 13:49:44  syntheticpp
 // make disabling the TYPELIST macros possible
 //
