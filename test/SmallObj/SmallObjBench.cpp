@@ -130,6 +130,11 @@ int FUNC(void**, const int N, int loop, Timer& t, const char* s)             \
     t.print(t.t(),s);                                                        \
     return t.t();                                                            \
 }
+#ifdef COMPARE_BOOST_POOL
+    #define LOKI_BOOST_TEST_NR 3
+#else
+    #define LOKI_BOOST_TEST_NR -1
+#endif
 
 #define LOKI_SMALLOBJ_BENCH_ARRAY(FUNC, CODE_DECL, CODE_NEW, CODE_DELETE)    \
 template<class T, int TN>                                                    \
@@ -156,7 +161,7 @@ int FUNC(void** arrv, const int N, int loop, Timer& t, const char* s)        \
         t.t100 = t100_new;                                                   \
     t.print(t.t(),s);                                                        \
                                                                              \
-    if(array_test_nr==3)                                                     \
+    if(array_test_nr==LOKI_BOOST_TEST_NR)                                    \
     {                                                                        \
         cout <<                                                              \
         "2. boost    :\tboost::object_pool is not tested because it's too slow"\
@@ -311,6 +316,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.14  2005/10/30 14:33:33  syntheticpp
+// test correct also when boost is disabled
+//
 // Revision 1.13  2005/10/30 14:03:23  syntheticpp
 // replace tabs space
 //
