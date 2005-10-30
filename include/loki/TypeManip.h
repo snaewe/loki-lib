@@ -226,7 +226,7 @@ struct SuperSubclassStrict
 template<>
 struct SuperSubclassStrict<void, void> 
 {
-	enum { value = false };
+    enum { value = false };
 };
 
 template<class U>

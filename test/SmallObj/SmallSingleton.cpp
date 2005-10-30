@@ -165,13 +165,16 @@ int main()
     MortalSingleton::Instance().DoThat();
     LongLivedSingleton::Instance().DoThat();
     ImmortalSingleton::Instance().DoThat();
-	system("PAUSE");
-	return 0;
+    system("PAUSE");
+    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.3  2005/10/30 14:03:23  syntheticpp
+// replace tabs space
+//
 // Revision 1.2  2005/10/29 10:21:46  syntheticpp
 // find loki include files without a correct sreach pathand some small fixes
 //

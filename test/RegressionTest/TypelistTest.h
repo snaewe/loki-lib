@@ -35,7 +35,7 @@ public:
     using namespace Loki::TL;
 
 #ifndef LOKI_DISABLE_TYPELIST_MACROS
-	typedef LOKI_TYPELIST_1(char) CharList;
+    typedef LOKI_TYPELIST_1(char) CharList;
     typedef LOKI_TYPELIST_3(char,int,double) CharIntDoubleList;
     typedef LOKI_TYPELIST_4(char,int,double,char) CharIntDoubleCharList;
     typedef LOKI_TYPELIST_3(Base,Derived1,Derived2) BaseDerived1Derived2List;
@@ -43,8 +43,8 @@ public:
     typedef LOKI_TYPELIST_4(Base,Derived1,Base,Derived2) BaseDerived1BaseDerived2List;
     typedef LOKI_TYPELIST_4(Derived1,Base,Derived1,Derived2) Derived1BaseDerived1Derived2List;
 #else
-	typedef Seq<char>::Type CharList;
-	typedef Seq<char,int,double>::Type CharIntDoubleList;
+    typedef Seq<char>::Type CharList;
+    typedef Seq<char,int,double>::Type CharIntDoubleList;
     typedef Seq<char,int,double,char>::Type CharIntDoubleCharList;
     typedef Seq<Base,Derived1,Derived2>::Type BaseDerived1Derived2List;
     typedef Seq<Derived2,Derived1,Base>::Type Derived2Derived1BaseList;
@@ -179,8 +179,8 @@ public:
 
 #else //LOKI_DISABLE_TYPELIST_MACROS
 
-	r=SameType<Append<NullType,NullType>::Result,NullType>::value &&
-		SameType<Append<NullType,char>::Result,Seq<char>::Type >::value &&
+    r=SameType<Append<NullType,NullType>::Result,NullType>::value &&
+        SameType<Append<NullType,char>::Result,Seq<char>::Type >::value &&
       SameType<Append<NullType,CharList>::Result,CharList>::value &&
       SameType<Append<CharList,NullType>::Result,CharList>::value &&
       SameType<Append<CharList,int>::Result,Seq<char,int>::Type >::value &&
@@ -254,7 +254,7 @@ public:
       SameType<DerivedToFront<CharIntDoubleCharList>::Result,CharIntDoubleCharList>::value &&
       SameType<DerivedToFront<BaseDerived1Derived2List>::Result,Derived2Derived1BaseList>::value &&
       SameType<DerivedToFront<Derived2Derived1BaseList>::Result,Derived2Derived1BaseList>::value &&
-	  SameType<DerivedToFront<BaseDerived1BaseDerived2List>::Result,Seq<Derived2,Derived1,Base,Base>::Type >::value &&
+      SameType<DerivedToFront<BaseDerived1BaseDerived2List>::Result,Seq<Derived2,Derived1,Base,Base>::Type >::value &&
       SameType<DerivedToFront<Derived1BaseDerived1Derived2List>::Result,Seq<Derived2,Derived1,Derived1,Base>::Type >::value;
 
       testAssert("DerivedToFront",r,result);

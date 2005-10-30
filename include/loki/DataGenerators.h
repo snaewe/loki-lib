@@ -30,12 +30,12 @@ Example Use
 
 template<typename T>
 struct ExtractDataType
-	{
-	some_type operator()()
-		{
-		return create_value_from_type<T>;
-		}
-	};
+    {
+    some_type operator()()
+        {
+        return create_value_from_type<T>;
+        }
+    };
 
 Loki::IterateTypes<parameter_tl, ExtractDataType> gendata;
 std::vector<some_type> stuff;
@@ -43,24 +43,24 @@ gendata(std::back_inserter(stuff));
 *******************************************************************************/
 namespace Loki
 {
-	namespace TL
-		{
-		template<typename T>
-		struct nameof_type
-			{
-			const char* operator()()
-				{
-				return typeid(T).name();
-				}
-			};
-		template<typename T>
-		struct sizeof_type
-			{
-			size_t operator()()
-				{
-				return sizeof(T);
-				}
-			};
+    namespace TL
+        {
+        template<typename T>
+        struct nameof_type
+            {
+            const char* operator()()
+                {
+                return typeid(T).name();
+                }
+            };
+        template<typename T>
+        struct sizeof_type
+            {
+            size_t operator()()
+                {
+                return sizeof(T);
+                }
+            };
     template <class TList, template <class> class GenFunc>
     struct IterateTypes;
      
@@ -75,8 +75,8 @@ namespace Loki
     void operator()(II ii)
         {
         head.operator()(ii);
-		tail.operator()(ii);
-		}
+        tail.operator()(ii);
+        }
     };
      
     template <class AtomicType, template <class> class GenFunc>
@@ -99,13 +99,13 @@ namespace Loki
         {}
     };
     
-	template<typename Types, template <class> class UnitFunc, typename II>
-	void iterate_types(II ii)
-		{
-		Loki::TL::IterateTypes<Types, UnitFunc> it;
-		it(ii);
-		}
-	}//ns TL
+    template<typename Types, template <class> class UnitFunc, typename II>
+    void iterate_types(II ii)
+        {
+        Loki::TL::IterateTypes<Types, UnitFunc> it;
+        it(ii);
+        }
+    }//ns TL
 }//ns Loki
 
 #endif //DATAGENERATORS_H

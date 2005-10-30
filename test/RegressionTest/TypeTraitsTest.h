@@ -105,7 +105,7 @@ public:
       SameType<TypeTraits<int>::ParameterType,int>::value &&
       SameType<TypeTraits<double>::ParameterType,double>::value &&
       SameType<TypeTraits<Test&>::ParameterType,Test &>::value &&
-	  SameType<TypeTraits<Test>::ParameterType,const Test &>::value;
+      SameType<TypeTraits<Test>::ParameterType,const Test &>::value;
 
     testAssert("TypeTraits",r,result);
 

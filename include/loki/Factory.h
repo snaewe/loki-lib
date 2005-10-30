@@ -682,7 +682,7 @@ template <typename AP, typename Id, typename P1 >
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12,Parm13,Parm14,Parm15 )
         = 0;
-	};
+    };
 
 #endif //LOKI_DISABLE_TYPELIST_MACROS
 
@@ -1036,6 +1036,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.9  2005/10/30 14:03:23  syntheticpp
+// replace tabs space
+//
 // Revision 1.8  2005/10/30 13:49:44  syntheticpp
 // make disabling the TYPELIST macros possible
 //

@@ -1,9 +1,9 @@
 // Boost.Function library
 
-//	Copyright Douglas Gregor 2001-2003. Use, modification and
-//	distribution is subject to the Boost Software License, Version
-//	1.0. (See accompanying file LICENSE_1_0.txt or copy at
-//	http://www.boost.org/LICENSE_1_0.txt)
+//    Copyright Douglas Gregor 2001-2003. Use, modification and
+//    distribution is subject to the Boost Software License, Version
+//    1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//    http://www.boost.org/LICENSE_1_0.txt)
 
 // For more information, see http://www.boost.org
 
@@ -44,20 +44,20 @@ struct write_three_obj{int operator()() const {global_int = 3; return 7;}};
 struct write_three_obj{void operator()() const {global_int = 3;}};
 #endif
 
-static void write_five()	{global_int = 5;}
-static void write_three()	{global_int = 3;}
-struct generate_five_obj	{int operator()() const {return 5;}};
-struct generate_three_obj	{int operator()() const {return 3;}};
-static int generate_five()	{return 5;}
-static int generate_three()	{return 3;}
+static void write_five()    {global_int = 5;}
+static void write_three()    {global_int = 3;}
+struct generate_five_obj    {int operator()() const {return 5;}};
+struct generate_three_obj    {int operator()() const {return 3;}};
+static int generate_five()    {return 5;}
+static int generate_three()    {return 3;}
 static string identity_str(const string& s){return s;}
 static string string_cat(const string& s1, const string& s2){return s1+s2;}
 static int sum_ints(int x, int y){return x+y;}
 
 struct write_const_1_nonconst_2
 {
-	void operator()(){global_int = 2;}
-	void operator()() const {global_int = 1;}
+    void operator()(){global_int = 2;}
+    void operator()() const {global_int = 1;}
 };
 struct add_to_obj
 {
@@ -645,7 +645,7 @@ static void test_member_functions()
     Loki::Function<int ()> f1_2(&one,&X::twice);
     BOOST_CHECK(f1_2() == 2);
 
-    f1_2 =	Loki::function<int ()>(&five,&X::twice);
+    f1_2 =    Loki::function<int ()>(&five,&X::twice);
     BOOST_CHECK(f1_2() == 10);
 
 #endif
@@ -698,12 +698,12 @@ static void test_ref()
     try
     {
 #ifndef TEST_LOKI_FUNCTION
-		boost::function<int (int, int)> f(ref(atc));
-		BOOST_CHECK(f(1, 3) == 4);
+        boost::function<int (int, int)> f(ref(atc));
+        BOOST_CHECK(f(1, 3) == 4);
 #else
-		//TODO: implement Loki::Ref
-		//Loki::Function<int (int, int)> f(Loki::ref(atc));
-		//BOOST_CHECK(f(1, 3) == 4);
+        //TODO: implement Loki::Ref
+        //Loki::Function<int (int, int)> f(Loki::ref(atc));
+        //BOOST_CHECK(f(1, 3) == 4);
 #endif
         
     }
@@ -731,7 +731,7 @@ static void test_exception()
 #else
     catch(Loki::bad_function_call)
 #endif
-	{
+    {
         // okay
     }
 }

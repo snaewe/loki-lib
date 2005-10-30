@@ -158,7 +158,7 @@ struct DefaultCatchAll
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LOKI_DEFINE_VISITABLE() \
-	virtual ReturnType Accept(::Loki::BaseVisitor& guest) \
+    virtual ReturnType Accept(::Loki::BaseVisitor& guest) \
     { return AcceptImpl(*this, guest); }
 
 ////////////////////////////////////////////////////////////////////////////////
