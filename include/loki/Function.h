@@ -111,9 +111,9 @@ namespace Loki
 
 	template<class R,class P01>
 	struct Function<R(P01)> 
-		: public Loki::Functor<R,typename Seq<P01>::Type>
+		: public Loki::Functor<R, Seq<P01> >
 	{
-		typedef Functor<R,typename Seq<P01>::Type> FBase;
+		typedef Functor<R, Seq<P01> > FBase;
 		
 		template<class R2,class Q01>
 		Function(Function<R2(Q01)> func) 
@@ -124,9 +124,9 @@ namespace Loki
 
 	template<class R,class P01,class P02>
 	struct Function<R(P01,P02)> 
-		: public Functor<R,typename Seq<P01,P02>::Type>
+		: public Functor<R, Seq<P01,P02> >
 	{
-		typedef Functor<R,typename Seq<P01,P02>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02> > FBase;
 
 		template<class R2,class Q01, class Q02>
 		Function(Function<R2(Q01,Q02)> func) 
@@ -137,9 +137,9 @@ namespace Loki
 
 	template<class R,class P01,class P02, class P03>
 	struct Function<R(P01,P02,P03)> 
-		: public Functor<R,typename Seq<P01,P02,P03>::Type>
+		: public Functor<R, Seq<P01,P02,P03> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03> > FBase;
 
 		template<class R2,class Q01, class Q02,class Q03>
 		Function(Function<R2(Q01,Q02,Q03)> func) 
@@ -150,9 +150,9 @@ namespace Loki
 
 	template<class R,class P01,class P02, class P03,class P04>
 	struct Function<R(P01,P02,P03,P04)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04> > FBase;
 
 		template<class R2,class Q01,class Q02, class Q03,class Q04>
 		Function(Function<R2(Q01,Q02,Q03,Q04)> func) 
@@ -163,9 +163,9 @@ namespace Loki
 
 	template<class R,class P01,class P02, class P03,class P04,class P05>
 	struct Function<R(P01,P02,P03,P04,P05)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05> > FBase;
 
 		template<class R2,class Q01,class Q02, class Q03,class Q04,class Q05>
 		Function(Function<R2(Q01,Q02,Q03,Q04,Q05)> func) 
@@ -177,9 +177,9 @@ namespace Loki
 	template<class R,	class P01,class P02, class P03,class P04,class P05,
 						class P06>
 	struct Function<R(P01,P02,P03,P04,P05,P06)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06> > FBase;
 		
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06>
@@ -192,9 +192,9 @@ namespace Loki
 	template<class R,	class P01,class P02, class P03,class P04,class P05,
 						class P06,class P07>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07> > FBase;
 
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07>
@@ -207,9 +207,9 @@ namespace Loki
 	template<class R,	class P01,class P02, class P03,class P04,class P05,
 						class P06,class P07, class P08>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08> > FBase;
 		
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08>
@@ -222,9 +222,9 @@ namespace Loki
 	template<class R,	class P01,class P02, class P03,class P04,class P05,
 						class P06,class P07, class P08,class P09>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08,P09)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09	>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09	> > FBase;
 		
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08,class Q09>
@@ -237,9 +237,9 @@ namespace Loki
 	template<class R,	class P01,class P02, class P03,class P04,class P05,
 						class P06,class P07, class P08,class P09,class P10>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08,P09,P10)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10> > FBase;
 		
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08,class Q09,class Q10>
@@ -253,9 +253,9 @@ namespace Loki
 						class P06,class P07, class P08,class P09,class P10,
 						class P11>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11)> 
-			: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11>::Type>
+			: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11>::Type>FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11> >FBase;
 		
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08,class Q09,class Q10,
@@ -270,9 +270,9 @@ namespace Loki
 						class P06,class P07, class P08,class P09,class P10,
 						class P11,class P12>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12> > FBase;
 		
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08,class Q09,class Q10,
@@ -287,9 +287,9 @@ namespace Loki
 						class P06,class P07, class P08,class P09,class P10,
 						class P11,class P12, class P13>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13> > FBase;
 		
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08,class Q09,class Q10,
@@ -304,9 +304,9 @@ namespace Loki
 						class P06,class P07, class P08,class P09,class P10,
 						class P11,class P12, class P13,class P14>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14> > FBase;
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08,class Q09,class Q10,
 							class Q11,class Q12, class Q13,class Q14>
@@ -320,9 +320,9 @@ namespace Loki
 						class P06,class P07, class P08,class P09,class P10,
 						class P11,class P12, class P13,class P14,class P15>
 	struct Function<R(P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14,P15)> 
-		: public Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14,P15>::Type>
+		: public Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14,P15> >
 	{
-		typedef Functor<R,typename Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14,P15>::Type> FBase;
+		typedef Functor<R, Seq<P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P11,P12,P13,P14,P15> > FBase;
 
 		template<class R2,	class Q01,class Q02, class Q03,class Q04,class Q05,
 							class Q06,class Q07, class Q08,class Q09,class Q10,

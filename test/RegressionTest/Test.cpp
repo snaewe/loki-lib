@@ -41,22 +41,22 @@ Test::tests_type Test::tests;
 // is the header inclusion to execute the correspond
 // unit test.
 
+#include "SmallObjectTest.h"
+#include "SingletonTest.h"
+
 #include "ThreadsTest.h"
 #include "TypelistTest.h"
 #include "SequenceTest.h"
 #include "TypeManipTest.h"
 #include "TypeTraitsTest.h"
 #include "TypeTraitsTest2.h"
-#include "SmallObjectTest.h"
-#include "SingletonTest.h"
 #include "SmartPtrTest.h"
 #include "FactoryTest.h"
 #include "FactoryParmTest.h"
 #include "AbstractFactoryTest.h"
-#include "AssocVectorTest.h"
 #include "FunctorTest.h"
 #include "DataGeneratorsTest.h"
-
+//#include "AssocVectorTest.h"
 
 int main()
 {
@@ -117,6 +117,9 @@ int main()
 
 
 // $Log$
+// Revision 1.11  2005/10/30 13:49:44  syntheticpp
+// make disabling the TYPELIST macros possible
+//
 // Revision 1.10  2005/10/24 20:51:38  syntheticpp
 // Table is out of date
 //

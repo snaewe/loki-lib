@@ -73,9 +73,9 @@ Loki::OrderedStatic<1,L1> l1;
 Loki::OrderedStatic<2,L2> l2;
 
 Loki::OrderedStatic<1, std::string, std::string(*)() >			s1( &func ); 
-Loki::OrderedStatic<2, std::string, LOKI_TYPELIST_1(char *) >	s2( "s2" ); 
+Loki::OrderedStatic<2, std::string, Loki::Seq<char *> >	s2( "s2" ); 
 
-Loki::OrderedStatic<1, Loki::Functor<int>, LOKI_TYPELIST_1( int(*)() ) >  f1(f); 
+Loki::OrderedStatic<1, Loki::Functor<int>, Loki::Seq<int(*)()> >  f1(f); 
 
 #else
 

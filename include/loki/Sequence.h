@@ -14,6 +14,8 @@
 #ifndef LOKI_SEQUENCE_INC_
 #define LOKI_SEQUENCE_INC_
 
+#include "Typelist.h"
+
 namespace Loki
 {
 

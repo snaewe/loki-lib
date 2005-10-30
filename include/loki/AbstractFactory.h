@@ -19,6 +19,7 @@
 #define LOKI_ABSTRACTFACTORY_INC_
 
 #include "Typelist.h"
+#include "Sequence.h"
 #include "TypeManip.h"
 #include "HierarchyGenerators.h"
 
