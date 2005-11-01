@@ -32,6 +32,8 @@ namespace ThreadsTestPrivate
         }
     };
 
+#if defined(LOKI_CLASS_LEVEL_THREADING) || defined(LOKI_OBJECT_LEVEL_THREADING)
+
     class ClassLevel : public Loki::ClassLevelLockable<ClassLevel>
     {
         int i;
@@ -57,7 +59,11 @@ namespace ThreadsTestPrivate
             i++;
         }
     };
-}
+
+#endif
+
+}//namespace Loki
+
 
 class ThreadsTest : public Test
 {
