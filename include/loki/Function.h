@@ -18,8 +18,10 @@
 namespace Loki
 {
 
-    template<class R>
-    struct Function;
+    template<class R = void()>
+	struct Function : public Functor<R>
+	{
+	};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function allows a boost/TR1 like usage of Functor.
