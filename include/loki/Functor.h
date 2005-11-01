@@ -1130,7 +1130,7 @@ namespace Loki
 // class template Functor
 // A generalized functor implementation with value semantics
 ////////////////////////////////////////////////////////////////////////////////
-    template <typename R, class TList = NullType,
+    template <typename R = void, class TList = NullType,
         template<class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
     class Functor
     {

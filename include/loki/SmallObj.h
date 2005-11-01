@@ -36,6 +36,15 @@
 #define LOKI_DEFAULT_OBJECT_ALIGNMENT 4
 #endif
 
+
+//#define LOKI_DEFAULT_SMALLOBJ_LIFETIME NoDestroy
+//#define LOKI_DEFAULT_SMALLOBJ_LIFETIME DefaultLifetime
+
+#ifndef LOKI_DEFAULT_SMALLOBJ_LIFETIME
+#define LOKI_DEFAULT_SMALLOBJ_LIFETIME \
+           FollowIntoDeath::With<DefaultLifetime>::AsMasterLifetime
+#endif
+
 #if defined(LOKI_SMALL_OBJECT_USE_NEW_ARRAY) && defined(_MSC_VER)
 #pragma message("Don't define LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a Microsoft compiler to prevet memory leaks.")
 #pragma message("now calling '#undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY'")
@@ -172,7 +181,7 @@ namespace Loki
         std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
-        template <class> class LifetimePolicy = Loki::NoDestroy
+        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME
     >
     class AllocatorSingleton : public SmallObjAllocator
     {
@@ -314,16 +323,19 @@ namespace Loki
 
 #if (LOKI_MAX_SMALL_OBJECT_SIZE != 0) && (LOKI_DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
 
-        /// Defines type of allocator.
+    public:        
+        /// Defines type of allocator singleton, must be public 
+        /// to handle singleton lifetime dependencies.
         typedef AllocatorSingleton< ThreadingModel, chunkSize,
-            maxSmallObjectSize, objectAlignSize, LifetimePolicy > MyAllocator;
+            maxSmallObjectSize, objectAlignSize, LifetimePolicy > ObjAllocatorSingleton;
+    
+    private:
 
         /// Defines type for thread-safety locking mechanism.
-        typedef ThreadingModel< MyAllocator > MyThreadingModel;
+        typedef ThreadingModel< ObjAllocatorSingleton > MyThreadingModel;
 
-        /// Defines singleton made from allocator.
-        typedef Loki::SingletonHolder< MyAllocator, Loki::CreateStatic,
-            LifetimePolicy, ThreadingModel > MyAllocatorSingleton;
+        /// Use singleton defined in AllocatorSingleton.
+        typedef typename ObjAllocatorSingleton::MyAllocatorSingleton MyAllocatorSingleton;
         
     public:
 
@@ -459,7 +471,7 @@ namespace Loki
         std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
-        template <class> class LifetimePolicy = Loki::NoDestroy
+        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME
     >
     class SmallObject : public SmallObjectBase< ThreadingModel, chunkSize,
             maxSmallObjectSize, objectAlignSize, LifetimePolicy >
@@ -493,7 +505,7 @@ namespace Loki
         std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
-        template <class> class LifetimePolicy = Loki::NoDestroy
+        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME
     >
     class SmallValueObject : public SmallObjectBase< ThreadingModel, chunkSize,
             maxSmallObjectSize, objectAlignSize, LifetimePolicy >
@@ -513,6 +525,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.19  2005/11/01 11:11:52  syntheticpp
+// add lifetime policies to manage singleton lifetime dependencies: FollowIntoDeath and DieOrder. Change SmallObject.h to avoid memory leaks by default
+//
 // Revision 1.18  2005/10/30 14:03:23  syntheticpp
 // replace tabs space
 //
