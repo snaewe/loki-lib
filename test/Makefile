@@ -36,7 +36,8 @@ sub-SafeFormat: FORCE
 sub-Singleton: FORCE
 	cd Singleton && \
 	$(MAKE) -f $(MAKEFILE)-DeletableSingleton && \
-	$(MAKE) -f $(MAKEFILE)-Phoenix 
+	$(MAKE) -f $(MAKEFILE)-Phoenix && \
+	$(MAKE) -f $(MAKEFILE)-Dependencies
 	@cd ..
 	
 sub-SmallObj: FORCE
@@ -78,6 +79,11 @@ clean:
 	cd SmallObj && \
 	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
+	
+	cd Singleton && \
+	$(MAKE) -f $(MAKEFILE)-DeletableSingleton clean&& \
+	$(MAKE) -f $(MAKEFILE)-Phoenix clean && \
+	$(MAKE) -f $(MAKEFILE)-Dependencies clean
 
 
 
