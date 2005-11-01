@@ -61,8 +61,7 @@ typedef SingletonHolder
 <
     MyFunctionObject, 
     CreateUsingNew, 
-	FollowIntoDeath::AfterMaster<Function<>::Impl::ObjAllocatorSingleton
-	>::IsDestroyed
+	FollowIntoDeath::AfterMaster<Function<>::Impl::ObjAllocatorSingleton>::IsDestroyed
 >
 Singleton_MyFunctionObject1;
 
@@ -70,8 +69,7 @@ typedef SingletonHolder
 <
     MyFunctionObject, 
     CreateUsingNew, 
-	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton
-	>::IsDestroyed
+	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
 >
 Singleton_MyFunctionObject2;
 

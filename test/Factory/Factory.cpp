@@ -23,12 +23,10 @@
 
 #ifdef USE_SEQUENCE
 #include "loki/Sequence.h"
-using Loki::Seq;
+
 #endif
 
-using Loki::Functor;
-using Loki::Factory;
-using Loki::SingletonHolder;
+using namespace Loki;
 using std::cout;
 using std::endl;
 
@@ -53,7 +51,9 @@ public:
  
 typedef SingletonHolder 
 <
-    Factory< AbstractProduct, int >
+    Factory< AbstractProduct, int >,
+    CreateUsingNew, 
+	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
 >
 PFactoryNull;
  
@@ -64,10 +64,12 @@ PFactoryNull;
 typedef SingletonHolder
 <
 #ifndef USE_SEQUENCE
-    Factory< AbstractProduct, int, LOKI_TYPELIST_2( int, int ) >
+    Factory< AbstractProduct, int, LOKI_TYPELIST_2( int, int ) >,
 #else
-    Factory< AbstractProduct, int, Seq< int, int > >
+    Factory< AbstractProduct, int, Seq< int, int > >,
 #endif
+    CreateUsingNew, 
+	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
 >
 PFactory;
  
@@ -161,10 +163,12 @@ typedef
 SingletonHolder
 <
 #ifndef USE_SEQUENCE
-    Factory< AbstractProduct, int,LOKI_TYPELIST_3(CreateFunctor,int,int) >
+    Factory< AbstractProduct, int,LOKI_TYPELIST_3(CreateFunctor,int,int) >,
 #else
-    Factory< AbstractProduct, int,Seq<CreateFunctor,int,int> >
+    Factory< AbstractProduct, int,Seq<CreateFunctor,int,int> >,
 #endif
+    CreateUsingNew, 
+	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
 >
 PFactoryFunctorParm;
 
@@ -249,6 +253,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.6  2005/11/01 11:38:19  syntheticpp
+// apply new lifetime policy to avoid crash on exit in test/Factory
+//
 // Revision 1.5  2005/10/30 14:03:23  syntheticpp
 // replace tabs space
 //
