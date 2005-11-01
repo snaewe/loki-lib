@@ -79,12 +79,11 @@ clean:
 	cd SmallObj && \
 	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
-	
 	cd Singleton && \
-	$(MAKE) -f $(MAKEFILE)-DeletableSingleton clean&& \
+	$(MAKE) -f $(MAKEFILE)-DeletableSingleton clean && \
 	$(MAKE) -f $(MAKEFILE)-Phoenix clean && \
 	$(MAKE) -f $(MAKEFILE)-Dependencies clean
-
+	@cd ..
 
 
 FORCE:
