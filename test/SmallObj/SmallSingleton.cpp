@@ -228,13 +228,13 @@ int main()
          << "       DieOrder::Last policy " << endl
          << "   and the derived Singleton has " << endl
          << "       DieOrder::First" << endl
-         << "   This is tested by the DieOrderSingleton class." << endl
+         << "   This is tested by the DieFirstSingleton class." << endl
          << endl
          << "3. Both SmallObject and derived Singleton use SingletonWithLongevity policy." << endl
          << "   This is tested by the LongLivedSingleton class." << endl
          << endl << endl
          << "If this program executes without crashing or asserting" << endl
-         << " at exit time, then all 3 policies work." << endl << endl;
+         << "at exit time, then all 3 policies work." << endl << endl;
     
     FollowerSingleton::Instance().DoThat();
     DieFirstSingleton::Instance().DoThat();
@@ -250,6 +250,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.5  2005/11/02 14:11:18  syntheticpp
+// use new singleton lifetime policies
+//
 // Revision 1.4  2005/11/02 13:58:18  syntheticpp
 // use new singleton lifetime policies
 //
