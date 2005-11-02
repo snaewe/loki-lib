@@ -16,7 +16,6 @@
 //#define LOKI_CLASS_LEVEL_THREADING
 //#define LOKI_OBJECT_LEVEL_THREADING
 
-// Uncomment this to test new [] and delete [].
 #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 
 #include "../../include/loki/SmallObj.h"
@@ -100,6 +99,9 @@ public:
         ::operator delete ( p, place );
     }
 
+    /** @note This class does not provide new [] and delete [] operators since
+     the Boost.Pool allocator only works for memory requests of the same size.
+     */
 };
 
 template<unsigned int N>
@@ -316,6 +318,10 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.15  2005/11/02 01:46:04  rich_sposato
+// Added explanatory comment about why class has no new [] and delete []
+// operators.  Removed other comment which is now useless.
+//
 // Revision 1.14  2005/10/30 14:33:33  syntheticpp
 // test correct also when boost is disabled
 //
