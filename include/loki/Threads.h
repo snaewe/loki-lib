@@ -11,6 +11,9 @@
 
 // $Header$
 
+/*! 
+	@defgroup  ThreadingGroup Threading
+*/
 
 #if defined(LOKI_CLASS_LEVEL_THREADING) || defined(LOKI_OBJECT_LEVEL_THREADING)
 
@@ -39,12 +42,14 @@
 
 namespace Loki
 {
-////////////////////////////////////////////////////////////////////////////////
-// class template SingleThreaded
-// Implementation of the ThreadingModel policy used by various classes
-// Implements a single-threaded model; no synchronization
-////////////////////////////////////////////////////////////////////////////////
-
+	
+	/*!
+		\class SingleThreaded
+		\ingroup ThreadingGroup
+	 
+        Implementation of the ThreadingModel policy used by various classes
+        Implements a single-threaded model; no synchronization
+	*/
     template <class Host>
     class SingleThreaded
     {
@@ -145,12 +150,14 @@ namespace Loki
 
 #if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
 
-////////////////////////////////////////////////////////////////////////////////
-// class template ObjectLevelLockable
-// Implementation of the ThreadingModel policy used by various classes
-// Implements a object-level locking scheme
-////////////////////////////////////////////////////////////////////////////////
-
+	/*!
+		\class ObjectLevelLockable
+		\ingroup ThreadingGroup
+		
+		class template ObjectLevelLockable
+		Implementation of the ThreadingModel policy used by various classes
+		Implements a object-level locking scheme
+	*/
     template <class Host>
     class ObjectLevelLockable
     {
@@ -214,13 +221,14 @@ namespace Loki
     pthread_mutex_t ObjectLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
 #endif
     
-
-////////////////////////////////////////////////////////////////////////////////
-// class template ClassLevelLockable
-// Implementation of the ThreadingModel policy used by various classes
-// Implements a class-level locking scheme
-////////////////////////////////////////////////////////////////////////////////
-    
+	
+	/*! 
+		\class ClassLevelLockable
+		\ingroup ThreadingGroup
+		
+		Implementation of the ThreadingModel policy used by various classes
+		Implements a class-level locking scheme
+	*/
     template <class Host>
     class ClassLevelLockable
     {
@@ -314,6 +322,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.17  2005/11/02 20:01:10  syntheticpp
+// more doxygen documentation, modules added
+//
 // Revision 1.16  2005/10/30 14:03:23  syntheticpp
 // replace tabs space
 //

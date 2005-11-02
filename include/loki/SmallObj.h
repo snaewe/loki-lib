@@ -51,11 +51,17 @@
 #undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 #endif
 
+///  \defgroup  SmallObjectGroup Small objects
+///
+///  \defgroup  SmallObjectGroupInternal Internals
+///  \ingroup   SmallObjectGroup
+
 namespace Loki
 {
     class FixedAllocator;
 
     /** @class SmallObjAllocator
+        @ingroup SmallObjectGroupInternal
      Manages pool of fixed-size allocators.
      Designed to be a non-templated base class of AllocatorSingleton so that
      implementation details can be safely hidden in the source code file.
@@ -161,6 +167,7 @@ namespace Loki
 
 
     /** @class AllocatorSingleton
+        @ingroup SmallObjectGroupInternal
      This template class is derived from
      SmallObjAllocator in order to pass template arguments into it, and still
      have a default constructor for the singleton.  Each instance is a unique
@@ -172,7 +179,7 @@ namespace Loki
      clients to use the new_handler without having the name of the new_handler
      function show up in classes derived from SmallObject or SmallValueObject.
      Thus, the only functions in the allocator which show up in SmallObject or
-     SmallValueObject inheritance heierarchies are the new and delete
+     SmallValueObject inheritance hierarchies are the new and delete
      operators.
     */
     template
@@ -274,6 +281,7 @@ namespace Loki
 
 
     /** @class SmallObjectBase
+        @ingroup SmallObjectGroupInternal
      Base class for small object allocation classes.
      The shared implementation of the new and delete operators are here instead
      of being duplicated in both SmallObject or SmallValueObject.  This class
@@ -457,7 +465,8 @@ namespace Loki
     }; // end class SmallObjectBase
 
 
-    /** @class
+    /** @class SmallObject
+        @ingroup SmallObjectGroup
      SmallObject Base class for polymorphic small objects, offers fast
      allocations & deallocations.  Destructor is virtual and public.  Default
      constructor is trivial.   Copy-constructor and copy-assignment operator are
@@ -490,7 +499,8 @@ namespace Loki
     }; // end class SmallObject
 
 
-    /** @class
+    /** @class SmallValueObject
+        @ingroup SmallObjectGroup
      SmallValueObject Base class for small objects with value-type
      semantics - offers fast allocations & deallocations.  Destructor is
      non-virtual, inline, and protected to prevent unintentional destruction
@@ -525,6 +535,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.20  2005/11/02 20:01:10  syntheticpp
+// more doxygen documentation, modules added
+//
 // Revision 1.19  2005/11/01 11:11:52  syntheticpp
 // add lifetime policies to manage singleton lifetime dependencies: FollowIntoDeath and DieOrder. Change SmallObject.h to avoid memory leaks by default
 //
