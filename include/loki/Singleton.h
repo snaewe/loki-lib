@@ -527,7 +527,7 @@ namespace Loki
             template<class F>
             struct IsDestroyed
             {
-                static void ScheduleDestruction(F* pObj, atexit_pfn_t pFun)
+                static void ScheduleDestruction(F*, atexit_pfn_t pFun)
                 {
                     Followers<Master>::AddFollower(pFun);
                 }
