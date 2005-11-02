@@ -223,7 +223,7 @@ int main()
          << "   SmallObject has  " << endl
          << "       FollowIntoDeath::With<LIFETIME>::AsMasterLiftime policy" << endl
          << "   and the derived Singleton has " << endl
-         << "       FollowIntoDeath::After<MASTERSINGLETON>::IsDestroyed policy" << endl
+         << "       FollowIntoDeath::AfterMaster<MASTERSINGLETON>::IsDestroyed policy" << endl
          << "   This is tested by the FollowerSingleton class." << endl
          << endl
          << "2. DieOrder:" << endl
@@ -253,6 +253,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.7  2005/11/02 15:00:38  syntheticpp
+// use new singleton lifetime policies
+//
 // Revision 1.6  2005/11/02 14:15:44  syntheticpp
 // use new singleton lifetime policies
 //
