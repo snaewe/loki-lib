@@ -33,9 +33,12 @@ using namespace std;
 typedef Loki::SmallValueObject< LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
     LOKI_DEFAULT_CHUNK_SIZE, LOKI_MAX_SMALL_OBJECT_SIZE,
     LOKI_DEFAULT_OBJECT_ALIGNMENT, 
-    Loki::FollowIntoDeath::With<Loki::DefaultLifetime>::AsMasterLifetime // this is default
+    Loki::FollowIntoDeath::With<Loki::DefaultLifetime>::AsMasterLifetime 
 >
 MasterObject;
+
+// this is default so you could also use:
+// typedef Loki::SmallValueObject<> MasterObject;
 
 class FollowerSingleton : public MasterObject
 {
@@ -250,6 +253,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.6  2005/11/02 14:15:44  syntheticpp
+// use new singleton lifetime policies
+//
 // Revision 1.5  2005/11/02 14:11:18  syntheticpp
 // use new singleton lifetime policies
 //
