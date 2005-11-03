@@ -16,13 +16,16 @@
 #ifndef LOKI_SMARTPTR_INC_
 #define LOKI_SMARTPTR_INC_
 
-////////////////////////////////////////////////////////////////////////////////
-// IMPORTANT NOTE
-// Due to threading issues, the OwnershipPolicy has been changed as follows:
-//     Release() returns a boolean saying if that was the last release
-//        so the pointer can be deleted by the StoragePolicy
-//     IsUnique() was removed
-////////////////////////////////////////////////////////////////////////////////
+///  \defgroup  SmartPointerGroup Smart pointers
+///  Policy based implementation of a smart pointer
+///  \defgroup  SmartPointerOwnershipGroup Ownership policies
+///  \ingroup   SmartPointerGroup
+///  \defgroup  SmartPointerStorageGroup Storage policies
+///  \ingroup   SmartPointerGroup
+///  \defgroup  SmartPointerConversionGroup Conversion policies
+///  \ingroup   SmartPointerGroup
+///  \defgroup  SmartPointerCheckingGroup Checking policies
+///  \ingroup   SmartPointerGroup
 
 
 #include "SmallObj.h"
@@ -36,8 +39,10 @@ namespace Loki
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template DefaultSPStorage
-// Implementation of the StoragePolicy used by SmartPtr
+///  \class DefaultSPStorage
+///
+///  \ingroup  SmartPointerStorageGroup 
+///  Implementation of the StoragePolicy used by SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class T>
@@ -95,9 +100,11 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template RefCounted
-// Implementation of the OwnershipPolicy used by SmartPtr
-// Provides a classic external reference counting implementation
+///  \class RefCounted
+///
+///  \ingroup  SmartPointerOwnershipGroup 
+///  Implementation of the OwnershipPolicy used by SmartPtr
+///  Provides a classic external reference counting implementation
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -149,10 +156,12 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// class template RefCountedMT
-// Implementation of the OwnershipPolicy used by SmartPtr
-// Implements external reference counting for multithreaded programs
-// Policy Usage: RefCountedMTAdj<ThreadingModel>::RefCountedMT
+///  \struct RefCountedMT
+///
+///  \ingroup  SmartPointerOwnershipGroup 
+///  Implementation of the OwnershipPolicy used by SmartPtr
+///  Implements external reference counting for multithreaded programs
+///  Policy Usage: RefCountedMTAdj<ThreadingModel>::RefCountedMT
 ////////////////////////////////////////////////////////////////////////////////
     
     template <template <class> class ThreadingModel>
@@ -216,9 +225,11 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template COMRefCounted
-// Implementation of the OwnershipPolicy used by SmartPtr
-// Adapts COM intrusive reference counting to OwnershipPolicy-specific syntax
+///  \class COMRefCounted
+///
+///  \ingroup  SmartPointerOwnershipGroup 
+///  Implementation of the OwnershipPolicy used by SmartPtr
+///  Adapts COM intrusive reference counting to OwnershipPolicy-specific syntax
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -253,10 +264,12 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template DeepCopy
-// Implementation of the OwnershipPolicy used by SmartPtr
-// Implements deep copy semantics, assumes existence of a Clone() member 
-//     function of the pointee type
+///  \struct DeepCopy
+///
+///  \ingroup  SmartPointerOwnershipGroup 
+///  Implementation of the OwnershipPolicy used by SmartPtr
+///  Implements deep copy semantics, assumes existence of a Clone() member 
+///  function of the pointee type
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -282,9 +295,11 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// class template RefLinked
-// Implementation of the OwnershipPolicy used by SmartPtr
-// Implements reference linking
+///  \class RefLinked
+///
+///  \ingroup  SmartPointerOwnershipGroup 
+///  Implementation of the OwnershipPolicy used by SmartPtr
+///  Implements reference linking
 ////////////////////////////////////////////////////////////////////////////////
 
     namespace Private
@@ -384,9 +399,11 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// class template DestructiveCopy
-// Implementation of the OwnershipPolicy used by SmartPtr
-// Implements destructive copy semantics (a la std::auto_ptr)
+///  \class DestructiveCopy
+///
+///  \ingroup  SmartPointerOwnershipGroup 
+///  Implementation of the OwnershipPolicy used by SmartPtr
+///  Implements destructive copy semantics (a la std::auto_ptr)
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -418,9 +435,11 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// class template NoCopy
-// Implementation of the OwnershipPolicy used by SmartPtr
-// Implements a policy that doesn't allow copying objects
+///  \class NoCopy
+///
+///  \ingroup  SmartPointerOwnershipGroup 
+///  Implementation of the OwnershipPolicy used by SmartPtr
+///  Implements a policy that doesn't allow copying objects
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -452,9 +471,11 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// class template AllowConversion
-// Implementation of the ConversionPolicy used by SmartPtr
-// Allows implicit conversion from SmartPtr to the pointee type
+///  \struct AllowConversion
+///  
+///  \ingroup  SmartPointerConversionGroup 
+///  Implementation of the ConversionPolicy used by SmartPtr
+///  Allows implicit conversion from SmartPtr to the pointee type
 ////////////////////////////////////////////////////////////////////////////////
 
     struct AllowConversion
@@ -466,10 +487,12 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template DisallowConversion
-// Implementation of the ConversionPolicy used by SmartPtr
-// Does not allow implicit conversion from SmartPtr to the pointee type
-// You can initialize a DisallowConversion with an AllowConversion
+///  \struct DisallowConversion
+///
+///  \ingroup  SmartPointerConversionGroup 
+///  Implementation of the ConversionPolicy used by SmartPtr
+///  Does not allow implicit conversion from SmartPtr to the pointee type
+///  You can initialize a DisallowConversion with an AllowConversion
 ////////////////////////////////////////////////////////////////////////////////
 
     struct DisallowConversion
@@ -487,9 +510,11 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template NoCheck
-// Implementation of the CheckingPolicy used by SmartPtr
-// Well, it's clear what it does :o)
+///  \struct NoCheck
+///
+///  \ingroup  SmartPointerCheckingGroup 
+///  Implementation of the CheckingPolicy used by SmartPtr
+///  Well, it's clear what it does :o)
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -517,9 +542,11 @@ namespace Loki
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template AssertCheck
-// Implementation of the CheckingPolicy used by SmartPtr
-// Checks the pointer before dereference
+///  \struct AssertCheck
+///
+///  \ingroup  SmartPointerCheckingGroup 
+///  Implementation of the CheckingPolicy used by SmartPtr
+///  Checks the pointer before dereference
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -550,10 +577,12 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template AssertCheckStrict
-// Implementation of the CheckingPolicy used by SmartPtr
-// Checks the pointer against zero upon initialization and before dereference
-// You can initialize an AssertCheckStrict with an AssertCheck 
+///  \struct AssertCheckStrict
+///
+///  \ingroup  SmartPointerCheckingGroup 
+///  Implementation of the CheckingPolicy used by SmartPtr
+///  Checks the pointer against zero upon initialization and before dereference
+///  You can initialize an AssertCheckStrict with an AssertCheck 
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -588,8 +617,10 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class NullPointerException
-// Used by some implementations of the CheckingPolicy used by SmartPtr
+///  \struct NullPointerException
+///
+///  \ingroup SmartPointerGroup 
+///  Used by some implementations of the CheckingPolicy used by SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
 
     struct NullPointerException : public std::runtime_error
@@ -601,9 +632,11 @@ namespace Loki
     };
         
 ////////////////////////////////////////////////////////////////////////////////
-// class template RejectNullStatic
-// Implementation of the CheckingPolicy used by SmartPtr
-// Checks the pointer upon initialization and before dereference
+///  \struct RejectNullStatic
+///
+///  \ingroup  SmartPointerCheckingGroup 
+///  Implementation of the CheckingPolicy used by SmartPtr
+///  Checks the pointer upon initialization and before dereference
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -647,9 +680,11 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template RejectNull
-// Implementation of the CheckingPolicy used by SmartPtr
-// Checks the pointer before dereference
+///  \struct RejectNull
+///
+///  \ingroup  SmartPointerCheckingGroup 
+///  Implementation of the CheckingPolicy used by SmartPtr
+///  Checks the pointer before dereference
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -676,9 +711,11 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template RejectNullStrict
-// Implementation of the CheckingPolicy used by SmartPtr
-// Checks the pointer upon initialization and before dereference
+///  \struct RejectNullStrict
+///
+///  \ingroup  SmartPointerCheckingGroup 
+///  Implementation of the CheckingPolicy used by SmartPtr
+///  Checks the pointer upon initialization and before dereference
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
@@ -706,9 +743,11 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template ByRef
-// Transports a reference as a value
-// Serves to implement the Colvin/Gibbons trick for SmartPtr
+///  \class ByRef
+///
+///  \ingroup SmartPointerGroup 
+///  Transports a reference as a value
+///  Serves to implement the Colvin/Gibbons trick for SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class T>
@@ -767,7 +806,21 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template SmartPtr (definition)
+///  \class SmartPtr
+///
+///  \ingroup SmartPointerGroup 
+///
+///  \param OwnershipPolicy  default =  RefCounted,
+///  \param ConversionPolicy default = DisallowConversion,
+///  \param CheckingPolicy default = AssertCheck,
+///  \param StoragePolicy default = DefaultSPStorage
+///
+///  \par IMPORTANT NOTE
+///  Due to threading issues, the OwnershipPolicy has been changed as follows:
+///
+///     - Release() returns a boolean saying if that was the last release
+///        so the pointer can be deleted by the StoragePolicy
+///     - IsUnique() was removed
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1022,7 +1075,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-// operator== for lhs = SmartPtr, rhs = raw pointer
+///  operator== for lhs = SmartPtr, rhs = raw pointer
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1039,7 +1093,8 @@ namespace Loki
     { return GetImpl(lhs) == rhs; }
     
 ////////////////////////////////////////////////////////////////////////////////
-// operator== for lhs = raw pointer, rhs = SmartPtr
+///  operator== for lhs = raw pointer, rhs = SmartPtr
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1056,7 +1111,8 @@ namespace Loki
     { return rhs == lhs; }
 
 ////////////////////////////////////////////////////////////////////////////////
-// operator!= for lhs = SmartPtr, rhs = raw pointer
+///  operator!= for lhs = SmartPtr, rhs = raw pointer
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1073,7 +1129,8 @@ namespace Loki
     { return !(lhs == rhs); }
     
 ////////////////////////////////////////////////////////////////////////////////
-// operator!= for lhs = raw pointer, rhs = SmartPtr
+///  operator!= for lhs = raw pointer, rhs = SmartPtr
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1090,7 +1147,8 @@ namespace Loki
     { return rhs != lhs; }
 
 ////////////////////////////////////////////////////////////////////////////////
-// operator< for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
+///  operator< for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1106,7 +1164,8 @@ namespace Loki
         U* rhs);
         
 ////////////////////////////////////////////////////////////////////////////////
-// operator< for lhs = raw pointer, rhs = SmartPtr -- NOT DEFINED
+///  operator< for lhs = raw pointer, rhs = SmartPtr -- NOT DEFINED
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1122,7 +1181,8 @@ namespace Loki
         const SmartPtr<T, OP, CP, KP, SP>& rhs);
         
 ////////////////////////////////////////////////////////////////////////////////
-// operator> for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
+//  operator> for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1139,7 +1199,8 @@ namespace Loki
     { return rhs < lhs; }
         
 ////////////////////////////////////////////////////////////////////////////////
-// operator> for lhs = raw pointer, rhs = SmartPtr
+///  operator> for lhs = raw pointer, rhs = SmartPtr
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1156,7 +1217,8 @@ namespace Loki
     { return rhs < lhs; }
   
 ////////////////////////////////////////////////////////////////////////////////
-// operator<= for lhs = SmartPtr, rhs = raw pointer
+///  operator<= for lhs = SmartPtr, rhs = raw pointer
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1173,7 +1235,8 @@ namespace Loki
     { return !(rhs < lhs); }
         
 ////////////////////////////////////////////////////////////////////////////////
-// operator<= for lhs = raw pointer, rhs = SmartPtr
+///  operator<= for lhs = raw pointer, rhs = SmartPtr
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1190,7 +1253,8 @@ namespace Loki
     { return !(rhs < lhs); }
 
 ////////////////////////////////////////////////////////////////////////////////
-// operator>= for lhs = SmartPtr, rhs = raw pointer
+///  operator>= for lhs = SmartPtr, rhs = raw pointer
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1207,7 +1271,8 @@ namespace Loki
     { return !(lhs < rhs); }
         
 ////////////////////////////////////////////////////////////////////////////////
-// operator>= for lhs = raw pointer, rhs = SmartPtr
+///  operator>= for lhs = raw pointer, rhs = SmartPtr
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1226,7 +1291,8 @@ namespace Loki
 } // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
-// specialization of std::less for SmartPtr
+///  specialization of std::less for SmartPtr
+///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace std
@@ -1261,7 +1327,8 @@ namespace std
 //  In case that the macro is defined and the conversion policy allow flag is off 
 //  (e.g. DisallowConversion) then the conversion from the "pointer" to the 
 //  SmartPtr must be explicit.
-// October 32, 2005: fix void Swap(RefLinkedBase& rhs). Peter Kümmel
+// October 21, 2005: fix void Swap(RefLinkedBase& rhs). Peter Kümmel
+// November 3, 2005: doxygen like documentation. Peter Kümmel
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMARTPTR_INC_

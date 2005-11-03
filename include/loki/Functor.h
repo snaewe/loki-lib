@@ -26,6 +26,8 @@
 #include <typeinfo>
 #include <memory>
 
+///  \defgroup FunctorGroup Function objects
+
 namespace Loki
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -1127,8 +1129,10 @@ namespace Loki
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template Functor
-// A generalized functor implementation with value semantics
+///  \class Functor
+///
+///  \ingroup FunctorGroup
+///  A generalized functor implementation with value semantics
 ////////////////////////////////////////////////////////////////////////////////
     template <typename R = void, class TList = NullType,
         template<class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
@@ -1340,8 +1344,10 @@ namespace Loki
     }
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template BinderFirst
-// Binds the first parameter of a Functor object to a specific value
+///  \class BinderFirst
+///  
+///  \ingroup FunctorGroup
+///  Binds the first parameter of a Functor object to a specific value
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class OriginalFunctor>
@@ -1444,8 +1450,8 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// function template BindFirst
-// Binds the first parameter of a Functor object to a specific value
+///  Binds the first parameter of a Functor object to a specific value
+///  \ingroup FunctorGroup
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class Fctor>
@@ -1462,8 +1468,10 @@ namespace Loki
     }
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template Chainer
-// Chains two functor calls one after another
+///  \class Chainer
+///
+///  \ingroup FunctorGroup
+///   Chains two functor calls one after another
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename Fun1, typename Fun2>
@@ -1594,8 +1602,8 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// function template Chain
-// Chains two functor calls one after another
+///  Chains two functor calls one after another
+///  \ingroup FunctorGroup
 ////////////////////////////////////////////////////////////////////////////////
 
 
