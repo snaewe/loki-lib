@@ -28,13 +28,16 @@
 //unreachable code if OnUnknownType throws an exception
 #endif
 
+///  \defgroup FactoryGroup Factory
 
 namespace Loki
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template DefaultFactoryError
-// Manages the "Unknown Type" error in an object factory
+///  \class DefaultFactoryError
+///
+///  \ingroup FactoryGroup
+///  Manages the "Unknown Type" error in an object factory
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename IdentifierType, class AbstractProduct>
@@ -54,48 +57,6 @@ namespace Loki
     
 #define LOKI_ENABLE_NEW_FACTORY_CODE
 #ifdef LOKI_ENABLE_NEW_FACTORY_CODE
-
-////////////////////////////////////////////////////////////////////////////////
-/*
-    class template Factory
-    Implements a generic object factory     
-    cretae functions with up to 15 parameters
-    
-    
-    template
-    <
-        class AbstractProduct,
-        typename IdentifierType,
-        typename CreatorParmTList = NullType,
-        template<typename, class> class FactoryErrorPolicy = ExceptionFactoryError
-    >
-    class Factory : public FactoryErrorPolicy<IdentifierType, AbstractProduct>
-    {
-
-    public:
-        typedef Functor<AbstractProduct*, CreatorParmTList> ProductCreator;
-        typedef FactoryImpl< AbstractProduct, IdentifierType, CreatorParmTList > Impl;
-
-        typedef typename Impl::Parm1Parm1;
-        // ... up to 15 Parameters
-        
-        typedef typename IdToProductMap::iterator iterator;
-        iterator begin();
-        iterator end();
-
-        bool Register(const IdentifierType& id, ProductCreator creator);
-        bool Unregister(const IdentifierType& id);
-
-        template <class PtrObj, typename CreaFn>
-        bool Register(const IdentifierType& id, const PtrObj& p, CreaFn fn);
-
-        AbstractProduct* CreateObject(const IdentifierType& id);
-        AbstractProduct* CreateObject(const IdentifierType& id,    Parm1 p1);
-        // ... up to 15 Parameters
-    };
-*/
-////////////////////////////////////////////////////////////////////////////////
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -688,9 +649,47 @@ template <typename AP, typename Id, typename P1 >
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template Factory
+///  \class Factory
+///
+///  \ingroup FactoryGroup
+///  Implements a generic object factory.     
+///  
+///  Create functions can have up to 15 parameters.
+///    
+///  \code
+///    template
+///    <
+///        class AbstractProduct,
+///        typename IdentifierType,
+///        typename CreatorParmTList = NullType,
+///        template<typename, class> class FactoryErrorPolicy = ExceptionFactoryError
+///    >
+///    class Factory : public FactoryErrorPolicy<IdentifierType, AbstractProduct>
+///    {
+///
+///    public:
+///        typedef Functor<AbstractProduct*, CreatorParmTList> ProductCreator;
+///        typedef FactoryImpl< AbstractProduct, IdentifierType, CreatorParmTList > Impl;
+///
+///        typedef typename Impl::Parm1Parm1;
+///        // ... up to 15 Parameters
+///        
+///        typedef typename IdToProductMap::iterator iterator;
+///        iterator begin();
+///        iterator end();
+///
+///        bool Register(const IdentifierType& id, ProductCreator creator);
+///        bool Unregister(const IdentifierType& id);
+///
+///        template <class PtrObj, typename CreaFn>
+///        bool Register(const IdentifierType& id, const PtrObj& p, CreaFn fn);
+///
+///        AbstractProduct* CreateObject(const IdentifierType& id);
+///        AbstractProduct* CreateObject(const IdentifierType& id,    Parm1 p1);
+///        // ... up to 15 Parameters
+///    };
+///  \endcode
 ////////////////////////////////////////////////////////////////////////////////
-
     template
     <
         class AbstractProduct,
@@ -972,8 +971,10 @@ template <typename AP, typename Id, typename P1 >
 #endif //#define ENABLE_NEW_FACTORY_CODE
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template CloneFactory
-// Implements a generic cloning factory
+///  \class CloneFactory
+///
+///  \ingroup FactoryGroup
+///  Implements a generic cloning factory
 ////////////////////////////////////////////////////////////////////////////////
 
     template
@@ -1036,6 +1037,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.10  2005/11/03 12:43:35  syntheticpp
+// more doxygen documentation, modules added
+//
 // Revision 1.9  2005/10/30 14:03:23  syntheticpp
 // replace tabs space
 //

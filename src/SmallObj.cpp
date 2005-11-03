@@ -712,6 +712,7 @@ inline std::size_t GetOffset( std::size_t numBytes, std::size_t alignment )
  Calls the default allocator when SmallObjAllocator decides not to handle a
  request.  SmallObjAllocator calls this if the number of bytes is bigger than
  the size which can be handled by any FixedAllocator.
+ @param numBytes number of bytes
  @param doThrow True if this function should throw an exception, or false if it
   should indicate failure by returning a NULL pointer.
 */
@@ -886,6 +887,9 @@ void SmallObjAllocator::Deallocate( void * p )
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.17  2005/11/03 12:43:55  syntheticpp
+// more doxygen documentation, modules added
+//
 // Revision 1.16  2005/11/02 20:01:11  syntheticpp
 // more doxygen documentation, modules added
 //

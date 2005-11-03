@@ -300,7 +300,7 @@ namespace Loki
 #endif
 
     ////////////////////////////////////////////////////////////////////////////////
-    ///  Copyright (c) 2004 by Curtis Krauskopf - curtis\decompile.com
+    /// Copyright (c) 2004 by Curtis Krauskopf - curtis@decompile.com
     ///
     ///  \struct  DeletableSingleton
     ///
@@ -463,25 +463,22 @@ namespace Loki
     };
 
     ////////////////////////////////////////////////////////////////////////////////
-    ///  \struct FollowIntoDeath
+    ///  \class FollowIntoDeath
     ///
     ///  \ingroup LifetimeGroup
     ///
     ///  Lifetime policyfor the SingletonHolder tempalte. 
     ///  Followers will die after the master dies Followers will not die, if
-    ///  - master never dies (NoDestroy policy)
-    ///  - master never created
-    ///  - master dies not in the function registered with atexit
-    ///  - master dies not by a call of a the atexit registerd function (DeletableSingleton::GreathFullDeath)         
+    ///    - master never dies (NoDestroy policy)
+    ///    - master never created
+    ///    - master dies not in the function registered with atexit
+    ///    - master dies not by a call of a the atexit registerd function (DeletableSingleton::GreathFullDeath)         
     ///
     ///  \par Usage:
     ///
-    ///  Lifetime of the master singleton, e.g. with a M class:
-    ///  SingletonHolder<M,FollowIntoDeath::With<DefaultLifetime>::AsMasterLifetime> MasterSingleton;
-    ///
-    ///  Lifetime of the follower singleton,  e.g. with a F class:
-    ///
-    ///  SingletonHolder<F,CreateUsingNew,FollowIntoDeath::AfterMaster<MasterSingleton>::IsDestroyed>FollowerSingleton
+    ///  Lifetimes of the master and the follower singletons,  e.g. with a M and a F class:
+    ///   \code SingletonHolder< M , FollowIntoDeath::With<DefaultLifetime>::AsMasterLifetime > MasterSingleton; \endcode
+    ///   \code SingletonHolder< F , CreateUsingNew, FollowIntoDeath::AfterMaster< MasterSingleton >::IsDestroyed > FollowerSingleton \endcode
     ////////////////////////////////////////////////////////////////////////////////
     class FollowIntoDeath
     {

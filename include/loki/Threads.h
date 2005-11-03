@@ -2,18 +2,38 @@
 #define LOKI_THREADS_H_
 
 ////////////////////////////////////////////////////////////////////////////////
-// macro LOKI_DEFAULT_THREADING
-// Selects the default threading model for certain components of Loki
-// If you don't define it, it defaults to single-threaded
-// All classes in Loki have configurable threading model; LOKI_DEFAULT_THREADING
-// affects only default template arguments
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Header$
 
-/*! 
-	@defgroup  ThreadingGroup Threading
-*/
+///  @defgroup  ThreadingGroup Threading
+///  Policies to for the threading model:
+///
+///  - SingleThreaded
+///  - ObjectLevelLockable
+///  - ClassLevelLockable
+///
+///  All classes in Loki have configurable threading model.
+///
+///  The macro LOKI_DEFAULT_THREADING selects the default 
+///  threading model for certain components of Loki 
+///  (it affects only default template arguments)
+///  
+///  \par Usage:
+/// 
+///  To use a specific threading model define
+///
+///  - nothing, single-theading is default
+///  - LOKI_OBJECT_LEVEL_THREADING for object-level-threading
+///  - LOKI_CLASS_LEVEL_THREADING for class-level-threading
+///
+///  \par Supported platfroms:
+///
+///  - Windows (windows.h)
+///  - POSIX (pthread.h)
+
+
 
 #if defined(LOKI_CLASS_LEVEL_THREADING) || defined(LOKI_OBJECT_LEVEL_THREADING)
 
@@ -42,18 +62,20 @@
 
 namespace Loki
 {
-	
-	/*!
-		\class SingleThreaded
-		\ingroup ThreadingGroup
-	 
-        Implementation of the ThreadingModel policy used by various classes
-        Implements a single-threaded model; no synchronization
-	*/
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class SingleThreaded
+    ///
+    ///  \ingroup ThreadingGroup
+    ///  Implementation of the ThreadingModel policy used by various classes
+    ///  Implements a single-threaded model; no synchronization
+    ////////////////////////////////////////////////////////////////////////////////
     template <class Host>
     class SingleThreaded
     {
     public:
+        /// \struct Lock
+        /// Dummy Lock class
         struct Lock
         {
             Lock() {}
@@ -150,14 +172,13 @@ namespace Loki
 
 #if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
 
-	/*!
-		\class ObjectLevelLockable
-		\ingroup ThreadingGroup
-		
-		class template ObjectLevelLockable
-		Implementation of the ThreadingModel policy used by various classes
-		Implements a object-level locking scheme
-	*/
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class ObjectLevelLockable
+    ///
+    ///  \ingroup ThreadingGroup
+    ///  Implementation of the ThreadingModel policy used by various classes
+    ///  Implements a object-level locking scheme
+    ////////////////////////////////////////////////////////////////////////////////
     template <class Host>
     class ObjectLevelLockable
     {
@@ -182,26 +203,32 @@ namespace Loki
         class Lock;
         friend class Lock;
         
+        ///  \struct Lock
+        ///  Lock class to lock on object level
         class Lock
         { 
         public:
-
+            
+            /// Lock object
             explicit Lock(const ObjectLevelLockable& host) : host_(host)
             {
                 LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
             }
 
+            /// Lock object
             explicit Lock(const ObjectLevelLockable* host) : host_(*host)
             {
                 LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
             }
-
+            
+            /// Unlock object
             ~Lock()
             {
                 LOKI_THREADS_MUTEX_UNLOCK(&host_.mtx_);
             }
             
         private:
+            /// private by design of the object level threading
             Lock();
             Lock(const Lock&);
             Lock& operator=(const Lock&);
@@ -221,14 +248,13 @@ namespace Loki
     pthread_mutex_t ObjectLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
 #endif
     
-	
-	/*! 
-		\class ClassLevelLockable
-		\ingroup ThreadingGroup
-		
-		Implementation of the ThreadingModel policy used by various classes
-		Implements a class-level locking scheme
-	*/
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class ClassLevelLockable
+    ///
+    ///  \ingroup ThreadingGroup
+    ///  Implementation of the ThreadingModel policy used by various classes
+    ///  Implements a class-level locking scheme
+    ////////////////////////////////////////////////////////////////////////////////
     template <class Host>
     class ClassLevelLockable
     {
@@ -256,28 +282,34 @@ namespace Loki
         class Lock;
         friend class Lock;
         
+        ///  \struct Lock
+        ///  Lock class to lock on class level
         class Lock
         {    
         public:
-        
+
+            /// Lock class
             Lock()
             {
                 assert(initializer_.init_);
                 LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
             }
             
+            /// Lock class
             explicit Lock(const ClassLevelLockable&)
             {
                 assert(initializer_.init_);
                 LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
             }
-
+            
+            /// Lock class
             explicit Lock(const ClassLevelLockable*)
             {
                 assert(initializer_.init_);
                 LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
             }
             
+            /// Unlock class
             ~Lock()
             {
                 assert(initializer_.init_);
@@ -322,6 +354,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.18  2005/11/03 12:43:35  syntheticpp
+// more doxygen documentation, modules added
+//
 // Revision 1.17  2005/11/02 20:01:10  syntheticpp
 // more doxygen documentation, modules added
 //

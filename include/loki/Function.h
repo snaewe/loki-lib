@@ -18,16 +18,19 @@
 namespace Loki
 {
 
+	////////////////////////////////////////////////////////////////////////////////
+	///  \struct Function
+	///
+	///  \ingroup FunctorGroup
+	///  Allows a boost/TR1 like usage of Functor.
+	///
+	///  e.g. Functor<int,LOKI_TYPELIST_2(int,int)> becomes Function<int(int,int)>
+	////////////////////////////////////////////////////////////////////////////////
     template<class R = void()>
-	struct Function : public Functor<R>
-	{
-	};
+    struct Function : public Functor<R>
+    {
+    };
 
-////////////////////////////////////////////////////////////////////////////////
-// Function allows a boost/TR1 like usage of Functor.
-//
-// e.g. Functor<int,LOKI_TYPELIST_2(int,int)> becomes Function<int(int,int)>
-////////////////////////////////////////////////////////////////////////////////
 
     template<class R>
     struct Function<R()> : public Functor<R>
@@ -42,7 +45,7 @@ namespace Loki
                 FBase::operator=(func);
         }
                 
-        // emptiness
+        // test on emptiness
         template<class R2> 
         Function(Function<R2()> func) : FBase() 
         {
