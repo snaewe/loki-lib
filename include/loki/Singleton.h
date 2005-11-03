@@ -472,7 +472,7 @@ namespace Loki
     ///    - master never dies (NoDestroy policy)
     ///    - master never created
     ///    - master dies not in the function registered with atexit
-    ///    - master dies not by a call of a the atexit registerd function (DeletableSingleton::GreathFullDeath)         
+    ///    - master dies not by a call of a the atexit registerd function (DeletableSingleton::GracefulDelete)         
     ///
     ///  \par Usage:
     ///
