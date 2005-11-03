@@ -300,7 +300,7 @@ namespace Loki
 #endif
 
     ////////////////////////////////////////////////////////////////////////////////
-    /// Copyright (c) 2004 by Curtis Krauskopf - curtis@decompile.com
+    // Copyright (c) 2004 by Curtis Krauskopf - curtis@decompile.com
     ///
     ///  \struct  DeletableSingleton
     ///
