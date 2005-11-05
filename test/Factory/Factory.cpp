@@ -52,8 +52,10 @@ public:
 typedef SingletonHolder 
 <
     Factory< AbstractProduct, int >,
-    CreateUsingNew, 
-	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+    CreateUsingNew 
+#if !defined(_MSC_VER) || (_MSC_VER>=1400)
+    ,FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+#endif
 >
 PFactoryNull;
  
@@ -68,8 +70,10 @@ typedef SingletonHolder
 #else
     Factory< AbstractProduct, int, Seq< int, int > >,
 #endif
-    CreateUsingNew, 
-	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+    CreateUsingNew
+#if !defined(_MSC_VER) || (_MSC_VER>=1400)
+    ,FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+#endif
 >
 PFactory;
  
@@ -167,8 +171,10 @@ SingletonHolder
 #else
     Factory< AbstractProduct, int,Seq<CreateFunctor,int,int> >,
 #endif
-    CreateUsingNew, 
-	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+    CreateUsingNew
+#if !defined(_MSC_VER) || (_MSC_VER>=1400)
+    ,FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+#endif
 >
 PFactoryFunctorParm;
 
@@ -253,6 +259,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.7  2005/11/05 17:43:55  syntheticpp
+// disable FollowIntoDeath/DieOrder lifetime policies when using the msvc 7.1 compiler, bug article: 839821 'Microsoft has confirmed that this is a problem..'
+//
 // Revision 1.6  2005/11/01 11:38:19  syntheticpp
 // apply new lifetime policy to avoid crash on exit in test/Factory
 //

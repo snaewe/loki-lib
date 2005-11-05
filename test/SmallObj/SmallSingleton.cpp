@@ -18,6 +18,9 @@
 #include "../../include/loki/Singleton.h"
 #include <iostream>
 
+// disable new implementation when using msvc 7.1
+#if !defined(_MSC_VER) || (_MSC_VER>=1400)
+
 // define DO_EXTRA_LOKI_TESTS in src/SmallObj.cpp to get 
 // a message when a SmallObject is created/deleted.
 
@@ -250,9 +253,168 @@ int main()
     return 0;
 }
 
+
+#else
+
+using namespace std;
+
+
+// ----------------------------------------------------------------------------
+
+typedef Loki::SmallValueObject< LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+    LOKI_DEFAULT_CHUNK_SIZE, LOKI_MAX_SMALL_OBJECT_SIZE,
+    LOKI_DEFAULT_OBJECT_ALIGNMENT, Loki::SingletonWithLongevity >
+LongLivedObject;
+
+typedef Loki::SmallValueObject< LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+    LOKI_DEFAULT_CHUNK_SIZE, LOKI_MAX_SMALL_OBJECT_SIZE,
+    LOKI_DEFAULT_OBJECT_ALIGNMENT, Loki::NoDestroy >
+ImmortalObject;
+
+// ----------------------------------------------------------------------------
+
+class LongLivedSingleton : public LongLivedObject
+{
+public:
+
+    typedef Loki::SingletonHolder< LongLivedSingleton, Loki::CreateUsingNew,
+        Loki::SingletonWithLongevity, LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL >
+        MySmallSingleton;
+
+    /// Returns reference to the singleton.
+    inline static LongLivedSingleton & Instance( void )
+    {
+        return MySmallSingleton::Instance();
+    }
+
+    LongLivedSingleton( void )
+    {
+        cout << "LongLivedSingleton" << endl;
+    }
+    ~LongLivedSingleton( void )
+    {
+        cout << "~LongLivedSingleton" << endl;
+    }
+    void DoThat( void )
+    {
+        cout << "LongLivedSingleton::DoThat" << endl;
+    }
+private:
+    char m_stuff[ 16 ];
+};
+
+// ----------------------------------------------------------------------------
+
+inline unsigned int GetLongevity( LongLivedSingleton * )
+{
+    /// @note Must return a longevity level lower than the one in SmallObj.h.
+    return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+class ImmortalSingleton : public ImmortalObject
+{
+public:
+
+    typedef Loki::SingletonHolder< ImmortalSingleton, Loki::CreateUsingNew,
+        Loki::NoDestroy, LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL >
+        MySmallSingleton;
+
+    /// Returns reference to the singleton.
+    inline static ImmortalSingleton & Instance( void )
+    {
+        return MySmallSingleton::Instance();
+    }
+
+    ImmortalSingleton( void )
+    {
+        cout << "ImmortalSingleton" << endl;
+    }
+    ~ImmortalSingleton( void )
+    {
+        cout << "~ImmortalSingleton destructor should never get called!" << endl;
+    }
+    void DoThat( void )
+    {
+        cout << "ImmortalSingleton::DoThat" << endl;
+    }
+private:
+    char m_stuff[ 16 ];
+};
+
+// ----------------------------------------------------------------------------
+
+class MortalSingleton : public ImmortalObject
+{
+public:
+
+    typedef Loki::SingletonHolder< MortalSingleton, Loki::CreateUsingNew,
+        Loki::SingletonWithLongevity, LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL >
+        MySmallSingleton;
+
+    /// Returns reference to the singleton.
+    inline static MortalSingleton & Instance( void )
+    {
+        return MySmallSingleton::Instance();
+    }
+
+    MortalSingleton( void )
+    {
+        cout << "MortalSingleton" << endl;
+    }
+    ~MortalSingleton( void )
+    {
+        cout << "~MortalSingleton" << endl;
+    }
+    void DoThat( void )
+    {
+        cout << "MortalSingleton::DoThat" << endl;
+    }
+private:
+    char m_stuff[ 16 ];
+};
+
+// ----------------------------------------------------------------------------
+
+inline unsigned int GetLongevity( MortalSingleton * )
+{
+    /// @note Must return a longevity level lower than the one in SmallObj.h.
+    return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+int main()
+{
+    cout << "This program tests the three recommended combinations of singleton" << endl
+         << "lifetime policies for Loki's Small-Object Allocator and singleton" << endl
+         << "objects that are derived from SmallObject or SmallValueObject." << endl << endl
+         << "Those 3 recommended combinations are:" << endl
+         << "\t1. Both SmallObject and derived Singleton use NoDestroy policy." << endl
+         << "\t   This is tested by the ImmortalSingleton class." << endl
+         << "\t2. Both use SingletonWithLongevity policy." << endl
+         << "\t   This is tested by the LongLivedSingleton class." << endl
+         << "\t3. SmallObject has NoDestroy policy but the derived Singleton has" << endl
+         << "\t   SingletonWithLongevity policy." << endl
+         << "\t   This is tested by the MortalSingleton class." << endl << endl
+         << "If this program executes without crashing or asserting at exit time," << endl
+         << "then all 3 combinations work." << endl << endl;
+    MortalSingleton::Instance().DoThat();
+    LongLivedSingleton::Instance().DoThat();
+    ImmortalSingleton::Instance().DoThat();
+    system("PAUSE");
+    return 0;
+}
+
+#endif
+
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.8  2005/11/05 17:43:55  syntheticpp
+// disable FollowIntoDeath/DieOrder lifetime policies when using the msvc 7.1 compiler, bug article: 839821 'Microsoft has confirmed that this is a problem..'
+//
 // Revision 1.7  2005/11/02 15:00:38  syntheticpp
 // use new singleton lifetime policies
 //
