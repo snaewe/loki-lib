@@ -37,12 +37,17 @@
 #endif
 
 
-//#define LOKI_DEFAULT_SMALLOBJ_LIFETIME NoDestroy
 //#define LOKI_DEFAULT_SMALLOBJ_LIFETIME DefaultLifetime
 
 #ifndef LOKI_DEFAULT_SMALLOBJ_LIFETIME
-#define LOKI_DEFAULT_SMALLOBJ_LIFETIME \
-           FollowIntoDeath::With<DefaultLifetime>::AsMasterLifetime
+
+#if defined(_MSC_VER) && (_MSC_VER<1400)
+// msvc 7.1 is faulty and can't handle the FollowIntoDeath and DieOrder lifetime policies
+#define LOKI_DEFAULT_SMALLOBJ_LIFETIME NoDestroy
+#else
+#define LOKI_DEFAULT_SMALLOBJ_LIFETIME FollowIntoDeath::With<DefaultLifetime>::AsMasterLifetime
+#endif
+
 #endif
 
 #if defined(LOKI_SMALL_OBJECT_USE_NEW_ARRAY) && defined(_MSC_VER)
@@ -535,6 +540,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.21  2005/11/05 17:43:55  syntheticpp
+// disable FollowIntoDeath/DieOrder lifetime policies when using the msvc 7.1 compiler, bug article: 839821 'Microsoft has confirmed that this is a problem..'
+//
 // Revision 1.20  2005/11/02 20:01:10  syntheticpp
 // more doxygen documentation, modules added
 //

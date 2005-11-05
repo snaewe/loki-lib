@@ -1,4 +1,14 @@
-
+////////////////////////////////////////////////////////////////////////////////
+// The Loki Library
+// Copyright (c) 2005 Peter Kümmel
+// Permission to use, copy, modify, distribute and sell this software for any 
+//     purpose is hereby granted without fee, provided that the above copyright 
+//     notice appear in all copies and that both that copyright notice and this 
+//     permission notice appear in supporting documentation.
+// The authors make no representations about the 
+//     suitability of this software for any purpose. It is provided "as is" 
+//     without express or implied warranty.
+////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 
@@ -8,6 +18,7 @@
 
 using namespace Loki;
 
+#if !defined(_MSC_VER) || (_MSC_VER>=1400)
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -45,23 +56,23 @@ Singleton_of_with_a_MySmallObject;
 
 struct MyFunctionObject 
 {
-	MyFunctionObject()
-	{
-		functor  = Functor<void>    (this, &MyFunctionObject::f);
-		function = Function< void()>(this, &MyFunctionObject::f);
-	}
+    MyFunctionObject()
+    {
+        functor  = Functor<void>    (this, &MyFunctionObject::f);
+        function = Function< void()>(this, &MyFunctionObject::f);
+    }
 
-	void f(){}
-	Functor<void> functor;
-	Function<void()> function;
-	
+    void f(){}
+    Functor<void> functor;
+    Function<void()> function;
+    
 };
 
 typedef SingletonHolder
 <
     MyFunctionObject, 
     CreateUsingNew, 
-	FollowIntoDeath::AfterMaster<Function<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+    FollowIntoDeath::AfterMaster<Function<>::Impl::ObjAllocatorSingleton>::IsDestroyed
 >
 Singleton_MyFunctionObject1;
 
@@ -69,7 +80,7 @@ typedef SingletonHolder
 <
     MyFunctionObject, 
     CreateUsingNew, 
-	FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
+    FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
 >
 Singleton_MyFunctionObject2;
 
@@ -363,8 +374,8 @@ void heap_debug()
 int main(int argc, char *argv[])
 {
 
-	MyFunctionObject *f1 = &Singleton_MyFunctionObject1::Instance();
-	MyFunctionObject *f2 = &Singleton_MyFunctionObject2::Instance();
+    MyFunctionObject *f1 = &Singleton_MyFunctionObject1::Instance();
+    MyFunctionObject *f2 = &Singleton_MyFunctionObject2::Instance();
 
 #ifdef _MSC_VER
     heap_debug();
@@ -407,3 +418,13 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+#else
+
+int main()
+{
+    std::cout<<"code is disabled because of faulty microsoft compiler 7.1";
+    return 0;
+};
+
+#endif //#if !defined(_MSC_VER) || (_MSC_VER>=1400)

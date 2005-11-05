@@ -38,7 +38,7 @@ cl -c -Zm200 -O2 -DNDEBUG -MT -EHsc -GR -W0 -wd4710 -I"." -I"..\..\include" -Fot
 
 if not defined LOKI_MSVC_NOLIB (
 
-link /NOLOGO /SUBSYSTEM:CONSOLE /incremental:no /OUT:"Dependencies-msvc.exe" ..\..\lib\loki.lib tmp\Phoenix.obj 
+link /NOLOGO /SUBSYSTEM:CONSOLE /incremental:no /OUT:"Dependencies-msvc.exe" ..\..\lib\loki.lib tmp\Dependencies.obj 
 
 ) else (
 
