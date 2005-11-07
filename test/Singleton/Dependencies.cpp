@@ -18,7 +18,155 @@
 
 using namespace Loki;
 
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+//    Data object for all singletons
+//
+////////////////////////////////////////////////////////////////////////////////////
+
+template<template <class> class T, int Nr>
+struct SingletonDataObject
+{
+    SingletonDataObject() {std::cout<<"new SingletonDataObject"<<Nr<<"\n\n";}
+    ~SingletonDataObject(){std::cout<<"delete SingletonDataObject"<<Nr<<"\n\n";}
+    
+    int i[Nr];
+};
+
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+//    How to use LongevityLifetime policies 
+//    DieAsSmallObjectParent/DieAsSmallObjectChild with SmallObjects?
+//
+////////////////////////////////////////////////////////////////////////////////////
+
+//  LongevityLifetime::DieAsSmallObjectParent is the default 
+//  lifetime of SmallObject template:
+typedef Loki::SmallObject<> 
+SmallObject_DieAs;
+
+class MySmallObject_DieAs : public SmallObject_DieAs
+{};
+
+typedef SingletonHolder
+<
+    MySmallObject_DieAs, 
+    CreateUsingNew, 
+    LongevityLifetime::DieAsSmallObjectChild
+>
+Singleton_with_MySmallObject_DieAs;
+
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+//    How to use LongevityLifetime policies 
+//    DieAsSmallObjectParent/DieAsSmallObjectChild with 
+//    classes containing a Functor/Function?
+//
+////////////////////////////////////////////////////////////////////////////////////
+
+
+struct MyFunctionObject_DieAs
+{
+    MyFunctionObject_DieAs()
+    {
+        functor  = Functor<void>    (this, &MyFunctionObject_DieAs::f);
+        function = Function< void()>(this, &MyFunctionObject_DieAs::f);
+    }
+
+    void f(){}
+    Functor<void> functor;
+    Function<void()> function;
+    
+};
+
+typedef SingletonHolder
+<
+    MyFunctionObject_DieAs, 
+    CreateUsingNew, 
+    LongevityLifetime::DieAsSmallObjectChild
+>
+Singleton_MyFunctionObject_DieAs;
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+//    Test code for LongevityLifetime Policy
+//
+////////////////////////////////////////////////////////////////////////////////////
+
+template<template <class> class Lifetime>
+struct Master_die_first
+{
+    Master_die_first() 
+    {
+        data = &Singleton::Instance();
+    }
+
+    virtual ~Master_die_first(){}
+
+    typedef Master_die_first<Lifetime> ThisType;
+    typedef SingletonDataObject<Lifetime,888> MasterSingleton;
+    typedef SingletonHolder<MasterSingleton,CreateUsingNew,Lifetime> Singleton;
+
+    MasterSingleton* data;
+};
+
+template<template <class> class Lifetime>
+struct Master_die_last
+{
+    Master_die_last() 
+    {
+        data = &Singleton::Instance();
+    }
+
+    virtual ~Master_die_last(){}
+
+    typedef Master_die_last<Lifetime> ThisType;
+    typedef SingletonDataObject<Lifetime,555> MasterSingleton;
+    typedef SingletonHolder<MasterSingleton,CreateUsingNew,Lifetime> Singleton;
+
+    MasterSingleton* data;
+};
+
+typedef Master_die_first<LongevityLifetime::DieFirst>
+Master1_die_first;
+
+typedef Master_die_last<LongevityLifetime::DieLast>
+Master1_die_last;
+
+class B1_die_first;
+class B1_die_last;
+
+typedef SingletonHolder<B1_die_first,CreateUsingNew, 
+LongevityLifetime::DieFirst
+> Follower1_Singleton_B1_die_first;
+
+typedef SingletonHolder<B1_die_last,CreateUsingNew, 
+LongevityLifetime::DieLast
+> Follower1_Singleton_B1_die_last;
+
+class B1_die_first : public Master1_die_last
+{
+public:
+    B1_die_first(){std::cout<<"new B1_die_first, look for SingletonDataObject555\n\n";}
+    ~B1_die_first(){std::cout<<"delete B1_die_first, look for SingletonDataObject555\n\n";}
+};
+
+class B1_die_last : public Master1_die_first
+{
+public:
+    B1_die_last(){std::cout<<"new B1_die_last,  look for SingletonDataObject888\n\n";}
+    ~B1_die_last(){std::cout<<"delete B1_die_last,  look for SingletonDataObject888\n\n";}
+};
+
+
 #if !defined(_MSC_VER) || (_MSC_VER>=1400)
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -84,99 +232,13 @@ typedef SingletonHolder
 >
 Singleton_MyFunctionObject2;
 
-////////////////////////////////////////////////////////////////////////////////////
-//
-//    Data object for all singletons
-//
-////////////////////////////////////////////////////////////////////////////////////
-
-template<template <class> class T, int Nr>
-struct SingletonDataObject
-{
-    SingletonDataObject() {std::cout<<"new SingletonDataObject"<<Nr<<"\n\n";}
-    ~SingletonDataObject(){std::cout<<"delete SingletonDataObject"<<Nr<<"\n\n";}
-    
-    int i[Nr];
-};
-
-////////////////////////////////////////////////////////////////////////////////////
-//
-//    Test code for DieOrder Policy
-//
-////////////////////////////////////////////////////////////////////////////////////
-
-template<template <class> class Lifetime>
-struct Master_die_first
-{
-    Master_die_first() 
-    {
-        data = &Singleton::Instance();
-    }
-
-    virtual ~Master_die_first(){}
-
-    typedef Master_die_first<Lifetime> ThisType;
-    typedef SingletonDataObject<Lifetime,888> MasterSingleton;
-    typedef SingletonHolder<MasterSingleton,CreateUsingNew,Lifetime> Singleton;
-
-    MasterSingleton* data;
-};
-
-template<template <class> class Lifetime>
-struct Master_die_last
-{
-    Master_die_last() 
-    {
-        data = &Singleton::Instance();
-    }
-
-    virtual ~Master_die_last(){}
-
-    typedef Master_die_last<Lifetime> ThisType;
-    typedef SingletonDataObject<Lifetime,555> MasterSingleton;
-    typedef SingletonHolder<MasterSingleton,CreateUsingNew,Lifetime> Singleton;
-
-    MasterSingleton* data;
-};
-
-typedef Master_die_first<DieOrder::First>
-Master1_die_first;
-
-typedef Master_die_last<DieOrder::Last>
-Master1_die_last;
-
-class B1_die_first;
-class B1_die_last;
-
-typedef SingletonHolder<B1_die_first,CreateUsingNew, 
-DieOrder::First
-> Follower1_Singleton_B1_die_first;
-
-typedef SingletonHolder<B1_die_last,CreateUsingNew, 
-DieOrder::Last
-> Follower1_Singleton_B1_die_last;
-
-class B1_die_first : public Master1_die_last
-{
-public:
-    B1_die_first(){std::cout<<"new B1_die_first, look for SingletonDataObject555\n\n";}
-    ~B1_die_first(){std::cout<<"delete B1_die_first, look for SingletonDataObject555\n\n";}
-};
-
-class B1_die_last : public Master1_die_first
-{
-public:
-    B1_die_last(){std::cout<<"new B1_die_last,  look for SingletonDataObject888\n\n";}
-    ~B1_die_last(){std::cout<<"delete B1_die_last,  look for SingletonDataObject888\n\n";}
-};
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
 //    Test code for FollowIntoDeath policy
 //
 ////////////////////////////////////////////////////////////////////////////////////
+
 
 template<template <class> class Lifetime>
 struct Master1
@@ -335,6 +397,7 @@ typedef SingletonHolder<B2_DeletableSingleton,CreateUsingNew,
     FollowIntoDeath::AfterMaster<Master2_DeletableSingleton::MasterSingleton>::IsDestroyed
 > Follower2_Singleton_DeletableSingleton;
 
+#endif //#if !defined(_MSC_VER) || (_MSC_VER>=1400)
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -373,19 +436,26 @@ void heap_debug()
 
 int main(int argc, char *argv[])
 {
-
-    MyFunctionObject *f1 = &Singleton_MyFunctionObject1::Instance();
-    MyFunctionObject *f2 = &Singleton_MyFunctionObject2::Instance();
-
+    
 #ifdef _MSC_VER
     heap_debug();
 #endif
+
+
+    MySmallObject_DieAs    *s_DieAs = &Singleton_with_MySmallObject_DieAs::Instance();
+    MyFunctionObject_DieAs *f_DieAs = &Singleton_MyFunctionObject_DieAs::Instance();
 
     std::cout<<"\n";
 
     B1_die_first     *first= &Follower1_Singleton_B1_die_first::Instance();
     B1_die_last         *last = &Follower1_Singleton_B1_die_last::Instance();
 
+
+    // test of FollowIntoDeath policy, not supported by msvc 7.1 compiler
+#if !defined(_MSC_VER) || (_MSC_VER>=1400)
+
+    MyFunctionObject *f1 = &Singleton_MyFunctionObject1::Instance();
+    MyFunctionObject *f2 = &Singleton_MyFunctionObject2::Instance();
 
     std::cout << "\nMaster1:\n\n";
 
@@ -406,11 +476,17 @@ int main(int argc, char *argv[])
     del2->data = &Master2_DeletableSingleton::Singleton::Instance();
     
     // memory leak when code is enabled
-//#define ENMasterBLE_LEMasterK
+    //#define ENMasterBLE_LEMasterK
 #ifdef ENMasterBLE_LEMasterK
     B1_NoDestroy          *no = &Follower1_Singleton_NoDestroy::Instance();
     B2_NoDestroy          *no2 = &Follower2_Singleton_NoDestro0::Instance();
     no2->data = &Master2_NoDestroy::Singleton::Instance();
+#endif
+
+#endif //#if !defined(_MSC_VER) || (_MSC_VER>=1400)
+
+#if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
+    system("pause"); // Stop console window from closing if run from IDE.
 #endif
 
     std::cout << "\nnow leaving main \n";
@@ -418,13 +494,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-#else
-
-int main()
-{
-    std::cout<<"code is disabled because of faulty microsoft compiler 7.1";
-    return 0;
-};
-
-#endif //#if !defined(_MSC_VER) || (_MSC_VER>=1400)
