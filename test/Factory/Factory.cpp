@@ -52,10 +52,8 @@ public:
 typedef SingletonHolder 
 <
     Factory< AbstractProduct, int >,
-    CreateUsingNew 
-#if !defined(_MSC_VER) || (_MSC_VER>=1400)
-    ,FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
-#endif
+    CreateUsingNew,
+    Loki::LongevityLifetime::DieAsSmallObjectChild
 >
 PFactoryNull;
  
@@ -70,10 +68,8 @@ typedef SingletonHolder
 #else
     Factory< AbstractProduct, int, Seq< int, int > >,
 #endif
-    CreateUsingNew
-#if !defined(_MSC_VER) || (_MSC_VER>=1400)
-    ,FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
-#endif
+    CreateUsingNew,
+    Loki::LongevityLifetime::DieAsSmallObjectChild
 >
 PFactory;
  
@@ -171,10 +167,8 @@ SingletonHolder
 #else
     Factory< AbstractProduct, int,Seq<CreateFunctor,int,int> >,
 #endif
-    CreateUsingNew
-#if !defined(_MSC_VER) || (_MSC_VER>=1400)
-    ,FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
-#endif
+    CreateUsingNew,
+    Loki::LongevityLifetime::DieAsSmallObjectChild
 >
 PFactoryFunctorParm;
 
@@ -259,6 +253,9 @@ int main(int argc, char *argv[])
 }
 
 // $Log$
+// Revision 1.8  2005/11/07 12:06:43  syntheticpp
+// change lifetime policy DieOrder to a msvc7.1 compilable version. Make this the default lifetime for SmallObject
+//
 // Revision 1.7  2005/11/05 17:43:55  syntheticpp
 // disable FollowIntoDeath/DieOrder lifetime policies when using the msvc 7.1 compiler, bug article: 839821 'Microsoft has confirmed that this is a problem..'
 //

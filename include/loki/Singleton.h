@@ -426,41 +426,66 @@ namespace Loki
         static void OnDeadReference()
         {}
     };
-
-    template <unsigned int Longevity, class T>
-    class SingletonFixedLongevity
-    {
-    public:
-        static void ScheduleDestruction(T* pObj, atexit_pfn_t pFun)
-        {
-            Private::Adapter<T> adapter = { pFun };
-            SetLongevity(pObj, Longevity , adapter);
-        }
-        
-        static void OnDeadReference()
-        { throw std::logic_error("Dead Reference Detected"); }
-    };
     
+
     ////////////////////////////////////////////////////////////////////////////////
-    ///  \struct  DieOrder 
-    ///
+    ///  \defgroup LongevityLifetimeGroup LongevityLifetime
     ///  \ingroup LifetimeGroup
-    ///  Lifetime policy to handle lifetime dependencies
+    ///
+    ///  \namespace LongevityLifetime
+    ///
+    ///  \ingroup LongevityLifetimeGroup
+    ///  \brief  In this namespace are special lifetime policies to manage lifetime
+    ///  dependencies.
     ////////////////////////////////////////////////////////////////////////////////
-    struct DieOrder
+    namespace LongevityLifetime
     {
-        ///  \struct Last
-        ///  Die after the singleton with the DieOrder::First lifetime
+        ////////////////////////////////////////////////////////////////////////////////
+        ///  \struct  SingletonFixedLongevity 
+        ///
+        ///  \ingroup LongevityLifetimeGroup
+        ///  Add your own lifetimes into the namespace 'LongevityLifetime'
+        ///  with your prefered lifetime by adding a struct like this:
+        ///
+        ///  template<class T>
+        ///  struct MyLifetime  : SingletonFixedLongevity< MyLifetimeNumber ,T> {}
+        ////////////////////////////////////////////////////////////////////////////////
+        template <unsigned int Longevity, class T>
+        class SingletonFixedLongevity
+        {
+        public:
+            static void ScheduleDestruction(T* pObj, atexit_pfn_t pFun)
+            {
+                Private::Adapter<T> adapter = { pFun };
+                SetLongevity(pObj, Longevity , adapter);
+            }
+            
+            static void OnDeadReference()
+            { throw std::logic_error("Dead Reference Detected"); }
+        };
+
+        ///  \struct DieLast
+        ///  \ingroup LongevityLifetimeGroup
+        ///  \brief  Longest possible SingletonWithLongevity lifetime: 0xFFFFFFFF
         template <class T>
-        struct Last  : public SingletonFixedLongevity<0xFFFFFFFF ,T>
+        struct DieLast  : SingletonFixedLongevity<0xFFFFFFFF ,T>
         {};
 
-        ///  \struct First
-        ///  Die before the singleton with the DieOrder::Last lifetime        
+        ///  \struct DieDirectlyBeforeLast
+        ///  \ingroup LongevityLifetimeGroup
+        ///  \brief  Lifetime is a one less than DieLast: 0xFFFFFFFF-1
         template <class T>
-        struct First : public SingletonFixedLongevity<0xFFFFFFFF-1,T>
+        struct DieDirectlyBeforeLast  : SingletonFixedLongevity<0xFFFFFFFF-1 ,T>
         {};
-    };
+
+        ///  \struct DieFirst
+        ///  \ingroup LongevityLifetimeGroup
+        ///  \brief  Shortest possible SingletonWithLongevity lifetime: 0 
+        template <class T>
+        struct DieFirst : SingletonFixedLongevity<0,T>
+        {};
+    
+    }//namespace LongevityLifetime
 
     ////////////////////////////////////////////////////////////////////////////////
     ///  \class FollowIntoDeath

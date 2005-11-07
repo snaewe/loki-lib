@@ -18,14 +18,14 @@
 namespace Loki
 {
 
-	////////////////////////////////////////////////////////////////////////////////
-	///  \struct Function
-	///
-	///  \ingroup FunctorGroup
-	///  Allows a boost/TR1 like usage of Functor.
-	///
-	///  e.g. Functor<int,LOKI_TYPELIST_2(int,int)> becomes Function<int(int,int)>
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \struct Function
+    ///
+    ///  \ingroup FunctorGroup
+    ///  Allows a boost/TR1 like usage of Functor.
+    ///
+    ///  e.g. Functor<int,LOKI_TYPELIST_2(int,int)> becomes Function<int(int,int)>
+    ////////////////////////////////////////////////////////////////////////////////
     template<class R = void()>
     struct Function : public Functor<R>
     {

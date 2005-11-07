@@ -2,8 +2,8 @@
 
 CPP = g++
 CC = gcc
-OBJ = SmallObjBench.o SmallObj.o 
-LINKOBJ = SmallObjBench.o SmallObj.o
+OBJ = SmallObjBench.o SmallObj.o Singleton.o 
+LINKOBJ = SmallObjBench.o SmallObj.o Singleton.o 
 CXXINCS = -I./../../include -I./../../include/loki 
 CXXFLAGS = $(CXXINCS) -DNDEBUG -fexpensive-optimizations -O3 
 BIN = main-gcc.exe
@@ -30,3 +30,6 @@ SmallObjBench.o: SmallObjBench.cpp
 
 SmallObj.o: ../../src/SmallObj.cpp
 	$(CPP) -c ../../src/SmallObj.cpp -o SmallObj.o $(CXXFLAGS)
+
+Singleton.o: ../../src/Singleton.cpp
+	$(CPP) -c ../../src/Singleton.cpp -o Singleton.o $(CXXFLAGS)

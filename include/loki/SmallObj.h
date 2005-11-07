@@ -36,18 +36,8 @@
 #define LOKI_DEFAULT_OBJECT_ALIGNMENT 4
 #endif
 
-
-//#define LOKI_DEFAULT_SMALLOBJ_LIFETIME DefaultLifetime
-
 #ifndef LOKI_DEFAULT_SMALLOBJ_LIFETIME
-
-#if defined(_MSC_VER) && (_MSC_VER<1400)
-// msvc 7.1 is faulty and can't handle the FollowIntoDeath and DieOrder lifetime policies
-#define LOKI_DEFAULT_SMALLOBJ_LIFETIME NoDestroy
-#else
-#define LOKI_DEFAULT_SMALLOBJ_LIFETIME FollowIntoDeath::With<DefaultLifetime>::AsMasterLifetime
-#endif
-
+#define LOKI_DEFAULT_SMALLOBJ_LIFETIME LongevityLifetime::DieAsSmallObjectParent
 #endif
 
 #if defined(LOKI_SMALL_OBJECT_USE_NEW_ARRAY) && defined(_MSC_VER)
@@ -63,6 +53,28 @@
 
 namespace Loki
 {
+    namespace LongevityLifetime
+    {
+        /** @struct DieAsSmallObjectParent
+			@ingroup SmallObjectGroup
+			Lifetime policy to manage lifetime dependencies of 
+			SmallObject base and child classes.
+			The Base class should have this lifetime
+		*/
+        template <class T>
+        struct DieAsSmallObjectParent  : DieLast<T> {};
+
+        /** @struct DieAsSmallObjectChild
+            @ingroup SmallObjectGroup
+			Lifetime policy to manage lifetime dependencies of 
+			SmallObject base and child classes.
+			The Child class should have this lifetime
+		*/
+        template <class T>
+        struct DieAsSmallObjectChild  : DieDirectlyBeforeLast<T> {};
+
+    } 
+
     class FixedAllocator;
 
     /** @class SmallObjAllocator
@@ -540,6 +552,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.22  2005/11/07 12:06:43  syntheticpp
+// change lifetime policy DieOrder to a msvc7.1 compilable version. Make this the default lifetime for SmallObject
+//
 // Revision 1.21  2005/11/05 17:43:55  syntheticpp
 // disable FollowIntoDeath/DieOrder lifetime policies when using the msvc 7.1 compiler, bug article: 839821 'Microsoft has confirmed that this is a problem..'
 //
