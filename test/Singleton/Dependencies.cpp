@@ -10,6 +10,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #include <iostream>
 
 #include "loki/SmallObj.h"
@@ -43,8 +44,8 @@ struct SingletonDataObject
 //
 ////////////////////////////////////////////////////////////////////////////////////
 
-//  LongevityLifetime::DieAsSmallObjectParent is the default 
-//  lifetime of SmallObject template:
+//  LongevityLifetime::DieAsSmallObjectParent is the default lifetime 
+//  of SmallObject template:
 typedef Loki::SmallObject<> 
 SmallObject_DieAs;
 
@@ -164,9 +165,8 @@ public:
     ~B1_die_last(){std::cout<<"delete B1_die_last,  look for SingletonDataObject888\n\n";}
 };
 
-
+// test of FollowIntoDeath policy, not supported by msvc 7.1 compiler
 #if !defined(_MSC_VER) || (_MSC_VER>=1400)
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -196,41 +196,6 @@ typedef SingletonHolder
 >
 Singleton_of_with_a_MySmallObject;
 
-////////////////////////////////////////////////////////////////////////////////////
-//
-//    How to use FollowIntoDeath with classes containing a Functor/Function?
-//
-////////////////////////////////////////////////////////////////////////////////////
-
-struct MyFunctionObject 
-{
-    MyFunctionObject()
-    {
-        functor  = Functor<void>    (this, &MyFunctionObject::f);
-        function = Function< void()>(this, &MyFunctionObject::f);
-    }
-
-    void f(){}
-    Functor<void> functor;
-    Function<void()> function;
-    
-};
-
-typedef SingletonHolder
-<
-    MyFunctionObject, 
-    CreateUsingNew, 
-    FollowIntoDeath::AfterMaster<Function<>::Impl::ObjAllocatorSingleton>::IsDestroyed
->
-Singleton_MyFunctionObject1;
-
-typedef SingletonHolder
-<
-    MyFunctionObject, 
-    CreateUsingNew, 
-    FollowIntoDeath::AfterMaster<Functor<>::Impl::ObjAllocatorSingleton>::IsDestroyed
->
-Singleton_MyFunctionObject2;
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -434,59 +399,57 @@ void heap_debug()
 //
 ////////////////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char *argv[])
+int main()
 {
     
 #ifdef _MSC_VER
     heap_debug();
 #endif
 
+    void* p;
 
-    MySmallObject_DieAs    *s_DieAs = &Singleton_with_MySmallObject_DieAs::Instance();
-    MyFunctionObject_DieAs *f_DieAs = &Singleton_MyFunctionObject_DieAs::Instance();
+    p = (void*) &Singleton_with_MySmallObject_DieAs::Instance();
+    p = (void*) &Singleton_MyFunctionObject_DieAs::Instance();
 
     std::cout<<"\n";
 
-    B1_die_first     *first= &Follower1_Singleton_B1_die_first::Instance();
-    B1_die_last         *last = &Follower1_Singleton_B1_die_last::Instance();
+    p = (void*) &Follower1_Singleton_B1_die_first::Instance();
+    p = (void*) &Follower1_Singleton_B1_die_last::Instance();
 
 
     // test of FollowIntoDeath policy, not supported by msvc 7.1 compiler
 #if !defined(_MSC_VER) || (_MSC_VER>=1400)
 
-    MyFunctionObject *f1 = &Singleton_MyFunctionObject1::Instance();
-    MyFunctionObject *f2 = &Singleton_MyFunctionObject2::Instance();
-
     std::cout << "\nMaster1:\n\n";
 
-    B1_DefaultLifetime     *def = &Follower1_Singleton_DefaultLifetime::Instance();
-    B1_PhoenixSingleton     *pho = &Follower1_Singleton_PhoenixSingleton::Instance();
-    B1_DeletableSingleton *del = &Follower1_Singleton_DeletableSingleton::Instance();
+    p = (void*) &Follower1_Singleton_DefaultLifetime::Instance();
+    p = (void*) &Follower1_Singleton_PhoenixSingleton::Instance();
+    p = (void*) &Follower1_Singleton_DeletableSingleton::Instance();
     
 
     std::cout << "\n\nMaster2:\n\n";
 
-    B2_DefaultLifetime     *def2 = &Follower2_Singleton_DefaultLifetime::Instance();
+    B2_DefaultLifetime *def2 = &Follower2_Singleton_DefaultLifetime::Instance();
     def2->data = &Master2_DefaultLifetime::Singleton::Instance();
 
-    B2_PhoenixSingleton     *pho2 = &Follower2_Singleton_PhoenixSingleton::Instance();
+    B2_PhoenixSingleton *pho2 = &Follower2_Singleton_PhoenixSingleton::Instance();
     pho2->data = &Master2_PhoenixSingleton::Singleton::Instance();
 
     B2_DeletableSingleton *del2 = &Follower2_Singleton_DeletableSingleton::Instance();
     del2->data = &Master2_DeletableSingleton::Singleton::Instance();
     
     // memory leak when code is enabled
-    //#define ENMasterBLE_LEMasterK
-#ifdef ENMasterBLE_LEMasterK
-    B1_NoDestroy          *no = &Follower1_Singleton_NoDestroy::Instance();
-    B2_NoDestroy          *no2 = &Follower2_Singleton_NoDestro0::Instance();
+//#define ENABLE_MEMORY_LEAK
+#ifdef ENABLE_MEMORY_LEAK
+    p = (void*) &Follower1_Singleton_NoDestroy::Instance();
+    B2_NoDestroy *no2 = &Follower2_Singleton_NoDestroy::Instance();
     no2->data = &Master2_NoDestroy::Singleton::Instance();
 #endif
 
 #endif //#if !defined(_MSC_VER) || (_MSC_VER>=1400)
 
 #if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
-    system("pause"); // Stop console window from closing if run from IDE.
+    system("pause");
 #endif
 
     std::cout << "\nnow leaving main \n";
