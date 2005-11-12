@@ -666,15 +666,7 @@ template <typename AP, typename Id, typename P1 >
     >
     class Factory : public FactoryErrorPolicy<IdentifierType, AbstractProduct>
     {
-        typedef Functor<AbstractProduct*, CreatorParmTList> ProductCreator;
         typedef FactoryImpl< AbstractProduct, IdentifierType, CreatorParmTList > Impl;
-
-        typedef AssocVector<IdentifierType, Functor<AbstractProduct*, CreatorParmTList> > IdToProductMap;
-		typedef typename IdToProductMap::iterator iterator;
-	
-        IdToProductMap associations_;
-
-    public:
 
         typedef typename Impl::Parm1 Parm1;
         typedef typename Impl::Parm2 Parm2;
@@ -691,6 +683,14 @@ template <typename AP, typename Id, typename P1 >
         typedef typename Impl::Parm13 Parm13;
         typedef typename Impl::Parm14 Parm14;
         typedef typename Impl::Parm15 Parm15;
+
+        typedef Functor<AbstractProduct*, CreatorParmTList> ProductCreator;
+
+        typedef AssocVector<IdentifierType, ProductCreator> IdToProductMap;
+
+        IdToProductMap associations_;
+
+    public:
 
         Factory()
         {
@@ -721,14 +721,15 @@ template <typename AP, typename Id, typename P1 >
             return associations_.erase(id) != 0;
         }
 
-		std::vector<IdentifierType> RegisteredIds()
+        std::vector<IdentifierType> RegisteredIds()
         {
-			std::vector<IdentifierType> ids;
-            for(iterator it = associations_.begin(); it != associations_.end();++it)
-			{
-				ids.push_back(it->first);
-			}
-			return ids;
+            std::vector<IdentifierType> ids;
+            for(typename IdToProductMap::iterator it = associations_.begin(); 
+                it != associations_.end(); ++it)
+            {
+                ids.push_back(it->first);
+            }
+            return ids;
         }
 
         AbstractProduct* CreateObject(const IdentifierType& id)
@@ -1001,6 +1002,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.12  2005/11/12 17:11:55  syntheticpp
+// make typedefs private, replace tabs
+//
 // Revision 1.11  2005/11/12 16:52:36  syntheticpp
 // protect private data, add std::vector<IdType> RegisteredIds()
 //
