@@ -656,39 +656,6 @@ template <typename AP, typename Id, typename P1 >
 ///  
 ///  Create functions can have up to 15 parameters.
 ///    
-///  \code
-///    template
-///    <
-///        class AbstractProduct,
-///        typename IdentifierType,
-///        typename CreatorParmTList = NullType,
-///        template<typename, class> class FactoryErrorPolicy = ExceptionFactoryError
-///    >
-///    class Factory : public FactoryErrorPolicy<IdentifierType, AbstractProduct>
-///    {
-///
-///    public:
-///        typedef Functor<AbstractProduct*, CreatorParmTList> ProductCreator;
-///        typedef FactoryImpl< AbstractProduct, IdentifierType, CreatorParmTList > Impl;
-///
-///        typedef typename Impl::Parm1Parm1;
-///        // ... up to 15 Parameters
-///        
-///        typedef typename IdToProductMap::iterator iterator;
-///        iterator begin();
-///        iterator end();
-///
-///        bool Register(const IdentifierType& id, ProductCreator creator);
-///        bool Unregister(const IdentifierType& id);
-///
-///        template <class PtrObj, typename CreaFn>
-///        bool Register(const IdentifierType& id, const PtrObj& p, CreaFn fn);
-///
-///        AbstractProduct* CreateObject(const IdentifierType& id);
-///        AbstractProduct* CreateObject(const IdentifierType& id,    Parm1 p1);
-///        // ... up to 15 Parameters
-///    };
-///  \endcode
 ////////////////////////////////////////////////////////////////////////////////
     template
     <
@@ -699,16 +666,16 @@ template <typename AP, typename Id, typename P1 >
     >
     class Factory : public FactoryErrorPolicy<IdentifierType, AbstractProduct>
     {
-
-
-    public:
         typedef Functor<AbstractProduct*, CreatorParmTList> ProductCreator;
         typedef FactoryImpl< AbstractProduct, IdentifierType, CreatorParmTList > Impl;
 
-    private:
         typedef AssocVector<IdentifierType, Functor<AbstractProduct*, CreatorParmTList> > IdToProductMap;
+		typedef typename IdToProductMap::iterator iterator;
+	
+        IdToProductMap associations_;
 
     public:
+
         typedef typename Impl::Parm1 Parm1;
         typedef typename Impl::Parm2 Parm2;
         typedef typename Impl::Parm3 Parm3;
@@ -734,17 +701,6 @@ template <typename AP, typename Id, typename P1 >
             associations_.erase(associations_.begin(), associations_.end());
         }
 
-        typedef typename IdToProductMap::iterator iterator;
-        
-        iterator begin()
-        {
-            return associations_.begin();
-        }
-        iterator end()
-        {
-            return associations_.end();
-        }
-
         bool Register(const IdentifierType& id, ProductCreator creator)
         {
             return associations_.insert(
@@ -763,6 +719,16 @@ template <typename AP, typename Id, typename P1 >
         bool Unregister(const IdentifierType& id)
         {
             return associations_.erase(id) != 0;
+        }
+
+		std::vector<IdentifierType> RegisteredIds()
+        {
+			std::vector<IdentifierType> ids;
+            for(iterator it = associations_.begin(); it != associations_.end();++it)
+			{
+				ids.push_back(it->first);
+			}
+			return ids;
         }
 
         AbstractProduct* CreateObject(const IdentifierType& id)
@@ -922,8 +888,6 @@ template <typename AP, typename Id, typename P1 >
             return this->OnUnknownType(id);
         }
 
-    private:
-        IdToProductMap associations_;
     };
 
 
@@ -1037,6 +1001,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.11  2005/11/12 16:52:36  syntheticpp
+// protect private data, add std::vector<IdType> RegisteredIds()
+//
 // Revision 1.10  2005/11/03 12:43:35  syntheticpp
 // more doxygen documentation, modules added
 //
