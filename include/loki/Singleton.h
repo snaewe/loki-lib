@@ -23,6 +23,8 @@
 #include <cstdlib>
 #include <new>
 #include <vector>
+#include <list>
+
 
 #ifdef _MSC_VER
 #define LOKI_C_CALLING_CONVENTION_QUALIFIER __cdecl 
@@ -43,6 +45,24 @@ namespace Loki
 
     namespace Private
     {
+        void LOKI_C_CALLING_CONVENTION_QUALIFIER AtExitFn(); // declaration needed below   
+
+        class LifetimeTracker;
+
+#define LOKI_ENABLE_NEW_SETLONGLIVITY_HELPER_DATA_IMPL        
+#ifdef LOKI_ENABLE_NEW_SETLONGLIVITY_HELPER_DATA_IMPL
+
+        // Helper data
+        // std::list because of the inserts
+        typedef std::list<LifetimeTracker*> TrackerArray;
+        extern TrackerArray* pTrackerArray;
+#else
+        // Helper data
+        typedef LifetimeTracker** TrackerArray;
+        extern TrackerArray pTrackerArray;
+        extern unsigned int elements;
+#endif
+
         ////////////////////////////////////////////////////////////////////////////////
         // class LifetimeTracker
         // Helper class for SetLongevity
@@ -68,11 +88,6 @@ namespace Loki
         
         // Definition required
         inline LifetimeTracker::~LifetimeTracker() {} 
-        
-        // Helper data
-        typedef LifetimeTracker** TrackerArray;
-        extern TrackerArray pTrackerArray;
-        extern unsigned int elements;
 
         // Helper destroyer function
         template <typename T>
@@ -102,8 +117,6 @@ namespace Loki
             Destroyer destroyer_;
         };
 
-        void LOKI_C_CALLING_CONVENTION_QUALIFIER AtExitFn(); // declaration needed below   
-         
     } // namespace Private
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -112,6 +125,38 @@ namespace Loki
     ///  Assigns an object a longevity; ensures ordered destructions of objects 
     ///  registered thusly during the exit sequence of the application
     ////////////////////////////////////////////////////////////////////////////////
+
+#ifdef LOKI_ENABLE_NEW_SETLONGLIVITY_HELPER_DATA_IMPL
+
+    template <typename T, typename Destroyer>
+    void SetLongevity(T* pDynObject, unsigned int longevity,
+        Destroyer d)
+    {
+        using namespace Private;
+
+        // manage lifetime of stack manually
+        if(pTrackerArray==0)
+            pTrackerArray = new TrackerArray;
+
+        LifetimeTracker* p = new ConcreteLifetimeTracker<T, Destroyer>(
+            pDynObject, longevity, d);
+
+        // Find correct position
+        TrackerArray::iterator pos = std::upper_bound(
+            pTrackerArray->begin(), 
+            pTrackerArray->end(), 
+            p, 
+            LifetimeTracker::Compare);
+        
+        // Insert a pointer to the object into the queue
+        pTrackerArray->insert(pos, p);
+                
+        // Register a call to AtExitFn
+        std::atexit(Private::AtExitFn);
+    }
+
+#else
+    
     template <typename T, typename Destroyer>
     void SetLongevity(T* pDynObject, unsigned int longevity,
         Destroyer d)
@@ -128,7 +173,7 @@ namespace Loki
         
         LifetimeTracker* p = new ConcreteLifetimeTracker<T, Destroyer>(
             pDynObject, longevity, d);
-        
+ 
         // Insert a pointer to the object into the queue
         TrackerArray pos = std::upper_bound(
             pTrackerArray, 
@@ -145,6 +190,8 @@ namespace Loki
         // Register a call to AtExitFn
         std::atexit(Private::AtExitFn);
     }
+
+#endif
 
     template <typename T>
     void SetLongevity(T* pDynObject, unsigned int longevity,
