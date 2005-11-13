@@ -56,20 +56,20 @@ namespace Loki
     namespace LongevityLifetime
     {
         /** @struct DieAsSmallObjectParent
-			@ingroup SmallObjectGroup
-			Lifetime policy to manage lifetime dependencies of 
-			SmallObject base and child classes.
-			The Base class should have this lifetime
-		*/
+            @ingroup SmallObjectGroup
+            Lifetime policy to manage lifetime dependencies of 
+            SmallObject base and child classes.
+            The Base class should have this lifetime
+        */
         template <class T>
         struct DieAsSmallObjectParent  : DieLast<T> {};
 
         /** @struct DieAsSmallObjectChild
             @ingroup SmallObjectGroup
-			Lifetime policy to manage lifetime dependencies of 
-			SmallObject base and child classes.
-			The Child class should have this lifetime
-		*/
+            Lifetime policy to manage lifetime dependencies of 
+            SmallObject base and child classes.
+            The Child class should have this lifetime
+        */
         template <class T>
         struct DieAsSmallObjectChild  : DieDirectlyBeforeLast<T> {};
 
@@ -298,42 +298,81 @@ namespace Loki
 
 
     /** @class SmallObjectBase
-        @ingroup SmallObjectGroupInternal
+        @ingroup SmallObjectGroup
      Base class for small object allocation classes.
      The shared implementation of the new and delete operators are here instead
-     of being duplicated in both SmallObject or SmallValueObject.  This class
-     is not meant to be used directly by clients, or derived from by clients.
-     Class has no data members so compilers can use Empty-Base-Optimization.
+     of being duplicated in both SmallObject or SmallValueObject, later just 
+     called Small-Objects.  This class is not meant to be used directly by clients, 
+     or derived from by clients. Class has no data members so compilers can 
+     use Empty-Base-Optimization.
 
-     @par Singleton Lifetime Policies and Small-Object Allocator
-     At this time, the only Singleton Lifetime policies recommended for
-     use with the Small-Object Allocator are Loki::SingletonWithLongevity and
-     Loki::NoDestroy.  The Loki::DefaultLifetime and Loki::PhoenixSingleton
-     policies are *not* recommended since they can cause the allocator to be
-     destroyed and release memory for singletons which inherit from either
-     SmallObject or SmallValueObject.  The default is Loki::NoDestroy to
-     insure that memory is never released before the object using that
-     memory is destroyed.  Loki::SingletonWithLongevity can also insure that
-     no memory is released before the owning object is destroyed, and also
-     insure that any memory controlled by a Small-Object Allocator is
-     released.
-
-     @par Small Singletons and Lifetime Policies
-     If you a singleton is derived from SmallValueObject or SmallObject, you
-     have to use compatible lifetime policies for both the singleton and the
-     allocator.  The 3 possible options are:
-     - They may both be Loki::NoDestroy.  Since neither is ever destroyed, the
-       destruction order does not matter.
-     - They may both be Loki::SingletonWithLongevity as long as the longevity
-       level for the singleton is lower than that for the allocator.  This is
-       why the allocator's GetLongevity function returns the highest value.
-     - The singleton may use Loki::SingletonWithLongevity, and the allocator
-       may use Loki::NoDestroy.  This is why the allocator's default policy is
-       Loki::NoDestroy.
-     You should *not* use Loki::NoDestroy for the singleton, and then use
-     Loki::SingletonWithLongevity for the allocator.  This causes the allocator
-     to be destroyed and release the memory for the singleton while the
-     singleton is still alive.
+     @par Lifetime Policy
+     
+     The SmallObjectBase template needs a lifetime policy because it owns
+     a singleton of SmallObjAllocator which does all the low level functions. 
+     When using a Small-Object in combination with the SingletonHolder template
+     you have to choose two lifetimes, that of the Small-Object and that of
+     the singleton. The rule is: The Small-Object lifetime must be greater than
+     the lifetime of the singleton hosting the Small-Object. Violating this rule
+     results in a crash on exit, because the hosting singleton tries to delete
+     the Small-Object which is then already destroyed. 
+     
+     The lifetime policies recommended for use with Small-Objects hosted 
+     by a SingletonHolder template are 
+         - LongevityLifetime::DieAsSmallObjectParent / LongevityLifetime::DieAsSmallObjectChild
+         - SingletonWithLongevity
+         - FollowIntoDeath (not supported by MSVC 7.1)
+         - NoDestroy
+     
+     The default lifetime of Small-Objects is 
+     LongevityLifetime::DieAsSmallObjectParent to
+     insure that memory is not released before a object with the lifetime
+     LongevityLifetime::DieAsSmallObjectChild using that
+     memory is destroyed. The LongevityLifetime::DieAsSmallObjectParent
+     lifetime has the highest possible value of a SetLongevity lifetime, so
+     you can use it in combination with your own lifetime not having also
+     the highest possible value.
+     
+     The DefaultLifetime and PhoenixSingleton policies are *not* recommended 
+     since they can cause the allocator to be destroyed and release memory 
+     for singletons hosting a object which inherit from either SmallObject
+     or SmallValueObject.  
+     
+     @par Lifetime usage
+    
+        - LongevityLifetime: The Small-Object has 
+          LongevityLifetime::DieAsSmallObjectParent policy and the Singleton
+          hosting the Small-Object has LongevityLifetime::DieAsSmallObjectChild. 
+          The child lifetime has a hard coded SetLongevity lifetime which is 
+          shorter than the lifetime of the parent, thus the child dies 
+          before the parent.
+         
+        - Both Small-Object and Singleton use SingletonWithLongevity policy.
+          The longevity level for the singleton must be lower than that for the
+          Small-Object. This is why the AllocatorSingleton's GetLongevity function 
+          returns the highest value.
+         
+        - FollowIntoDeath lifetime: The Small-Object has 
+          FollowIntoDeath::With<LIFETIME>::AsMasterLiftime
+          policy and the Singleton has 
+          FollowIntoDeath::AfterMaster<MASTERSINGLETON>::IsDestroyed policy,
+          where you could choose the LIFETIME. 
+        
+        - Both Small-Object and Singleton use NoDestroy policy. 
+          Since neither is ever destroyed, the destruction order does not matter.
+          Note: yow will get memory leaks!
+         
+        - The Small-Object has NoDestroy policy but the Singleton has
+          SingletonWithLongevity policy. Note: yow will get memory leaks!
+         
+     
+     You should *not* use NoDestroy for the singleton, and then use
+     SingletonWithLongevity for the Small-Object. 
+     
+     @par Examples:
+     
+     - test/SmallObj/SmallSingleton.cpp
+     - test/Singleton/Dependencies.cpp
      */
     template
     <
@@ -552,6 +591,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.23  2005/11/13 16:51:22  syntheticpp
+// update documentation due to the new lifetime policies
+//
 // Revision 1.22  2005/11/07 12:06:43  syntheticpp
 // change lifetime policy DieOrder to a msvc7.1 compilable version. Make this the default lifetime for SmallObject
 //
