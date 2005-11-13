@@ -24,6 +24,7 @@
 #include <new>
 #include <vector>
 #include <list>
+#include <memory>
 
 
 #ifdef _MSC_VER
@@ -138,19 +139,23 @@ namespace Loki
         if(pTrackerArray==0)
             pTrackerArray = new TrackerArray;
 
-        LifetimeTracker* p = new ConcreteLifetimeTracker<T, Destroyer>(
-            pDynObject, longevity, d);
+        // automatically delete the ConcreteLifetimeTracker object when a exception is thrown
+        std::auto_ptr<LifetimeTracker> 
+            p( new ConcreteLifetimeTracker<T, Destroyer>(pDynObject, longevity, d) );
 
         // Find correct position
         TrackerArray::iterator pos = std::upper_bound(
             pTrackerArray->begin(), 
             pTrackerArray->end(), 
-            p, 
+            p.get(), 
             LifetimeTracker::Compare);
         
-        // Insert a pointer to the object into the queue
-        pTrackerArray->insert(pos, p);
-                
+        // Insert the pointer to the ConcreteLifetimeTracker object into the queue
+        pTrackerArray->insert(pos, p.get());
+        
+        // nothing has thrown: don't delete the ConcreteLifetimeTracker object
+        p.release();
+        
         // Register a call to AtExitFn
         std::atexit(Private::AtExitFn);
     }
