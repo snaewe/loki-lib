@@ -245,7 +245,7 @@ namespace Loki
 
 #if defined(_PTHREAD_H) 
     template <class Host>
-    pthread_mutex_t ObjectLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
+    pthread_mutex_t ObjectLevelLockable<Host>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
     
     ////////////////////////////////////////////////////////////////////////////////
@@ -331,7 +331,7 @@ namespace Loki
 
 #if defined(_PTHREAD_H) 
     template <class Host>
-    pthread_mutex_t ClassLevelLockable<Host>::atomic_mutex_(PTHREAD_MUTEX_INITIALIZER);
+    pthread_mutex_t ClassLevelLockable<Host>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
     template <class Host>
@@ -354,6 +354,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.19  2005/11/15 11:08:57  syntheticpp
+// also compile with the original gnu pthread.h
+//
 // Revision 1.18  2005/11/03 12:43:35  syntheticpp
 // more doxygen documentation, modules added
 //
