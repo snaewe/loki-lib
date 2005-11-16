@@ -6,17 +6,17 @@ November 16, 2005
 _____________________________________
 
 General:
-	- fixes to compile under linux (Thanks to  David Lawrence, pk)
+	- changes to compile under Linux (Thanks to David Lawrence, pk)
 	- more doxygen documentation, modules added (rs, pk)
 
 SmartPtr.h:
 	- three year old bugs 626407 and 541846 fixed: 
 	  Assertion with SmartPtr<T, LinkedRef> (pk)
-	  SmartPtr and COMRefCounted (pk)
+	  SmartPtr and COMRefCounted (Thanks to James Mclaren, pk)
 
 Typelists:
 	- it's now possible to completely disable the 
-	  LOKI_TYPELIST_XX macros (pk)
+	  LOKI_TYPELIST_  macros (pk)
 	- marco definitions moved to a separate file (pk)
 
 Factory:
@@ -29,7 +29,7 @@ Functor:
 	
 Function:
 	- boost/TR1 like Function template with 
-	  improved member usage (pk)
+	  improved member function pointer usage (pk)
 	- tested with boost's function_test.cpp 
 
 Sequence:
