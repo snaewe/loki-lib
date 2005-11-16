@@ -23,8 +23,15 @@ namespace Loki
     ///
     ///  \ingroup FunctorGroup
     ///  Allows a boost/TR1 like usage of Functor.
+    /// 
+    ///  \par Usage
     ///
-    ///  e.g. Functor<int,LOKI_TYPELIST_2(int,int)> becomes Function<int(int,int)>
+    ///      - free functions: e.g.  \code Function<int(int,int)> f(&freeFunction);
+    ///                              \endcode
+    ///      - member functions: e.g \code Function<int()> f(&object,&ObjectType::memberFunction); 
+    ///                              \endcode
+    ///
+    ///  see also test/Function/FunctionTest.cpp (the modified test program from boost)
     ////////////////////////////////////////////////////////////////////////////////
     template<class R = void()>
     struct Function : public Functor<R>

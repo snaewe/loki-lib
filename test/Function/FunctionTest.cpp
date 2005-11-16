@@ -14,14 +14,12 @@
 #include <boost/test/minimal.hpp>
 
 #define TEST_LOKI_FUNCTION
-
 #ifndef TEST_LOKI_FUNCTION
 
 #include <boost/function.hpp>
 using namespace boost;
 
 #else
-
 
 #include <boost/ref.hpp>
 #include <loki/Function.h>
