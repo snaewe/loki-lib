@@ -58,7 +58,13 @@ namespace Loki
                 return *val_;
             }
 
+            T* operator->()
+            {
+                return val_;
+            }
+
         protected:
+
             OrderedStaticBase(unsigned int longevity) :  val_(0), longevity_(longevity)
             {
             }
