@@ -124,7 +124,7 @@ int main()
     
     std::string s("text11");
     *s1=s;
-    std::cout << "value of s1: " << (*s1).c_str() << "\n";
+    std::cout << "value of s1: " << s1->c_str() << "\n";
     
 #else
     
@@ -137,6 +137,9 @@ int main()
 #endif
 
     std::cout << "\n";
+
+    system("pause");
+
     return 0;
 }
 
