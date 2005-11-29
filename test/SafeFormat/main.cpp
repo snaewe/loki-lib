@@ -14,6 +14,8 @@
 #include <cassert>
 #include <utility>
 
+#include "../SmallObj/timer.h"
+
 using namespace std;
 
 template <class Integral1, class Integral2>
@@ -58,7 +60,7 @@ void TestCase(const string& fmt, T value)
     char buf[4096];
     std::string s;
     const int i1 = SPrintf(s, fmt.c_str())(value);
-    
+
 #ifdef _MSC_VER
     const int i2 = _snprintf(buf, sizeof(buf), fmt.c_str(), value);
 #else
@@ -90,124 +92,135 @@ void TestCase2(const string& fmt, T value, U value2)
 
 int main(int argc, char** argv)
 {
-    if (argc == 3)
+    if (argc == 2)
     {
         // test speed
-        int i = atoi(argv[2]);
-        switch (argv[1][0])
-        {
-        case 'p':
-            for (; i > 0; --i)
-            {
-                printf("Hey, %u frobnicators and %u twiddlicators\n",
-                       i, i);
-            }
-            break;
-        case 's':
-            for (; i > 0; --i)
-            {
-                cout << "Hey, " << i << " frobnicators and " << i <<
-                " twiddlicators\n";
-            }
-            break;
-        case 'n':
-            for (; i > 0; --i)
-            {
-                Printf("Hey, %u frobnicators and %u twiddlicators\n")
-                (i)(i);
-            }
-            break;
-        }
-        return 0;
+
+        Timer t;
+
+        int loop = atoi(argv[1]);
+
+        if(loop < 100)
+            loop = 100;
+
+        t.start();
+        for (int i=loop; i > 0; --i)
+            printf("Hey, %u frobnicators and %u twiddlicators\n",i, i);
+        t.stop();
+        t.t100 = t.t();
+        int t_printf = t.t();
+
+
+        t.start();
+        for (int i=loop; i > 0; --i)
+            Printf("Hey, %u frobnicators and %u twiddlicators\n")(i)(i);
+        t.stop();
+        int t_Printf = t.t();
+
+
+        t.start();
+        for (int i=loop; i > 0; --i)
+            cout << "Hey, " << i << " frobnicators and " << i <<" twiddlicators\n";
+        t.stop();
+        int t_cout = t.t();
+
+
+        Printf("\n\nElapsed time for %i outputs\n\n")(loop);
+        t.print(t_printf,"printf   : ");
+        t.print(t_Printf,"Printf   : ");
+        t.print(t_cout,  "std::cout: ");
     }
-
-    //srand(time(0));
-    srand(0);
-    for (unsigned i = 0; ; ++i)
+    else
     {
-        printf("%u\r", i);
+        //srand(time(0));
+        srand(0);
+        printf("\nNumber of tests:\n");
+        for (unsigned i = 0; ; ++i)
+        {
+            printf("%u\r", i);
 
-        // Generate a random string for the head
-        string lead = RandomString(100);
-        // This string will hold a random format specification
-        string formatSpec(lead + "|%");
-        // Generate a random set of flags
-        static const string flags("-+0 #");
-        unsigned int maxFlags = RandomInt(0u, flags.length() - 1);
-        for (unsigned int i = 0; i != maxFlags; ++i)
-        {
-            formatSpec += flags[RandomInt(0u, flags.length() - 1)];
-        }
-        // Generate an optional random width
-        if (RandomInt(0, 1))
-        {
-            const unsigned int width = RandomInt(0, 100);
-            char buf[4];
-            sprintf(buf, "%u", width);
-            formatSpec += buf;
-        }
-        // Generate an optional random precision
-        if (RandomInt(0, 1))
-        {
-            const unsigned int prec = RandomInt(0, 100);
-            char buf[4];
-            sprintf(buf, "%u", prec);
-            formatSpec += '.';
-            formatSpec += buf;
-        }
-        
-        // Generate a random type character
-        /* disable %p tests
-        static const string type("cdeEfgGinopsuxX");*/
-        static const string type("cdeEfgGinosuxX"); 
-        
-        const char typeSpec = type[RandomInt(0, type.size() - 1)];
-        // Generate an optional type prefix
-        static const string prefix("hl");
-        if (typeSpec != 's' && RandomInt(0, 1))
-        {
-            formatSpec += prefix[RandomInt(0, prefix.size() - 1)];
-        }
-        formatSpec += typeSpec;
-        formatSpec += '|';
-        formatSpec += RandomString(100);
-
-        switch (typeSpec)
-        {
-        case 'c':
-            TestCase(formatSpec, RandomInt(1, 127));
-            break;
-        case 'd':
-        case 'i':
-        case 'o':
-        case 'u':
-        case 'x':
-        case 'X':
-            TestCase(formatSpec, RandomInt(-10000, 10000));
-            break;
-        case 'e':
-        case 'E':
-        case 'f':
-        case 'g':
-        case 'G':
-            TestCase(formatSpec,
-                     RandomInt(-10000, 10000) / double(RandomInt(1, 100)));
-            break;
-        case 'n':
-            break;
-        case 'p':
+            // Generate a random string for the head
+            string lead = RandomString(100);
+            // This string will hold a random format specification
+            string formatSpec(lead + "|%");
+            // Generate a random set of flags
+            static const string flags("-+0 #");
+            unsigned int maxFlags = RandomInt(0u, flags.length() - 1);
+            for (unsigned int i = 0; i != maxFlags; ++i)
             {
-                void * p = malloc(RandomInt(1, 1000));
-                TestCase(formatSpec, p);
-                free(p);
+                formatSpec += flags[RandomInt(0u, flags.length() - 1)];
             }
-            break;
-        case 's':
-            TestCase(formatSpec, RandomString(100).c_str());
-            break;
-        default:
-            assert(false);
-            break;
+            // Generate an optional random width
+            if (RandomInt(0, 1))
+            {
+                const unsigned int width = RandomInt(0, 100);
+                char buf[4];
+                sprintf(buf, "%u", width);
+                formatSpec += buf;
+            }
+            // Generate an optional random precision
+            if (RandomInt(0, 1))
+            {
+                const unsigned int prec = RandomInt(0, 100);
+                char buf[4];
+                sprintf(buf, "%u", prec);
+                formatSpec += '.';
+                formatSpec += buf;
+            }
+
+            // Generate a random type character
+            /* disable %p tests
+            static const string type("cdeEfgGinopsuxX");*/
+            static const string type("cdeEfgGinosuxX");
+
+            const char typeSpec = type[RandomInt(0, type.size() - 1)];
+            // Generate an optional type prefix
+            static const string prefix("hl");
+            if (typeSpec != 's' && RandomInt(0, 1))
+            {
+                formatSpec += prefix[RandomInt(0, prefix.size() - 1)];
+            }
+            formatSpec += typeSpec;
+            formatSpec += '|';
+            formatSpec += RandomString(100);
+
+            switch (typeSpec)
+            {
+            case 'c':
+                TestCase(formatSpec, RandomInt(1, 127));
+                break;
+            case 'd':
+            case 'i':
+            case 'o':
+            case 'u':
+            case 'x':
+            case 'X':
+                TestCase(formatSpec, RandomInt(-10000, 10000));
+                break;
+            case 'e':
+            case 'E':
+            case 'f':
+            case 'g':
+            case 'G':
+                TestCase(formatSpec,
+                         RandomInt(-10000, 10000) / double(RandomInt(1, 100)));
+                break;
+            case 'n':
+                break;
+            case 'p':
+                {
+                    void * p = malloc(RandomInt(1, 1000));
+                    TestCase(formatSpec, p);
+                    free(p);
+                }
+                break;
+            case 's':
+                TestCase(formatSpec, RandomString(100).c_str());
+                break;
+            default:
+                assert(false);
+                break;
+            }
         }
     }
 }
