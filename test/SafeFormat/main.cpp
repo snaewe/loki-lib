@@ -61,12 +61,14 @@ void TestCase(const string& fmt, T value) {
     const int i2 = snprintf(buf, sizeof(buf), fmt.c_str(), value); 
 #endif
     
-    if (i1 != i2 || s != buf) {
-        cout << 
-            "\nReference: " << i2 << 
-            "; Actual: " << i1 << "\nV: [" << value << "]\nF: [" << 
-            fmt << "]\n" <<
-            "R: [" << buf << "]\nA: [" << s.c_str() << "]\n";
+    if (i1 != i2 || s != buf) 
+    {
+        cout << endl
+            << "Reference: " << i2 << "; Actual: " << i1 << ",  Difference = " << i2-i1 << endl
+            << "V: [" << value << "]" << endl
+            << "F: [" << fmt << "]" << endl
+            << "R: [" << buf << "]" << endl
+            << "A: [" << s.c_str() << "]" << endl;
         assert(false); 
     }
 }
