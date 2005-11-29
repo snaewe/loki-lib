@@ -155,8 +155,12 @@ int main(int argc, char** argv)
             formatSpec += '.';
             formatSpec += buf;
         }
+        
         // Generate a random type character
-        static const string type("cdeEfgGinopsuxX");
+        /* disable %p tests
+        static const string type("cdeEfgGinopsuxX");*/
+        static const string type("cdeEfgGinosuxX"); 
+        
         const char typeSpec = type[RandomInt(0, type.size() - 1)];
         // Generate an optional type prefix
         static const string prefix("hl");
