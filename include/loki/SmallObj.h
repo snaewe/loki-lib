@@ -150,7 +150,8 @@ namespace Loki
         void Deallocate( void * p );
 
         /// Returns max # of bytes which this can allocate.
-        inline std::size_t GetMaxObjectSize() const { return maxSmallObjectSize_; }
+        inline std::size_t GetMaxObjectSize() const
+        { return maxSmallObjectSize_; }
 
         /// Returns # of bytes between allocation boundaries.
         inline std::size_t GetAlignment() const { return objectAlignSize_; }
@@ -164,6 +165,16 @@ namespace Loki
          */
         bool TrimExcessMemory( void );
 
+        /** Returns true if anything in implementation is corrupt.  Complexity
+         is O(F + C + B) where F is the count of FixedAllocator's in the pool,
+         C is the number of Chunks in all FixedAllocator's, and B is the number
+         of blocks in all Chunks.  If it determines any data is corrupted, this
+         will return true in release version, but assert in debug version at
+         the line where it detects the corrupted data.  If it does not detect
+         any corrupted data, it returns false.
+         */
+        bool IsCorrupt( void ) const;
+
     private:
         /// Default-constructor is not implemented.
         SmallObjAllocator( void );
@@ -176,10 +187,10 @@ namespace Loki
         Loki::FixedAllocator * pool_;
 
         /// Largest object size supported by allocators.
-        std::size_t maxSmallObjectSize_;
+        const std::size_t maxSmallObjectSize_;
 
         /// Size of alignment boundaries.
-        std::size_t objectAlignSize_;
+        const std::size_t objectAlignSize_;
     };
 
 
@@ -246,6 +257,16 @@ namespace Loki
          */
         static void ClearExtraMemory( void );
 
+        /** Returns true if anything in implementation is corrupt.  Complexity
+         is O(F + C + B) where F is the count of FixedAllocator's in the pool,
+         C is the number of Chunks in all FixedAllocator's, and B is the number
+         of blocks in all Chunks.  If it determines any data is corrupted, this
+         will return true in release version, but assert in debug version at
+         the line where it detects the corrupted data.  If it does not detect
+         any corrupted data, it returns false.
+         */
+        static bool IsCorrupted( void );
+
     private:
         /// Copy-constructor is not implemented.
         AllocatorSingleton( const AllocatorSingleton & );
@@ -268,6 +289,20 @@ namespace Loki
         Instance().TrimExcessMemory();
     }
 
+    template
+    <
+        template <class> class TM,
+        std::size_t CS,
+        std::size_t MSOS,
+        std::size_t OAS,
+        template <class> class LP
+    >
+    bool AllocatorSingleton< TM, CS, MSOS, OAS, LP >::IsCorrupted( void )
+    {
+        typename MyThreadingModel::Lock lock;
+        (void)lock; // get rid of warning
+        return Instance().IsCorrupt();
+    }
 
     /** This standalone function provides the longevity level for Small-Object
      Allocators which use the Loki::SingletonWithLongevity policy.  The
@@ -591,6 +626,10 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.24  2005/12/08 22:09:08  rich_sposato
+// Added functions to check for memory corruption.  Also made some minor
+// coding changes.
+//
 // Revision 1.23  2005/11/13 16:51:22  syntheticpp
 // update documentation due to the new lifetime policies
 //
