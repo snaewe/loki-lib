@@ -30,9 +30,7 @@ using namespace std;
 // ----------------------------------------------------------------------------
 
 typedef Loki::SmallValueObject< LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
-    LOKI_DEFAULT_CHUNK_SIZE, LOKI_MAX_SMALL_OBJECT_SIZE,
-    LOKI_DEFAULT_OBJECT_ALIGNMENT, 
-    Loki::LongevityLifetime::DieAsSmallObjectParent
+    512, 32, 4, Loki::LongevityLifetime::DieAsSmallObjectParent
 >
 SmallObjectParent;
 
@@ -368,6 +366,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.11  2005/12/08 21:03:02  rich_sposato
+// Changed template parameter values for SmallObject allocator.
+//
 // Revision 1.10  2005/11/13 13:39:15  syntheticpp
 // add removed tests with NoDestroy plolicy
 //
