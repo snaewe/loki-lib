@@ -243,16 +243,19 @@ LOKI_SMALLOBJ_BENCH_ARRAY(new_del_a_on_a_all,std::allocator<T[TN]> st ,
     cout << endl << endl;
 #endif
 
+#define LOKI_ALLOCATOR_PARAMETERS Loki::SingleThreaded, 4096, 32, 4, Loki::NoDestroy
+
 template<unsigned int Size, int loop>
 void testSize()
 {
     typedef Base<Size, void> A;
-    typedef Base<Size, Loki::SmallObject< Loki::SingleThreaded > > B;
-    typedef Base<Size, Loki::SmallValueObject< Loki::SingleThreaded > > C;
+    typedef Base<Size, Loki::SmallObject< LOKI_ALLOCATOR_PARAMETERS > > B;
+    typedef Base<Size, Loki::SmallValueObject< LOKI_ALLOCATOR_PARAMETERS > > C;
 #ifdef COMPARE_BOOST_POOL
     typedef BoostPoolNew<Size> D;
 #endif
 
+    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
     cout << endl << endl;
     cout << "Allocator Benchmark Tests with " << Size << " bytes big objects " << endl;
     cout << endl;
@@ -275,21 +278,26 @@ void testSize()
 
     cout << loop  << " times ";
     LOKI_SMALLOBJBECH_ABCD(delete_new        ,0,loop,t,"'delete new T'");
+    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
     
     cout << "N=" << N <<" :  " << loop  << " times ";
     LOKI_SMALLOBJBECH_ABCD(delete_new_array    ,N,loop,t,"'delete[] new T[N]'");
+    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
 
     cout << "i=0..." << Narr << " :  ";
     LOKI_SMALLOBJBECH_ABCD(new_del_on_arr    ,0,Narr,t,"1. 'arr[i] = new T'   2. 'delete arr[i]'");
+    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
     
     cout << "i=0..." << Narr << ",  N=" << N <<" :  ";
     LOKI_SMALLOBJBECH_ABCD(new_del_a_on_a    ,N,Narr,t,"1. 'arr[i] = new T[N]'   2. 'delete[] arr[i]'");
+    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
 
 
     delete [] a;
     
     cout << "_________________________________________________________________" << endl;
-    Loki::AllocatorSingleton<>::ClearExtraMemory();
+    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
+    Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::ClearExtraMemory();
 }
 
 
@@ -318,6 +326,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.16  2005/12/08 22:23:33  rich_sposato
+// Added checks for whether loki's allocator is corrupted.
+//
 // Revision 1.15  2005/11/02 01:46:04  rich_sposato
 // Added explanatory comment about why class has no new [] and delete []
 // operators.  Removed other comment which is now useless.
