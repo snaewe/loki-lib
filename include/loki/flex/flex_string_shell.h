@@ -530,7 +530,7 @@ private:
         InputIterator b, InputIterator e, Selector<0>)
     { 
 		InsertImpl(i, b, e, 
-			typename std::iterator_traits<InputIterator>::iterator_category());
+			std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
 
@@ -776,7 +776,7 @@ private:
         InputIterator b, InputIterator e, Selector<0>)
     { 
 		ReplaceImpl(i1, i2, b, e, 
-			typename  std::iterator_traits<InputIterator>::iterator_category());
+			std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
 
@@ -816,7 +816,7 @@ private:
 		{
 			// grows
 			flex_string_details::copy_n(s1, n1, i1);
-			advance(s1, n1);
+			std::advance(s1, n1);
 			insert(i2, s1, s2);
 		}
     }
@@ -1041,7 +1041,10 @@ public:
     }
 
     int compare(const flex_string& str) const
-	{ return traits_type::compare(data(), str.data(), Min(size(), str.size())); }
+	{ 
+		// FIX due to Goncalo N M de Carvalho July 18, 2005
+		return compare(0, size(), str);
+	}
     
     int compare(size_type pos1, size_type n1,
         const flex_string& str) const
@@ -1062,7 +1065,12 @@ public:
     {
         Enforce(pos1 <= size(), (std::out_of_range*)0, "");
 		Procust(n1, size() - pos1);
-		return traits_type::compare(data(), s, Min(n1, n2));
+		const int r = traits_type::compare(data(), s, Min(n1, n2));
+		return 
+			r != 0 ? r :
+			n1 > n2 ? 1 :
+			n1 < n2 ? -1 :
+			0;
     }
     
     int compare(size_type pos1, size_type n1,
@@ -1075,8 +1083,7 @@ public:
 
     int compare(const value_type* s) const
 	{ 
-		return traits_type::compare(data(), s, 
-			Min(size(), traits_type::length(s))); 
+		return traits_type::compare(data(), s, traits_type::length(s)); 
 	}
 };
 
@@ -1269,6 +1276,6 @@ getline(
 
 template <typename E1, class T, class A, class S>
 const typename flex_string<E1, T, A, S>::size_type
-flex_string<E1, T, A, S>::npos = (typename flex_string<E1, T, A, S>::size_type)(-1);
+flex_string<E1, T, A, S>::npos = (flex_string<E1, T, A, S>::size_type)(-1);
 
 #endif // FLEX_STRING_SHELL_INC_
