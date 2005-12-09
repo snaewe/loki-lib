@@ -530,7 +530,7 @@ private:
         InputIterator b, InputIterator e, Selector<0>)
     { 
 		InsertImpl(i, b, e, 
-			std::iterator_traits<InputIterator>::iterator_category());
+			typename std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
 
@@ -776,7 +776,7 @@ private:
         InputIterator b, InputIterator e, Selector<0>)
     { 
 		ReplaceImpl(i1, i2, b, e, 
-			std::iterator_traits<InputIterator>::iterator_category());
+			typename std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
 
@@ -1276,6 +1276,6 @@ getline(
 
 template <typename E1, class T, class A, class S>
 const typename flex_string<E1, T, A, S>::size_type
-flex_string<E1, T, A, S>::npos = (flex_string<E1, T, A, S>::size_type)(-1);
+flex_string<E1, T, A, S>::npos = (typename flex_string<E1, T, A, S>::size_type)(-1);
 
 #endif // FLEX_STRING_SHELL_INC_
