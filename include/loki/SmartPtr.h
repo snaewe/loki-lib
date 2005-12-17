@@ -178,7 +178,7 @@ namespace Loki
             RefCountedMT() 
             {
                 pCount_ = static_cast<CountPtrType>(
-                    SmallObject<ThreadingModel>::operator new(
+                    SmallObject<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::operator new(
                         sizeof(*pCount_)));
                 assert(pCount_);
                 //*pCount_ = 1;
@@ -205,7 +205,7 @@ namespace Loki
             {
                 if (!ThreadingModel<RefCountedMT>::AtomicDecrement(*pCount_))
                 {
-                    SmallObject<ThreadingModel>::operator delete(
+                    SmallObject<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::operator delete(
                         const_cast<CountType *>(pCount_), 
                         sizeof(*pCount_));
                     return true;
