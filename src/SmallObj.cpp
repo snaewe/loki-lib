@@ -487,7 +487,8 @@ bool Chunk::IsCorrupt( unsigned char numBlocks, std::size_t blockSize,
 bool Chunk::IsBlockAvailable( void * p, unsigned char numBlocks,
     std::size_t blockSize ) const
 {
-
+	(void) numBlocks;
+	
     if ( IsFilled() )
         return false;
 
@@ -1061,6 +1062,7 @@ void * SmallObjAllocator::Allocate( std::size_t numBytes, bool doThrow )
     if ( 0 == numBytes ) numBytes = 1;
     const std::size_t index = GetOffset( numBytes, GetAlignment() ) - 1;
     const std::size_t allocCount = GetOffset( GetMaxObjectSize(), GetAlignment() );
+    (void) allocCount;
     assert( index < allocCount );
 
     FixedAllocator & allocator = pool_[ index ];
@@ -1098,11 +1100,13 @@ void SmallObjAllocator::Deallocate( void * p, std::size_t numBytes )
     if ( 0 == numBytes ) numBytes = 1;
     const std::size_t index = GetOffset( numBytes, GetAlignment() ) - 1;
     const std::size_t allocCount = GetOffset( GetMaxObjectSize(), GetAlignment() );
+    (void) allocCount;
     assert( index < allocCount );
     FixedAllocator & allocator = pool_[ index ];
     assert( allocator.BlockSize() >= numBytes );
     assert( allocator.BlockSize() < numBytes + GetAlignment() );
     const bool found = allocator.Deallocate( p, NULL );
+    (void) found;
     assert( found );
 }
 
@@ -1133,6 +1137,7 @@ void SmallObjAllocator::Deallocate( void * p )
 
     assert( NULL != chunk );
     const bool found = pAllocator->Deallocate( p, chunk );
+    (void) found;
     assert( found );
 }
 
@@ -1177,6 +1182,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.19  2005/12/19 08:05:46  syntheticpp
+// remove warnings when NDEBUG is defined
+//
 // Revision 1.18  2005/12/08 22:08:20  rich_sposato
 // Added functions to check for corrupted Chunks and FixedAllocators.  Made
 // several minor coding changes.
