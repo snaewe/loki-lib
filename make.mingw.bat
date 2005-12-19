@@ -8,4 +8,5 @@ set LOKI_TMP=
 
 if not exist lib\ mkdir lib
 
-mingw32-make 
+mingw32-make
+

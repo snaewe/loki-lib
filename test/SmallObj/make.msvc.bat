@@ -41,3 +41,4 @@ link /NOLOGO /SUBSYSTEM:CONSOLE /incremental:no /OUT:SmallSingleton-msvc.exe tmp
 @ECHO OFF
 set MTMD=
 set OUT_EXE=
+
