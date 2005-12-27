@@ -152,7 +152,7 @@ struct PrintfState {
         ReadLeaders();
         const char fmt = *format_;
         if (fmt == 'p') {
-            FormatWithCurrentFlags(reinterpret_cast<unsigned long>(s));
+            FormatWithCurrentFlags(reinterpret_cast<uintptr_t>(s));
             return *this;
         }
         if (fmt != 's') {
@@ -176,7 +176,7 @@ struct PrintfState {
     }
     
     PrintfState& operator()(const void *const p) {
-        return (*this)(reinterpret_cast<unsigned long>(p));
+        return (*this)(reinterpret_cast<uintptr_t>(p));
     }
     
     // read the result
@@ -185,6 +185,7 @@ struct PrintfState {
     }
     
 private:
+	PrintfState& operator=(const PrintfState&);
     template <typename T>
     PrintfState& StoreCountHelper(T *const pi) {
         if (result_ == -1) return *this; // don't even bother
