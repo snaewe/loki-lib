@@ -2184,7 +2184,7 @@ namespace Loki
         enum { isIntegral       = isStdIntegral || isUnsignedInt || isSignedInt };
         enum { isFloat          = isStdFloat || IsCustomFloat<UnqualifiedType>::value };
         enum { isArith          = isIntegral || isFloat };
-        enum { isFundamental    = isStdFundamental || isArith || isFloat };
+        enum { isFundamental    = isStdFundamental || isArith };
         
         typedef typename Select<isStdArith || isPointer || isMemberPointer, T, 
                 typename Private::AddParameterType<T>::Result>::Result 
