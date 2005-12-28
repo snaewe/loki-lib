@@ -212,6 +212,12 @@ namespace Loki
         /// Iterator through const container of Chunks.
         typedef Chunks::const_iterator ChunkCIter;
 
+        /// Fewest # of objects managed by a Chunk.
+        static unsigned char MinObjectsPerChunk_;
+
+        /// Most # of objects managed by a Chunk - never exceeds UCHAR_MAX.
+        static unsigned char MaxObjectsPerChunk_;
+
         /// Number of bytes in a single block within a Chunk.
         std::size_t blockSize_;
         /// Number of blocks managed by each Chunk.
@@ -281,6 +287,9 @@ namespace Loki
         }
 
     };
+
+    unsigned char FixedAllocator::MinObjectsPerChunk_ = 8;
+    unsigned char FixedAllocator::MaxObjectsPerChunk_ = UCHAR_MAX;
 
 // Chunk::Init ----------------------------------------------------------------
 
@@ -553,8 +562,8 @@ void FixedAllocator::Initialize( std::size_t blockSize, std::size_t pageSize )
     blockSize_ = blockSize;
 
     std::size_t numBlocks = pageSize / blockSize;
-    if (numBlocks > UCHAR_MAX) numBlocks = UCHAR_MAX;
-    else if ( numBlocks < 8 ) numBlocks = 8;
+    if ( numBlocks > MaxObjectsPerChunk_ ) numBlocks = MaxObjectsPerChunk_;
+    else if ( numBlocks < MinObjectsPerChunk_ ) numBlocks = MinObjectsPerChunk_;
 
     numBlocks_ = static_cast<unsigned char>(numBlocks);
     assert(numBlocks_ == numBlocks);
@@ -1182,6 +1191,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.20  2005/12/28 22:34:53  rich_sposato
+// Replaced literal constants with class static data members.  (for clarity)
+//
 // Revision 1.19  2005/12/19 08:05:46  syntheticpp
 // remove warnings when NDEBUG is defined
 //
