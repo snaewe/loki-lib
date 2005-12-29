@@ -259,8 +259,16 @@ namespace Loki
 
         /** Releases the memory used by the empty Chunk.  This will take
          constant time under any situation.
+         @return True if empty chunk found and released, false if none empty.
          */
         bool TrimEmptyChunk( void );
+
+        /** Releases unused spots from ChunkList.  This takes constant time
+         with respect to # of Chunks, but actual time depends on underlying
+         memory allocator.
+         @return False if no unused spots, true if some found and released.
+         */
+        bool TrimChunkList( void );
 
         /** Returns count of empty Chunks held by this allocator.  Complexity
          is O(C) where C is the total number of Chunks - empty or used.
@@ -764,6 +772,24 @@ bool FixedAllocator::TrimEmptyChunk( void )
     return true;
 }
 
+// FixedAllocator::TrimChunkList ----------------------------------------------
+
+bool FixedAllocator::TrimChunkList( void )
+{
+    if ( chunks_.empty() )
+    {
+        assert( NULL == allocChunk_ );
+        assert( NULL == deallocChunk_ );
+    }
+
+    if ( chunks_.size() == chunks_.capacity() )
+        return false;
+    // Use the "make-a-temp-and-swap" trick to remove excess capacity.
+    Chunks( chunks_ ).swap( chunks_ );
+
+    return true;
+}
+
 // FixedAllocator::MakeNewChunk -----------------------------------------------
 
 bool FixedAllocator::MakeNewChunk( void )
@@ -1052,11 +1078,18 @@ bool SmallObjAllocator::TrimExcessMemory( void )
 {
     bool found = false;
     const std::size_t allocCount = GetOffset( GetMaxObjectSize(), GetAlignment() );
-    for ( std::size_t i = 0; i < allocCount; ++i )
+    std::size_t i = 0;
+    for ( ; i < allocCount; ++i )
     {
         if ( pool_[ i ].TrimEmptyChunk() )
             found = true;
     }
+    for ( i = 0; i < allocCount; ++i )
+    {
+        if ( pool_[ i ].TrimChunkList() )
+            found = true;
+    }
+
     return found;
 }
 
@@ -1191,6 +1224,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.21  2005/12/29 01:54:24  rich_sposato
+// Added function to trim excess capacity from Chunk container.
+//
 // Revision 1.20  2005/12/28 22:34:53  rich_sposato
 // Replaced literal constants with class static data members.  (for clarity)
 //
