@@ -9,7 +9,8 @@ SUBTARGETS	= \
 		sub-RegressionTest \
 		sub-SafeFormat \
 		sub-Singleton \
-		sub-SmallObj 
+		sub-SmallObj \
+		sub-Visitor
 
 all: $(SUBTARGETS)
 
@@ -20,6 +21,17 @@ sub-Factory: FORCE
 	
 sub-flex_string: FORCE
 	cd flex_string && \
+	$(MAKE) -f $(MAKEFILE)
+	@cd ..
+
+sub-Longevity: FORCE
+	cd Longevity && \
+	$(MAKE) -f $(MAKEFILE) && \
+	$(MAKE) -f $(MAKEFILE)2
+	@cd ..
+	
+sub-OrderedStatic: FORCE
+	cd OrderedStatic && \
 	$(MAKE) -f $(MAKEFILE)
 	@cd ..
 
@@ -46,16 +58,11 @@ sub-SmallObj: FORCE
 	$(MAKE) -f $(MAKEFILE)-SmallSingleton
 	@cd ..
 	
-sub-OrderedStatic: FORCE
-	cd OrderedStatic && \
+sub-Visitor: FORCE
+	cd Visitor && \
 	$(MAKE) -f $(MAKEFILE)
 	@cd ..
 	
-sub-Longevity: FORCE
-	cd Longevity && \
-	$(MAKE) -f $(MAKEFILE) && \
-	$(MAKE) -f $(MAKEFILE)2
-	@cd ..
 	
 clean: 
 	cd Factory && \
@@ -83,6 +90,10 @@ clean:
 	$(MAKE) -f $(MAKEFILE)-DeletableSingleton clean && \
 	$(MAKE) -f $(MAKEFILE)-Phoenix clean && \
 	$(MAKE) -f $(MAKEFILE)-Dependencies clean
+	@cd ..
+	
+	cd Visitor && \
+	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
 
 
