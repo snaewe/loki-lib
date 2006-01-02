@@ -15,6 +15,8 @@
 
 // $Header:
 
+///  \defgroup VisitorGroup Visitor
+
 #ifndef LOKI_VISITOR_INC_
 #define LOKI_VISITOR_INC_
 
@@ -25,8 +27,10 @@ namespace Loki
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template BaseVisitor
-// The base class of any Acyclic Visitor
+/// \class BaseVisitor
+///  
+/// \ingroup VisitorGroup
+/// The base class of any Acyclic Visitor
 ////////////////////////////////////////////////////////////////////////////////
 
     class BaseVisitor
@@ -36,11 +40,89 @@ namespace Loki
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// class template Visitor
-// The building block of Acyclic Visitor
+/// \class Visitor
+///
+/// \ingroup VisitorGroup
+/// The building block of Acyclic Visitor
+///
+/// \par Usage
+///
+/// Defining the visitable class:
+/// 
+/// \code
+/// class RasterBitmap : public BaseVisitable<>
+/// {
+/// public:
+///     LOKI_DEFINE_VISITABLE()
+/// };
+/// \endcode
+///
+/// Way 1 to define a visitor:
+/// \code
+/// class SomeVisitor : 
+///     public BaseVisitor // required
+///     public Visitor<RasterBitmap>,
+///     public Visitor<Paragraph>
+/// {
+/// public:
+///     void Visit(RasterBitmap&); // visit a RasterBitmap
+///     void Visit(Paragraph &);   // visit a Paragraph
+/// };
+/// \endcode
+///
+/// Way 2 to define the visitor:
+/// \code
+/// class SomeVisitor : 
+///     public BaseVisitor // required
+///     public Visitor<LOKI_TYPELIST_2(RasterBitmap, Paragraph)>
+/// {
+/// public:
+///     void Visit(RasterBitmap&); // visit a RasterBitmap
+///     void Visit(Paragraph &);   // visit a Paragraph
+/// };
+/// \endcode
+///
+/// Way 3 to define the visitor:
+/// \code
+/// class SomeVisitor : 
+///     public BaseVisitor // required
+///     public Visitor<Seq<RasterBitmap, Paragraph>::Type>
+/// {
+/// public:
+///     void Visit(RasterBitmap&); // visit a RasterBitmap
+///     void Visit(Paragraph &);   // visit a Paragraph
+/// };
+/// \endcode
+///
+/// \par Using const visit functions:
+///
+/// Defining the visitable class (true for const):
+/// 
+/// \code
+/// class RasterBitmap : public BaseVisitable<void, DefaultCatchAll, true>
+/// {
+/// public:
+///     LOKI_DEFINE_CONST_VISITABLE()
+/// };
+/// \endcode
+///
+/// Defining the visitor which only calls const member functions:
+/// \code
+/// class SomeVisitor : 
+///     public BaseVisitor // required
+///     public Visitor<RasterBitmap, void, true>,
+/// {
+/// public:
+///     void Visit(const RasterBitmap&); // visit a RasterBitmap by a const member function
+/// };
+/// \endcode
+///
+/// \par Example:
+///
+/// test/Visitor/main.cpp 
 ////////////////////////////////////////////////////////////////////////////////
 
-	template <class T, typename R = void, bool ConstVisit = false>
+    template <class T, typename R = void, bool ConstVisit = false>
     class Visitor;
 
     template <class T, typename R>
@@ -48,7 +130,7 @@ namespace Loki
     {
     public:
         typedef R ReturnType;
-		typedef T ParamType;
+        typedef T ParamType;
         virtual ReturnType Visit(ParamType&) = 0;
     };
 
@@ -57,7 +139,7 @@ namespace Loki
     {
     public:
         typedef R ReturnType;
-		typedef const T ParamType;
+        typedef const T ParamType;
         virtual ReturnType Visit(ParamType&) = 0;
     };
 
@@ -94,7 +176,7 @@ namespace Loki
         using Visitor<Head, R, false>::Visit;
     };
 
-	template <class Head, class Tail, typename R>
+    template <class Head, class Tail, typename R>
     class Visitor<Typelist<Head, Tail>, R, true>
         : public Visitor<Head, R, true>, public Visitor<Tail, R, true>
     {
@@ -161,7 +243,7 @@ struct DefaultCatchAll
     <
         typename R = void, 
         template <typename, class> class CatchAll = DefaultCatchAll,
-		bool ConstVisitable = false
+        bool ConstVisitable = false
     >
     class BaseVisitable;
 
@@ -207,24 +289,35 @@ struct DefaultCatchAll
         }
     };
 
+
 ////////////////////////////////////////////////////////////////////////////////
-// macro DEFINE_VISITABLE
-// Put it in every class that you want to make visitable (in addition to 
-//     deriving it from BaseVisitable<R>
+/// \def LOKI_DEFINE_VISITABLE()
+/// \ingroup VisitorGroup
+/// Put it in every class that you want to make visitable 
+/// (in addition to deriving it from BaseVisitable<R>)
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LOKI_DEFINE_VISITABLE() \
     virtual ReturnType Accept(::Loki::BaseVisitor& guest) \
     { return AcceptImpl(*this, guest); }
 
+////////////////////////////////////////////////////////////////////////////////
+/// \def LOKI_DEFINE_CONST_VISITABLE()
+/// \ingroup VisitorGroup
+/// Put it in every class that you want to make visitable by const member 
+/// functions (in addition to deriving it from BaseVisitable<R>)
+////////////////////////////////////////////////////////////////////////////////
+
 #define LOKI_DEFINE_CONST_VISITABLE() \
     virtual ReturnType Accept(::Loki::BaseVisitor& guest) const \
     { return AcceptImpl(*this, guest); }
 
 ////////////////////////////////////////////////////////////////////////////////
-// class template CyclicVisitor
-// Put it in every class that you want to make visitable (in addition to 
-//     deriving it from BaseVisitable<R>
+/// \class CyclicVisitor
+///
+/// \ingroup VisitorGroup
+/// Put it in every class that you want to make visitable (in addition to 
+/// deriving it from BaseVisitable<R>
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, class TList>
@@ -243,8 +336,9 @@ struct DefaultCatchAll
     };
     
 ////////////////////////////////////////////////////////////////////////////////
-// macro LOKI_DEFINE_CYCLIC_VISITABLE
-// Put it in every class that you want to make visitable by a cyclic visitor
+/// \def LOKI_DEFINE_CYCLIC_VISITABLE(SomeVisitor)
+/// \ingroup VisitorGroup
+/// Put it in every class that you want to make visitable by a cyclic visitor
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LOKI_DEFINE_CYCLIC_VISITABLE(SomeVisitor) \
