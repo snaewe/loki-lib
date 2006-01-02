@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Last update: June 20, 2001
+// $Header:
 
 #ifndef LOKI_VISITOR_INC_
 #define LOKI_VISITOR_INC_
@@ -40,14 +40,27 @@ namespace Loki
 // The building block of Acyclic Visitor
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <class T, typename R = void>
-    class Visitor
+	template <class T, typename R = void, bool ConstVisit = false>
+    class Visitor;
+
+    template <class T, typename R>
+    class Visitor<T, R, false>
     {
     public:
         typedef R ReturnType;
-        virtual ReturnType Visit(T&) = 0;
+		typedef T ParamType;
+        virtual ReturnType Visit(ParamType&) = 0;
     };
-    
+
+    template <class T, typename R>
+    class Visitor<T, R, true>
+    {
+    public:
+        typedef R ReturnType;
+		typedef const T ParamType;
+        virtual ReturnType Visit(ParamType&) = 0;
+    };
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template Visitor (specialization)
 // This specialization is not present in the book. It makes it easier to define
@@ -55,8 +68,7 @@ namespace Loki
 //
 // class SomeVisitor : 
 //     public BaseVisitor // required
-//     public Visitor<LOKI_TYPELIST_2(RasterBitmap, Paragraph)>, 
-//     public Visitor<Paragraph>
+//     public Visitor<LOKI_TYPELIST_2(RasterBitmap, Paragraph)>
 // {
 // public:
 //     void Visit(RasterBitmap&); // visit a RasterBitmap
@@ -65,8 +77,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class Head, class Tail, typename R>
-    class Visitor<Typelist<Head, Tail>, R>
-        : public Visitor<Head, R>, public Visitor<Tail, R>
+    class Visitor<Typelist<Head, Tail>, R, false>
+        : public Visitor<Head, R, false>, public Visitor<Tail, R, false>
     {
     public:
         typedef R ReturnType;
@@ -75,12 +87,31 @@ namespace Loki
     };
     
     template <class Head, typename R>
-    class Visitor<Typelist<Head, NullType>, R> : public Visitor<Head, R>
+    class Visitor<Typelist<Head, NullType>, R, false> : public Visitor<Head, R, false>
     {
     public:
         typedef R ReturnType;
-        using Visitor<Head, R>::Visit;
+        using Visitor<Head, R, false>::Visit;
     };
+
+	template <class Head, class Tail, typename R>
+    class Visitor<Typelist<Head, Tail>, R, true>
+        : public Visitor<Head, R, true>, public Visitor<Tail, R, true>
+    {
+    public:
+        typedef R ReturnType;
+       // using Visitor<Head, R>::Visit;
+       // using Visitor<Tail, R>::Visit;
+    };
+    
+    template <class Head, typename R>
+    class Visitor<Typelist<Head, NullType>, R, true> : public Visitor<Head, R, true>
+    {
+    public:
+        typedef R ReturnType;
+        using Visitor<Head, R, true>::Visit;
+    };
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template BaseVisitorImpl
@@ -129,9 +160,13 @@ struct DefaultCatchAll
     template 
     <
         typename R = void, 
-        template <typename, class> class CatchAll = DefaultCatchAll
+        template <typename, class> class CatchAll = DefaultCatchAll,
+		bool ConstVisitable = false
     >
-    class BaseVisitable
+    class BaseVisitable;
+
+    template<typename R,template <typename, class> class CatchAll>
+    class BaseVisitable<R, CatchAll, false>
     {
     public:
         typedef R ReturnType;
@@ -151,6 +186,27 @@ struct DefaultCatchAll
         }
     };
 
+    template<typename R,template <typename, class> class CatchAll>
+    class BaseVisitable<R, CatchAll, true>
+    {
+    public:
+        typedef R ReturnType;
+        virtual ~BaseVisitable() {}
+        virtual ReturnType Accept(BaseVisitor&) const = 0;
+        
+    protected: // give access only to the hierarchy
+        template <class T>
+        static ReturnType AcceptImpl(const T& visited, BaseVisitor& guest)
+        {
+            // Apply the Acyclic Visitor
+            if (Visitor<T,R,true>* p = dynamic_cast<Visitor<T,R,true>*>(&guest))
+            {
+                return p->Visit(visited);
+            }
+            return CatchAll<R, T>::OnUnknownVisitor(const_cast<T&>(visited), guest);
+        }
+    };
+
 ////////////////////////////////////////////////////////////////////////////////
 // macro DEFINE_VISITABLE
 // Put it in every class that you want to make visitable (in addition to 
@@ -159,6 +215,10 @@ struct DefaultCatchAll
 
 #define LOKI_DEFINE_VISITABLE() \
     virtual ReturnType Accept(::Loki::BaseVisitor& guest) \
+    { return AcceptImpl(*this, guest); }
+
+#define LOKI_DEFINE_CONST_VISITABLE() \
+    virtual ReturnType Accept(::Loki::BaseVisitor& guest) const \
     { return AcceptImpl(*this, guest); }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -195,9 +255,10 @@ struct DefaultCatchAll
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
-// March 20: add default argument DefaultCatchAll to BaseVisitable
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
+// March     20, ????: add default argument DefaultCatchAll to BaseVisitable
+// June      20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
 // September 28, 2004: replaced Loki:: with ::Loki:: in DEFINE_VISITABLE
+// January    2, 2006: add support for visiting constant member functions, Peter Kümmel
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // VISITOR_INC_
