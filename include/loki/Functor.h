@@ -1363,7 +1363,7 @@ namespace Loki
         struct BinderFirstBoundTypeStorage< Functor<R, TList, ThreadingModel> >
         {
 			typedef Functor<R, TList, ThreadingModel> OriginalFunctor;
-            typedef typename const TypeTraits<OriginalFunctor>::ReferredType RefOrValue;
+            typedef const typename TypeTraits<OriginalFunctor>::ReferredType RefOrValue;
         };  
 
 
