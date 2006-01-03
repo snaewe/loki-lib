@@ -1,3 +1,49 @@
+_____________________________________
+
+Version 0.1.3
+January , 2006
+_____________________________________
+
+General:
+	- now also the ms toolkit 2003 generates a library (pk)
+	- LockPtr added (rs)
+	- ScopeGuard added (pk,rs)
+
+OrderedStatic:
+	- point operator added (pk)
+
+SafeFormat:
+	- %p test disabled due to platform dependent problems (pk)
+	- speed comparison added (pk)
+	- 64 bit problems fixed (pk)
+
+SmallObject:
+	- added functions to check for memory corruption (rs)
+	- more fine tuning (rs)
+	- some warnings removed (pk)
+	
+TypeTraits:
+	- bug 1388477 fixed (pk)
+	
+flex_string:
+	- fix compare bug by updating (Thanks to Justin Matthews, pk)
+	
+SmartPtr:
+	- make object level locking possible (Thanks to Ryan Smith, pk)
+	
+BindFirst:
+	- store Functor arguments by value (bug 1383566) (pk)
+	
+Visitor:
+	- add support for visiting constant member functions (pk)
+	- example added (pk)
+	
+ScopeGuard:
+	- example added (pk)
+	
+	
+CVS commits by Rich Sposato (rs) and Peter Kümmel (pk)
+
 
 _____________________________________
 
@@ -9,7 +55,7 @@ General:
 	- changes to compile under Linux (Thanks to David Lawrence, pk)
 	- more doxygen documentation, modules added (rs, pk)
 
-SmartPtr.h:
+SmartPtr:
 	- three year old bugs 626407 and 541846 fixed: 
 	  Assertion with SmartPtr<T, LinkedRef> (pk)
 	  SmartPtr and COMRefCounted (Thanks to James Mclaren, pk)
