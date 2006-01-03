@@ -5,43 +5,43 @@ January , 2006
 _____________________________________
 
 General:
-	- now also the ms toolkit 2003 generates a library (pk)
-	- LockPtr added (rs)
-	- ScopeGuard added (pk,rs)
+    - now also the ms toolkit 2003 generates a library (pk)
+    - LockPtr added (rs)
+    - ScopeGuard added (pk,rs)
 
 OrderedStatic:
-	- point operator added (pk)
+    - point operator added (pk)
 
 SafeFormat:
-	- %p test disabled due to platform dependent problems (pk)
-	- speed comparison added (pk)
-	- 64 bit problems fixed (pk)
+    - %p test disabled due to platform dependent problems (pk)
+    - speed comparison added (pk)
+    - 64 bit problems fixed (pk)
 
 SmallObject:
-	- added functions to check for memory corruption (rs)
-	- more fine tuning (rs)
-	- some warnings removed (pk)
-	
+    - added functions to check for memory corruption (rs)
+    - more fine tuning (rs)
+    - some warnings removed (pk)
+    
 TypeTraits:
-	- bug 1388477 fixed (pk)
-	
+    - bug 1388477 fixed (pk)
+    
 flex_string:
-	- fix compare bug by updating (Thanks to Justin Matthews, pk)
-	
+    - fix compare bug by updating (Thanks to Justin Matthews, pk)
+    
 SmartPtr:
-	- make object level locking possible (Thanks to Ryan Smith, pk)
-	
+    - make object level locking possible (Thanks to Ryan Smith, pk)
+    
 BindFirst:
-	- store Functor arguments by value (bug 1383566) (pk)
-	
+    - store Functor arguments by value (bug 1383566) (pk)
+    
 Visitor:
-	- add support for visiting constant member functions (pk)
-	- example added (pk)
-	
+    - add support for visiting constant member functions (pk)
+    - example added (pk)
+    
 ScopeGuard:
-	- example added (pk)
-	
-	
+    - example added (pk)
+    
+    
 CVS commits by Rich Sposato (rs) and Peter Kümmel (pk)
 
 
@@ -52,56 +52,56 @@ November 16, 2005
 _____________________________________
 
 General:
-	- changes to compile under Linux (Thanks to David Lawrence, pk)
-	- more doxygen documentation, modules added (rs, pk)
+    - changes to compile under Linux (Thanks to David Lawrence, pk)
+    - more doxygen documentation, modules added (rs, pk)
 
 SmartPtr:
-	- three year old bugs 626407 and 541846 fixed: 
-	  Assertion with SmartPtr<T, LinkedRef> (pk)
-	  SmartPtr and COMRefCounted (Thanks to James Mclaren, pk)
+    - three year old bugs 626407 and 541846 fixed: 
+      Assertion with SmartPtr<T, LinkedRef> (pk)
+      SmartPtr and COMRefCounted (Thanks to James Mclaren, pk)
 
 Typelists:
-	- it's now possible to completely disable the 
-	  LOKI_TYPELIST_  macros (pk)
-	- marco definitions moved to a separate file (pk)
+    - it's now possible to completely disable the 
+      LOKI_TYPELIST_  macros (pk)
+    - marco definitions moved to a separate file (pk)
 
 Factory:
-	- Factory now protects its private data (pk)
-	- new method to get the keys: 
-	  std::vector<IdType> RegisteredIds() (pk)
-	
+    - Factory now protects its private data (pk)
+    - new method to get the keys: 
+      std::vector<IdType> RegisteredIds() (pk)
+    
 Functor:
-	- TR1 methods added: empty() and clear() (pk)
-	
+    - TR1 methods added: empty() and clear() (pk)
+    
 Function:
-	- boost/TR1 like Function template with 
-	  improved member function pointer usage (pk)
-	- tested with boost's function_test.cpp 
+    - boost/TR1 like Function template with 
+      improved member function pointer usage (pk)
+    - tested with boost's function_test.cpp 
 
 Sequence:
-	- small change in usage: use e.g. Functor<void,Seq<bool &> > 
-	  instead of Functor<void,Seq<bool &>::Type > 
+    - small change in usage: use e.g. Functor<void,Seq<bool &> > 
+      instead of Functor<void,Seq<bool &>::Type > 
 
 SmallObjects:
-	- comparison of new/malloc/std::allocator/boost::object_pool (rs, pk)
-	- #undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a ms compiler (pk)
-	- new lifetimes in namespace LongevityLifetime to manage dependencies: 
-	  DieAsSmallObjectParent and DieAsSmallObjectClient (pk)
-	- no memory leaks when using SmallObjects (pk)
-	- new default lifetime is DieAsSmallObjectParent (pk)
+    - comparison of new/malloc/std::allocator/boost::object_pool (rs, pk)
+    - #undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a ms compiler (pk)
+    - new lifetimes in namespace LongevityLifetime to manage dependencies: 
+      DieAsSmallObjectParent and DieAsSmallObjectClient (pk)
+    - no memory leaks when using SmallObjects (pk)
+    - new default lifetime is DieAsSmallObjectParent (pk)
 
 Threads:
-	- threads on POSIX systems (Thanks to Ilya Volvovski ,pk)
-	- small regression test program (pk)
+    - threads on POSIX systems (Thanks to Ilya Volvovski ,pk)
+    - small regression test program (pk)
 
 Singleton:
-	- new lifetime: FollowIntoDeath (pk)
-	- new namespace LongevityLifetime with lifetimes DieLast, DieFirst,
-	  DieDirectlyBeforeLast, and function SingletonFixedLongevity (pk)
-	- new implementation for SetLongevity (pk)
-	- example programs (pk)
-	
-	
+    - new lifetime: FollowIntoDeath (pk)
+    - new namespace LongevityLifetime with lifetimes DieLast, DieFirst,
+      DieDirectlyBeforeLast, and function SingletonFixedLongevity (pk)
+    - new implementation for SetLongevity (pk)
+    - example programs (pk)
+    
+    
 CVS commits by Rich Sposato (rs) and Peter Kümmel (pk)
 
 
@@ -113,31 +113,31 @@ October 17, 2005
 _____________________________________
 
 Singleton: 
-	- wrong ordered longevity fixed (Thanks to Kwak Jae Hyuk, pk)
-	- less warnings with msvc (Thanks to  John Bates, pk)
-	- new policy, DeletableSingleton, from Curtis Krauskopf, 
-	  see also CUJ article 'Creating Dynamic Singletons & the Loki Library',(pk)
-	
+    - wrong ordered longevity fixed (Thanks to Kwak Jae Hyuk, pk)
+    - less warnings with msvc (Thanks to  John Bates, pk)
+    - new policy, DeletableSingleton, from Curtis Krauskopf, 
+      see also CUJ article 'Creating Dynamic Singletons & the Loki Library',(pk)
+    
 AssocVector:
-	- hinted insert does now preserve ordering (Thanks to Christopher Twigg, pk)
-	- additional 'hinted insert' test for Regression test by Christopher Twigg (pk)
-	- fix name look up (Thanks to Markus Werle, pk)
+    - hinted insert does now preserve ordering (Thanks to Christopher Twigg, pk)
+    - additional 'hinted insert' test for Regression test by Christopher Twigg (pk)
+    - fix name look up (Thanks to Markus Werle, pk)
 
 SmallObj:
- 	- several improvements (rs)
- 	- more documentation (rs)
- 	- improved SmallBench (rs, pk)
+     - several improvements (rs)
+     - more documentation (rs)
+     - improved SmallBench (rs, pk)
 
 Longevity:
-	- example added (pk)
-	- additional example similar to that of the book, by Curtis Krauskopf (pk)
-	
+    - example added (pk)
+    - additional example similar to that of the book, by Curtis Krauskopf (pk)
+    
 OrderedStatic:
-	- a proposal to solve the 'static initialization ordered fiasco' problem (pk)
+    - a proposal to solve the 'static initialization ordered fiasco' problem (pk)
 
 Sequence:
-	- a proposal to replace the LOKI_TYPELIST_XX macros with a template implementation (pk)
-	- e.g.: LOKI_TYPELIST_1(int) becomes Seq<int>::Type 
+    - a proposal to replace the LOKI_TYPELIST_XX macros with a template implementation (pk)
+    - e.g.: LOKI_TYPELIST_1(int) becomes Seq<int>::Type 
       inspired by the functional language OPAL (pk)
             
             
@@ -152,30 +152,30 @@ September 29, 2005
 _____________________________________
 
 General:
-	- version numbering started 
-	- new directory structure 
-	- Andrei's yasli, flex_string, and SafePrint added  (pk)
-	- all macros now in the LOKI "namespace", e.g.: 
-  	  TYPLELIST_1 -> LOKI_TYPELIST_1  (rs, pk)
-	- Makefiles added: tested with gcc 3.4 (mingw, cygwin),
-  	  msvc 8.0, and the toolkit  (pk)
-	- added some documentation (rs)
-	- several bug fixes (pk)
-	- added a cvs-list to sourceforge where you can see all changes (pk)
-  	
+    - version numbering started 
+    - new directory structure 
+    - Andrei's yasli, flex_string, and SafePrint added  (pk)
+    - all macros now in the LOKI "namespace", e.g.: 
+      TYPLELIST_1 -> LOKI_TYPELIST_1  (rs, pk)
+    - Makefiles added: tested with gcc 3.4 (mingw, cygwin),
+      msvc 8.0, and the toolkit  (pk)
+    - added some documentation (rs)
+    - several bug fixes (pk)
+    - added a cvs-list to sourceforge where you can see all changes (pk)
+    
 SmallObjects:
-	- new implementation (rs)
-	
+    - new implementation (rs)
+    
 Factory:
-	- works now with parameters (pk)
-	- regression test added (Thanks to Kalle Rutanen, pk)
-	
+    - works now with parameters (pk)
+    - regression test added (Thanks to Kalle Rutanen, pk)
+    
 TypeTraits: 
-	- isMemberPointer, isFunction added (Thanks to Kalle Rutanen, pk)
-	- regression test added (Thanks to Kalle Rutanen, pk)
-	
+    - isMemberPointer, isFunction added (Thanks to Kalle Rutanen, pk)
+    - regression test added (Thanks to Kalle Rutanen, pk)
+    
 Threading: 
-	- new macros for better thread support (win32):
+    - new macros for better thread support (win32):
       LOKI_CLASS_LEVEL_THREADING and LOKI_OBJECT_LEVEL_THREADING (pk)
 
 
