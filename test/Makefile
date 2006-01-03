@@ -8,6 +8,7 @@ SUBTARGETS	= \
 		sub-OrderedStatic \
 		sub-RegressionTest \
 		sub-SafeFormat \
+		sub-ScopeGuard \
 		sub-Singleton \
 		sub-SmallObj \
 		sub-Visitor
@@ -45,6 +46,11 @@ sub-SafeFormat: FORCE
 	$(MAKE) -f $(MAKEFILE)
 	@cd ..
 
+sub-ScopeGuard: FORCE
+	cd ScopeGuard && \
+	$(MAKE) -f $(MAKEFILE)
+	@cd ..
+	
 sub-Singleton: FORCE
 	cd Singleton && \
 	$(MAKE) -f $(MAKEFILE)-DeletableSingleton && \
@@ -84,6 +90,9 @@ clean:
 	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
 	cd SmallObj && \
+	$(MAKE) -f $(MAKEFILE) clean
+	@cd ..
+	cd ScopeGuard && \
 	$(MAKE) -f $(MAKEFILE) clean
 	@cd ..
 	cd Singleton && \
