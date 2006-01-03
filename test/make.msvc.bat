@@ -23,6 +23,10 @@ cd SafeFormat
 call make.msvc.bat
 cd ..
 
+cd ScopeGuard
+call make.msvc.bat
+cd ..
+
 cd Singleton
 call make.msvc.bat
 cd ..
