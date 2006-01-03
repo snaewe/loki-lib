@@ -86,7 +86,7 @@ namespace Loki
     /// \typedef typedef const ScopeGuardImplBase& ScopeGuard
     /// \ingroup ThreadingGroup
     ///
-    /// See Andrei's CUJ article
+    /// See Andrei's and Petru Marginean's CUJ article
     /// http://www.cuj.com/documents/s=8000/cujcexp1812alexandr/alexandr.htm
     ///
     /// Changes to the original code by Joshua Lehrer:
