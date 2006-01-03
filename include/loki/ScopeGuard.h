@@ -15,6 +15,8 @@
 #ifndef LOKI_SCOPEGUARD_H_
 #define LOKI_SCOPEGUARD_H_
 
+/// \defgroup ExceptionGroup Exception-safe code
+
 namespace Loki
 {
 
@@ -84,7 +86,7 @@ namespace Loki
     ////////////////////////////////////////////////////////////////
     ///
     /// \typedef typedef const ScopeGuardImplBase& ScopeGuard
-    /// \ingroup ThreadingGroup
+    /// \ingroup ExceptionGroup
     ///
     /// See Andrei's and Petru Marginean's CUJ article
     /// http://www.cuj.com/documents/s=8000/cujcexp1812alexandr/alexandr.htm
