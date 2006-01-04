@@ -293,14 +293,19 @@ int main()
 
     cout << endl;
     cout << endl;
-
+    
+#if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");
+#endif
 
     return EXIT_SUCCESS;
 }
 
 
 // $Log$
+// Revision 1.11  2006/01/04 23:54:28  syntheticpp
+// remove system(PAUSE) for gcc, Thanks to Lukas Fittl
+//
 // Revision 1.10  2006/01/04 23:45:08  syntheticpp
 // remove gcc 4.0 warnings, Thanks to Lukas Fittl
 //

@@ -784,7 +784,9 @@ int test_main(int, char* [])
     test_implicit();
     test_call();
 
-    system("pause");
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
+#endif
 
     return 0;
 }

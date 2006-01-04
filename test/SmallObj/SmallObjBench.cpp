@@ -314,10 +314,8 @@ int main()
     testSize<16,loop>();
     testSize<17,loop>();
 
-
-#if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
-    // Stop console window from closing if run from IDE.
-    system("pause"); 
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
 #endif
 
     return 0;
@@ -326,6 +324,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.17  2006/01/04 23:54:30  syntheticpp
+// remove system(PAUSE) for gcc, Thanks to Lukas Fittl
+//
 // Revision 1.16  2005/12/08 22:23:33  rich_sposato
 // Added checks for whether loki's allocator is corrupted.
 //
