@@ -138,7 +138,9 @@ int main()
 
     std::cout << "\n";
 
-    system("pause");
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
+#endif
 
     return 0;
 }

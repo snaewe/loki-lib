@@ -82,8 +82,8 @@ int main(int argc, char* argv[])
      SetLongevity<Example, void (*)(Example*)>(example, 1, &Loki::Private::Deleter<Example>::Delete);
     LogBook::Instance().echo("LogClass now instantiated.");
     
-#if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
-    system("pause"); // Stop console window from closing if run from IDE.
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
 #endif
 
     return 0;

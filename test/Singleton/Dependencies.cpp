@@ -448,8 +448,8 @@ int main()
 
 #endif //#if !defined(_MSC_VER) || (_MSC_VER>=1400)
 
-#if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
-    system("pause");
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
 #endif
 
     std::cout << "\nnow leaving main \n";

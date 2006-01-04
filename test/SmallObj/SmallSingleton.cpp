@@ -353,8 +353,8 @@ int main()
     cout << endl << endl;
 #endif
     
-#if defined(__BORLANDC__) || defined(__GNUC__) || defined(_MSC_VER)
-    system("pause"); 
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
 #endif
 
     cout << endl<< endl << "now leaving main" << endl;
@@ -366,6 +366,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.12  2006/01/04 23:54:30  syntheticpp
+// remove system(PAUSE) for gcc, Thanks to Lukas Fittl
+//
 // Revision 1.11  2005/12/08 21:03:02  rich_sposato
 // Changed template parameter values for SmallObject allocator.
 //
