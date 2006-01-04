@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // This file contains definitions for SafePrintf. SafeScanf coming soon (the 
 //   design is similar). 
-// See Alexandrescu, Andrei: Type-safe Formatting, C/C++ Users Journal, Jul 2005
+// See Alexandrescu, Andrei: Type-safe Formatting, C/C++ Users Journal, Aug 2005
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef LOKI_SAFEFORMAT_H_
@@ -408,9 +408,9 @@ private:
         }
     }
     
-    void ParseDecimalUInt(unsigned int& dest) {
+    void ParseDecimalSizeT(size_t& dest) {
         if (!std::isdigit(*format_, std::locale())) return;
-        unsigned int r = 0;
+        size_t r = 0;
         do {
             // TODO: inefficient - rewrite
             r *= 10;
@@ -421,7 +421,7 @@ private:
     }
     
     void ReadWidth() {
-        ParseDecimalUInt(width_);
+        ParseDecimalSizeT(width_);
     }    
     
     void ReadPrecision() {
