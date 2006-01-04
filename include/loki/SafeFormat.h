@@ -427,7 +427,7 @@ private:
     void ReadPrecision() {
         assert(*format_ == '.');
         ++format_;
-        ParseDecimalUInt(prec_);
+        ParseDecimalSizeT(prec_);
     }    
     
     void ReadModifiers() {
