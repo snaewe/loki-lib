@@ -89,6 +89,7 @@ namespace Loki
     struct FactoryImpl<AP, Id, NullType>
                 : public FactoryImplBase
     {
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id & id ) = 0;
     };
 template <typename AP, typename Id, typename P1 >
@@ -96,6 +97,7 @@ template <typename AP, typename Id, typename P1 >
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1 ) = 0;
     };
 
@@ -105,6 +107,7 @@ template <typename AP, typename Id, typename P1 >
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2 ) = 0;
     };
 
@@ -115,6 +118,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3 ) = 0;
     };
 
@@ -126,6 +130,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
         typedef typename TypeTraits<P4>::ParameterType Parm4;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4 ) = 0;
     };
 
@@ -139,6 +144,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P3>::ParameterType Parm3;
         typedef typename TypeTraits<P4>::ParameterType Parm4;
         typedef typename TypeTraits<P5>::ParameterType Parm5;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5 ) = 0;
     };
 
@@ -154,6 +160,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P4>::ParameterType Parm4;
         typedef typename TypeTraits<P5>::ParameterType Parm5;
         typedef typename TypeTraits<P6>::ParameterType Parm6;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6 )
         = 0;
@@ -172,6 +179,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P5>::ParameterType Parm5;
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7 )
         = 0;
@@ -191,6 +199,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8)
         = 0;
@@ -211,6 +220,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9)
         = 0;
@@ -232,6 +242,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10)
         = 0;
@@ -255,6 +266,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11)
@@ -280,6 +292,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12)
@@ -306,6 +319,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12,Parm13)
@@ -333,6 +347,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm8,Parm10,
                                 Parm11,Parm12,Parm13,Parm14)
@@ -361,6 +376,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
         typedef typename TypeTraits<P15>::ParameterType Parm15;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12,Parm13,Parm14,Parm15 )
@@ -374,6 +390,7 @@ template <typename AP, typename Id, typename P1 >
                 : public FactoryImplBase
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1 ) = 0;
     };
 
@@ -383,6 +400,7 @@ template <typename AP, typename Id, typename P1 >
     {
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2 ) = 0;
     };
 
@@ -393,6 +411,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P1>::ParameterType Parm1;
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3 ) = 0;
     };
 
@@ -404,6 +423,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P2>::ParameterType Parm2;
         typedef typename TypeTraits<P3>::ParameterType Parm3;
         typedef typename TypeTraits<P4>::ParameterType Parm4;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4 ) = 0;
     };
 
@@ -417,6 +437,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P3>::ParameterType Parm3;
         typedef typename TypeTraits<P4>::ParameterType Parm4;
         typedef typename TypeTraits<P5>::ParameterType Parm5;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5 ) = 0;
     };
 
@@ -432,6 +453,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P4>::ParameterType Parm4;
         typedef typename TypeTraits<P5>::ParameterType Parm5;
         typedef typename TypeTraits<P6>::ParameterType Parm6;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6 )
         = 0;
@@ -450,6 +472,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P5>::ParameterType Parm5;
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7 )
         = 0;
@@ -469,6 +492,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8)
         = 0;
@@ -489,6 +513,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9)
         = 0;
@@ -510,6 +535,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10)
         = 0;
@@ -533,6 +559,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11)
@@ -558,6 +585,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12)
@@ -584,6 +612,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12,Parm13)
@@ -611,6 +640,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm8,Parm10,
                                 Parm11,Parm12,Parm13,Parm14)
@@ -639,6 +669,7 @@ template <typename AP, typename Id, typename P1 >
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
         typedef typename TypeTraits<P15>::ParameterType Parm15;
+        virtual ~FactoryImpl() {}
         virtual AP* CreateObject(const Id& id,Parm1, Parm2, Parm3, Parm4, Parm5,
                                 Parm6, Parm7, Parm8, Parm9,Parm10,
                                 Parm11,Parm12,Parm13,Parm14,Parm15 )
@@ -1002,6 +1033,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.13  2006/01/04 23:45:07  syntheticpp
+// remove gcc 4.0 warnings, Thanks to Lukas Fittl
+//
 // Revision 1.12  2005/11/12 17:11:55  syntheticpp
 // make typedefs private, replace tabs
 //

@@ -111,6 +111,7 @@ Product* createProductOver( int a, int b )
  
 class AbstractCreator{
 public:
+    virtual ~AbstractCreator() {}
     virtual AbstractProduct* create() = 0;
     virtual AbstractProduct* createParm( int, int ) = 0;
 };
@@ -300,6 +301,9 @@ int main()
 
 
 // $Log$
+// Revision 1.10  2006/01/04 23:45:08  syntheticpp
+// remove gcc 4.0 warnings, Thanks to Lukas Fittl
+//
 // Revision 1.9  2005/11/12 16:52:36  syntheticpp
 // protect private data, add std::vector<IdType> RegisteredIds()
 //
