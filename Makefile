@@ -1,34 +1,16 @@
+DESTDIR := $(CURDIR)/$(DESTDIR)
 
-MAKEFILE = Makefile
+build:
+	$(MAKE) -C src
 
-SUBTARGETS	= \
-		sub-src \
-		sub-test \
+check: build
+	$(MAKE) -C test
 
-all: $(SUBTARGETS)
+install:
+	$(MAKE) -C src install
+	$(MAKE) -C include install
 
-sub-src: FORCE
-	cd src && \
-	$(MAKE) -f $(MAKEFILE)
-	@cd ..
-
-sub-test: FORCE
-	cd test && \
-	$(MAKE) -f $(MAKEFILE)
-	@cd ..
-
-	
-	
-clean: 
-	cd src && \
-	$(MAKE) -f $(MAKEFILE) clean
-	@cd ..
-	cd test && \
-	$(MAKE) -f $(MAKEFILE) clean
-	@cd ..
-
-
-
-
-FORCE:
-
+.PHONY: clean
+clean:
+	$(MAKE) -C src clean
+	$(MAKE) -C test clean

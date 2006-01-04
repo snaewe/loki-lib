@@ -1,4 +1,4 @@
-OBJ = Test.o
+OBJ = FunctionTest.o
 BIN = main-gcc
 CXXFLAGS = -I../../include -Wall -O2
 LIBS = -L../../lib -lloki
