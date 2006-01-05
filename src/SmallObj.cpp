@@ -5,7 +5,7 @@
 // Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 // Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
+//     purpose is hereby granted without fee, provided that the above  copyright 
 //     notice appear in all copies and that both that copyright notice and this 
 //     permission notice appear in supporting documentation.
 // The author or Addison-Wesley Longman make no representations about the 
@@ -1224,6 +1224,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.23  2006/01/05 17:21:12  syntheticpp
+// add msvc8 project files
+//
 // Revision 1.22  2006/01/05 00:23:43  syntheticpp
 // always use #include <loki/...>, Thanks to Lukas Fittl
 //
