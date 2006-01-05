@@ -2,7 +2,7 @@ OBJ1 = SmallObjBench.o
 OBJ2 = SmallSingleton.o
 BIN1 = small-obj-bench-gcc
 BIN2 = small-singleton-gcc
-CXXFLAGS = -I../../include -Wall -fexpensive-optimizations -O3
+CXXFLAGS = -I../../include -Wall -fexpensive-optimizations -O3 -DNDEBUG
 LIBS = -L../../lib -lloki
 
 .PHONY: all
