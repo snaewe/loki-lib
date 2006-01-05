@@ -10,10 +10,13 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#pragma warning (disable : 4786)    // Get rid of browser information too long names
+#ifdef _MSC_VER
 
+#pragma warning (disable : 4786)    // Get rid of browser information too long names
 #ifdef _DEBUG
 #pragma warning (disable : 4786)
+#endif
+
 #endif
 
 #include <stdio.h>
@@ -61,7 +64,7 @@ template <class String>
 String RandomString(const String* /* model */, unsigned int maxSize)
 {
     String result(random(0, maxSize), '\0');
-    int i = 0;
+    size_t i = 0;
     for (; i != result.size(); ++i)
     {
         result[i] = random('a', 'z');
