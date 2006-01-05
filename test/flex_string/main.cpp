@@ -92,6 +92,8 @@ std::list<char> RandomList(unsigned int maxSize)
     return lst;
 }
 
+int currentTest = 0;
+
 template <class String>
 String Test(String, unsigned int count, bool avoidAliasing)
 {
@@ -104,7 +106,10 @@ String Test(String, unsigned int count, bool avoidAliasing)
         test = RandomString(&test, maxString);
 
 		static unsigned int functionSelector = 0;
-        switch (++functionSelector % 90)
+		++functionSelector;
+		currentTest = functionSelector % 90; 
+		//std::cout << currentTest <<"\n";
+        switch (currentTest)
         {
         case 0:
             // test default constructor 21.3.1
@@ -222,8 +227,11 @@ String Test(String, unsigned int count, bool avoidAliasing)
             break;
         case 15:
             // exercise element access 21.3.4
-            test[random(0, test.size() - 1)];
-            test.at(random(0, test.size() - 1));
+            if(!test.empty())
+			{
+				test[random(0, test.size() - 1)];
+				test.at(random(0, test.size() - 1));
+			}
             break;
         case 16:
             // 21.3.5 modifiers
@@ -373,7 +381,8 @@ String Test(String, unsigned int count, bool avoidAliasing)
             break;
         case 42:
             // 21.3.5 modifiers
-            test.erase(test.begin() + random(0, test.size()));
+            if(!test.empty())
+				test.erase(test.begin() + random(0, test.size()));
             break;
         case 43:
             // 21.3.5 modifiers
@@ -853,6 +862,23 @@ String Test(String, unsigned int count, bool avoidAliasing)
     return test;
 }
 
+template<class T>
+void checkResults(const std::string& reference, const T& tested)
+{
+    if( (tested.size() != reference.size())||
+		(std::string(tested.data(), tested.size()) != reference) )
+	{
+		std::cout << "\nTest " << currentTest << " failed: \n";
+		std::cout << "reference.size() = " << reference.size() << "\n";
+		std::cout << "tested.size()    = " << tested.size()    << "\n";
+		std::cout << "reference data   = " <<  reference << "\n";
+		std::cout << "tested    data   = " <<  tested    << "\n";
+	}
+
+	//assert(tested.size() == reference.size());
+    //assert(std::string(tested.data(), tested.size()) == reference);
+}
+
 void Compare()
 {
     unsigned int count = 0;
@@ -875,8 +901,7 @@ void Compare()
                 SimpleStringStorage<char, std::allocator<char> >
             > my_string;
             const my_string tested = Test(my_string(), 1, false);
-            assert(tested.size() == reference.size());
-            assert(std::string(tested.data(), tested.size()) == reference);
+			checkResults(reference, tested);
         }
 
 		{
@@ -888,8 +913,7 @@ void Compare()
                 AllocatorStringStorage<char, std::allocator<char> >
             > my_string;
             const my_string tested = Test(my_string(), 1, false);
-            assert(tested.size() == reference.size());
-            assert(std::string(tested.data(), tested.size()) == reference);
+			checkResults(reference, tested);
         }
 
 		{
@@ -901,8 +925,7 @@ void Compare()
                 AllocatorStringStorage<char, mallocator<char> >
             > my_string;
             const my_string tested = Test(my_string(), 1, false);
-            assert(tested.size() == reference.size());
-            assert(std::string(tested.data(), tested.size()) == reference);
+			checkResults(reference, tested);
         }
 
 		{
@@ -914,8 +937,7 @@ void Compare()
                 VectorStringStorage<char, std::allocator<char> >
             > my_string;
             const my_string tested = Test(my_string(), 1, false);
-            assert(tested.size() == reference.size());
-            assert(std::string(tested.data(), tested.size()) == reference);
+			checkResults(reference, tested);
         }
 		{
             srand(t);
@@ -929,8 +951,7 @@ void Compare()
             > my_string;
             static my_string sample;
             const my_string tested(Test(sample, 1, false));
-            assert(tested.size() == reference.size());
-            assert(std::string(tested.data(), tested.size()) == reference);
+			checkResults(reference, tested);
         }
         {
             srand(t);
@@ -944,8 +965,7 @@ void Compare()
             > my_string;
             static my_string sample;
             const my_string tested(Test(sample, 1, false));
-            assert(tested.size() == reference.size());
-            assert(std::string(tested.data(), tested.size()) == reference);
+			checkResults(reference, tested);
         }
         {
             srand(t);
@@ -959,8 +979,7 @@ void Compare()
             > my_string;
             static my_string sample;
             const my_string tested(Test(sample, 1, false));
-            assert(tested.size() == reference.size());
-            assert(std::string(tested.data(), tested.size()) == reference);
+			checkResults(reference, tested);
         }
 /*
         {	// SimpleStringStorage with UTF16 Encoding
