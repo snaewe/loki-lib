@@ -131,6 +131,7 @@ namespace Loki
     public:
         typedef R ReturnType;
         typedef T ParamType;
+        virtual ~Visitor() {}
         virtual ReturnType Visit(ParamType&) = 0;
     };
 
@@ -140,6 +141,7 @@ namespace Loki
     public:
         typedef R ReturnType;
         typedef const T ParamType;
+        virtual ~Visitor() {}
         virtual ReturnType Visit(ParamType&) = 0;
     };
 

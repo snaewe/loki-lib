@@ -256,7 +256,7 @@ inline void TypeTraitsTest2::testEnd()
         cout << "---------------------------" 
             << "-----------------------" << endl;
 
-        for (int i = 0;i < textBuffer_.size();++i)
+        for (size_t i = 0;i < textBuffer_.size();++i)
         {
             cout << textBuffer_[i];
         }
