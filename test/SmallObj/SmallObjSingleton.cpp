@@ -366,6 +366,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.1  2006/01/05 21:05:19  syntheticpp
+// rename Small->SmallObj
+//
 // Revision 1.13  2006/01/05 09:55:09  syntheticpp
 // assert, include path, and virtual ~ patches by Lukas Fittl
 //
