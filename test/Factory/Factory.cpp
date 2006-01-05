@@ -15,15 +15,15 @@
 
 #include <iostream>
 #include <string>
-#include "loki/Factory.h"
-#include "loki/Functor.h"
+#include <loki/Factory.h>
+#include <loki/Functor.h>
 
 #ifdef LOKI_DISABLE_TYPELIST_MACROS
 #define USE_WQUENCE
 #endif
 
 #ifdef USE_SEQUENCE
-#include "loki/Sequence.h"
+#include <loki/Sequence.h>
 
 #endif
 
@@ -303,6 +303,9 @@ int main()
 
 
 // $Log$
+// Revision 1.12  2006/01/05 00:23:43  syntheticpp
+// always use #include <loki/...>, Thanks to Lukas Fittl
+//
 // Revision 1.11  2006/01/04 23:54:28  syntheticpp
 // remove system(PAUSE) for gcc, Thanks to Lukas Fittl
 //

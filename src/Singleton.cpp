@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "../include/loki/Singleton.h"
+#include <loki/Singleton.h>
 
 
 #ifdef LOKI_ENABLE_NEW_SETLONGLIVITY_HELPER_DATA_IMPL

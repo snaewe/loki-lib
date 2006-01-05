@@ -106,7 +106,7 @@
 #include <string>
 #include <vector>
 
-#include "loki/TypeTraits.h"
+#include <loki/TypeTraits.h>
 
 // Macros for testing isX variables
 

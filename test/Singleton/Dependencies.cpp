@@ -13,8 +13,8 @@
 
 #include <iostream>
 
-#include "loki/SmallObj.h"
-#include "loki/Function.h"
+#include <loki/SmallObj.h>
+#include <loki/Function.h>
 
 
 using namespace Loki;

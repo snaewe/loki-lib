@@ -12,7 +12,7 @@
 
 // $Header:
 
-#include "../include/loki/OrderedStatic.h"
+#include <loki/OrderedStatic.h>
 #include <limits>
 
 namespace Loki

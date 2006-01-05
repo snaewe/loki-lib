@@ -9,7 +9,7 @@
 //     warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "loki/SafeFormat.h"
+#include <loki/SafeFormat.h>
 #include <iostream>
 #include <cassert>
 #include <utility>
