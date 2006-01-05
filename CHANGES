@@ -8,6 +8,8 @@ General:
     - now also the ms toolkit 2003 generates a library (pk)
     - LockPtr added (rs)
     - ScopeGuard added (pk,rs)
+    - improved Makefile (Thanks to Lukas Fittl, pk)
+    - several gcc fixes by Lukas Fittl
 
 OrderedStatic:
     - point operator added (pk)
@@ -15,7 +17,7 @@ OrderedStatic:
 SafeFormat:
     - %p test disabled due to platform dependent problems (pk)
     - speed comparison added (pk)
-    - 64 bit problems fixed (pk)
+    - 64 bit problems fixed (Thanks to Zak Kipling, pk)
 
 SmallObject:
     - added functions to check for memory corruption (rs)
@@ -27,6 +29,8 @@ TypeTraits:
     
 flex_string:
     - fix compare bug by updating (Thanks to Justin Matthews, pk)
+    - fix seg faults on linux and windows (pk)
+    - improved error reporting of the test program
     
 SmartPtr:
     - make object level locking possible (Thanks to Ryan Smith, pk)
