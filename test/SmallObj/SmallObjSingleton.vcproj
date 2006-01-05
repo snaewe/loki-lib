@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="SmallSingleton"
+	Name="SmallObjSingleton"
 	ProjectGUID="{78536B46-8307-4AE5-933E-0CADE2887AFB}"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -34,7 +34,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/SmallSingleton.exe"
+				OutputFile="$(OutDir)/SmallObjSingleton.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/test.pdb"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/SmallSingleton.exe"
+				OutputFile="$(OutDir)/SmallObjSingleton.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
@@ -149,7 +149,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\SmallSingleton.cpp">
+				RelativePath=".\SmallObjSingleton.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool

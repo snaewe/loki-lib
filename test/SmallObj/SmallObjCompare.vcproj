@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="CompareSmallObj"
+	Name="SmallObjCompare"
 	ProjectGUID="{0A98B714-818C-4DD3-A07C-BDD16399F362}"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -34,7 +34,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/CompareSmallObj.exe"
+				OutputFile="$(OutDir)/SmallObjCompare.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/test.pdb"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/CompareSmallObj.exe"
+				OutputFile="$(OutDir)/SmallObjCompare.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
