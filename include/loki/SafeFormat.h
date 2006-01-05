@@ -208,7 +208,7 @@ namespace Loki
 			return *this;
 		}
 
-		void FormatWithCurrentFlags(const unsigned long i) {
+		void FormatWithCurrentFlags(const uintptr_t i) {
 			// look at the format character
 			Char formatChar = *format_;
 			bool isSigned = formatChar == 'd' || formatChar == 'i';
@@ -339,13 +339,20 @@ namespace Loki
 				Write(&c, &c + 1);
 			}
 		}
-	    
-		Char* RenderWithoutSign(unsigned long n, char* bufLast, 
+	   
+		Char* RenderWithoutSign(uintptr_t n, char* bufLast, 
 				unsigned int base, bool uppercase) {
 			const Char hex1st = uppercase ? 'A' : 'a';
 			for (;;) {
-				const unsigned long next = n / base;
+				const uintptr_t next = n / base;
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4244)
+#endif
 				Char c = n - next * base;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 				c += (c <= 9) ? '0' : hex1st - 10;
 				*bufLast = c;
 				n = next;
@@ -354,17 +361,17 @@ namespace Loki
 			}
 			return bufLast;
 		}
-	    
+
 		char* RenderWithoutSign(long n, char* bufLast, unsigned int base, 
 				bool uppercase) {
 			if (n != LONG_MIN) {
-				return RenderWithoutSign(static_cast<unsigned long>(n < 0 ? -n : n),
+				return RenderWithoutSign(static_cast<uintptr_t>(n < 0 ? -n : n),
 					bufLast, base, uppercase);            
 			}
 			// annoying corner case
 			char* save = bufLast;
 			++n;
-			bufLast = RenderWithoutSign(static_cast<unsigned long>(n),
+			bufLast = RenderWithoutSign(static_cast<uintptr_t>(n),
 				bufLast, base, uppercase);
 			--(*save);
 			return bufLast;
@@ -487,7 +494,7 @@ namespace Loki
 		size_t width_;
 		size_t prec_;
 		unsigned int flags_;
-		int result_;
+		ptrdiff_t result_;
 	};
 
 	PrintfState<std::FILE*, char> Printf(const char* format) {
