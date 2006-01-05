@@ -379,7 +379,8 @@ public:
     
     flex_string& append(const value_type* s, const size_type n)
     { 
-		Invariant checker(*this); checker; 
+		Invariant checker(*this); 
+		(void) checker; 
         static std::less_equal<const value_type*> le;
 		if (le(&*begin(), s) && le(s, &*end())) // aliasing
 		{
@@ -434,7 +435,8 @@ public:
     
     flex_string& assign(const value_type* s, const size_type n)
     {
-		Invariant checker(*this); checker; 
+		Invariant checker(*this); 
+		(void) checker; 
         if (size() >= n)
         {
 			std::copy(s, s + n, begin());
@@ -497,7 +499,8 @@ private:
     flex_string& InsertImplDiscr(iterator p, 
         size_type n, value_type c, Selector<1>)
     { 
-		Invariant checker(*this); checker; 
+		Invariant checker(*this); 
+		(void) checker; 
 		assert(p >= begin() && p <= end());
 		if (capacity() - size() < n)
 		{
@@ -538,7 +541,8 @@ private:
     void InsertImpl(iterator i,
 		FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
     { 
-		Invariant checker(*this); checker; 
+		Invariant checker(*this); 
+		(void) checker;
 		const size_type pos = i - begin();
 		const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
 			std::distance(s1, s2);
@@ -604,7 +608,8 @@ public:
     
     flex_string& erase(size_type pos = 0, size_type n = npos)
     { 
-		Invariant checker(*this); checker;
+		Invariant checker(*this); 
+		(void) checker;
         Enforce(pos <= length(), (std::out_of_range*)0, "");
 		Procust(n, length() - pos);
 		std::copy(begin() + pos + n, end(), begin() + pos);
@@ -647,7 +652,8 @@ public:
 	flex_string& replace(const size_type pos, size_type n1, 
 		const value_type* s1, const size_type n2)
     {
-		Invariant checker(*this); checker;
+		Invariant checker(*this); 
+		(void) checker;
         Enforce(pos <= size(), (std::out_of_range*)0, "");
         Procust(n1, size() - pos);
 		const iterator b = begin() + pos;
@@ -731,7 +737,8 @@ public:
     flex_string& replace(size_type pos, size_type n1, 
 		StrOrLength s_or_n2, NumOrChar n_or_c)
     {
-		Invariant checker(*this); checker;
+		Invariant checker(*this); 
+		(void) checker;
 		Enforce(pos <= size(), (std::out_of_range*)0, "");
 		Procust(n1, length() - pos);
 		const iterator b = begin() + pos;
@@ -784,7 +791,8 @@ private:
     void ReplaceImpl(iterator i1, iterator i2,
 		FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
     { 
-		Invariant checker(*this); checker;
+		Invariant checker(*this); 
+		(void) checker;
 		const typename std::iterator_traits<iterator>::difference_type n1 = 
 			i2 - i1;
 		assert(n1 >= 0);
