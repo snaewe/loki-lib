@@ -1,7 +1,7 @@
 OBJ = main.o
 BIN = main-gcc
 CXXFLAGS = -I../../include -Wall -O2 -DNDEBUG
-LIBS = -L../../lib -lloki
+LIBS = 
 
 $(BIN): $(OBJ)
 	$(CXX) -o $(BIN) $(OBJ) $(LIBS)
