@@ -73,7 +73,7 @@ String RandomString(const String* /* model */, unsigned int maxSize)
 }
 
 template <class String, class Integral>
-void Num2String(String& str, Integral n)
+void Num2String(String& str, Integral )
 {
     str.resize(10, '\0');
 //    ultoa((unsigned long)n, &str[0], 10);
