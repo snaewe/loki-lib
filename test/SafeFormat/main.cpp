@@ -17,6 +17,7 @@
 #include "../SmallObj/timer.h"
 
 using namespace std;
+using namespace Loki;
 
 template <class Integral1, class Integral2>
 Integral2 RandomInt(Integral1 low, Integral2 up)
