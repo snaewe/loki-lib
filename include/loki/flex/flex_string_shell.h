@@ -510,7 +510,8 @@ private:
 			p = begin() + sz;
 		}
 		const iterator oldEnd = end();
-		if (p + n < oldEnd)
+		//if (p + n < oldEnd) // replaced because of crash (pk)
+		if( n < size_type(oldEnd - p))
 		{
 			append(oldEnd - n, oldEnd);
 			//std::copy(
