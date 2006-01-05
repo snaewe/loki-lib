@@ -2,7 +2,7 @@ OBJ1 = main.o
 OBJ2 = main2.o
 BIN1 = main-gcc
 BIN2 = main2-gcc
-CXXFLAGS = -I../../include -Wall -O2
+CXXFLAGS = -I../../include -Wall -O2 -DNDEBUG
 LIBS = -L../../lib -lloki
 
 .PHONY: all

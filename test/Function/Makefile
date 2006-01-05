@@ -1,6 +1,6 @@
 OBJ = FunctionTest.o
 BIN = main-gcc
-CXXFLAGS = -I../../include -Wall -O2
+CXXFLAGS = -I../../include -Wall -O2 -DNDEBUG
 LIBS = -L../../lib -lloki
 
 $(BIN): $(OBJ)

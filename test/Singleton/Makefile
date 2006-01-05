@@ -4,7 +4,7 @@ OBJ3 = Phoenix.o
 BIN1 = deletable-singleton-gcc
 BIN2 = dependencies-gcc
 BIN3 = phoenix-gcc
-CXXFLAGS = -I../../include -Wall -O2
+CXXFLAGS = -I../../include -Wall -O2 -DNDEBUG
 LIBS = -L../../lib -lloki
 
 .PHONY: all
