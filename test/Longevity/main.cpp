@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "loki/Singleton.h"
+#include <loki/Singleton.h>
 
 
 struct L1

@@ -49,7 +49,7 @@
 //
 
 #include <iostream>
-#include "loki/Singleton.h"   // for Loki::SingletonHolder
+#include <loki/Singleton.h>   // for Loki::SingletonHolder
 
 using namespace std;   // okay for small programs
 using namespace Loki;  // okay for small programs

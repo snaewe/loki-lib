@@ -16,7 +16,7 @@
 // $Header$
 
 
-#include "../include/loki/SmallObj.h"
+#include <loki/SmallObj.h>
 
 #include <cassert>
 #include <vector>
@@ -1224,6 +1224,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.22  2006/01/05 00:23:43  syntheticpp
+// always use #include <loki/...>, Thanks to Lukas Fittl
+//
 // Revision 1.21  2005/12/29 01:54:24  rich_sposato
 // Added function to trim excess capacity from Chunk container.
 //
