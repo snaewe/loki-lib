@@ -91,12 +91,7 @@ void TestCase2(const string& fmt, T value, U value2)
 }
 
 int main(int argc, char** argv)
-{
-	if(sizeof(size_t) > 4)
-	{
-		std::cout << "\n\nSPrintf does not work for negative \n";
-		std::cout << "integer values on 64 bit systems !!! \n\n";
-	}		
+{        
 
     if (argc == 2)
     {
@@ -202,8 +197,9 @@ int main(int argc, char** argv)
             case 'x':
             case 'X':
                 //TestCase(formatSpec, RandomInt(-10000, 10000));
-				// don't test negative values on 64bit systems
-				TestCase(formatSpec, RandomInt( -10000 * (sizeof(size_t)>4 ? 0 : 1) , 10000));   
+                // don't test negative values on 64bit systems, because 
+                // snprintf does not support 64 Bit values
+                TestCase(formatSpec, RandomInt( -10000 * (sizeof(size_t)>4 ? 0 : 1) , 10000));   
                 break;
             case 'e':
             case 'E':
