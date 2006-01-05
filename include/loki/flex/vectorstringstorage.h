@@ -158,6 +158,7 @@ public: // protected:
 				that->base::push_back(value_type());
 			}
 		} onBlockExit = { this };
+		(void) onBlockExit;
 		assert(!base::empty());
 		assert(base::back() == value_type());
 		base::back() = v;
