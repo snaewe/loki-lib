@@ -84,4 +84,9 @@ int main()
 	try{ u2.AddFriendGuarded(u1); }
     catch (...){}
 	std::cout << "u2 countFriends: " << u2.countFriends() << "\n";
+
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
+#endif
+
 }

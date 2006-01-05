@@ -76,4 +76,9 @@ int main()
 	CType1 ctype1;
 	CBase* cdyn = &ctype1;
 	cdyn->Accept(cvisitor);
+
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
+#endif
+
 }
