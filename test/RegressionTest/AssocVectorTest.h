@@ -183,8 +183,8 @@ void check_insert1(test_vect1_t& v)
 template <class Vect>
 void check_swap(Vect& v1, Vect& v2)
 {
-    size_t size1 = v1.size();
-    size_t size2 = v2.size();
+    size_t size1 = v1.size(); (void) size1;
+    size_t size2 = v2.size(); (void) size2;
     v1.swap(v2);
     assert(v1.size() == size2);
     assert(v2.size() == size1);
@@ -201,6 +201,7 @@ void test_vect1()
 
     check_insert1(vec11);
     size_t size1 = vec11.size();
+    (void) size1;
     assert(size1);
 
     test_vect1_t vec12(vec11.begin(), vec11.end());
