@@ -8,7 +8,7 @@ General:
     - now also the ms toolkit 2003 generates a library (pk)
     - LockPtr added (rs)
     - ScopeGuard added (pk,rs)
-    - improved Makefile (Thanks to Lukas Fittl, pk)
+    - improved Makefiles (Thanks to Lukas Fittl, pk)
     - several gcc fixes by Lukas Fittl
 
 OrderedStatic:
@@ -28,8 +28,8 @@ TypeTraits:
     - bug 1388477 fixed (pk)
     
 flex_string:
-    - fix compare bug by updating (Thanks to Justin Matthews, pk)
-    - fix seg faults on linux and windows (pk)
+    - fixed compare bug by updating (Thanks to Justin Matthews, pk)
+    - fixed seg faults on linux and windows (pk)
     - improved error reporting of the test program
     
 SmartPtr:
