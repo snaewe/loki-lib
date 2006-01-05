@@ -157,6 +157,8 @@ private:
 
 #ifdef LOKI_NONCC
 #include "../../include/noncc/loki/Singleton.cpp"
+#else
+#include "../../src/Singleton.cpp"
 #endif
 
 #endif

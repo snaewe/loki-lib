@@ -30,7 +30,7 @@ TypeTraits:
 flex_string:
     - fixed compare bug by updating (Thanks to Justin Matthews, pk)
     - fixed seg faults on linux and windows (pk)
-    - improved error reporting of the test program
+    - improved error reporting of the test program (pk)
     
 SmartPtr:
     - make object level locking possible (Thanks to Ryan Smith, pk)
