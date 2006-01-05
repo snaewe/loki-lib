@@ -241,6 +241,7 @@ public:
         if (capacity() < neededCapacity)
         {
             static std::less_equal<const E*> le;
+            (void) le;
             assert(!(le(begin(), &*b) && le(&*b, end())));
             reserve(neededCapacity);
         }
