@@ -14,8 +14,8 @@
 // $Header$
 
 
-#include "../../include/loki/SmallObj.h"
-#include "../../include/loki/Singleton.h"
+#include <loki/SmallObj.h>
+#include <loki/Singleton.h>
 #include <iostream>
 
 // define DO_EXTRA_LOKI_TESTS in src/SmallObj.cpp to get 
@@ -366,6 +366,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.13  2006/01/05 09:55:09  syntheticpp
+// assert, include path, and virtual ~ patches by Lukas Fittl
+//
 // Revision 1.12  2006/01/04 23:54:30  syntheticpp
 // remove system(PAUSE) for gcc, Thanks to Lukas Fittl
 //

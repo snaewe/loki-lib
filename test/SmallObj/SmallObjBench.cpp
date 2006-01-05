@@ -18,7 +18,7 @@
 
 #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 
-#include "../../include/loki/SmallObj.h"
+#include <loki/SmallObj.h>
 #include "timer.h"
 
 #include <iostream>
@@ -255,7 +255,7 @@ void testSize()
     typedef BoostPoolNew<Size> D;
 #endif
 
-    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
+    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
     cout << endl << endl;
     cout << "Allocator Benchmark Tests with " << Size << " bytes big objects " << endl;
     cout << endl;
@@ -278,25 +278,25 @@ void testSize()
 
     cout << loop  << " times ";
     LOKI_SMALLOBJBECH_ABCD(delete_new        ,0,loop,t,"'delete new T'");
-    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
+    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
     
     cout << "N=" << N <<" :  " << loop  << " times ";
     LOKI_SMALLOBJBECH_ABCD(delete_new_array    ,N,loop,t,"'delete[] new T[N]'");
-    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
+    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
 
     cout << "i=0..." << Narr << " :  ";
     LOKI_SMALLOBJBECH_ABCD(new_del_on_arr    ,0,Narr,t,"1. 'arr[i] = new T'   2. 'delete arr[i]'");
-    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
+    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
     
     cout << "i=0..." << Narr << ",  N=" << N <<" :  ";
     LOKI_SMALLOBJBECH_ABCD(new_del_a_on_a    ,N,Narr,t,"1. 'arr[i] = new T[N]'   2. 'delete[] arr[i]'");
-    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
+    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
 
 
     delete [] a;
     
     cout << "_________________________________________________________________" << endl;
-    assert( !Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted() );
+    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
     Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::ClearExtraMemory();
 }
 
@@ -324,6 +324,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.18  2006/01/05 09:55:09  syntheticpp
+// assert, include path, and virtual ~ patches by Lukas Fittl
+//
 // Revision 1.17  2006/01/04 23:54:30  syntheticpp
 // remove system(PAUSE) for gcc, Thanks to Lukas Fittl
 //
