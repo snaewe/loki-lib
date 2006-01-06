@@ -521,17 +521,34 @@ namespace Loki
         return PrintfState<std::FILE*, char>(stdout, format);
     }
 
+	PrintfState<std::FILE*, char> Printf(const std::string format) {
+        return PrintfState<std::FILE*, char>(stdout, format.c_str());
+    }
+
     PrintfState<std::FILE*, char> FPrintf(FILE* f, const char* format) {
         return PrintfState<std::FILE*, char>(f, format);
+    }
+
+	PrintfState<std::FILE*, char> FPrintf(FILE* f, const std::string& format) {
+        return PrintfState<std::FILE*, char>(f, format.c_str());
     }
 
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format) {
         return PrintfState<std::string&, char>(s, format);
     }
 
+	PrintfState<std::string&, char> SPrintf(std::string& s, const std::string& format) {
+		return PrintfState<std::string&, char>(s, format.c_str());
+    }
+
     template <class T, class Char>
     PrintfState<T&, Char> XPrintf(T& device, const Char* format) {
         return PrintfState<T&, Char>(device, format);
+    }
+
+	template <class T>
+	PrintfState<T&, char> XPrintf(T& device, const std::string& format) {
+		return PrintfState<T&, char>(device, format.c_str());
     }
 
     template <class Char, std::size_t N>
