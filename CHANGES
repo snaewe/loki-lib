@@ -22,6 +22,7 @@ SafeFormat:
     - speed comparison added (pk)
     - 64 bit problems fixed (Thanks to Zak Kipling)
     - ported to 64-bit Windows, not tested (pk)
+    - Printf/SPrintfing of std::strings added
 
 SmallObject:
     - added functions to check for memory corruption (rs)
