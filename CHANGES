@@ -5,19 +5,23 @@ January , 2006
 _____________________________________
 
 General:
-    - now also the ms toolkit 2003 generates a library (pk)
     - LockPtr added (rs)
     - ScopeGuard added (pk,rs)
     - improved Makefiles (Thanks to Lukas Fittl, pk)
-    - several gcc fixes by Lukas Fittl
+    - several gcc fixes and removed warnings by Lukas Fittl 
+    - tested on 64-bit Linux (pk)
+    - MS Visual C++ project files added (pk)
+    - now also the ms toolkit 2003 generates a library (pk)
 
 OrderedStatic:
     - point operator added (pk)
 
 SafeFormat:
+    - moved into namespace Loki
     - %p test disabled due to platform dependent problems (pk)
     - speed comparison added (pk)
-    - 64 bit problems fixed (Thanks to Zak Kipling, pk)
+    - 64 bit problems fixed (Thanks to Zak Kipling)
+    - ported to 64-bit Windows, not tested (pk)
 
 SmallObject:
     - added functions to check for memory corruption (rs)
@@ -29,7 +33,7 @@ TypeTraits:
     
 flex_string:
     - fixed compare bug by updating (Thanks to Justin Matthews, pk)
-    - fixed seg faults on linux and windows (pk)
+    - fixed seg faults on Linux and Windows (pk)
     - improved error reporting of the test program (pk)
     
 SmartPtr:
