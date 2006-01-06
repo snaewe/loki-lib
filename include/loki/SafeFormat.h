@@ -25,6 +25,20 @@
 #include <cassert>
 #include <locale>
 
+
+// long is 32bit on 64bit Windows!
+#if defined(_WIN32) || defined(_WIN64)
+
+#define LOKI_SIGNED_LONG intptr_t
+#define LOKI_UNSIGNED_LONG uintptr_t
+
+#else
+
+#define LOKI_SIGNED_LONG signed long
+#define LOKI_UNSIGNED_LONG unsigned long
+
+#endif
+
 namespace Loki
 {
 
@@ -71,25 +85,25 @@ namespace Loki
 		~PrintfState() {
 		}
 
-		// long is 32bit on 64bit Windows!
-		// there could be problems on 32bit systems with sizeof(long)>4
 		#define LOKI_PRINTF_STATE_FORWARD(type) \
 			PrintfState& operator()(type par) {\
-				return (*this)(static_cast< uintptr_t >(par)); \
+				return (*this)(static_cast< LOKI_UNSIGNED_LONG >(par)); \
 			}
 
 		LOKI_PRINTF_STATE_FORWARD(bool)
 		LOKI_PRINTF_STATE_FORWARD(char)
 		LOKI_PRINTF_STATE_FORWARD(signed char)
 		LOKI_PRINTF_STATE_FORWARD(unsigned char)
-		LOKI_PRINTF_STATE_FORWARD(short)
+		LOKI_PRINTF_STATE_FORWARD(signed short)
 		LOKI_PRINTF_STATE_FORWARD(unsigned short)
-		LOKI_PRINTF_STATE_FORWARD(int)
-		//LOKI_PRINTF_STATE_FORWARD(unsigned)
-		LOKI_PRINTF_STATE_FORWARD(long)
+		LOKI_PRINTF_STATE_FORWARD(signed int)
+#if !(defined(_WIN32) || defined(_WIN64))
+		LOKI_PRINTF_STATE_FORWARD(unsigned int)
+#endif
+		LOKI_PRINTF_STATE_FORWARD(signed long)
 
 		// Print (or gobble in case of the "*" specifier) an int
-		PrintfState& operator()(uintptr_t i) {
+		PrintfState& operator()(LOKI_UNSIGNED_LONG i) {
 			if (result_ == -1) return *this; // don't even bother
 			// % [flags] [width] [.prec] [modifier] type_char
 			// Fetch the flags 
@@ -118,7 +132,7 @@ namespace Loki
 				// short int
 				const Char c = *format_;
 				if (c == 'x' || c == 'X' || c == 'u' || c == 'o') {
-					i = static_cast<unsigned long>(static_cast<unsigned short>(i));
+					i = static_cast<LOKI_UNSIGNED_LONG>(static_cast<unsigned short>(i));
 				}
 			}
 			FormatWithCurrentFlags(i);
@@ -157,7 +171,7 @@ namespace Loki
 			ReadLeaders();
 			const char fmt = *format_;
 			if (fmt == 'p') {
-				FormatWithCurrentFlags(reinterpret_cast<uintptr_t>(s));
+				FormatWithCurrentFlags(reinterpret_cast<LOKI_UNSIGNED_LONG>(s));
 				return *this;
 			}
 			if (fmt != 's') {
@@ -181,7 +195,7 @@ namespace Loki
 		}
 	    
 		PrintfState& operator()(const void *const p) {
-			return (*this)(reinterpret_cast<uintptr_t>(p));
+			return (*this)(reinterpret_cast<LOKI_UNSIGNED_LONG>(p));
 		}
 	    
 		// read the result
@@ -197,7 +211,7 @@ namespace Loki
 			ReadLeaders();
 			const char fmt = *format_;
 			if (fmt == 'p') { // pointer
-				FormatWithCurrentFlags(reinterpret_cast<uintptr_t>(pi));
+				FormatWithCurrentFlags(reinterpret_cast<LOKI_UNSIGNED_LONG>(pi));
 				return *this;
 			}
 			if (fmt != 'n') {
@@ -210,7 +224,7 @@ namespace Loki
 			return *this;
 		}
 
-		void FormatWithCurrentFlags(const uintptr_t i) {
+		void FormatWithCurrentFlags(const LOKI_UNSIGNED_LONG i) {
 			// look at the format character
 			Char formatChar = *format_;
 			bool isSigned = formatChar == 'd' || formatChar == 'i';
@@ -224,7 +238,7 @@ namespace Loki
 				return;
 			}
 			Char buf[
-				sizeof(unsigned long) * 3 // digits
+				sizeof(LOKI_UNSIGNED_LONG) * 3 // digits
 				+ 1 // sign or ' '
 				+ 2 // 0x or 0X
 				+ 1]; // terminating zero
@@ -240,11 +254,11 @@ namespace Loki
 				*bufLast = static_cast<char>(i);
 			} else {
 				// TODO: inefficient code, refactor
-				const bool negative = isSigned && static_cast<intptr_t>(i) < 0;
+				const bool negative = isSigned && static_cast<LOKI_SIGNED_LONG>(i) < 0;
 				if (formatChar == 'o') base = 8;
 				else if (formatChar == 'x' || formatChar == 'X') base = 16;
 				bufLast = isSigned
-					? RenderWithoutSign(static_cast<intptr_t>(i), bufLast, base,
+					? RenderWithoutSign(static_cast<LOKI_SIGNED_LONG>(i), bufLast, base,
 						formatChar == 'X')
 					: RenderWithoutSign(i, bufLast, base, 
 						formatChar == 'X');
@@ -297,7 +311,7 @@ namespace Loki
 	    
 		void Write(const Char* b, const Char* e) {
 			if (result_ < 0) return;
-			const intptr_t x = e - b;
+			const LOKI_SIGNED_LONG x = e - b;
 			write(device_, b, e);
 			result_ += x;
 		}
@@ -342,11 +356,11 @@ namespace Loki
 			}
 		}
 	   
-		Char* RenderWithoutSign(uintptr_t n, char* bufLast, 
+		Char* RenderWithoutSign(LOKI_UNSIGNED_LONG n, char* bufLast, 
 				unsigned int base, bool uppercase) {
 			const Char hex1st = uppercase ? 'A' : 'a';
 			for (;;) {
-				const uintptr_t next = n / base;
+				const LOKI_UNSIGNED_LONG next = n / base;
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4244)
@@ -364,16 +378,16 @@ namespace Loki
 			return bufLast;
 		}
 
-		char* RenderWithoutSign(intptr_t n, char* bufLast, unsigned int base, 
+		char* RenderWithoutSign(LOKI_SIGNED_LONG n, char* bufLast, unsigned int base, 
 				bool uppercase) {
 			if (n != LONG_MIN) {
-				return RenderWithoutSign(static_cast<uintptr_t>(n < 0 ? -n : n),
+				return RenderWithoutSign(static_cast<LOKI_UNSIGNED_LONG>(n < 0 ? -n : n),
 					bufLast, base, uppercase);            
 			}
 			// annoying corner case
 			char* save = bufLast;
 			++n;
-			bufLast = RenderWithoutSign(static_cast<uintptr_t>(n),
+			bufLast = RenderWithoutSign(static_cast<LOKI_UNSIGNED_LONG>(n),
 				bufLast, base, uppercase);
 			--(*save);
 			return bufLast;
@@ -496,7 +510,7 @@ namespace Loki
 		size_t width_;
 		size_t prec_;
 		unsigned int flags_;
-		intptr_t result_;
+		LOKI_SIGNED_LONG result_;
 	};
 
 	PrintfState<std::FILE*, char> Printf(const char* format) {
@@ -524,5 +538,8 @@ namespace Loki
 	}
 
 }// namespace Loki
+
+#undef LOKI_SIGNED_LONG 
+#undef LOKI_UNSIGNED_LONG 
 
 #endif //SAFEFORMAT_H_
