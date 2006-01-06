@@ -166,6 +166,10 @@ namespace Loki
             return StoreCountHelper(pi);
         }
         
+        PrintfState& operator()(const std::string& stdstr) {
+            return operator()(stdstr.c_str());
+        }
+
         PrintfState& operator()(const char *const s) {
             if (result_ == -1) return *this;
             ReadLeaders();
