@@ -16,6 +16,11 @@
 
 #include "../SmallObj/timer.h"
 
+#if defined(_MSC_VER)
+#define sprintf sprintf_s
+#define _snprintf _snprintf_s
+#endif
+
 using namespace std;
 using namespace Loki;
 
@@ -31,7 +36,7 @@ Integral2 RandomInt(Integral1 low, Integral2 up)
 
     assert(n > 0);
 
-    const unsigned int bucket_size = RAND_MAX / n;
+    const size_t bucket_size = RAND_MAX / n;
     assert(bucket_size > 0);
 
     Integral2 r;
@@ -39,7 +44,7 @@ Integral2 RandomInt(Integral1 low, Integral2 up)
         r = Integral2(rand() / bucket_size);
     while (r > n);
 
-    r += low2;
+    r = r + low2;
     assert(r >= low2 && r <= up);
     return r;
 }
@@ -147,8 +152,8 @@ int main(int argc, char** argv)
             string formatSpec(lead + "|%");
             // Generate a random set of flags
             static const string flags("-+0 #");
-            unsigned int maxFlags = RandomInt(0u, flags.length() - 1);
-            for (unsigned int i = 0; i != maxFlags; ++i)
+            size_t maxFlags = RandomInt(0u, flags.length() - 1);
+            for (size_t i = 0; i != maxFlags; ++i)
             {
                 formatSpec += flags[RandomInt(0u, flags.length() - 1)];
             }
@@ -175,12 +180,12 @@ int main(int argc, char** argv)
             static const string type("cdeEfgGinopsuxX");*/
             static const string type("cdeEfgGinosuxX");
 
-            const char typeSpec = type[RandomInt(0, type.size() - 1)];
+            const char typeSpec = type[RandomInt(0u, type.size() - 1)];
             // Generate an optional type prefix
             static const string prefix("hl");
             if (typeSpec != 's' && RandomInt(0, 1))
             {
-                formatSpec += prefix[RandomInt(0, prefix.size() - 1)];
+                formatSpec += prefix[RandomInt(0u, prefix.size() - 1)];
             }
             formatSpec += typeSpec;
             formatSpec += '|';

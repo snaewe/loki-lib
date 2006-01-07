@@ -204,7 +204,7 @@ namespace Loki
         
         // read the result
         operator int() const {
-            return result_;
+            return static_cast<int>(result_);
         }
         
     private:
@@ -341,7 +341,7 @@ namespace Loki
             memcpy(fmtBuf, fmt, (format_ - fmt) * sizeof(Char));
             fmtBuf[format_ - fmt] = 0;
     #ifdef _MSC_VER
-            const int stored = _snprintf(resultBuf, 
+            const int stored = _snprintf_s(resultBuf, 
     #else
             const int stored = snprintf(resultBuf, 
     #endif        
