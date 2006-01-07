@@ -29,10 +29,6 @@
     #include <iostream>
 #endif
 
-
-using namespace Loki;
-
-
 namespace Loki
 {
 
@@ -1224,6 +1220,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.24  2006/01/07 03:24:10  lfittl
+// Removed useless "using namespace Loki;".
+//
 // Revision 1.23  2006/01/05 17:21:12  syntheticpp
 // add msvc8 project files
 //
