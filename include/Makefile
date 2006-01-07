@@ -1,3 +1,4 @@
+.PHONY: install
 install:
 	mkdir -p $(DESTDIR)/usr/include/loki
 	mkdir -p $(DESTDIR)/usr/include/loki/flex
