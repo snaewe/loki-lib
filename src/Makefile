@@ -5,10 +5,10 @@ CXXFLAGS = -I../include -Wall -O2 -DNDEBUG
 $(BIN): $(OBJ)
 	ar rs $(BIN) $(OBJ)
 
+.PHONY: clean install
 install: $(BIN)
 	mkdir -p $(DESTDIR)/usr/lib
 	install $(BIN) $(DESTDIR)/usr/lib
 
-.PHONY: clean
 clean:
 	rm -f $(OBJ) $(BIN)
