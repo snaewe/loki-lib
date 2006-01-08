@@ -176,9 +176,7 @@ int main(int argc, char** argv)
             }
 
             // Generate a random type character
-            /* disable %p tests
-            static const string type("cdeEfgGinopsuxX");*/
-            static const string type("cdeEfgGinosuxX");
+            static const string type("cdeEfgGinopsuxX");
 
             const char typeSpec = type[RandomInt(0u, type.size() - 1)];
             // Generate an optional type prefix
