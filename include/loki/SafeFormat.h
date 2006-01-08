@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2005 by Andrei Alexandrescu
+// Copyright (c) 2006 Peter Kümmel
 // Permission to use, copy, modify, distribute, and sell this software for any
 //     purpose is hereby granted without fee, provided that the above copyright
 //     notice appear in all copies and that both that copyright notice and this
@@ -138,16 +139,22 @@ namespace Loki
             FormatWithCurrentFlags(i);
             return *this;
         }
+
+        PrintfState& operator()(void* n) {
+            if (result_ == -1) return *this; // don't even bother
+            PrintUsing_printf(n,"p");
+            return *this;
+        }
         
         PrintfState& operator()(double n) {
             if (result_ == -1) return *this; // don't even bother
-            PrintFloatingPoint(n);
+            PrintUsing_printf(n,"eEfgG");
             return *this;
         }
 
         PrintfState& operator()(long double n) {
             if (result_ == -1) return *this; // don't even bother
-            PrintFloatingPoint(n);
+            PrintUsing_printf(n,"eEfgG");
             return *this;
         }
 
@@ -320,14 +327,14 @@ namespace Loki
             result_ += x;
         }
 
-        template <class Double>
-        void PrintFloatingPoint(Double n) {
+        template <class Value>
+        void PrintUsing_printf(Value n, const char* check_fmt_char) {
             const Char *const fmt = format_ - 1;
             assert(*fmt == '%');
             // enforce format string validity
             ReadLeaders();
             // enforce format spec
-            if (!strchr("eEfgG", *format_)) {
+            if (!strchr(check_fmt_char, *format_)) {
                 result_ = -1;
                 return;
             }
@@ -340,11 +347,11 @@ namespace Loki
             }
             memcpy(fmtBuf, fmt, (format_ - fmt) * sizeof(Char));
             fmtBuf[format_ - fmt] = 0;
-    #ifdef _MSC_VER
+#ifdef _MSC_VER
             const int stored = _snprintf_s(resultBuf, 
-    #else
+#else
             const int stored = snprintf(resultBuf, 
-    #endif        
+#endif        
                 sizeof(resultBuf) / sizeof(Char), fmtBuf, n);
             if (stored < 0) {
                 result_ = -1;
