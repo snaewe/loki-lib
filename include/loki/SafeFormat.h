@@ -142,19 +142,19 @@ namespace Loki
 
         PrintfState& operator()(void* n) {
             if (result_ == -1) return *this; // don't even bother
-            PrintUsing_printf(n,"p");
+            PrintUsing_snprintf(n,"p");
             return *this;
         }
         
         PrintfState& operator()(double n) {
             if (result_ == -1) return *this; // don't even bother
-            PrintUsing_printf(n,"eEfgG");
+            PrintUsing_snprintf(n,"eEfgG");
             return *this;
         }
 
         PrintfState& operator()(long double n) {
             if (result_ == -1) return *this; // don't even bother
-            PrintUsing_printf(n,"eEfgG");
+            PrintUsing_snprintf(n,"eEfgG");
             return *this;
         }
 
@@ -328,7 +328,7 @@ namespace Loki
         }
 
         template <class Value>
-        void PrintUsing_printf(Value n, const char* check_fmt_char) {
+        void PrintUsing_snprintf(Value n, const char* check_fmt_char) {
             const Char *const fmt = format_ - 1;
             assert(*fmt == '%');
             // enforce format string validity

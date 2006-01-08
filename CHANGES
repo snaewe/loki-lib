@@ -7,8 +7,8 @@ _____________________________________
 General:
     - LockPtr added (rs)
     - ScopeGuard added (pk,rs)
-    - improved Makefiles (Thanks to Lukas Fittl, pk)
-    - several gcc fixes and removed warnings by Lukas Fittl 
+    - improved Makefiles (lf,pk)
+    - several gcc fixes and removed warnings by Lukas Fittl (lf)
     - tested on 64-bit Linux (pk)
     - MS Visual C++ project files added (pk)
     - now also the ms toolkit 2003 generates a library (pk)
@@ -17,12 +17,13 @@ OrderedStatic:
     - point operator added (pk)
 
 SafeFormat:
-    - moved into namespace Loki
-    - %p test disabled due to platform dependent problems (pk)
-    - speed comparison added (pk)
+    - moved into namespace Loki (pk)
     - 64 bit problems fixed (Thanks to Zak Kipling)
     - ported to 64-bit Windows, not tested (pk)
-    - Printf/SPrintfing of std::strings added
+    - Printf/SPrintfing of std::strings added (pk)
+    - all warnings removed gcc and msvc (pk)
+	- use snprintf for "p"
+    - test program: speed comparison added (pk)
 
 SmallObject:
     - added functions to check for memory corruption (rs)
@@ -51,7 +52,8 @@ ScopeGuard:
     - example added (pk)
     
     
-CVS commits by Rich Sposato (rs) and Peter Kümmel (pk)
+CVS commits by Rich Sposato (rs), Lukas Fittl (lf)
+and Peter Kümmel (pk)
 
 
 _____________________________________
