@@ -22,13 +22,13 @@ SafeFormat:
     - ported to 64-bit Windows, not tested (pk)
     - Printf/SPrintfing of std::strings added (pk)
     - all warnings removed gcc and msvc (pk)
-	- use snprintf for "p"
+	- use snprintf for "%p"
     - test program: speed comparison added (pk)
 
 SmallObject:
     - added functions to check for memory corruption (rs)
     - more fine tuning (rs)
-    - some warnings removed (pk)
+    - warnings removed (pk)
     
 TypeTraits:
     - bug 1388477 fixed (pk)
