@@ -500,8 +500,8 @@ bool Chunk::IsCorrupt( unsigned char numBlocks, std::size_t blockSize,
 bool Chunk::IsBlockAvailable( void * p, unsigned char numBlocks,
     std::size_t blockSize ) const
 {
-	(void) numBlocks;
-	
+    (void) numBlocks;
+    
     if ( IsFilled() )
         return false;
 
@@ -1220,6 +1220,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.25  2006/01/09 07:27:00  syntheticpp
+// replace tabs
+//
 // Revision 1.24  2006/01/07 03:24:10  lfittl
 // Removed useless "using namespace Loki;".
 //
