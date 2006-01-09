@@ -1,6 +1,7 @@
 OBJ = main.o
 BIN = main-gcc
-CXXFLAGS = -I../../include -Wall -O2 -DNDEBUG
+CXXFLAGS = -Wall -O2
+CPPFLAGS = -I../../include -DNDEBUG
 
 $(BIN): $(OBJ)
 	$(CXX) -o $(BIN) $(OBJ)

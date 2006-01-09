@@ -1,20 +1,11 @@
-OBJ1 = main.o
-OBJ2 = main2.o
-BIN1 = main-gcc
-BIN2 = main2-gcc
-CXXFLAGS = -I../../include -Wall -O2 -DNDEBUG
-LIBS = -L../../lib -lloki
+BIN1 = main
+BIN2 = main2
+CXXFLAGS = -Wall -fexpensive-optimizations -O3
+CPPFLAGS = -I../../include -DNDEBUG
+LDFLAGS = -L../../lib
+LDLIBS = -lloki
 
-.PHONY: all
-all: $(BIN1) $(BIN2)
-
-$(BIN1): $(OBJ1)
-	$(CXX) -o $(BIN1) $(OBJ1) $(LIBS)
-
-$(BIN2): $(OBJ2)
-	$(CXX) -o $(BIN2) $(OBJ2) $(LIBS)
-
-.PHONY: clean
+.PHONY: build clean
+build: $(BIN1) $(BIN2)
 clean:
-	rm -f $(OBJ1) $(BIN1)
-	rm -f $(OBJ2) $(BIN2)
+	rm -f $(BIN1) $(BIN2)
