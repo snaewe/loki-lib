@@ -279,7 +279,7 @@ public:
             else
             {
 				std::copy(b, e, buf_ + maxSmallString - buf_[maxSmallString]);
-                buf_[maxSmallString] -= value_type(sz);
+                buf_[maxSmallString] = buf_[maxSmallString] - value_type(sz);
             }
         }
     }
