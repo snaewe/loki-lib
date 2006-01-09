@@ -10,7 +10,7 @@ General:
     - improved Makefiles (lf,pk)
     - several gcc fixes and removed warnings by Lukas Fittl (lf)
     - tested on 64-bit Linux (pk)
-    - MS Visual C++ project files added (pk)
+    - MS Visual C++ 2005 project files added (pk)
     - now also the ms toolkit 2003 generates a library (pk)
 
 OrderedStatic:
