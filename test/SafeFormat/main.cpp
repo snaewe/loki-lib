@@ -17,8 +17,13 @@
 #include "../SmallObj/timer.h"
 
 #if defined(_MSC_VER)
-#define sprintf sprintf_s
+#if _MSC_VER >= 1400
+#define sprintf     sprintf_s
 #define _snprintf _snprintf_s
+else
+#define sprintf     sprintf
+#define _snprintf _snprintf
+#endif
 #endif
 
 using namespace std;
