@@ -20,7 +20,7 @@
 #if _MSC_VER >= 1400
 #define sprintf     sprintf_s
 #define _snprintf _snprintf_s
-else
+#else
 #define sprintf     sprintf
 #define _snprintf _snprintf
 #endif
