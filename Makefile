@@ -1,5 +1,3 @@
-DESTDIR := $(CURDIR)/$(DESTDIR)
-
 .PHONY: build check install clean
 build:
 	$(MAKE) -C src

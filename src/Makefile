@@ -1,6 +1,7 @@
 OBJ = Singleton.o SmallObj.o OrderedStatic.o
 BIN = ../lib/libloki.a
-CXXFLAGS = -I../include -Wall -O2 -DNDEBUG
+CXXFLAGS = -Wall -O2
+CPPFLAGS = -I../include -DNDEBUG
 
 $(BIN): $(OBJ)
 	ar rs $(BIN) $(OBJ)

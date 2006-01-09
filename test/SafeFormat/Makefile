@@ -1,11 +1,8 @@
-OBJ = main.o
-BIN = main-gcc
-CXXFLAGS = -I../../include -Wall -O2 -DNDEBUG
-LIBS = 
+BIN = main
+CXXFLAGS = -Wall -O2
+CPPFLAGS = -I../../include -DNDEBUG
 
-$(BIN): $(OBJ)
-	$(CXX) -o $(BIN) $(OBJ) $(LIBS)
-
-.PHONY: clean
+.PHONY: build clean
+build: $(BIN)
 clean:
-	rm -f $(OBJ) $(BIN)
+	rm -f $(BIN)

@@ -1,20 +1,11 @@
-OBJ1 = SmallObjBench.o
-OBJ2 = SmallObjSingleton.o
-BIN1 = small-obj-bench-gcc
-BIN2 = small-obj-singleton-gcc
-CXXFLAGS = -I../../include -Wall -fexpensive-optimizations -O3 -DNDEBUG
-LIBS = -L../../lib -lloki
+BIN1 = SmallObjBench
+BIN2 = SmallObjSingleton
+CXXFLAGS = -Wall -fexpensive-optimizations -O3
+CPPFLAGS = -I../../include -DNDEBUG
+LDFLAGS = -L../../lib
+LDLIBS = -lloki
 
-.PHONY: all
-all: $(BIN1) $(BIN2)
-
-$(BIN1): $(OBJ1)
-	$(CXX) -o $(BIN1) $(OBJ1) $(LIBS)
-
-$(BIN2): $(OBJ2)
-	$(CXX) -o $(BIN2) $(OBJ2) $(LIBS)
-
-.PHONY: clean
+.PHONY: build clean
+build: $(BIN1) $(BIN2)
 clean:
-	rm -f $(OBJ1) $(BIN1)
-	rm -f $(OBJ2) $(BIN2)
+	rm -f $(BIN1) $(BIN2)
