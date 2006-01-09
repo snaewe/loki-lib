@@ -24,17 +24,19 @@ if "%1"=="dll" (
 
 :: SmallObjBench.cpp
 
-cl -c -DNDEBUG -Zm200 -O2 -%MTMD% -EHsc -GR -W4 -wd4710 -I"." -I"..\..\include" -I"..\..\include\loki" -Fotmp\ SmallObjBench.cpp ..\..\src\SmallObj.cpp ..\..\src\Singleton.cpp
+cl -c -DNDEBUG -Zm200 -O2 -%MTMD% -EHsc -GR -W4 -wd4710 -wd4100 -I"." -I"..\..\include" -I"..\..\include\loki" -Fotmp\ SmallObjBench.cpp 
+:: ..\..\src\SmallObj.cpp ..\..\src\Singleton.cpp
 
-link /NOLOGO /SUBSYSTEM:CONSOLE /incremental:no /OUT:%OUT_EXE% tmp\SmallObjBench.obj tmp\SmallObj.obj tmp\Singleton.obj
+link /NOLOGO /SUBSYSTEM:CONSOLE /incremental:no /OUT:%OUT_EXE% tmp\SmallObjBench.obj ..\..\lib\loki.lib
+::tmp\SmallObj.obj tmp\Singleton.obj
 
 
 
 :: SmallSingleton.cpp
 
-cl -c -DNDEBUG -Zm200 -O2 -%MTMD% -EHsc -GR -W4 -wd4710 -I"." -I"..\..\include" -I"..\..\include\loki" -Fotmp\ SmallSingleton.cpp ..\..\src\SmallObj.cpp ..\..\src\Singleton.cpp
+cl -c -DNDEBUG -Zm200 -O2 -%MTMD% -EHsc -GR -W4 -wd4710 -I"." -I"..\..\include" -I"..\..\include\loki" -Fotmp\ SmallObjSingleton.cpp
 
-link /NOLOGO /SUBSYSTEM:CONSOLE /incremental:no /OUT:SmallSingleton-msvc.exe tmp\SmallSingleton.obj tmp\SmallObj.obj tmp\Singleton.obj
+link /NOLOGO /SUBSYSTEM:CONSOLE /incremental:no /OUT:SmallObjSingleton-msvc.exe ..\..\lib\loki.lib tmp\SmallObjSingleton.obj 
 
 
 
