@@ -347,12 +347,19 @@ namespace Loki
             }
             memcpy(fmtBuf, fmt, (format_ - fmt) * sizeof(Char));
             fmtBuf[format_ - fmt] = 0;
+
+            const int stored = 
 #ifdef _MSC_VER
-            const int stored = _snprintf_s(resultBuf, 
+#if _MSC_VER < 1400
+            _snprintf
 #else
-            const int stored = snprintf(resultBuf, 
+            _snprintf_s
+#endif
+#else
+            snprintf 
 #endif        
-                sizeof(resultBuf) / sizeof(Char), fmtBuf, n);
+                     (resultBuf, sizeof(resultBuf) / sizeof(Char), fmtBuf, n);
+                     
             if (stored < 0) {
                 result_ = -1;
                 return;
