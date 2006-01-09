@@ -1350,19 +1350,19 @@ namespace Loki
         };  
 
 
-		template<class T>
+        template<class T>
         struct BinderFirstBoundTypeStorage;
 
-		template<class T>
+        template<class T>
         struct BinderFirstBoundTypeStorage
         {
             typedef typename TypeTraits<T>::ParameterType RefOrValue;
         };
-		
-		template <typename R, class TList, template <class> class ThreadingModel>
+        
+        template <typename R, class TList, template <class> class ThreadingModel>
         struct BinderFirstBoundTypeStorage< Functor<R, TList, ThreadingModel> >
         {
-			typedef Functor<R, TList, ThreadingModel> OriginalFunctor;
+            typedef Functor<R, TList, ThreadingModel> OriginalFunctor;
             typedef const typename TypeTraits<OriginalFunctor>::ReferredType RefOrValue;
         };  
 
@@ -1383,7 +1383,7 @@ namespace Loki
         typedef typename Private::BinderFirstTraits<OriginalFunctor>::Impl Base;
         typedef typename OriginalFunctor::ResultType ResultType;
 
-		typedef typename OriginalFunctor::Parm1 BoundType;
+        typedef typename OriginalFunctor::Parm1 BoundType;
 
         typedef typename Private::BinderFirstBoundTypeStorage<
                              typename Private::BinderFirstTraits<OriginalFunctor>
@@ -1491,7 +1491,7 @@ namespace Loki
     typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
     BindFirst(
         const Fctor& fun, 
-		typename Fctor::Parm1 bound)
+        typename Fctor::Parm1 bound)
     {
         typedef typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
             Outgoing;

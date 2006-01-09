@@ -21,38 +21,38 @@
 
 struct UserDatabase
 {
-	void AddFriend(const std::string&, const std::string&)
-	{
-		throw 55;
-	}
+    void AddFriend(const std::string&, const std::string&)
+    {
+        throw 55;
+    }
 };
 
 class User
 {
 public:
-	User(UserDatabase* db) : pDB_(db){}
+    User(UserDatabase* db) : pDB_(db){}
 
-	std::string GetName();
+    std::string GetName();
 
     void AddFriend(User& newFriend);
-	void AddFriendGuarded(User& newFriend);
+    void AddFriendGuarded(User& newFriend);
 
-	size_t countFriends();
+    size_t countFriends();
 
 private:
-	typedef std::vector<User*> UserCont;
+    typedef std::vector<User*> UserCont;
     UserCont friends_;
     UserDatabase* pDB_;
 };
 
 std::string User::GetName()
 {
-	return "A name";
+    return "A name";
 }
 
 size_t User::countFriends()
 {
-	return friends_.size();
+    return friends_.size();
 }
 
 void User::AddFriend(User& newFriend)
@@ -64,7 +64,7 @@ void User::AddFriend(User& newFriend)
 void User::AddFriendGuarded(User& newFriend)
 {
     friends_.push_back(&newFriend);
-	Loki::ScopeGuard guard = Loki::MakeObjGuard(friends_, &UserCont::pop_back);
+    Loki::ScopeGuard guard = Loki::MakeObjGuard(friends_, &UserCont::pop_back);
     pDB_->AddFriend(GetName(), newFriend.GetName());
     guard.Dismiss();
 }
@@ -72,18 +72,18 @@ void User::AddFriendGuarded(User& newFriend)
 
 int main()
 {
-	UserDatabase db;
+    UserDatabase db;
 
-	User u1(&db);
-	User u2(&db);
+    User u1(&db);
+    User u2(&db);
 
-	try{ u1.AddFriend(u2); }
+    try{ u1.AddFriend(u2); }
     catch (...){}
-	std::cout << "u1 countFriends: " << u1.countFriends() << "\n";
+    std::cout << "u1 countFriends: " << u1.countFriends() << "\n";
 
-	try{ u2.AddFriendGuarded(u1); }
+    try{ u2.AddFriendGuarded(u1); }
     catch (...){}
-	std::cout << "u2 countFriends: " << u2.countFriends() << "\n";
+    std::cout << "u2 countFriends: " << u2.countFriends() << "\n";
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");

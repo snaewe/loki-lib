@@ -243,7 +243,7 @@ void heap_debug()
 
 int main()
 {
-	heap_debug();
+    heap_debug();
 
     reg();
     
@@ -281,14 +281,14 @@ int main()
     p= PFactoryFunctorParm::Instance().CreateObject( 1, func2, 64,64 );
     delete p;
 
-	
+    
     cout << endl;
-	cout << "Registered ids: \n";
+    cout << "Registered ids: \n";
 
-	std::vector<std::string> ids = PFactory::Instance().RegisteredIds();
+    std::vector<std::string> ids = PFactory::Instance().RegisteredIds();
 
-	for(std::vector<std::string>::iterator it=ids.begin(); it!=ids.end(); ++it)
-		cout << *it << "\n";
+    for(std::vector<std::string>::iterator it=ids.begin(); it!=ids.end(); ++it)
+        cout << *it << "\n";
 
 
     cout << endl;
@@ -303,6 +303,9 @@ int main()
 
 
 // $Log$
+// Revision 1.13  2006/01/09 07:27:01  syntheticpp
+// replace tabs
+//
 // Revision 1.12  2006/01/05 00:23:43  syntheticpp
 // always use #include <loki/...>, Thanks to Lukas Fittl
 //
