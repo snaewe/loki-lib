@@ -4,7 +4,8 @@ CXXFLAGS = -Wall -O2
 CPPFLAGS = -I../include -DNDEBUG
 
 $(BIN): $(OBJ)
-	ar rs $(BIN) $(OBJ)
+	ar rs $(BIN) $(OBJ) && \
+	rm *.o
 
 .PHONY: clean install
 install: $(BIN)
