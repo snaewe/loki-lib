@@ -1,6 +1,8 @@
 BIN = main
-CXXFLAGS = -Wall -O2
+CXXFLAGS = -Wall -fexpensive-optimizations -O3
 CPPFLAGS = -I../../include -DNDEBUG
+LDFLAGS = -L../../lib
+LDLIBS = -lloki
 
 .PHONY: build clean
 build: $(BIN)
