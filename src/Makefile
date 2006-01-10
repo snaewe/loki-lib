@@ -1,4 +1,4 @@
-OBJ = Singleton.o SmallObj.o OrderedStatic.o
+OBJ = Singleton.o SmallObj.o OrderedStatic.o SafeFormat.o
 BIN = ../lib/libloki.a
 CXXFLAGS = -Wall -O2
 CPPFLAGS = -I../include -DNDEBUG

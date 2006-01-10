@@ -315,6 +315,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SafeFormat.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Singleton.cpp"
 				>
 			</File>
