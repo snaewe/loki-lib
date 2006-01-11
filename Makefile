@@ -1,4 +1,4 @@
-.PHONY: build check install clean
+.PHONY: build check install clean-tmp clean
 build:
 	$(MAKE) -C src
 
@@ -8,6 +8,9 @@ check: build
 install:
 	$(MAKE) -C src install
 	$(MAKE) -C include install
+
+clean-tmp:
+	$(MAKE) -C src clean-tmp
 
 clean:
 	$(MAKE) -C src clean
