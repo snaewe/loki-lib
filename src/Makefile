@@ -6,10 +6,13 @@ CPPFLAGS = -I../include -DNDEBUG
 $(BIN): $(OBJ)
 	ar rs $(BIN) $(OBJ)
 
-.PHONY: clean install
+.PHONY: install clean-tmp clean
 install: $(BIN)
 	mkdir -p $(DESTDIR)/usr/lib
 	install $(BIN) $(DESTDIR)/usr/lib
 
-clean:
-	rm -f $(OBJ) $(BIN)
+clean-tmp:
+	rm -f $(OBJ)
+
+clean: clean-tmp
+	rm -f $(BIN)
