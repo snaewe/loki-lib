@@ -50,13 +50,13 @@ namespace Loki
         }
 
         /// Star-operator dereferences pointer.
-        T & operator * ()
+        LockingPtr & operator * ()
         {
             return *pObject_;
         }
 
         /// Point-operator returns pointer to object.
-        T * operator -> ()
+        LockingPtr * operator -> ()
         {
             return pObject_;
         }
@@ -85,6 +85,9 @@ namespace Loki
 #endif  // end file guardian
 
 // $Log$
+// Revision 1.2  2006/01/14 00:20:10  syntheticpp
+// remove c&p error
+//
 // Revision 1.1  2005/11/19 22:00:23  rich_sposato
 // Adding LockingPtr class to Loki project.
 //
