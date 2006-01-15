@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
-// Copyright (c) 2006 Peter Kmmel
+// Copyright (c) 2006 Peter Kümmel
 // Permission to use, copy, modify, distribute and sell this software for any 
 //     purpose is hereby granted without fee, provided that the above copyright 
 //     notice appear in all copies and that both that copyright notice and this 
@@ -136,8 +136,42 @@ void D::foo()
 /////////////////////////////////////////
 void test_more();
 
+//#define MSVC_DETECT_MEMORY_LEAKS
+#ifdef MSVC_DETECT_MEMORY_LEAKS 
+
+#include <crtdbg.h>
+#include <cassert>
+
+void heap_debug()
+{
+	int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
+
+	// Turn on leak-checking bit
+	tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
+
+	//tmpFlag |= _CRTDBG_CHECK_ALWAYS_DF;
+
+	// Turn off CRT block checking bit
+	tmpFlag &= ~_CRTDBG_CHECK_CRT_DF;
+
+	// Set flag to the new value
+	_CrtSetDbgFlag( tmpFlag );
+
+}
+
+#else
+
+void heap_debug()
+{
+}
+
+#endif
+
+
+
 int main()
 {
+	heap_debug();
 
     A* a = new A;
     B* b = new B;
