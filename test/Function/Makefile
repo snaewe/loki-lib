@@ -7,4 +7,4 @@ LDLIBS = -lloki -lboost_test_exec_monitor
 .PHONY: build clean
 build: $(BIN)
 clean:
-	rm -f $(BIN)
+	rm -f $(BIN) $(BIN).exe $(BIN).o

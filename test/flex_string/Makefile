@@ -5,4 +5,4 @@ CPPFLAGS = -I../../include -DNDEBUG
 .PHONY: build clean
 build: $(BIN)
 clean:
-	rm -f $(OBJ) $(BIN)
+	rm -f $(BIN) $(BIN).exe $(BIN).o

@@ -8,4 +8,4 @@ LDLIBS = -lloki
 .PHONY: build clean
 build: $(BIN1) $(BIN2)
 clean:
-	rm -f $(BIN1) $(BIN2)
+	rm -f $(BIN1) $(BIN2)  $(BIN1).exe $(BIN1).o  $(BIN2).exe $(BIN2).o
