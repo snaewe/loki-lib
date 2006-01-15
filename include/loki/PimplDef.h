@@ -59,8 +59,7 @@ namespace Loki
         template<class> class Del
     >
     inline
-    Ptr
-    PimplLife<Impl,Ptr,Del>::Create()
+    Ptr PimplLife<Impl,Ptr,Del>::Create()
     {
         ptr = Ptr( new Impl );
         return ptr;
