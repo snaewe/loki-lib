@@ -1,5 +1,5 @@
-SUBTARGETS = Factory flex_string Longevity OrderedStatic RegressionTest \
-	SafeFormat ScopeGuard Singleton SmallObj Visitor Pimpl
+SUBTARGETS = Factory flex_string Longevity OrderedStatic Pimpl RegressionTest \
+	SafeFormat ScopeGuard Singleton SmallObj Visitor 
 
 .PHONY: clean all $(SUBTARGETS)
 all: $(SUBTARGETS)
