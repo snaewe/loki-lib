@@ -15,6 +15,10 @@ cd OrderedStatic
 call make.msvc.bat
 cd ..
 
+cd Pimpl
+call make.msvc.bat
+cd ..
+
 cd RegressionTest
 call make.msvc.bat
 cd ..
