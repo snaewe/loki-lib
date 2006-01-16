@@ -10,6 +10,7 @@
 //     warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Header$
 
 #include <loki/SafeFormat.h>
 
@@ -68,3 +69,7 @@ namespace Loki
 
 }// namespace Loki
 
+// $Log$
+// Revision 1.2  2006/01/16 20:59:53  rich_sposato
+// Added cvs keywords.
+//
