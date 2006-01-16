@@ -16,15 +16,18 @@
 
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
-#define LOKI_INHERITED_PIMPL_NAME pimpl
+#define LOKI_INHERITED_PIMPL_NAME d
 #endif
 
 #ifndef LOKI_INHERITED_RIMPL_NAME
-#define LOKI_INHERITED_RIMPL_NAME rimpl
+#define LOKI_INHERITED_RIMPL_NAME d
 #endif
 
 namespace Loki
 {
+	/////////////////////
+    //  template for the implementations
+    /////////////////////
     template<class T>
     struct Impl;
 
@@ -32,7 +35,7 @@ namespace Loki
     /////////////////////
     // creation policies
     /////////////////////
-    // hard coded creation prefered
+    // hard coded creation preferred
 
 
     /////////////////////
@@ -41,7 +44,13 @@ namespace Loki
     template<class T>
     struct AutoDeletePimpl
     {
-        static void Destroy(T ptr);
+        static void Destroy(T ptr)
+		{
+			typedef char T_must_be_defined[
+				sizeof(typename TypeTraits<T>::PointeeType) ? 1 : -1 ];
+			delete ptr; 
+			ptr = 0;
+		}
     };
 
     template<class T>
@@ -53,35 +62,49 @@ namespace Loki
 
 
     /////////////////////
-    // Lifetime manager
+    // Helper class AutoPtrHolder to manage pimpl lifetime
     /////////////////////
 
-    template
-    <
-        class Impl,
-        class Ptr,
-        template<class> class Del
-    >
-    struct PimplLife
-    {
-        PimplLife();
-        ~PimplLife();
+	namespace Private
+	
+	{
+		template
+		<
+			class Impl,
+			class Ptr,
+			template<class> class Del
+		>
+		struct AutoPtrHolder
+		{
+			AutoPtrHolder() //: ptr(Ptr()) this owerwrites the pointer to PtrImpl
+			{}              // when using DeclaredRimpl!!
 
-        template<class T>
-        operator T&();
+			~AutoPtrHolder()
+			{
+				// delete automatically by the delete policy
+				Del<Ptr>::Destroy( ptr );
+			}
 
-        Ptr Create();
+			template<class T>
+			operator T&()
+			{
+				Create();
+				return *ptr;
+			}
 
-        Ptr ptr;
-    };
+			Ptr Create()
+			{
+				ptr = Ptr( new Impl );
+				return ptr;
+			}
 
+			Ptr ptr;
+		};
 
-    namespace Private
-    {
         template<class T> 
-        struct HaveAPimplLife
+        struct HavePtrHolder
         {
-            T life;
+            T ptr;
         };
     }
 
@@ -92,9 +115,27 @@ namespace Loki
     /////////////////////
 
     template<class Impl, typename Ptr, template<class> class Del>
-    class DeclaredPimpl : private Private::HaveAPimplLife<PimplLife<Impl,Ptr,Del> >
+    class InheritedPimpl : private 
+		Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> >
+    {    
+        typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
+
+    public:
+        const Ptr LOKI_INHERITED_PIMPL_NAME;
+
+    protected:
+        InheritedPimpl() : LOKI_INHERITED_PIMPL_NAME(PtrHolder::ptr.Create())
+        {}
+
+	private:
+		InheritedPimpl& operator=(const InheritedPimpl&);
+    };
+
+    template<class Impl, typename Ptr, template<class> class Del>
+	class DeclaredPimpl : private 
+		Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> >
     {
-        typedef Private::HaveAPimplLife<PimplLife<Impl,Ptr,Del> > Life;
+        typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
 
     public:
         Ptr operator->() const
@@ -108,29 +149,36 @@ namespace Loki
         }
     
     protected:
-        DeclaredPimpl() : ptr(Life::life.Create())
+		DeclaredPimpl() : ptr(PtrHolder::ptr.Create())
         {}
 
     private:
+		DeclaredPimpl& operator=(const DeclaredPimpl&);
         const Ptr ptr;
-    };
-
-    template<class Impl, typename Ptr, template<class> class Del>
-    class InheritedPimpl : private Private::HaveAPimplLife<PimplLife<Impl,Ptr,Del> >
-    {    
-        typedef Private::HaveAPimplLife<PimplLife<Impl,Ptr,Del> > Life;
-
-    public:
-        const Ptr LOKI_INHERITED_PIMPL_NAME;
-
-    protected:
-        InheritedPimpl() : LOKI_INHERITED_PIMPL_NAME(Life::life.Create())
-        {}
     };
 
     /////////////////////
     // Rimpl usage policies
     /////////////////////
+
+
+    template<class Impl, typename Ptr, template<class> class Del>
+    class InheritedRimpl : private 
+		Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> >
+    {
+        typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
+
+    public:
+        Impl& LOKI_INHERITED_RIMPL_NAME;
+
+    protected:
+        InheritedRimpl() :
+            LOKI_INHERITED_RIMPL_NAME(*PtrHolder::ptr.Create())
+        {}
+
+    private:
+        InheritedRimpl& operator=(const InheritedRimpl&);
+    };
 
     template<class Impl, typename PointerPolicy, template<class> class DeletePolicy>
     class DeclaredRimpl : public Impl
@@ -139,26 +187,6 @@ namespace Loki
         DeclaredRimpl()
         {}
     };
-
-
-    template<class Impl, typename Ptr, template<class> class Del>
-    class InheritedRimpl : private Private::HaveAPimplLife<PimplLife<Impl,Ptr,Del> >
-    {
-        typedef Private::HaveAPimplLife<PimplLife<Impl,Ptr,Del> > Life;
-
-    public:
-        Impl& LOKI_INHERITED_RIMPL_NAME;
-
-    protected:
-        InheritedRimpl() :
-            LOKI_INHERITED_RIMPL_NAME(*Life::life.Create())
-        {}
-
-    private:
-        InheritedRimpl& operator=(const InheritedRimpl&);
-    };
-
-
 
 
     /////////////////////
@@ -179,21 +207,17 @@ namespace Loki
     >
     class PtrImpl : public UsagePolicy<Impl,PointerPolicy,DeletePolicy>
     {
-        typedef PimplLife<Impl,PointerPolicy,DeletePolicy> Life;
-
     public:
 
         typedef Impl ImplType;
         typedef PointerPolicy PointerType;
     
-        PtrImpl() : UsagePolicy<Impl,PointerPolicy,DeletePolicy>()//Private::HaveALife<Life>::life.Create())
+        PtrImpl() : UsagePolicy<Impl,PointerPolicy,DeletePolicy>()
         {}
 
-        PtrImpl(PointerPolicy pimpl) : UsagePolicy<Impl,PointerPolicy,DeletePolicy>(pimpl)
-        {}
+	private:
+		PtrImpl& operator=(const PtrImpl&);
 
-        virtual ~PtrImpl()
-        {}
     };
 
     
@@ -205,6 +229,7 @@ namespace Loki
     template<class T>
     struct Pimpl
     {
+		// declare pimpl
         typedef PtrImpl
         <
             Impl<T>,
@@ -214,6 +239,7 @@ namespace Loki
         >
         Type;
 
+		// inherit pimpl
         typedef PtrImpl
         <
             Impl<T>,
@@ -229,6 +255,7 @@ namespace Loki
     struct Rimpl
     {
 
+		// declare rimpl
         typedef PtrImpl
         <
             Impl<T>,
@@ -238,17 +265,17 @@ namespace Loki
         >
         Type;
 
-
-        typedef PimplLife
+		// init declared rimpl
+		typedef Private::AutoPtrHolder
         <
             Type,
             Type*,
             AutoDeletePimpl
         >
-        Life;
+        Init;
 
 
-
+		// ingerit rimpl
         typedef PtrImpl
         <
             Impl<T>,
