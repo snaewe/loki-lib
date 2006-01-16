@@ -223,6 +223,35 @@ namespace Loki
         { delete p; }
     };
     
+	////////////////////////////////////////////////////////////////////////////////
+    ///  \struct CreateUsing
+    ///
+    ///  \ingroup CreationGroup
+    ///  Implementation of the CreationPolicy used by SingletonHolder
+    ///  Creates objects using a custom allocater.
+	///  Usage: e.g. CreateUsing<std::allocator>::Allocator
+    ////////////////////////////////////////////////////////////////////////////////
+	template<template<class> class Alloc>
+	struct CreateUsing
+	{
+		template <class T>
+		struct Allocator
+		{
+			static Alloc<T> allocator;
+
+			static T* Create()
+			{
+				return new (allocator.allocate(1)) T;
+			}
+
+			static void Destroy(T* p)
+			{
+				//allocator.destroy(p);
+				p->~T();
+				allocator.deallocate(p,1);
+			}
+		};
+	};
     
     ////////////////////////////////////////////////////////////////////////////////
     ///  \struct CreateUsingMalloc
@@ -804,6 +833,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.20  2006/01/16 19:56:30  syntheticpp
+// add support of allocators with a standard interface, thanks to Miguel A. Figueroa-Villanueva
+//
 // Revision 1.19  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
