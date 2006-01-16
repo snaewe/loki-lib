@@ -23,8 +23,6 @@
 #include "type.h"
 #include "type2.h"
 
-#include <loki/PimplDef.h>
-
 #include <loki/SafeFormat.h>
 
 
@@ -97,7 +95,7 @@ namespace Loki // gcc!!
 /////////////////////////////////////////
 // class C definition
 /////////////////////////////////////////
-C::C() : d(rlife)
+C::C() : d(rinit)
 {}
 
 void C::foo()
@@ -208,24 +206,28 @@ P2::P2(){d->data = 2;}
 P3::P3(){d->data = 3;}
 P4::P4(){d->data = 4;}
 P5::P5(){d->data = 5;}
+P6::P6(){d->data = 6;}
 
 R1::R1(){d.data = 11;}
 R2::R2(){d.data = 22;}
 R3::R3(){d.data = 33;}
-R4::R4():d(t){d.data = 44;}
-R5::R5():d(t){d.data = 55;}
-R6::R6():d(t){d.data = 66;}
+R4::R4():d(rinit){d.data = 44;}
+R5::R5():d(rinit){d.data = 55;}
+R6::R6():d(rinit){d.data = 66;}
 
 void test_more()
 {
-    Loki::Printf("\nmore tests:\n");
+    Loki::Printf("\n\nMore tests:\n");
 
+	Loki::Printf("\nCreating Pimpls\n");
     P1* p1 =  new P1;
     P2* p2 =  new P2;
     P3* p3 =  new P3;
     P4* p4 =  new P4;
     P5* p5 =  new P5;
+	P6* p6 =  new P6;
 
+	Loki::Printf("\nCreating Rimpls\n");
     R1* r1 =  new R1;
     R2* r2 =  new R2;
     R3* r3 =  new R3;
@@ -234,13 +236,16 @@ void test_more()
     R6* r6 =  new R6;
     
 
-    delete p1;
+	Loki::Printf("\nDeleting Pimpls\n");
+	delete p1;
     delete p2;
     delete p3;
     delete p4;
     delete p5;
+	delete p6;
     
-    delete r1;
+    Loki::Printf("\nDeleting Rimpls\n");
+	delete r1;
     delete r2;
     delete r3;
     delete r4;

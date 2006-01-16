@@ -15,6 +15,7 @@
 
 #include <loki/Pimpl.h>
 
+
 //#define TEST_WITH_BOOST
 #ifdef TEST_WITH_BOOST
 #include <boost/shared_ptr.hpp>
@@ -64,7 +65,7 @@ public:
     void foo();
 
 private:
-    Rimpl<C>::Life rlife; 
+    Rimpl<C>::Init rinit; 
     Rimpl<C>::Type& d; 
 };
 
@@ -145,6 +146,15 @@ typedef Loki::PtrImpl
     Loki::DeclaredPimpl
 >
 Pimpl5;
+
+typedef Loki::PtrImpl
+<
+    Loki::Impl<B>,
+    Loki::Impl<B>*,
+    Loki::AutoDeletePimpl,
+    Loki::DeclaredPimpl
+>
+Pimpl6;
 
 
 // Pimpl
@@ -241,13 +251,13 @@ Pimpl8;
 template<class T>
 struct R
 {
-    typedef Loki::PimplLife
+    typedef Loki::Private::AutoPtrHolder
     <
         T,
         T*,
         Loki::AutoDeletePimpl
     >
-    Life;
+    Init;
 };
 
 
@@ -256,12 +266,13 @@ struct P2 : private Pimpl2 {P2();};
 struct P3 : private Pimpl3 {P3();};
 struct P4 {Pimpl4 d;        P4();};
 struct P5 {Pimpl5 d;        P5();};
+struct P6 {Pimpl6 d;        P6();};
 
 struct R1 : private Rimpl1 {R1();};
 struct R2 : private Rimpl2 {R2();};
 struct R3 : private Rimpl3 {R3();};
-struct R4 {Rimpl4& d; R<Rimpl4>::Life t; R4();};
-struct R5 {Rimpl5& d; R<Rimpl5>::Life t; R5();};
-struct R6 {Rimpl6& d; R<Rimpl6>::Life t; R6();};
+struct R4 {Rimpl4& d; R<Rimpl4>::Init rinit; R4();};
+struct R5 {Rimpl5& d; R<Rimpl5>::Init rinit; R5();};
+struct R6 {Rimpl6& d; R<Rimpl6>::Init rinit; R6();};
 
 
