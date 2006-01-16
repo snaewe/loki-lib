@@ -21,6 +21,7 @@
 #define LOKI_INHERITED_RIMPL_NAME d
 
 #include "type.h"
+#include "type2.h"
 
 #include <loki/PimplDef.h>
 

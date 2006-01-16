@@ -16,6 +16,29 @@
 
 namespace Loki
 {
+    template<class T>
+    void AutoDeletePimpl<T>::Destroy(T ptr)
+    { 
+#ifndef _MSC_VER // msvc bug
+
+        typedef char T_must_be_defined[
+            sizeof(typename TypeTraits<T>::PointeeType) ? 1 : -1 ];
+        delete ptr; 
+        ptr = 0;
+
+#else
+
+#pragma warning(push)
+#pragma warning(disable: 4150)
+
+        delete ptr; 
+        ptr = 0;
+
+#pragma warning(pop)
+#endif
+    }
+
+
     template
     <
         class Impl,
@@ -24,7 +47,7 @@ namespace Loki
     >
     inline 
     PimplLife<Impl,Ptr,Del>::PimplLife()    //: ptr(Ptr()) this owerwrites the pointer to PtrImpl
-    {}                                        // when using DeclaredRimpl!!
+    {}                                      // when using DeclaredRimpl!!
 
     template
     <
