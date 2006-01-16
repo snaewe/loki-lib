@@ -16,6 +16,8 @@
 #ifndef LOKI_FACTORYPARM_INC_
 #define LOKI_FACTORYPARM_INC_
 
+// $Header$
+
 #include "LokiTypeInfo.h"
 #include "Functor.h"
 #include "AssocVector.h"
@@ -1033,6 +1035,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.14  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//
 // Revision 1.13  2006/01/04 23:45:07  syntheticpp
 // remove gcc 4.0 warnings, Thanks to Lukas Fittl
 //

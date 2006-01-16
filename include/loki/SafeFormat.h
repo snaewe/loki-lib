@@ -19,6 +19,8 @@
 #ifndef LOKI_SAFEFORMAT_H_
 #define LOKI_SAFEFORMAT_H_
 
+// $Header$
+
 #include <cstdio>
 #include <string>
 #include <stdexcept>
@@ -556,3 +558,8 @@ namespace Loki
 
 
 #endif //SAFEFORMAT_H_
+
+// $Log$
+// Revision 1.22  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

@@ -14,6 +14,9 @@
 
 #ifndef LOKI_DATAGENERATORS_H
 #define LOKI_DATAGENERATORS_H
+
+// $Header$
+
 #include "Typelist.h"
 
 //Reference version
@@ -114,3 +117,8 @@ namespace Loki
 // 9/20/02 Named changed from GenData to IterateTypes
 // 10/8/02 insertion iterators are passed-by-value, not by-reference (oops)
 ////////////////////////////////////////////////////////////////////////////////
+
+// $Log$
+// Revision 1.4  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

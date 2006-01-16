@@ -10,12 +10,12 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
-
 // usage: see test/OrderedStatic
 
 #ifndef LOKI_ORDEREDSTATIC_H_
 #define LOKI_ORDEREDSTATIC_H_
+
+// $Header$
 
 #include <vector>
 #include <iostream>
@@ -221,3 +221,8 @@ namespace Loki
 
 
 #endif
+
+// $Log$
+// Revision 1.9  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

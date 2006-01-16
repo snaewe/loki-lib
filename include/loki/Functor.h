@@ -13,10 +13,12 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 #ifndef LOKI_FUNCTOR_INC_
 #define LOKI_FUNCTOR_INC_
+
+// $Header$
 
 #include "Typelist.h"
 #include "Sequence.h"
@@ -1658,3 +1660,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif  // FUNCTOR_INC_
+
+// $Log$
+// Revision 1.14  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

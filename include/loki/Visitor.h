@@ -13,7 +13,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 ///  \defgroup VisitorGroup Visitor
 
@@ -359,3 +359,7 @@ struct DefaultCatchAll
 
 #endif // VISITOR_INC_
 
+// $Log$
+// Revision 1.7  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

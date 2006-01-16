@@ -13,10 +13,10 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
-
 #ifndef LOKI_HIERARCHYGENERATORS_INC_
 #define LOKI_HIERARCHYGENERATORS_INC_
+
+// $Header$
 
 #include "Typelist.h"
 #include "TypeTraits.h"
@@ -296,3 +296,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // HIERARCHYGENERATORS_INC_
+
+// $Log$
+// Revision 1.5  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

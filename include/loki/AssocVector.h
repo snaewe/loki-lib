@@ -16,6 +16,8 @@
 #ifndef LOKI_ASSOCVECTOR_INC_
 #define LOKI_ASSOCVECTOR_INC_
 
+// $Header$
+
 #include <algorithm>
 #include <functional>
 #include <vector>
@@ -332,3 +334,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ASSOCVECTOR_INC_
+
+// $Log$
+// Revision 1.5  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

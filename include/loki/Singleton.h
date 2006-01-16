@@ -16,6 +16,8 @@
 #ifndef LOKI_SINGLETON_INC_
 #define LOKI_SINGLETON_INC_
 
+// $Header$
+
 #include "Threads.h"
 #include <algorithm>
 #include <stdexcept>
@@ -800,3 +802,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SINGLETON_INC_
+
+// $Log$
+// Revision 1.19  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

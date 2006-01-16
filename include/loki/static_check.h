@@ -18,6 +18,8 @@
 #ifndef LOKI_STATIC_CHECK_INC_
 #define LOKI_STATIC_CHECK_INC_
 
+// $Header$
+
 namespace Loki
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,3 +51,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // STATIC_CHECK_INC_
+
+// $Log$
+// Revision 1.3  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

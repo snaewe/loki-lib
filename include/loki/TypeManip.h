@@ -15,6 +15,8 @@
 
 // Last update, July 26, 2005
 
+// $Header$
+
 #ifndef LOKI_TYPEMANIP_INC_
 #define LOKI_TYPEMANIP_INC_
 
@@ -298,3 +300,8 @@ struct SuperSubclassStrict<T, void>
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // TYPEMANIP_INC_
+
+// $Log$
+// Revision 1.8  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//
