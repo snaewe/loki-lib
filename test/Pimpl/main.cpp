@@ -143,18 +143,18 @@ void test_more();
 
 void heap_debug()
 {
-	int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
+    int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
 
-	// Turn on leak-checking bit
-	tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
+    // Turn on leak-checking bit
+    tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
 
-	//tmpFlag |= _CRTDBG_CHECK_ALWAYS_DF;
+    //tmpFlag |= _CRTDBG_CHECK_ALWAYS_DF;
 
-	// Turn off CRT block checking bit
-	tmpFlag &= ~_CRTDBG_CHECK_CRT_DF;
+    // Turn off CRT block checking bit
+    tmpFlag &= ~_CRTDBG_CHECK_CRT_DF;
 
-	// Set flag to the new value
-	_CrtSetDbgFlag( tmpFlag );
+    // Set flag to the new value
+    _CrtSetDbgFlag( tmpFlag );
 
 }
 
@@ -170,7 +170,7 @@ void heap_debug()
 
 int main()
 {
-	heap_debug();
+    heap_debug();
 
     A* a = new A;
     B* b = new B;
@@ -219,15 +219,15 @@ void test_more()
 {
     Loki::Printf("\n\nMore tests:\n");
 
-	Loki::Printf("\nCreating Pimpls\n");
+    Loki::Printf("\nCreating Pimpls\n");
     P1* p1 =  new P1;
     P2* p2 =  new P2;
     P3* p3 =  new P3;
     P4* p4 =  new P4;
     P5* p5 =  new P5;
-	P6* p6 =  new P6;
+    P6* p6 =  new P6;
 
-	Loki::Printf("\nCreating Rimpls\n");
+    Loki::Printf("\nCreating Rimpls\n");
     R1* r1 =  new R1;
     R2* r2 =  new R2;
     R3* r3 =  new R3;
@@ -236,16 +236,16 @@ void test_more()
     R6* r6 =  new R6;
     
 
-	Loki::Printf("\nDeleting Pimpls\n");
-	delete p1;
+    Loki::Printf("\nDeleting Pimpls\n");
+    delete p1;
     delete p2;
     delete p3;
     delete p4;
     delete p5;
-	delete p6;
+    delete p6;
     
     Loki::Printf("\nDeleting Rimpls\n");
-	delete r1;
+    delete r1;
     delete r2;
     delete r3;
     delete r4;
