@@ -50,13 +50,13 @@ namespace Loki
         }
 
         /// Star-operator dereferences pointer.
-        LockingPtr & operator * ()
+        SharedObject & operator * ()
         {
             return *pObject_;
         }
 
         /// Point-operator returns pointer to object.
-        LockingPtr * operator -> ()
+        SharedObject * operator -> ()
         {
             return pObject_;
         }
@@ -85,6 +85,9 @@ namespace Loki
 #endif  // end file guardian
 
 // $Log$
+// Revision 1.3  2006/01/16 18:34:37  rich_sposato
+// Changed return type from LockingPtr to SharedObject.
+//
 // Revision 1.2  2006/01/14 00:20:10  syntheticpp
 // remove c&p error
 //
