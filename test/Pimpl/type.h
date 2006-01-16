@@ -251,7 +251,7 @@ Pimpl8;
 template<class T>
 struct R
 {
-    typedef Loki::Private::AutoPtrHolder
+    typedef Loki::Private::AutoPtrHolderChecked
     <
         T,
         T*,
@@ -271,8 +271,8 @@ struct P6 {Pimpl6 d;        P6();};
 struct R1 : private Rimpl1 {R1();};
 struct R2 : private Rimpl2 {R2();};
 struct R3 : private Rimpl3 {R3();};
-struct R4 {Rimpl4& d; R<Rimpl4>::Init rinit; R4();};
-struct R5 {Rimpl5& d; R<Rimpl5>::Init rinit; R5();};
-struct R6 {Rimpl6& d; R<Rimpl6>::Init rinit; R6();};
+struct R4 {R<Rimpl4>::Init rinit; Rimpl4& d; R4();};
+struct R5 {R<Rimpl5>::Init rinit; Rimpl5& d; R5();};
+struct R6 {R<Rimpl6>::Init rinit; Rimpl6& d; R6();};
 
 

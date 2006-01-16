@@ -66,7 +66,6 @@ namespace Loki
     /////////////////////
 
     namespace Private
-    
     {
         template
         <
@@ -76,10 +75,40 @@ namespace Loki
         >
         struct AutoPtrHolder
         {
-            AutoPtrHolder() //: ptr(Ptr()) this owerwrites the pointer to PtrImpl
-            {}              // when using DeclaredRimpl!!
+            AutoPtrHolder() : ptr(Ptr())
+            {}              
 
             ~AutoPtrHolder()
+            {
+                // delete automatically by the delete policy
+                Del<Ptr>::Destroy( ptr );
+            }
+
+            Ptr Create()
+            {
+                ptr = Ptr( new Impl );
+                return ptr;
+            }
+
+            Ptr ptr;
+        };
+
+        template
+        <
+            class Impl,
+            class Ptr,
+            template<class> class Del
+        >
+        struct AutoPtrHolderChecked //: AutoPtrHolder<Impl,Ptr,Del>
+        {
+            static bool init_;
+
+            AutoPtrHolderChecked() : ptr(Ptr())
+            {
+                init_ = true;
+            }              
+
+            ~AutoPtrHolderChecked()
             {
                 // delete automatically by the delete policy
                 Del<Ptr>::Destroy( ptr );
@@ -88,6 +117,9 @@ namespace Loki
             template<class T>
             operator T&()
             {
+                if(!init_)
+                    // if this throws change the declaration order
+                    throw 1;
                 Create();
                 return *ptr;
             }
@@ -100,6 +132,15 @@ namespace Loki
 
             Ptr ptr;
         };
+
+        template
+        <
+            class Impl,
+            class Ptr,
+            template<class> class Del
+        >
+        bool AutoPtrHolderChecked<Impl,Ptr,Del>::init_ = false;
+
 
         template<class T> 
         struct HavePtrHolder
@@ -266,7 +307,7 @@ namespace Loki
         Type;
 
         // init declared rimpl
-        typedef Private::AutoPtrHolder
+        typedef Private::AutoPtrHolderChecked
         <
             Type,
             Type*,
