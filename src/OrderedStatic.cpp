@@ -10,7 +10,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 #include <loki/OrderedStatic.h>
 #include <limits>
@@ -71,3 +71,7 @@ namespace Loki
 
 }//namespace Loki
 
+// $Log$
+// Revision 1.5  2006/01/16 20:59:53  rich_sposato
+// Added cvs keywords.
+//

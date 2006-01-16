@@ -13,6 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Header$
+
 #include <loki/Singleton.h>
 
 
@@ -76,3 +78,8 @@ void LOKI_C_CALLING_CONVENTION_QUALIFIER Loki::Private::AtExitFn()
 //      Eike Petersen
 // May 08, 2002: Refixed bug in call to realloc
 ////////////////////////////////////////////////////////////////////////////////
+
+// $Log$
+// Revision 1.7  2006/01/16 20:59:53  rich_sposato
+// Added cvs keywords.
+//
