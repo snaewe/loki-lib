@@ -41,13 +41,7 @@ namespace Loki
     template<class T>
     struct AutoDeletePimpl
     {
-        static void Destroy(T ptr)
-        { 
-            typedef char T_must_be_defined[ 
-                    sizeof(typename TypeTraits<T>::PointeeType) ? 1 : -1 ];
-            delete ptr; 
-            ptr = 0;
-        }
+        static void Destroy(T ptr);
     };
 
     template<class T>
