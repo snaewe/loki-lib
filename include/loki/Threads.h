@@ -1,3 +1,18 @@
+////////////////////////////////////////////////////////////////////////////////
+// The Loki Library
+// Copyright (c) 2001 by Andrei Alexandrescu
+// This code accompanies the book:
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+//     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
+// Permission to use, copy, modify, distribute and sell this software for any 
+//     purpose is hereby granted without fee, provided that the above copyright 
+//     notice appear in all copies and that both that copyright notice and this 
+//     permission notice appear in supporting documentation.
+// The author or Addison-Wesley Longman make no representations about the 
+//     suitability of this software for any purpose. It is provided "as is" 
+//     without express or implied warranty.
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef LOKI_THREADS_H_
 #define LOKI_THREADS_H_
 
@@ -354,6 +369,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.20  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//
 // Revision 1.19  2005/11/15 11:08:57  syntheticpp
 // also compile with the original gnu pthread.h
 //

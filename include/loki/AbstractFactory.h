@@ -18,6 +18,8 @@
 #ifndef LOKI_ABSTRACTFACTORY_INC_
 #define LOKI_ABSTRACTFACTORY_INC_
 
+// $Header$
+
 #include "Typelist.h"
 #include "Sequence.h"
 #include "TypeManip.h"
@@ -165,3 +167,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // ABSTRACTFACTORY_INC_
+
+// $Log$
+// Revision 1.4  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

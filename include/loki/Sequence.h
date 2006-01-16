@@ -14,6 +14,8 @@
 #ifndef LOKI_SEQUENCE_INC_
 #define LOKI_SEQUENCE_INC_
 
+// $Header$
+
 #include "Typelist.h"
 
 namespace Loki
@@ -490,3 +492,8 @@ namespace Loki
 }   // namespace Loki
 
 #endif // LOKI_SEQUENCE_INC_
+
+// $Log$
+// Revision 1.3  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

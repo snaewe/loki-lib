@@ -16,6 +16,8 @@
 #ifndef LOKI_MULTIMETHODS_INC_
 #define LOKI_MULTIMETHODS_INC_
 
+// $Header$
+
 #include "Typelist.h"
 #include "LokiTypeInfo.h"
 #include "Functor.h"
@@ -414,3 +416,8 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
+
+// $Log$
+// Revision 1.4  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

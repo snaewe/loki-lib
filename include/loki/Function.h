@@ -12,6 +12,8 @@
 
 #define LOKI_ENABLE_FUNCTION
 
+// $Header$
+
 #include <loki/Functor.h>
 #include <loki/Sequence.h>
 
@@ -347,3 +349,7 @@ namespace Loki
 
 }// namespace Loki
 
+// $Log$
+// Revision 1.8  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

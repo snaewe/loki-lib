@@ -14,6 +14,7 @@
 
 #include <loki/TypeTraits.h>
 
+// $Header$
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
 #define LOKI_INHERITED_PIMPL_NAME d
@@ -332,3 +333,8 @@ namespace Loki
 }
 
 #endif
+
+// $Log$
+// Revision 1.6  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

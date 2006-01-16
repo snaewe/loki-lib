@@ -15,6 +15,8 @@
 #ifndef LOKI_SCOPEGUARD_H_
 #define LOKI_SCOPEGUARD_H_
 
+// $Header$
+
 /// \defgroup ExceptionGroup Exception-safe code
 
 namespace Loki
@@ -381,3 +383,8 @@ namespace Loki
 #define LOKI_ON_BLOCK_EXIT_OBJ  ScopeGuard LOKI_ANONYMOUS_VARIABLE(scopeGuard) = MakeObjGuard
 
 #endif //LOKI_SCOPEGUARD_H_
+
+// $Log$
+// Revision 1.4  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//

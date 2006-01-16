@@ -16,6 +16,8 @@
 #ifndef LOKI_SMARTPTR_INC_
 #define LOKI_SMARTPTR_INC_
 
+// $Header$
+
 ///  \defgroup  SmartPointerGroup Smart pointers
 ///  Policy based implementation of a smart pointer
 ///  \defgroup  SmartPointerOwnershipGroup Ownership policies
@@ -1332,3 +1334,8 @@ namespace std
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // SMARTPTR_INC_
+
+// $Log$
+// Revision 1.9  2006/01/16 19:05:09  rich_sposato
+// Added cvs keywords.
+//
