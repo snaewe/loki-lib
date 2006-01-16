@@ -30,7 +30,7 @@ public:
     void foo();
 
 private:
-    Pimpl<A>::Type d;
+    Pimpl<A2>::Type d;
 };
 
 
@@ -57,7 +57,7 @@ public:
     void foo();
 
 private:
-    Rimpl<C2>::Life rlife; 
+    Rimpl<C2>::Init rint; 
     Rimpl<C2>::Type& d; 
 };
 
