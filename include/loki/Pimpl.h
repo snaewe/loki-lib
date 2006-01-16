@@ -14,7 +14,6 @@
 
 #include <loki/TypeTraits.h>
 
-// $Header$
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
 #define LOKI_INHERITED_PIMPL_NAME d
@@ -31,6 +30,8 @@ namespace Loki
     /////////////////////
     template<class T>
     struct Impl;
+
+
 
 
     /////////////////////
@@ -61,6 +62,31 @@ namespace Loki
         {}
     };
 
+    /////////////////////
+    // error handling
+    /////////////////////
+    template<class T>
+    struct ExceptionOnPimplError
+    {
+        struct Exception : public std::exception
+        {
+            const char* what() const throw() { return "error in loki/Pimpl.h"; }
+        };
+        
+        static void PimplError()
+        {
+            throw Exception();
+        }
+        
+    };
+
+    template<class T>
+    struct IgnorPimplError
+    {
+        static void PimplError()
+        {}
+        
+    };
 
     /////////////////////
     // Helper class AutoPtrHolder to manage pimpl lifetime
@@ -98,9 +124,10 @@ namespace Loki
         <
             class Impl,
             class Ptr,
-            template<class> class Del
+            template<class> class Del,
+            template<class> class ErrorPolicy = ExceptionOnPimplError
         >
-        struct AutoPtrHolderChecked //: AutoPtrHolder<Impl,Ptr,Del>
+        struct AutoPtrHolderChecked
         {
             static bool init_;
 
@@ -118,9 +145,10 @@ namespace Loki
             template<class T>
             operator T&()
             {
+                // if this throws change the declaration order
+                // of the DeclaredRimpl construct
                 if(!init_)
-                    // if this throws change the declaration order
-                    throw 1;
+                    ErrorPolicy<T>::PimplError();
                 Create();
                 return *ptr;
             }
@@ -138,9 +166,10 @@ namespace Loki
         <
             class Impl,
             class Ptr,
-            template<class> class Del
+            template<class> class Del,
+            template<class> class Err
         >
-        bool AutoPtrHolderChecked<Impl,Ptr,Del>::init_ = false;
+        bool AutoPtrHolderChecked<Impl,Ptr,Del,Err>::init_ = false;
 
 
         template<class T> 
@@ -335,6 +364,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.7  2006/01/16 19:48:23  syntheticpp
+// add error policy
+//
 // Revision 1.6  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
