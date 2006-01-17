@@ -127,20 +127,14 @@ namespace Loki
             template<class> class Del,
             template<class> class ErrorPolicy = ExceptionOnPimplError
         >
-        struct AutoPtrHolderChecked
+        struct AutoPtrHolderChecked : AutoPtrHolder<Impl,Ptr,Del>
         {
             static bool init_;
 
-            AutoPtrHolderChecked() : ptr(Ptr())
+            AutoPtrHolderChecked()
             {
                 init_ = true;
             }              
-
-            ~AutoPtrHolderChecked()
-            {
-                // delete automatically by the delete policy
-                Del<Ptr>::Destroy( ptr );
-            }
 
             template<class T>
             operator T&()
@@ -152,14 +146,6 @@ namespace Loki
                 Create();
                 return *ptr;
             }
-
-            Ptr Create()
-            {
-                ptr = Ptr( new Impl );
-                return ptr;
-            }
-
-            Ptr ptr;
         };
 
         template
@@ -364,6 +350,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.8  2006/01/17 11:07:34  syntheticpp
+// AutoPtrHolderChecked inherits from AutoPtrHolder
+//
 // Revision 1.7  2006/01/16 19:48:23  syntheticpp
 // add error policy
 //
