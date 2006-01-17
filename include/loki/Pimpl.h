@@ -13,7 +13,7 @@
 #define LOKI_PIMPL_H
 
 #include <loki/TypeTraits.h>
-
+#include <exception>
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
 #define LOKI_INHERITED_PIMPL_NAME d
@@ -94,6 +94,7 @@ namespace Loki
 
     namespace Private
     {
+        // does not work with std::auto_ptr
         template
         <
             class Impl,
@@ -120,6 +121,7 @@ namespace Loki
             Ptr ptr;
         };
 
+
         template
         <
             class Impl,
@@ -143,8 +145,8 @@ namespace Loki
                 // of the DeclaredRimpl construct
                 if(!init_)
                     ErrorPolicy<T>::PimplError();
-                Create();
-                return *ptr;
+                AutoPtrHolder<Impl,Ptr,Del>::Create();
+                return *AutoPtrHolder<Impl,Ptr,Del>::ptr;
             }
         };
 
@@ -350,6 +352,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.9  2006/01/17 12:03:36  syntheticpp
+// add comment about auto_ptr
+//
 // Revision 1.8  2006/01/17 11:07:34  syntheticpp
 // AutoPtrHolderChecked inherits from AutoPtrHolder
 //
