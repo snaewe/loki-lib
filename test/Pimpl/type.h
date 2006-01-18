@@ -66,7 +66,7 @@ public:
 
 private:
     Rimpl<C>::Init rinit; 
-    Rimpl<C>::Type& d; 
+    Rimpl<C>::Type d; 
 };
 
 

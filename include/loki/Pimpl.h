@@ -320,16 +320,18 @@ namespace Loki
             DontDeletePimpl,
             DeclaredRimpl
         >
-        Type;
+        Ptr;
 
         // init declared rimpl
         typedef Private::AutoPtrHolderChecked
         <
-            Type,
-            Type*,
+            Ptr,
+            Ptr*,
             AutoDeletePimpl
         >
         Init;
+
+        typedef Ptr & Type;
 
 
         // inherit rimpl
@@ -350,6 +352,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.11  2006/01/18 19:03:06  syntheticpp
+// make rimpl type really a reference
+//
 // Revision 1.10  2006/01/18 16:49:06  syntheticpp
 // move definition of the destructor to extra file, because msvc tries to use the incomplete type; not inlining does not help; maybe this is a compiler bug.
 //

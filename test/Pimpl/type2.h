@@ -58,7 +58,7 @@ public:
 
 private:
     Rimpl<C2>::Init rint; 
-    Rimpl<C2>::Type& d; 
+    Rimpl<C2>::Type d; 
 };
 
 

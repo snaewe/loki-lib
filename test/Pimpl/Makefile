@@ -1,6 +1,6 @@
 BIN = main
 CC = gcc
-CXXFLAGS = -Wall -O2
+CXXFLAGS = -Wall -O2 -pedantic
 CPPFLAGS = -I../../include -DNDEBUG
 LDFLAGS = -L../../lib
 LDLIBS = -lloki
