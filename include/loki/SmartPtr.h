@@ -60,11 +60,11 @@ namespace Loki
 
         // The storage policy doesn't initialize the stored pointer 
         //     which will be initialized by the OwnershipPolicy's Clone fn
-        DefaultSPStorage(const DefaultSPStorage&)
+        DefaultSPStorage(const DefaultSPStorage&) : pointee_(0)
         {}
 
         template <class U>
-        DefaultSPStorage(const DefaultSPStorage<U>&) 
+        DefaultSPStorage(const DefaultSPStorage<U>&) : pointee_(0)
         {}
         
         DefaultSPStorage(const StoredType& p) : pointee_(p) {}
@@ -114,9 +114,9 @@ namespace Loki
     {
     public:
         RefCounted() 
+            : pCount_(static_cast<unsigned int*>(
+                SmallObject<>::operator new(sizeof(unsigned int))))
         {
-            pCount_ = static_cast<unsigned int*>(
-                SmallObject<>::operator new(sizeof(unsigned int)));
             assert(pCount_);
             *pCount_ = 1;
         }
@@ -1336,6 +1336,10 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.10  2006/01/18 17:21:31  lfittl
+// - Compile library with -Weffc++ and -pedantic (gcc)
+// - Fix most issues raised by using -Weffc++ (initialization lists)
+//
 // Revision 1.9  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //

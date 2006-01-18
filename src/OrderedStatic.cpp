@@ -30,6 +30,7 @@ namespace Loki
     
 
         OrderedStaticManagerClass::OrderedStaticManagerClass() :
+                    staticObjects_(),
                     max_longevity_(std::numeric_limits<unsigned int>::min()),
                     min_longevity_(std::numeric_limits<unsigned int>::max())
         {
@@ -61,10 +62,8 @@ namespace Loki
         }
 
         OrderedStaticManagerClass::Data::Data(unsigned int l, OrderedStaticCreatorFunc* o, Creator f)
+            : longevity(l), object(o), creator(f)
         {
-            longevity = l;
-            object = o;
-            creator = f;
         }
 
     }//namespace Private
@@ -72,6 +71,10 @@ namespace Loki
 }//namespace Loki
 
 // $Log$
+// Revision 1.6  2006/01/18 17:21:31  lfittl
+// - Compile library with -Weffc++ and -pedantic (gcc)
+// - Fix most issues raised by using -Weffc++ (initialization lists)
+//
 // Revision 1.5  2006/01/16 20:59:53  rich_sposato
 // Added cvs keywords.
 //
