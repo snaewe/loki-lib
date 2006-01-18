@@ -227,6 +227,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\loki\PimplDef.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\loki\SafeFormat.h"
 				>
 			</File>

@@ -106,12 +106,10 @@ namespace Loki
             AutoPtrHolder() : ptr(Ptr())
             {}              
 
-            ~AutoPtrHolder()
-            {
-                // delete automatically by the delete policy
-                Del<Ptr>::Destroy( ptr );
-            }
-
+            // defined in #include<loki/PimplDef.h>
+            ~AutoPtrHolder(); 
+            
+           
             Ptr Create()
             {
                 ptr = Ptr( new Impl );
@@ -334,7 +332,7 @@ namespace Loki
         Init;
 
 
-        // ingerit rimpl
+        // inherit rimpl
         typedef PtrImpl
         <
             Impl<T>,
@@ -352,6 +350,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.10  2006/01/18 16:49:06  syntheticpp
+// move definition of the destructor to extra file, because msvc tries to use the incomplete type; not inlining does not help; maybe this is a compiler bug.
+//
 // Revision 1.9  2006/01/17 12:03:36  syntheticpp
 // add comment about auto_ptr
 //
