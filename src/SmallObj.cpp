@@ -543,6 +543,8 @@ bool Chunk::IsBlockAvailable( void * p, unsigned char numBlocks,
 
 FixedAllocator::FixedAllocator()
     : blockSize_( 0 )
+    , numBlocks_( 0 )
+    , chunks_( 0 )
     , allocChunk_( NULL )
     , deallocChunk_( NULL )
     , emptyChunk_( NULL )
@@ -1220,6 +1222,10 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.26  2006/01/18 17:21:31  lfittl
+// - Compile library with -Weffc++ and -pedantic (gcc)
+// - Fix most issues raised by using -Weffc++ (initialization lists)
+//
 // Revision 1.25  2006/01/09 07:27:00  syntheticpp
 // replace tabs
 //

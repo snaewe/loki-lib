@@ -73,6 +73,9 @@ namespace Loki
         PrintfState(Device dev, const Char * format) 
                 : device_(dev)
                 , format_(format)
+                , width_(0)
+                , prec_(0)
+                , flags_(0)
                 , result_(0) {
             Advance();
         }
@@ -560,6 +563,10 @@ namespace Loki
 #endif //SAFEFORMAT_H_
 
 // $Log$
+// Revision 1.23  2006/01/18 17:21:31  lfittl
+// - Compile library with -Weffc++ and -pedantic (gcc)
+// - Fix most issues raised by using -Weffc++ (initialization lists)
+//
 // Revision 1.22  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
