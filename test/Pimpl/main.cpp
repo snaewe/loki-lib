@@ -24,7 +24,7 @@
 #include "type2.h"
 
 #include <loki/SafeFormat.h>
-
+#include <loki/PimplDef.h>
 
 
 /////////////////////////////////////////
