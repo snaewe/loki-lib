@@ -10,6 +10,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Header$
+
 #ifndef LOKI_THREAD_H_
 #define LOKI_THREAD_H_
 
@@ -114,6 +116,10 @@ namespace Loki
         void Lock()  { LOKI_THREADS_MUTEX_LOCK  (&mtx_);}
         void Unlock(){ LOKI_THREADS_MUTEX_UNLOCK(&mtx_);}
     private:
+        /// Copy-constructor not implemented.
+        Mutex( const Mutex & );
+        /// Copy-assignement operator not implemented.
+        Mutex & operator = ( const Mutex & );
         LOKI_THREADS_MUTEX mtx_;
     };
 
@@ -123,4 +129,7 @@ namespace Loki
 
 #endif
 
-// $Log: 
+// $Log$
+// Revision 1.2  2006/01/19 19:36:09  rich_sposato
+// Added functions to Mutex class.
+//
