@@ -80,11 +80,73 @@ namespace Loki
 
     }; // end class LockingPtr
 
+    /** @class ConstLockingPtr
+     Similar to LockingPtr, except that it returns pointers and references to
+     a const SharedObject instead of a mutuable SharedObject.
+     @see LockingPtr
+     */
+    template < typename SharedObject, typename LockingPolicy >
+    class ConstLockingPtr
+    {
+    public:
+
+        /** Constructor locks mutex associated with an object.
+         @param obj Reference to const object.
+         @param mtx Mutex used to control thread access to object.
+         */
+        ConstLockingPtr( volatile const SharedObject & object,
+            LockingPolicy & mutex )
+            : pObject_( const_cast< const SharedObject * >( &object ) ),
+            pMutex_( &mutex )
+        {
+            mutex.Lock();
+        }
+
+        /// Destructor unlocks the mutex.
+        ~ConstLockingPtr()
+        {
+            pMutex_->Unlock();
+        }
+
+        /// Star-operator dereferences pointer.
+        const SharedObject & operator * ()
+        {
+            return *pObject_;
+        }
+
+        /// Point-operator returns pointer to object.
+        const SharedObject * operator -> ()
+        {
+            return pObject_;
+        }
+
+    private:
+
+        /// Default constructor is not implemented.
+        ConstLockingPtr();
+
+        /// Copy-constructor is not implemented.
+        ConstLockingPtr( const ConstLockingPtr & );
+
+        /// Copy-assignment-operator is not implemented.
+        ConstLockingPtr & operator = ( const ConstLockingPtr & );
+
+        /// Pointer to the shared object.
+        const SharedObject * pObject_;
+
+        /// Pointer to the mutex.
+        LockingPolicy * pMutex_;
+
+    }; // end class ConstLockingPtr
+
 } // namespace Loki
 
 #endif  // end file guardian
 
 // $Log$
+// Revision 1.4  2006/01/19 19:34:19  rich_sposato
+// Added ConstLockingPtr class.
+//
 // Revision 1.3  2006/01/16 18:34:37  rich_sposato
 // Changed return type from LockingPtr to SharedObject.
 //
