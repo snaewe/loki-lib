@@ -14,6 +14,8 @@
 
 #include <loki/TypeTraits.h>
 #include <exception>
+#include <memory>
+
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
 #define LOKI_INHERITED_PIMPL_NAME d
@@ -118,6 +120,10 @@ namespace Loki
 
             Ptr ptr;
         };
+
+        // don't compile with std::auto_ptr
+        template<class Impl,template<class> class Del>
+        struct AutoPtrHolder<Impl,std::auto_ptr<Impl>,Del>{};
 
 
         template
@@ -352,6 +358,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.12  2006/01/19 18:16:39  syntheticpp
+// disable usage with auto_ptr: don't compile with std::auto_ptr
+//
 // Revision 1.11  2006/01/18 19:03:06  syntheticpp
 // make rimpl type really a reference
 //
