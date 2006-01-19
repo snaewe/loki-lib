@@ -1,5 +1,5 @@
 BIN = FunctionTest
-CXXFLAGS = -Wall -O2
+CXXFLAGS = -Wall -Wold-style-cast -Wundef -pedantic -O2
 CPPFLAGS = -I../../include -DNDEBUG
 LDFLAGS = -L../../lib
 LDLIBS = -lloki -lboost_test_exec_monitor

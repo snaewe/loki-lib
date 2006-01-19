@@ -358,7 +358,7 @@ void test_vect5()
 
 void test_vect6()
 {
-    srand( (unsigned int) time(NULL) );
+    srand( static_cast<unsigned int>(time(NULL)) );
     typedef Loki::AssocVector<int, int> IntMap;
 
     const unsigned int numTests = 20;

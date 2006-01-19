@@ -65,7 +65,7 @@ public:
 
     testAssert("TypeAt",r,result);
 
-    #if !(_MSC_VER && !__INTEL_COMPILER && !__MWERKS__ && _MSC_VER < 1300)
+    #if !(defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__MWERKS__) && _MSC_VER < 1300)
 
     // TypeAtNonStrict works like TypeAt on MSVC 6.0
 
@@ -90,7 +90,7 @@ public:
 
     testAssert("IndexOf",r,result);
 
-    #if !(_MSC_VER && !__INTEL_COMPILER && !__MWERKS__ && _MSC_VER < 1300)
+    #if !(defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__MWERKS__) && _MSC_VER < 1300)
 
     // Append, Erase, EraseAll, NoDuplicates, Replace, ReplaceAll, Reverse,
     // MostDerived and DerivedToFront doesn't work on MSVC 6.0

@@ -537,6 +537,8 @@ namespace Loki
         class SingletonFixedLongevity
         {
         public:
+        	virtual ~SingletonFixedLongevity() {}
+        	
             static void ScheduleDestruction(T* pObj, atexit_pfn_t pFun)
             {
                 Private::Adapter<T> adapter = { pFun };
@@ -833,6 +835,10 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.22  2006/01/19 23:11:55  lfittl
+// - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
+// - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
+//
 // Revision 1.21  2006/01/16 20:10:51  syntheticpp
 // another fight against tabs
 //

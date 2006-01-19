@@ -324,7 +324,7 @@ public:
     
     void reserve(size_type res_arg = 0)
     {
-        Enforce(res_arg <= max_size(), (std::length_error*)0, "");
+        Enforce(res_arg <= max_size(), static_cast<std::length_error*>(0), "");
         Storage::reserve(res_arg);
     }
     
@@ -343,13 +343,13 @@ public:
 
     const_reference at(size_type n) const
     {
-        Enforce(n <= size(), (std::out_of_range*)0, "");
+        Enforce(n <= size(), static_cast<std::out_of_range*>(0), "");
         return (*this)[n];
     }
     
     reference at(size_type n)
     {
-        Enforce(n < size(), (std::out_of_range*)0, "");
+        Enforce(n < size(), static_cast<std::out_of_range*>(0), "");
         return (*this)[n];
     }
     
@@ -373,7 +373,7 @@ public:
         size_type n)
     { 
         const size_type sz = str.size();
-        Enforce(pos <= sz, (std::out_of_range*)0, "");
+        Enforce(pos <= sz, static_cast<std::out_of_range*>(0), "");
 		Procust(n, sz - pos);
         return append(str.data() + pos, n); 
     }
@@ -429,7 +429,7 @@ public:
         size_type n)
     { 
 		const size_type sz = str.size();
-        Enforce(pos <= sz, (std::out_of_range*)0, "");
+        Enforce(pos <= sz, static_cast<std::out_of_range*>(0), "");
 		Procust(n, sz - pos);
         return assign(str.data() + pos, n);
     }
@@ -465,14 +465,14 @@ public:
     flex_string& insert(size_type pos1, const flex_string& str,
         size_type pos2, size_type n)
     { 
-        Enforce(pos2 <= str.length(), (std::out_of_range*)0, "");
+        Enforce(pos2 <= str.length(), static_cast<std::out_of_range*>(0), "");
 		Procust(n, str.length() - pos2);
 		return insert(pos1, str.data() + pos2, n); 
 	}
     
     flex_string& insert(size_type pos, const value_type* s, size_type n)
     { 
-        Enforce(pos <= length(), (std::out_of_range*)0, "");
+        Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
 		insert(begin() + pos, s, s + n); 
 		return *this;
 	}
@@ -482,7 +482,7 @@ public:
     
     flex_string& insert(size_type pos, size_type n, value_type c)
     {
-        Enforce(pos <= length(), (std::out_of_range*)0, "");
+        Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
 		insert(begin() + pos, n, c);
 		return *this;
 	}
@@ -612,7 +612,7 @@ public:
     { 
 		Invariant checker(*this); 
 		(void) checker;
-        Enforce(pos <= length(), (std::out_of_range*)0, "");
+        Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
 		Procust(n, length() - pos);
 		std::copy(begin() + pos + n, end(), begin() + pos);
 		resize(length() - n);
@@ -642,7 +642,7 @@ public:
     flex_string& replace(size_type pos1, size_type n1, const flex_string& str,
         size_type pos2, size_type n2)
     {
-        Enforce(pos2 <= str.length(), (std::out_of_range*)0, "");
+        Enforce(pos2 <= str.length(), static_cast<std::out_of_range*>(0), "");
         return replace(pos1, n1, str.data() + pos2, 
             Min(n2, str.size() - pos2));
     }
@@ -741,7 +741,7 @@ public:
     {
 		Invariant checker(*this); 
 		(void) checker;
-		Enforce(pos <= size(), (std::out_of_range*)0, "");
+		Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
 		Procust(n1, length() - pos);
 		const iterator b = begin() + pos;
 		return replace(b, b + n1, s_or_n2, n_or_c);
@@ -854,7 +854,7 @@ public:
        
     size_type copy(value_type* s, size_type n, size_type pos = 0) const
     {
-        Enforce(pos <= size(), (std::out_of_range*)0, "");
+        Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
         Procust(n, size() - pos);
         
         flex_string_details::pod_copy(
@@ -1046,7 +1046,7 @@ public:
     
     flex_string substr(size_type pos = 0, size_type n = npos) const
     {
-        Enforce(pos <= size(), (std::out_of_range*)0, "");
+        Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
         return flex_string(data() + pos, Min(n, size() - pos));
     }
 
@@ -1073,7 +1073,7 @@ public:
     int compare(size_type pos1, size_type n1,
         const value_type* s, size_type n2) const
     {
-        Enforce(pos1 <= size(), (std::out_of_range*)0, "");
+        Enforce(pos1 <= size(), static_cast<std::out_of_range*>(0), "");
 		Procust(n1, size() - pos1);
 		const int r = traits_type::compare(data(), s, Min(n1, n2));
 		return 
@@ -1087,7 +1087,7 @@ public:
         const flex_string& str,
         size_type pos2, size_type n2) const
     {
-        Enforce(pos2 <= str.size(), (std::out_of_range*)0, "");
+        Enforce(pos2 <= str.size(), static_cast<std::out_of_range*>(0), "");
         return compare(pos1, n1, str.data() + pos2, Min(n2, str.size() - pos2));
     }
 
@@ -1286,6 +1286,6 @@ getline(
 
 template <typename E1, class T, class A, class S>
 const typename flex_string<E1, T, A, S>::size_type
-flex_string<E1, T, A, S>::npos = (typename flex_string<E1, T, A, S>::size_type)(-1);
+flex_string<E1, T, A, S>::npos = static_cast<typename flex_string<E1, T, A, S>::size_type>(-1);
 
 #endif // FLEX_STRING_SHELL_INC_

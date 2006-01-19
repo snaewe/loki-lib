@@ -57,9 +57,9 @@ namespace FactoryTestPrivate
   {
     FactoryType factory;
 
-    factory.Register(1, (Shape * (*)()) createPolygon);
-    factory.Register(2, (Shape * (*)()) createCircle);
-    factory.Register(3, (Shape * (*)()) createLine);
+    factory.Register(1, reinterpret_cast<Shape* (*)()>(createPolygon));
+    factory.Register(2, reinterpret_cast<Shape* (*)()>(createCircle));
+    factory.Register(3, reinterpret_cast<Shape* (*)()>(createLine));
 
     Shape *s;
 
@@ -96,9 +96,9 @@ namespace FactoryTestPrivate
   {
     CloneFactoryType factory;
 
-    factory.Register(Loki::TypeInfo(typeid(Polygon)), (Shape * (*)(const Shape *)) clonePolygon);
-    factory.Register(Loki::TypeInfo(typeid(Circle)), (Shape * (*)(const Shape *)) cloneCircle);
-    factory.Register(Loki::TypeInfo(typeid(Line)), (Shape * (*)(const Shape *)) cloneLine);
+    factory.Register(Loki::TypeInfo(typeid(Polygon)), reinterpret_cast<Shape* (*)(const Shape*)>(clonePolygon));
+    factory.Register(Loki::TypeInfo(typeid(Circle)), reinterpret_cast<Shape* (*)(const Shape*)>(cloneCircle));
+    factory.Register(Loki::TypeInfo(typeid(Line)), reinterpret_cast<Shape* (*)(const Shape*)>(cloneLine));
 
     Polygon p;
     Circle c;
