@@ -194,12 +194,12 @@ CreatorT<Product> cT;
 bool reg()
 {
     bool const ok1 = PFactoryNull::Instance().Register( 1, createProductNull );
-    bool const ok2 = PFactoryNull::Instance().Register( 2, (Product*(*)()) createProductOver );
+    bool const ok2 = PFactoryNull::Instance().Register( 2, static_cast<Product*(*)()>(createProductOver) );
     bool const ok3 = PFactoryNull::Instance().Register( 3, c, &AbstractCreator::create );
     bool const ok4 = PFactoryNull::Instance().Register( 4, &cT, &CreatorT<Product>::create );
  
     bool const ok5 = PFactory::Instance().Register( "One", createProductParm );
-    bool const ok6 = PFactory::Instance().Register( "Two", (Product*(*)(int,int))createProductOver );
+    bool const ok6 = PFactory::Instance().Register( "Two", static_cast<Product*(*)(int,int)>(createProductOver) );
     bool const ok7 = PFactory::Instance().Register( "Three", c, &AbstractCreator::createParm );
     bool const ok8 = PFactory::Instance().Register( "Four", &cT, &CreatorT<Product>::createParm );
 
@@ -303,6 +303,10 @@ int main()
 
 
 // $Log$
+// Revision 1.14  2006/01/19 23:11:56  lfittl
+// - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
+// - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
+//
 // Revision 1.13  2006/01/09 07:27:01  syntheticpp
 // replace tabs
 //

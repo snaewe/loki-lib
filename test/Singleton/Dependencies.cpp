@@ -408,13 +408,13 @@ int main()
 
     void* p;
 
-    p = (void*) &Singleton_with_MySmallObject_DieAs::Instance();
-    p = (void*) &Singleton_MyFunctionObject_DieAs::Instance();
+    p = static_cast<void*>(&Singleton_with_MySmallObject_DieAs::Instance());
+    p = static_cast<void*>(&Singleton_MyFunctionObject_DieAs::Instance());
 
     std::cout<<"\n";
 
-    p = (void*) &Follower1_Singleton_B1_die_first::Instance();
-    p = (void*) &Follower1_Singleton_B1_die_last::Instance();
+    p = static_cast<void*>(&Follower1_Singleton_B1_die_first::Instance());
+    p = static_cast<void*>(&Follower1_Singleton_B1_die_last::Instance());
 
 
     // test of FollowIntoDeath policy, not supported by msvc 7.1 compiler
@@ -422,9 +422,9 @@ int main()
 
     std::cout << "\nMaster1:\n\n";
 
-    p = (void*) &Follower1_Singleton_DefaultLifetime::Instance();
-    p = (void*) &Follower1_Singleton_PhoenixSingleton::Instance();
-    p = (void*) &Follower1_Singleton_DeletableSingleton::Instance();
+    p = static_cast<void*>(&Follower1_Singleton_DefaultLifetime::Instance());
+    p = static_cast<void*>(&Follower1_Singleton_PhoenixSingleton::Instance());
+    p = static_cast<void*>(&Follower1_Singleton_DeletableSingleton::Instance());
     
 
     std::cout << "\n\nMaster2:\n\n";
@@ -441,7 +441,7 @@ int main()
     // memory leak when code is enabled
 //#define ENABLE_MEMORY_LEAK
 #ifdef ENABLE_MEMORY_LEAK
-    p = (void*) &Follower1_Singleton_NoDestroy::Instance();
+    p = static_cast<void*>(&Follower1_Singleton_NoDestroy::Instance());
     B2_NoDestroy *no2 = &Follower2_Singleton_NoDestroy::Instance();
     no2->data = &Master2_NoDestroy::Singleton::Instance();
 #endif

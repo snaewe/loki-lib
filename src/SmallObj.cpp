@@ -1115,7 +1115,7 @@ void * SmallObjAllocator::Allocate( std::size_t numBytes, bool doThrow )
 
     if ( ( NULL == place ) && doThrow )
     {
-#if _MSC_VER
+#ifdef _MSC_VER
         throw std::bad_alloc( "could not allocate small object" );
 #else
         // GCC did not like a literal string passed to std::bad_alloc.
@@ -1222,6 +1222,10 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.27  2006/01/19 23:11:56  lfittl
+// - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
+// - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
+//
 // Revision 1.26  2006/01/18 17:21:31  lfittl
 // - Compile library with -Weffc++ and -pedantic (gcc)
 // - Fix most issues raised by using -Weffc++ (initialization lists)

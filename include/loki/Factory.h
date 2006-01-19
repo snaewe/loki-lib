@@ -726,6 +726,7 @@ template <typename AP, typename Id, typename P1 >
     public:
 
         Factory()
+            : associations_()
         {
         }
 
@@ -1035,6 +1036,10 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.15  2006/01/19 23:11:55  lfittl
+// - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
+// - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
+//
 // Revision 1.14  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //

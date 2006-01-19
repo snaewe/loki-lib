@@ -9,6 +9,7 @@ General:
 	- improved Makefiles (lf)
 	- improved make.msvc.bat files (pk)
 	- cvs LOG keywords added (rs)
+	- removed old c style casts (lf)
 
 Singleton:
 	- support of allocators with a standard interface added (Thanks to Miguel A. Figueroa-Villanueva, pk)

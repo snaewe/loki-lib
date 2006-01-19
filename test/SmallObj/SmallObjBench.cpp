@@ -195,11 +195,11 @@ int FUNC(void** arrv, const int N, int loop, Timer& t, const char* s)        \
 
 
 LOKI_SMALLOBJ_BENCH(delete_new        ,delete new T;)
-LOKI_SMALLOBJ_BENCH(delete_new_mal    ,std::free(std::malloc(sizeof(T))););
+LOKI_SMALLOBJ_BENCH(delete_new_mal    ,std::free(std::malloc(sizeof(T)));)
 LOKI_SMALLOBJ_BENCH(delete_new_all    ,std::allocator<T> st;st.deallocate(st.allocate(1), 1);)
 
 LOKI_SMALLOBJ_BENCH(delete_new_array    ,delete[] new T[N];)
-LOKI_SMALLOBJ_BENCH(delete_new_array_mal,std::free(std::malloc(sizeof(T[TN]))););
+LOKI_SMALLOBJ_BENCH(delete_new_array_mal,std::free(std::malloc(sizeof(T[TN])));)
 LOKI_SMALLOBJ_BENCH(delete_new_array_all,std::allocator<T[TN]> st;st.deallocate(st.allocate(1), 1);)
 
 LOKI_SMALLOBJ_BENCH_ARRAY(new_del_on_arr    , , arr[i] = new T; , 
@@ -324,6 +324,10 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.19  2006/01/19 23:11:57  lfittl
+// - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
+// - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
+//
 // Revision 1.18  2006/01/05 09:55:09  syntheticpp
 // assert, include path, and virtual ~ patches by Lukas Fittl
 //
