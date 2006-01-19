@@ -31,7 +31,7 @@ struct A
 {
 #define  DO for(int i=0; i<10000000; i++) g++;
 
-    void print(void* id)
+    void print(void* id) const
     {
         DO;Printf("%p: ----------------\n")(id);
         DO;Printf("%p: ---------------\n")(id);
@@ -55,14 +55,27 @@ struct A
 };
 
 typedef Loki::LockingPtr<A,Loki::Mutex> LPtr;
+typedef Loki::ConstLockingPtr<A,Loki::Mutex> CLPtr;
 
 void* RunLocked(void *id)
 {
-    A a;
+    volatile A a;
     static Loki::Mutex m;    
     for(int i=0; i<loop; i++)
     {
         LPtr l(a,m);
+        l->print(id);
+    }
+    return 0;
+}
+
+void* RunConstLocked(void *id)
+{
+    const volatile A a;
+    static Loki::Mutex m;    
+    for(int i=0; i<loop; i++)
+    {
+        CLPtr l(a,m);
         l->print(id);
     }
     return 0;
