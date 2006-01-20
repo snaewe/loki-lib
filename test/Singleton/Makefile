@@ -1,7 +1,7 @@
 BIN1 = DeletableSingleton
 BIN2 = Dependencies
 BIN3 = Phoenix
-CXXFLAGS = -Wall -Wold-style-cast -Wundef -pedantic -O2
+CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wpadded -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2
 CPPFLAGS = -I../../include -DNDEBUG
 LDFLAGS = -L../../lib
 LDLIBS = -lloki

@@ -1,6 +1,5 @@
 BIN = main
-CC = gcc
-CXXFLAGS = -Wall -O2
+CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wpadded -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2
 CPPFLAGS = -I../../include -DNDEBUG
 LDFLAGS = -L../../lib
 LDLIBS = -lloki

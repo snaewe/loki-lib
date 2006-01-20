@@ -1,5 +1,5 @@
 BIN = main
-CXXFLAGS = -Wall -Wold-style-cast -Wundef -pedantic -fexpensive-optimizations -O3
+CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wpadded -Wsign-compare -Wconversion -Wpointer-arith -pedantic -fexpensive-optimizations -O3
 CPPFLAGS = -I../../include -DNDEBUG
 LDFLAGS = -L../../lib
 LDLIBS = -lloki
