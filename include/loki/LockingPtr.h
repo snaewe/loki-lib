@@ -27,7 +27,7 @@ namespace Loki
      the mutex type as a LockingPolicy class.  The only requirements for a
      LockingPolicy class are to provide Lock and Unlock methods.
      */
-    template < typename SharedObject, typename LockingPolicy >
+    template < typename SharedObject, typename LockingPolicy = Loki::Mutex >
     class LockingPtr
     {
     public:
@@ -85,7 +85,7 @@ namespace Loki
      a const SharedObject instead of a mutuable SharedObject.
      @see LockingPtr
      */
-    template < typename SharedObject, typename LockingPolicy >
+    template < typename SharedObject, typename LockingPolicy = Loki::Mutex >
     class ConstLockingPtr
     {
     public:
@@ -144,6 +144,9 @@ namespace Loki
 #endif  // end file guardian
 
 // $Log$
+// Revision 1.5  2006/01/21 01:02:12  rich_sposato
+// Added Mutex class to Loki.  Made it the default policy class for locking.
+//
 // Revision 1.4  2006/01/19 19:34:19  rich_sposato
 // Added ConstLockingPtr class.
 //
