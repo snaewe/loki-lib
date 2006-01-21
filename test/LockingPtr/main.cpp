@@ -14,6 +14,10 @@
 
 #define LOKI_CLASS_LEVEL_THREADING
 
+#ifndef LOKI_CLASS_LEVEL_THREADING
+#define LOKI_OBJECT_LEVEL_THREADING
+#endif 
+
 #include "Thread.h"
 
 #include <loki/LockingPtr.h>
@@ -29,6 +33,8 @@ int loop = 5;
 
 struct A
 {
+    A(){};
+
 #define  DO for(int i=0; i<10000000; i++) g++;
 
     void print(void* id) const
@@ -54,8 +60,8 @@ struct A
     }
 };
 
-typedef Loki::LockingPtr<A,Loki::Mutex> LPtr;
-typedef Loki::ConstLockingPtr<A,Loki::Mutex> CLPtr;
+typedef Loki::Locking<A>::Ptr LPtr;
+typedef Loki::Locking<A>::ConstPtr CLPtr;
 
 void* RunLocked(void *id)
 {
@@ -96,7 +102,7 @@ int main ()
     for(int i=0; i<numThreads; i++)
     {
         Printf("Creating thread %d\n")(i);
-        threads.push_back(new Thread(RunLocked,(void*)i));
+        threads.push_back(new Thread(RunLocked,reinterpret_cast<void*>(i)));
     }
     for(int i=0; i<numThreads; i++)
         threads.at(i)->start();
@@ -111,7 +117,7 @@ int main ()
     for(int i=0; i<numThreads; i++)
     {
         Printf("Creating thread %d\n")(i);
-        threads.push_back(new Thread(Run,(void*)i));
+        threads.push_back(new Thread(Run,reinterpret_cast<void*>(i)));
     }
     for(int i=0; i<numThreads; i++)
         threads.at(i)->start();
