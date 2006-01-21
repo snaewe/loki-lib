@@ -207,10 +207,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\loki\LockingPtr.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\include\loki\LokiTypeInfo.h"
 				>
 			</File>
@@ -252,10 +248,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\loki\static_check.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\Threads.h"
 				>
 			</File>
 			<File
@@ -325,11 +317,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\include\loki\LockingPtr.h"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Thread.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\loki\Threads.h"
 				>
 			</File>
 		</Filter>

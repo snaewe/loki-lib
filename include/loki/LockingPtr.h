@@ -19,6 +19,20 @@
 namespace Loki
 {
 
+    template<class T>
+    struct NonConstObject
+    {
+        typedef T Type;
+    };
+
+    template<class T>
+    struct ConstObject
+    {
+        typedef const T Type;
+    };
+
+
+
     /** @class LockingPtr
      Locks a volatile object and casts away volatility so that the object
      can be safely used in a single-threaded region of code.
@@ -27,16 +41,19 @@ namespace Loki
      the mutex type as a LockingPolicy class.  The only requirements for a
      LockingPolicy class are to provide Lock and Unlock methods.
      */
-    template < typename SharedObject, typename LockingPolicy = Loki::Mutex >
+    template < typename SharedObject, typename LockingPolicy = Loki::Mutex, 
+               template<class> class ConstPolicy = NonConstObject >
     class LockingPtr
     {
     public:
+
+        typedef typename ConstPolicy<SharedObject>::Type ConstOrNotType;
 
         /** Constructor locks mutex associated with an object.
          @param obj Reference to object.
          @param mtx Mutex used to control thread access to object.
          */
-        LockingPtr( volatile SharedObject & object, LockingPolicy & mutex )
+        LockingPtr( volatile ConstOrNotType & object, LockingPolicy & mutex )
            : pObject_( const_cast< SharedObject * >( &object ) ),
             pMutex_( &mutex )
         {
@@ -50,13 +67,13 @@ namespace Loki
         }
 
         /// Star-operator dereferences pointer.
-        SharedObject & operator * ()
+        ConstOrNotType & operator * ()
         {
             return *pObject_;
         }
 
         /// Point-operator returns pointer to object.
-        SharedObject * operator -> ()
+        ConstOrNotType * operator -> ()
         {
             return pObject_;
         }
@@ -73,13 +90,23 @@ namespace Loki
         LockingPtr & operator = ( const LockingPtr & );
 
         /// Pointer to the shared object.
-        SharedObject * pObject_;
+        ConstOrNotType * pObject_;
 
         /// Pointer to the mutex.
         LockingPolicy * pMutex_;
 
     }; // end class LockingPtr
 
+
+    template<typename SharedObject,    typename LockingPolicy = Mutex>
+    struct Locking
+    {
+        typedef LockingPtr<SharedObject, LockingPolicy, NonConstObject> Ptr;
+        typedef LockingPtr<SharedObject, LockingPolicy, ConstObject>    ConstPtr;
+    };
+
+
+#if 0
     /** @class ConstLockingPtr
      Similar to LockingPtr, except that it returns pointers and references to
      a const SharedObject instead of a mutuable SharedObject.
@@ -138,12 +165,19 @@ namespace Loki
         LockingPolicy * pMutex_;
 
     }; // end class ConstLockingPtr
+#endif
+
 
 } // namespace Loki
 
 #endif  // end file guardian
 
+
+
 // $Log$
+// Revision 1.6  2006/01/21 14:09:09  syntheticpp
+// replace LockPtr/ConstLockPtr implementation with a template policy based one
+//
 // Revision 1.5  2006/01/21 01:02:12  rich_sposato
 // Added Mutex class to Loki.  Made it the default policy class for locking.
 //
