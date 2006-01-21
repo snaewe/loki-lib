@@ -273,8 +273,8 @@ namespace Loki
     };
 
 #if defined(_PTHREAD_H) 
-    template <class Host>
-    pthread_mutex_t ObjectLevelLockable<Host>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
+    template <class Host, class MutexPolicy>
+    pthread_mutex_t ObjectLevelLockable<Host, MutexPolicy>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
     
     ////////////////////////////////////////////////////////////////////////////////
@@ -292,7 +292,7 @@ namespace Loki
             bool init_;
             MutexPolicy mtx_;
 
-            Initializer() : init_(false), mtx()
+            Initializer() : init_(false), mtx_()
             {
                 init_ = true;
             }
@@ -357,8 +357,8 @@ namespace Loki
     };
 
 #if defined(_PTHREAD_H) 
-    template <class Host>
-    pthread_mutex_t ClassLevelLockable<Host>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
+    template <class Host, class MutexPolicy>
+    pthread_mutex_t ClassLevelLockable<Host, MutexPolicy>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
     template < class Host, class MutexPolicy >
@@ -381,6 +381,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.24  2006/01/21 14:11:09  syntheticpp
+// complete usage of Loki::Mutex, gcc can't compile without these corrections
+//
 // Revision 1.23  2006/01/21 13:09:45  syntheticpp
 // don't compile Mutex when multi threading is disabled
 //
