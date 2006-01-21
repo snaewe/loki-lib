@@ -219,7 +219,7 @@ namespace Loki
     template < class Host, class MutexPolicy = Loki::Mutex >
     class ObjectLevelLockable
     {
-        mutable volatile MutexPolicy mtx_;
+        mutable MutexPolicy mtx_;
 
     public:
         ObjectLevelLockable() : mtx_() {}
@@ -289,7 +289,7 @@ namespace Loki
         struct Initializer
         {   
             bool init_;
-            volatile MutexPolicy mtx_;
+            MutexPolicy mtx_;
 
             Initializer() : init_(false), mtx()
             {
@@ -380,6 +380,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.22  2006/01/21 01:05:44  rich_sposato
+// Removed volatile keyword from 2 data members.
+//
 // Revision 1.21  2006/01/21 01:02:12  rich_sposato
 // Added Mutex class to Loki.  Made it the default policy class for locking.
 //
