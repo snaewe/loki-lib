@@ -101,28 +101,6 @@ namespace Loki
     };
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //  \class Mutex
-    //
-    //  \ingroup ThreadingGroup
-    //  A portable Mutex
-    ////////////////////////////////////////////////////////////////////////////////
-
-    class Mutex
-    {
-    public:
-        Mutex()      { LOKI_THREADS_MUTEX_INIT  (&mtx_);}
-        ~Mutex()     { LOKI_THREADS_MUTEX_DELETE(&mtx_);}
-        void Lock()  { LOKI_THREADS_MUTEX_LOCK  (&mtx_);}
-        void Unlock(){ LOKI_THREADS_MUTEX_UNLOCK(&mtx_);}
-    private:
-        /// Copy-constructor not implemented.
-        Mutex( const Mutex & );
-        /// Copy-assignement operator not implemented.
-        Mutex & operator = ( const Mutex & );
-        LOKI_THREADS_MUTEX mtx_;
-    };
-
 
 
 } // namespace Loki
@@ -130,6 +108,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.3  2006/01/21 01:02:58  rich_sposato
+// Moved Mutex class into Loki library.
+//
 // Revision 1.2  2006/01/19 19:36:09  rich_sposato
 // Added functions to Mutex class.
 //
