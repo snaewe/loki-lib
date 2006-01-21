@@ -184,6 +184,8 @@ namespace Loki
 
 #endif
 
+#if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
+
     ////////////////////////////////////////////////////////////////////////////////
     ///  \class Mutex
     //
@@ -207,7 +209,6 @@ namespace Loki
     };
 
 
-#if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
 
     ////////////////////////////////////////////////////////////////////////////////
     ///  \class ObjectLevelLockable
@@ -380,6 +381,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.23  2006/01/21 13:09:45  syntheticpp
+// don't compile Mutex when multi threading is disabled
+//
 // Revision 1.22  2006/01/21 01:05:44  rich_sposato
 // Removed volatile keyword from 2 data members.
 //
