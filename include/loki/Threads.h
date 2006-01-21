@@ -184,6 +184,28 @@ namespace Loki
 
 #endif
 
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class Mutex
+    //
+    ///  \ingroup ThreadingGroup
+    ///  A simple and portable Mutex.  A default policy class for locking objects.
+    ////////////////////////////////////////////////////////////////////////////////
+
+    class Mutex
+    {
+    public:
+        Mutex()       { LOKI_THREADS_MUTEX_INIT  ( &mtx_ ); }
+        ~Mutex()      { LOKI_THREADS_MUTEX_DELETE( &mtx_ ); }
+        void Lock()   { LOKI_THREADS_MUTEX_LOCK  ( &mtx_ ); }
+        void Unlock() { LOKI_THREADS_MUTEX_UNLOCK( &mtx_ ); }
+    private:
+        /// Copy-constructor not implemented.
+        Mutex( const Mutex & );
+        /// Copy-assignement operator not implemented.
+        Mutex & operator = ( const Mutex & );
+        LOKI_THREADS_MUTEX mtx_;
+    };
+
 
 #if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
 
@@ -194,26 +216,17 @@ namespace Loki
     ///  Implementation of the ThreadingModel policy used by various classes
     ///  Implements a object-level locking scheme
     ////////////////////////////////////////////////////////////////////////////////
-    template <class Host>
+    template < class Host, class MutexPolicy = Loki::Mutex >
     class ObjectLevelLockable
     {
-        mutable LOKI_THREADS_MUTEX mtx_;
+        mutable volatile MutexPolicy mtx_;
 
     public:
-        ObjectLevelLockable()
-        {
-           LOKI_THREADS_MUTEX_INIT(&mtx_);
-        }
-        
-        ObjectLevelLockable(const ObjectLevelLockable&)
-        {
-            LOKI_THREADS_MUTEX_INIT(&mtx_);
-        }
+        ObjectLevelLockable() : mtx_() {}
 
-        ~ObjectLevelLockable()
-        {
-            LOKI_THREADS_MUTEX_DELETE(&mtx_);
-        }
+        ObjectLevelLockable(const ObjectLevelLockable&) : mtx_() {}
+
+        ~ObjectLevelLockable() {}
 
         class Lock;
         friend class Lock;
@@ -227,21 +240,21 @@ namespace Loki
             /// Lock object
             explicit Lock(const ObjectLevelLockable& host) : host_(host)
             {
-                LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
+                host_.mtx_.Lock();
             }
 
             /// Lock object
             explicit Lock(const ObjectLevelLockable* host) : host_(*host)
             {
-                LOKI_THREADS_MUTEX_LOCK(&host_.mtx_);
+                host_.mtx_.Lock();
             }
-            
+
             /// Unlock object
             ~Lock()
             {
-                LOKI_THREADS_MUTEX_UNLOCK(&host_.mtx_);
+                host_.mtx_.Unlock();
             }
-            
+
         private:
             /// private by design of the object level threading
             Lock();
@@ -270,33 +283,31 @@ namespace Loki
     ///  Implementation of the ThreadingModel policy used by various classes
     ///  Implements a class-level locking scheme
     ////////////////////////////////////////////////////////////////////////////////
-    template <class Host>
+    template <class Host, class MutexPolicy = Loki::Mutex >
     class ClassLevelLockable
     {
         struct Initializer
         {   
-            LOKI_THREADS_MUTEX mtx_;
             bool init_;
+            volatile MutexPolicy mtx_;
 
-            Initializer() : init_(false)
+            Initializer() : init_(false), mtx()
             {
-                LOKI_THREADS_MUTEX_INIT(&mtx_);
                 init_ = true;
             }
             ~Initializer()
             {
                 assert(init_);
-                LOKI_THREADS_MUTEX_DELETE(&mtx_);
             }
         };
-        
+
         static Initializer initializer_;
 
     public:
-    
+
         class Lock;
         friend class Lock;
-        
+
         ///  \struct Lock
         ///  Lock class to lock on class level
         class Lock
@@ -307,30 +318,30 @@ namespace Loki
             Lock()
             {
                 assert(initializer_.init_);
-                LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
+                initializer_.mtx_.Lock();
             }
-            
+
             /// Lock class
             explicit Lock(const ClassLevelLockable&)
             {
                 assert(initializer_.init_);
-                LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
+                initializer_.mtx_.Lock();
             }
-            
+
             /// Lock class
             explicit Lock(const ClassLevelLockable*)
             {
                 assert(initializer_.init_);
-                LOKI_THREADS_MUTEX_LOCK(&initializer_.mtx_);
+                initializer_.mtx_.Lock();
             }
-            
+
             /// Unlock class
             ~Lock()
             {
                 assert(initializer_.init_);
-                LOKI_THREADS_MUTEX_UNLOCK(&initializer_.mtx_);
+                initializer_.mtx_.Unlock();
             }
-            
+
         private:
             Lock(const Lock&);
             Lock& operator=(const Lock&);
@@ -349,9 +360,9 @@ namespace Loki
     pthread_mutex_t ClassLevelLockable<Host>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
-    template <class Host>
-    typename ClassLevelLockable<Host>::Initializer 
-    ClassLevelLockable<Host>::initializer_;
+    template < class Host, class MutexPolicy >
+    typename ClassLevelLockable< Host, MutexPolicy >::Initializer 
+    ClassLevelLockable< Host, MutexPolicy >::initializer_;
 
 #endif // defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
   
@@ -369,6 +380,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.21  2006/01/21 01:02:12  rich_sposato
+// Added Mutex class to Loki.  Made it the default policy class for locking.
+//
 // Revision 1.20  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
