@@ -74,7 +74,7 @@ namespace Loki
         {
             int status = 0;
             (void) status;
-            return LOKI_pthread_join(thread.pthread_, (void **)&status);
+            return LOKI_pthread_join(thread.pthread_, reinterpret_cast<void **>(&status));
         }
 
         static void JoinThreads(const std::vector<Thread*>& threads)
@@ -108,6 +108,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.4  2006/01/21 14:11:59  syntheticpp
+// remove gcc warnings
+//
 // Revision 1.3  2006/01/21 01:02:58  rich_sposato
 // Moved Mutex class into Loki library.
 //
