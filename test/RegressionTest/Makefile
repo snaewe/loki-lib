@@ -1,5 +1,5 @@
 BIN = Test
-CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wpadded -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2
+CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2
 CPPFLAGS = -I../../include -DNDEBUG
 LDFLAGS = -L../../lib
 LDLIBS = -lloki
