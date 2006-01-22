@@ -707,7 +707,7 @@ namespace Loki
         template <class> class CreationPolicy = CreateUsingNew,
         template <class> class LifetimePolicy = DefaultLifetime,
         template <class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
-        class MutexPolicy = Mutex
+        class MutexPolicy = LOKI_DEFAULT_MUTEX
     >
     class SingletonHolder
     {
@@ -841,6 +841,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.24  2006/01/22 13:37:33  syntheticpp
+// use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
+//
 // Revision 1.23  2006/01/22 00:44:17  syntheticpp
 // add additional template parameter for the changed threading classes
 //
