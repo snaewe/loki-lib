@@ -212,11 +212,12 @@ namespace Loki
     */
     template
     <
-        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+        template <class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
         std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
-        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME
+        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
+		class MutexPolicy = Mutex
     >
     class AllocatorSingleton : public SmallObjAllocator
     {
@@ -227,7 +228,7 @@ namespace Loki
             maxSmallObjectSize, objectAlignSize, LifetimePolicy > MyAllocator;
 
         /// Defines type for thread-safety locking mechanism.
-        typedef ThreadingModel< MyAllocator > MyThreadingModel;
+        typedef ThreadingModel< MyAllocator, MutexPolicy > MyThreadingModel;
 
         /// Defines singleton made from allocator.
         typedef Loki::SingletonHolder< MyAllocator, Loki::CreateStatic,
@@ -276,13 +277,14 @@ namespace Loki
 
     template
     <
-        template <class> class TM,
+        template <class, class> class TM,
         std::size_t CS,
         std::size_t MSOS,
         std::size_t OAS,
-        template <class> class LP
+        template <class> class LP,
+		class MX
     >
-    void AllocatorSingleton< TM, CS, MSOS, OAS, LP >::ClearExtraMemory( void )
+    void AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX >::ClearExtraMemory( void )
     {
         typename MyThreadingModel::Lock lock;
         (void)lock; // get rid of warning
@@ -291,13 +293,14 @@ namespace Loki
 
     template
     <
-        template <class> class TM,
+        template <class, class> class TM,
         std::size_t CS,
         std::size_t MSOS,
         std::size_t OAS,
-        template <class> class LP
+        template <class> class LP,
+		class MX
     >
-    bool AllocatorSingleton< TM, CS, MSOS, OAS, LP >::IsCorrupted( void )
+    bool AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX >::IsCorrupted( void )
     {
         typename MyThreadingModel::Lock lock;
         (void)lock; // get rid of warning
@@ -318,14 +321,15 @@ namespace Loki
      */
     template
     <
-        template <class> class TM,
+        template <class, class> class TM,
         std::size_t CS,
         std::size_t MSOS,
         std::size_t OAS,
-        template <class> class LP
+        template <class> class LP,
+		class MX
     >
     inline unsigned int GetLongevity(
-        AllocatorSingleton< TM, CS, MSOS, OAS, LP > * )
+        AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX > * )
     {
         // Returns highest possible value.
         return 0xFFFFFFFF;
@@ -411,11 +415,12 @@ namespace Loki
      */
     template
     <
-        template <class> class ThreadingModel,
+        template <class, class> class ThreadingModel,
         std::size_t chunkSize,
         std::size_t maxSmallObjectSize,
         std::size_t objectAlignSize,
-        template <class> class LifetimePolicy
+        template <class> class LifetimePolicy,
+		class MutexPolicy
     >
     class SmallObjectBase
     {
@@ -431,7 +436,7 @@ namespace Loki
     private:
 
         /// Defines type for thread-safety locking mechanism.
-        typedef ThreadingModel< ObjAllocatorSingleton > MyThreadingModel;
+        typedef ThreadingModel< ObjAllocatorSingleton, MutexPolicy > MyThreadingModel;
 
         /// Use singleton defined in AllocatorSingleton.
         typedef typename ObjAllocatorSingleton::MyAllocatorSingleton MyAllocatorSingleton;
@@ -567,14 +572,15 @@ namespace Loki
      */
     template
     <
-        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+        template <class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
         std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
-        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME
+        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
+		class MutexPolicy = Mutex
     >
     class SmallObject : public SmallObjectBase< ThreadingModel, chunkSize,
-            maxSmallObjectSize, objectAlignSize, LifetimePolicy >
+            maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy >
     {
 
     public:
@@ -602,14 +608,15 @@ namespace Loki
      */
     template
     <
-        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+        template <class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
         std::size_t chunkSize = LOKI_DEFAULT_CHUNK_SIZE,
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
-        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME
+        template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
+		class MutexPolicy = Mutex
     >
     class SmallValueObject : public SmallObjectBase< ThreadingModel, chunkSize,
-            maxSmallObjectSize, objectAlignSize, LifetimePolicy >
+            maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy >
     {
     protected:
         inline SmallValueObject( void ) {}
@@ -626,6 +633,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.25  2006/01/22 13:31:45  syntheticpp
+// add additional template parameter for the changed threading classes
+//
 // Revision 1.24  2005/12/08 22:09:08  rich_sposato
 // Added functions to check for memory corruption.  Also made some minor
 // coding changes.

@@ -38,7 +38,7 @@ namespace Loki
 
     namespace Private
     {
-        template <typename R, template <class> class ThreadingModel>
+        template <typename R, template <class, class> class ThreadingModel>
         struct FunctorImplBase : public SmallObject<ThreadingModel>
         {
             typedef R ResultType;
@@ -92,7 +92,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, class TList, 
-        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
+        template <class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
     class FunctorImpl;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ namespace Loki
 // Specialization for 0 (zero) parameters
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename R, template <class> class ThreadingModel>
+    template <typename R, template <class, class> class ThreadingModel>
     class FunctorImpl<R, NullType, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -114,7 +114,7 @@ namespace Loki
 // Specialization for 1 parameter
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename R, typename P1, template <class> class ThreadingModel>
+    template <typename R, typename P1, template <class, class> class ThreadingModel>
         class FunctorImpl<R, Seq<P1>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -130,7 +130,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, typename P1, typename P2, 
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -147,7 +147,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, typename P1, typename P2, typename P3,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -165,7 +165,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3, P4>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -185,7 +185,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3, P4, P5>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -206,7 +206,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -228,7 +228,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -252,7 +252,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7, P8>,
             ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -278,7 +278,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9>,
             ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -306,7 +306,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>,
             ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -335,7 +335,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11>,
             ThreadingModel>
@@ -366,7 +366,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12>,
             ThreadingModel>
@@ -398,7 +398,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12, typename P13,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13>,
             ThreadingModel>
@@ -431,7 +431,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12, typename P13, typename P14,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13,
                 P14>,
@@ -466,7 +466,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12, typename P13, typename P14,
-        typename P15, template <class> class ThreadingModel>
+        typename P15, template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             Seq<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13,
                 P14, P15>,
@@ -502,7 +502,7 @@ namespace Loki
 // Specialization for 1 parameter
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename R, typename P1, template <class> class ThreadingModel>
+    template <typename R, typename P1, template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_1(P1), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -518,7 +518,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, typename P1, typename P2, 
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_2(P1, P2), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -535,7 +535,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, typename P1, typename P2, typename P3,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_3(P1, P2, P3), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -553,7 +553,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_4(P1, P2, P3, P4), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -573,7 +573,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_5(P1, P2, P3, P4, P5), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -594,7 +594,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_6(P1, P2, P3, P4, P5, P6), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -616,7 +616,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_7(P1, P2, P3, P4, P5, P6, P7), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
     {
@@ -640,7 +640,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_8(P1, P2, P3, P4, P5, P6, P7, P8),
             ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -666,7 +666,7 @@ namespace Loki
 
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_9(P1, P2, P3, P4, P5, P6, P7, P8, P9),
             ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -694,7 +694,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_10(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10),
             ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -723,7 +723,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             LOKI_TYPELIST_11(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11),
             ThreadingModel>
@@ -754,7 +754,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             LOKI_TYPELIST_12(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12),
             ThreadingModel>
@@ -786,7 +786,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12, typename P13,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             LOKI_TYPELIST_13(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13),
             ThreadingModel>
@@ -819,7 +819,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12, typename P13, typename P14,
-        template <class> class ThreadingModel>
+        template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             LOKI_TYPELIST_14(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13,
                 P14),
@@ -854,7 +854,7 @@ namespace Loki
     template <typename R, typename P1, typename P2, typename P3, typename P4,
         typename P5, typename P6, typename P7, typename P8, typename P9,
         typename P10, typename P11, typename P12, typename P13, typename P14,
-        typename P15, template <class> class ThreadingModel>
+        typename P15, template <class, class> class ThreadingModel>
     class FunctorImpl<R,
             LOKI_TYPELIST_15(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13,
                 P14, P15),
@@ -1137,7 +1137,7 @@ namespace Loki
 ///  A generalized functor implementation with value semantics
 ////////////////////////////////////////////////////////////////////////////////
     template <typename R = void, class TList = NullType,
-        template<class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
+        template<class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
     class Functor
     {
     public:
@@ -1334,7 +1334,7 @@ namespace Loki
     {
         template <class Fctor> struct BinderFirstTraits;
 
-        template <typename R, class TList, template <class> class ThreadingModel>
+        template <typename R, class TList, template <class, class> class ThreadingModel>
         struct BinderFirstTraits< Functor<R, TList, ThreadingModel> >
         {
             typedef Functor<R, TList, ThreadingModel> OriginalFunctor;
@@ -1361,7 +1361,7 @@ namespace Loki
             typedef typename TypeTraits<T>::ParameterType RefOrValue;
         };
         
-        template <typename R, class TList, template <class> class ThreadingModel>
+        template <typename R, class TList, template <class, class> class ThreadingModel>
         struct BinderFirstBoundTypeStorage< Functor<R, TList, ThreadingModel> >
         {
             typedef Functor<R, TList, ThreadingModel> OriginalFunctor;
@@ -1662,6 +1662,9 @@ namespace Loki
 #endif  // FUNCTOR_INC_
 
 // $Log$
+// Revision 1.15  2006/01/22 13:31:45  syntheticpp
+// add additional template parameter for the changed threading classes
+//
 // Revision 1.14  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
