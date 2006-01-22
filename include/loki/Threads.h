@@ -74,6 +74,9 @@
     
 #endif
     
+#ifndef LOKI_DEFAULT_MUTEX
+#define LOKI_DEFAULT_MUTEX ::Loki::Mutex
+#endif
 
 #if defined(_WINDOWS_) || defined(_WINDOWS_H) 
 
@@ -176,7 +179,7 @@ namespace Loki
     ///  Implementation of the ThreadingModel policy used by various classes
     ///  Implements a single-threaded model; no synchronization
     ////////////////////////////////////////////////////////////////////////////////
-    template <class Host, class MutexPolicy = Mutex>
+    template <class Host, class MutexPolicy = LOKI_DEFAULT_MUTEX>
     class SingleThreaded
     {
     public:
@@ -228,7 +231,7 @@ namespace Loki
     ///  Implementation of the ThreadingModel policy used by various classes
     ///  Implements a object-level locking scheme
     ////////////////////////////////////////////////////////////////////////////////
-    template < class Host, class MutexPolicy = Loki::Mutex >
+    template < class Host, class MutexPolicy = LOKI_DEFAULT_MUTEX >
     class ObjectLevelLockable
     {
         mutable MutexPolicy mtx_;
@@ -295,7 +298,7 @@ namespace Loki
     ///  Implementation of the ThreadingModel policy used by various classes
     ///  Implements a class-level locking scheme
     ////////////////////////////////////////////////////////////////////////////////
-    template <class Host, class MutexPolicy = Loki::Mutex >
+    template <class Host, class MutexPolicy = LOKI_DEFAULT_MUTEX >
     class ClassLevelLockable
     {
         struct Initializer
@@ -392,6 +395,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.26  2006/01/22 13:37:33  syntheticpp
+// use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
+//
 // Revision 1.25  2006/01/22 00:32:29  syntheticpp
 // add dummy Mutex for single threading and additional template parameter
 //

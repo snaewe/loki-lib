@@ -217,7 +217,7 @@ namespace Loki
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
-		class MutexPolicy = Mutex
+		class MutexPolicy = LOKI_DEFAULT_MUTEX
     >
     class AllocatorSingleton : public SmallObjAllocator
     {
@@ -577,7 +577,7 @@ namespace Loki
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
-		class MutexPolicy = Mutex
+		class MutexPolicy = LOKI_DEFAULT_MUTEX
     >
     class SmallObject : public SmallObjectBase< ThreadingModel, chunkSize,
             maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy >
@@ -613,7 +613,7 @@ namespace Loki
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
-		class MutexPolicy = Mutex
+		class MutexPolicy = LOKI_DEFAULT_MUTEX
     >
     class SmallValueObject : public SmallObjectBase< ThreadingModel, chunkSize,
             maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy >
@@ -633,6 +633,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.26  2006/01/22 13:37:33  syntheticpp
+// use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
+//
 // Revision 1.25  2006/01/22 13:31:45  syntheticpp
 // add additional template parameter for the changed threading classes
 //
