@@ -168,7 +168,7 @@ namespace Loki
         Mutex( const Mutex & );
         /// Copy-assignement operator not implemented.
         Mutex & operator = ( const Mutex & );
-        LOKI_THREADS_MUTEX(mtx_);
+        LOKI_THREADS_MUTEX(mtx_;)
     };
 
 
@@ -395,6 +395,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.27  2006/01/22 15:33:41  syntheticpp
+// a -pedantic fix
+//
 // Revision 1.26  2006/01/22 13:37:33  syntheticpp
 // use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
 //
