@@ -166,13 +166,14 @@ namespace Loki
 ///  Policy Usage: RefCountedMTAdj<ThreadingModel>::RefCountedMT
 ////////////////////////////////////////////////////////////////////////////////
     
-    template <template <class> class ThreadingModel>
+    template <template <class, class> class ThreadingModel,
+	          class MX = LOKI_DEFAULT_MUTEX >
     struct RefCountedMTAdj
     {
         template <class P>
-        class RefCountedMT : public ThreadingModel< RefCountedMT<P> >
+        class RefCountedMT : public ThreadingModel< RefCountedMT<P>, MX >
         {
-            typedef ThreadingModel< RefCountedMT<P> > base_type;
+            typedef ThreadingModel< RefCountedMT<P>, MX > base_type;
             typedef typename base_type::IntType       CountType;
             typedef volatile CountType               *CountPtrType;
 
@@ -184,7 +185,7 @@ namespace Loki
                         sizeof(*pCount_)));
                 assert(pCount_);
                 //*pCount_ = 1;
-                ThreadingModel<RefCountedMT>::AtomicAssign(*pCount_, 1);
+                ThreadingModel<RefCountedMT, MX>::AtomicAssign(*pCount_, 1);
             }
 
             RefCountedMT(const RefCountedMT& rhs) 
@@ -199,13 +200,13 @@ namespace Loki
 
             P Clone(const P& val)
             {
-                ThreadingModel<RefCountedMT>::AtomicIncrement(*pCount_);
+                ThreadingModel<RefCountedMT, MX>::AtomicIncrement(*pCount_);
                 return val;
             }
 
             bool Release(const P&)
             {
-                if (!ThreadingModel<RefCountedMT>::AtomicDecrement(*pCount_))
+                if (!ThreadingModel<RefCountedMT, MX>::AtomicDecrement(*pCount_))
                 {
                     SmallObject<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::operator delete(
                         const_cast<CountType *>(pCount_), 
@@ -1336,6 +1337,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.11  2006/01/22 13:31:12  syntheticpp
+// add additional template parameter for the changed threading classes
+//
 // Revision 1.10  2006/01/18 17:21:31  lfittl
 // - Compile library with -Weffc++ and -pedantic (gcc)
 // - Fix most issues raised by using -Weffc++ (initialization lists)
