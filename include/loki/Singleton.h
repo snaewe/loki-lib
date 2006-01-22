@@ -537,8 +537,8 @@ namespace Loki
         class SingletonFixedLongevity
         {
         public:
-        	virtual ~SingletonFixedLongevity() {}
-        	
+            virtual ~SingletonFixedLongevity() {}
+            
             static void ScheduleDestruction(T* pObj, atexit_pfn_t pFun)
             {
                 Private::Adapter<T> adapter = { pFun };
@@ -706,7 +706,8 @@ namespace Loki
         typename T,
         template <class> class CreationPolicy = CreateUsingNew,
         template <class> class LifetimePolicy = DefaultLifetime,
-        template <class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL
+        template <class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL,
+        class MutexPolicy = Mutex
     >
     class SingletonHolder
     {
@@ -724,7 +725,7 @@ namespace Loki
         SingletonHolder();
         
         // Data
-        typedef typename ThreadingModel<T*>::VolatileType PtrInstanceType;
+        typedef typename ThreadingModel<T*,MutexPolicy>::VolatileType PtrInstanceType;
         static PtrInstanceType pInstance_;
         static bool destroyed_;
     };
@@ -738,19 +739,21 @@ namespace Loki
         class T,
         template <class> class C,
         template <class> class L,
-        template <class> class M
+        template <class, class> class M,
+        class X
     >
-    typename SingletonHolder<T, C, L, M>::PtrInstanceType
-        SingletonHolder<T, C, L, M>::pInstance_;
+    typename SingletonHolder<T, C, L, M, X>::PtrInstanceType
+        SingletonHolder<T, C, L, M, X>::pInstance_;
 
     template
     <
         class T,
         template <class> class C,
         template <class> class L,
-        template <class> class M
+        template <class, class> class M,
+        class X
     >
-    bool SingletonHolder<T, C, L, M>::destroyed_;
+    bool SingletonHolder<T, C, L, M, X>::destroyed_;
 
     ////////////////////////////////////////////////////////////////////////////////
     // SingletonHolder::Instance
@@ -761,10 +764,11 @@ namespace Loki
         class T,
         template <class> class CreationPolicy,
         template <class> class LifetimePolicy,
-        template <class> class ThreadingModel
+        template <class, class> class ThreadingModel,
+        class MutexPolicy
     >
     inline T& SingletonHolder<T, CreationPolicy, 
-        LifetimePolicy, ThreadingModel>::Instance()
+        LifetimePolicy, ThreadingModel, MutexPolicy>::Instance()
     {
         if (!pInstance_)
         {
@@ -782,12 +786,13 @@ namespace Loki
         class T,
         template <class> class CreationPolicy,
         template <class> class LifetimePolicy,
-        template <class> class ThreadingModel
+        template <class, class> class ThreadingModel,
+        class MutexPolicy
     >
     void SingletonHolder<T, CreationPolicy, 
-        LifetimePolicy, ThreadingModel>::MakeInstance()
+        LifetimePolicy, ThreadingModel, MutexPolicy>::MakeInstance()
     {
-        typename ThreadingModel<SingletonHolder>::Lock guard;
+        typename ThreadingModel<SingletonHolder,MutexPolicy>::Lock guard;
         (void)guard;
         
         if (!pInstance_)
@@ -808,10 +813,11 @@ namespace Loki
         class T,
         template <class> class CreationPolicy,
         template <class> class L,
-        template <class> class M
+        template <class, class> class M,
+        class X
     >
     void LOKI_C_CALLING_CONVENTION_QUALIFIER 
-    SingletonHolder<T, CreationPolicy, L, M>::DestroySingleton()
+    SingletonHolder<T, CreationPolicy, L, M, X>::DestroySingleton()
     {
         assert(!destroyed_);
         CreationPolicy<T>::Destroy(pInstance_);
@@ -835,6 +841,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.23  2006/01/22 00:44:17  syntheticpp
+// add additional template parameter for the changed threading classes
+//
 // Revision 1.22  2006/01/19 23:11:55  lfittl
 // - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
 // - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
