@@ -199,6 +199,23 @@ int main()
 // more test code
 ////////////////////
 
+/////////////////////////////////////////
+// Definition  of Impl<E>
+/////////////////////////////////////////
+namespace Loki // gcc!!
+{
+    template<>
+    struct Impl<E> : public SmallObject<> // inherit SmallObj for speed up
+    {
+        Impl() : data(0) {Printf("E created\n");}
+        ~Impl(){Printf("E destroyed, data=%d\n")(data);}
+        int data;
+
+        void foo()       {Printf("E  foo() \n");}
+        void foo() const {Printf("E  foo() const \n");}
+    };
+}
+
 
 
 P1::P1(){d->data = 1;}
@@ -208,12 +225,42 @@ P4::P4(){d->data = 4;}
 P5::P5(){d->data = 5;}
 P6::P6(){d->data = 6;}
 
+void P1::f(){d->foo();}
+void P2::f(){d->foo();}
+void P3::f(){d->foo();}
+void P4::f(){d->foo();}
+void P5::f(){d->foo();}
+void P6::f(){d->foo();}
+
+void P1::f()const{d->foo();}
+void P2::f()const{d->foo();}
+void P3::f()const{d->foo();}
+void P4::f()const{d->foo();}
+void P5::f()const{d->foo();}
+void P6::f()const{d->foo();}
+
+
 R1::R1(){d.data = 11;}
 R2::R2(){d.data = 22;}
 R3::R3(){d.data = 33;}
 R4::R4():d(rinit){d.data = 44;}
 R5::R5():d(rinit){d.data = 55;}
 R6::R6():d(rinit){d.data = 66;}
+
+void R1::f(){d.foo();}
+void R2::f(){d.foo();}
+void R3::f(){d.foo();}
+void R4::f(){d.foo();}
+void R5::f(){d.foo();}
+void R6::f(){d.foo();}
+
+void R1::f()const{d.foo();}
+void R2::f()const{d.foo();}
+void R3::f()const{d.foo();}
+void R4::f()const{d.foo();}
+void R5::f()const{d.foo();}
+void R6::f()const{d.foo();}
+
 
 void test_more()
 {
@@ -227,14 +274,13 @@ void test_more()
     P5* p5 =  new P5;
     P6* p6 =  new P6;
 
-    Loki::Printf("\nCreating Rimpls\n");
-    R1* r1 =  new R1;
-    R2* r2 =  new R2;
-    R3* r3 =  new R3;
-    R4* r4 =  new R4;
-    R5* r5 =  new R5;
-    R6* r6 =  new R6;
-    
+    Loki::Printf("\nConst check\n");
+    p1->f();
+    p2->f();
+    p3->f();
+    p4->f();
+    p5->f();
+    p6->f();
 
     Loki::Printf("\nDeleting Pimpls\n");
     delete p1;
@@ -244,6 +290,22 @@ void test_more()
     delete p5;
     delete p6;
     
+    Loki::Printf("\nCreating Rimpls\n");
+    R1* r1 =  new R1;
+    R2* r2 =  new R2;
+    R3* r3 =  new R3;
+    R4* r4 =  new R4;
+    R5* r5 =  new R5;
+    R6* r6 =  new R6;
+
+    Loki::Printf("\nConst check\n");
+    r1->f();
+    r2->f();
+    r3->f();
+    r4->f();
+    r5->f();
+    r6->f();
+
     Loki::Printf("\nDeleting Rimpls\n");
     delete r1;
     delete r2;
@@ -251,4 +313,54 @@ void test_more()
     delete r4;
     delete r5;
     delete r6;
+
+    Loki::Printf("\nCreating Pimpls\n");
+    const P1* cp1 =  new P1;
+    const P2* cp2 =  new P2;
+    const P3* cp3 =  new P3;
+    const P4* cp4 =  new P4;
+    const P5* cp5 =  new P5;
+    const P6* cp6 =  new P6;
+
+    Loki::Printf("\nConst check\n");
+    cp1->f();
+    cp2->f();
+    cp3->f();
+    cp4->f();
+    cp5->f();
+    cp6->f();
+
+    Loki::Printf("\nDeleting Rimpls\n");
+    delete cp1;
+    delete cp2;
+    delete cp3;
+    delete cp4;
+    delete cp5;
+    delete cp6;
+
+
+    Loki::Printf("\nCreating Rimpls\n");
+    const R1* cr1 =  new R1;
+    const R2* cr2 =  new R2;
+    const R3* cr3 =  new R3;
+    const R4* cr4 =  new R4;
+    const R5* cr5 =  new R5;
+    const R6* cr6 =  new R6;
+
+    Loki::Printf("\nConst check\n");
+    cr1->f();
+    cr2->f();
+    cr3->f();
+    cr4->f();
+    cr5->f();
+    cr6->f();
+
+    Loki::Printf("\nDeleting Rimpls\n");
+    delete cr1;
+    delete cr2;
+    delete cr3;
+    delete cr4;
+    delete cr5;
+    delete cr6;
+
 }

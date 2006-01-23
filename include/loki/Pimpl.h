@@ -13,6 +13,7 @@
 #define LOKI_PIMPL_H
 
 #include <loki/TypeTraits.h>
+#include <loki/SmartPtr.h>
 #include <exception>
 #include <memory>
 
@@ -184,7 +185,7 @@ namespace Loki
         typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
 
     public:
-        const Ptr LOKI_INHERITED_PIMPL_NAME;
+        Ptr LOKI_INHERITED_PIMPL_NAME;
 
     protected:
         InheritedPimpl() : LOKI_INHERITED_PIMPL_NAME(PtrHolder::ptr.Create())
@@ -200,13 +201,32 @@ namespace Loki
     {
         typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
 
+#if defined(LOKI_DEFAULT_CONSTNESS) 
+		typedef typename LOKI_DEFAULT_CONSTNESS<Ptr>::Type ConstPtr;
+		typedef typename LOKI_DEFAULT_CONSTNESS<Impl>::Type ConstImpl;
+#else // default: enable 
+		typedef typename const Ptr ConstPtr;
+		typedef typename const Impl ConstImpl;
+#endif
+
     public:
-        Ptr operator->() const
+
+		Ptr operator->()
         {
             return ptr;
         }
 
-        Impl& operator*() const
+        Impl& operator*()
+        {
+            return *ptr;
+        }
+
+        ConstPtr operator->() const
+        {
+            return ptr;
+        }
+
+        ConstImpl& operator*() const
         {
             return *ptr;
         }
@@ -358,6 +378,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.13  2006/01/23 17:22:49  syntheticpp
+// add support of deep constness, only supported by (future) Loki::SmartPtr, not supported by boost::shared_ptr and plain pointer. Maybe deep constness forces a redesign of Pimpl. Is there a way to support deep constness by a rimpl?
+//
 // Revision 1.12  2006/01/19 18:16:39  syntheticpp
 // disable usage with auto_ptr: don't compile with std::auto_ptr
 //
