@@ -10,7 +10,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 #include <loki/Visitor.h>
 #include <iostream>
