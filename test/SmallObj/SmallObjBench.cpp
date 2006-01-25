@@ -243,7 +243,7 @@ LOKI_SMALLOBJ_BENCH_ARRAY(new_del_a_on_a_all,std::allocator<T[TN]> st ,
     cout << endl << endl;
 #endif
 
-#define LOKI_ALLOCATOR_PARAMETERS Loki::SingleThreaded, 4096, 32, 4, Loki::NoDestroy
+#define LOKI_ALLOCATOR_PARAMETERS Loki::SingleThreaded, 4096, 128, 4, Loki::NoDestroy
 
 template<unsigned int Size, int loop>
 void testSize()
@@ -324,6 +324,9 @@ int main()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.20  2006/01/25 18:07:40  rich_sposato
+// Changed values for template parameters used to make SmallObject allocator.
+//
 // Revision 1.19  2006/01/19 23:11:57  lfittl
 // - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
 // - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
