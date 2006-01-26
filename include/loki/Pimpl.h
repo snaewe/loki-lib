@@ -205,8 +205,8 @@ namespace Loki
 		typedef typename LOKI_DEFAULT_CONSTNESS<Ptr>::Type ConstPtr;
 		typedef typename LOKI_DEFAULT_CONSTNESS<Impl>::Type ConstImpl;
 #else // default: enable 
-		typedef typename const Ptr ConstPtr;
-		typedef typename const Impl ConstImpl;
+		typedef const Ptr ConstPtr;
+		typedef const Impl ConstImpl;
 #endif
 
     public:
@@ -378,6 +378,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.14  2006/01/26 14:28:59  syntheticpp
+// remove wrong 'typename'
+//
 // Revision 1.13  2006/01/23 17:22:49  syntheticpp
 // add support of deep constness, only supported by (future) Loki::SmartPtr, not supported by boost::shared_ptr and plain pointer. Maybe deep constness forces a redesign of Pimpl. Is there a way to support deep constness by a rimpl?
 //
