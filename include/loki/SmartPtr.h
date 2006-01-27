@@ -114,10 +114,10 @@ namespace Loki
     {
     public:
         RefCounted() 
-            : pCount_(static_cast<unsigned int*>(
-                SmallObject<>::operator new(sizeof(unsigned int))))
+            : pCount_(static_cast<uintptr_t*>(
+                SmallObject<>::operator new(sizeof(uintptr_t))))
         {
-            assert(pCount_);
+            assert(pCount_!=0);
             *pCount_ = 1;
         }
         
@@ -141,7 +141,7 @@ namespace Loki
         {
             if (!--*pCount_)
             {
-                SmallObject<>::operator delete(pCount_, sizeof(unsigned int));
+                SmallObject<>::operator delete(pCount_, sizeof(uintptr_t));
                 return true;
             }
             return false;
@@ -154,7 +154,7 @@ namespace Loki
 
     private:
         // Data
-        unsigned int* pCount_;
+        uintptr_t* pCount_;
     };
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -1337,6 +1337,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.12  2006/01/27 08:58:17  syntheticpp
+// replace unsigned int with the platform independent uintptr_t to make it more 64bit portable, and work around for mac gcc 4.0.0 bug in assert
+//
 // Revision 1.11  2006/01/22 13:31:12  syntheticpp
 // add additional template parameter for the changed threading classes
 //
