@@ -12,11 +12,6 @@
 #ifndef LOKI_PIMPL_H
 #define LOKI_PIMPL_H
 
-#include <loki/TypeTraits.h>
-#include <loki/SmartPtr.h>
-#include <exception>
-#include <memory>
-
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
 #define LOKI_INHERITED_PIMPL_NAME d
@@ -28,356 +23,147 @@
 
 namespace Loki
 {
+
+	//////////////////////////////////////////
+    //  simple const propagating pointer
+    //////////////////////////////////////////
+
+	template<class T>
+	struct ConstPropPtr
+	{
+		explicit ConstPropPtr(T* p) : ptr_(p){}
+		~ConstPropPtr()
+		{ 
+			typedef char T_must_be_defined[sizeof(T) ? 1 : -1 ];
+            delete ptr_; 
+            ptr_ = 0;
+		}
+
+		T* operator->()	{return ptr_;}
+		T& operator*()	{return *ptr_;}
+		const T* operator->() const	{return ptr_;}
+		const T& operator*()  const	{return *ptr_;}
+	
+	private:
+		ConstPropPtr();
+		ConstPropPtr(const ConstPropPtr&);
+		ConstPropPtr& operator=(const ConstPropPtr&);
+		T* ptr_;
+	};
+
+
     /////////////////////
-    //  template for the implementations
+    // Pimpl
     /////////////////////
-    template<class T>
-    struct Impl;
 
+	template
+	<	
+		class T, 
+		typename Pointer = ConstPropPtr<T>
+	>
+    class Pimpl 
+	{
+    public:
 
+		typedef T Impl;
 
-
-    /////////////////////
-    // creation policies
-    /////////////////////
-    // hard coded creation preferred
-
-
-    /////////////////////
-    // destroy policies
-    /////////////////////
-    template<class T>
-    struct AutoDeletePimpl
-    {
-        static void Destroy(T ptr)
-        {
-            typedef char T_must_be_defined[
-                sizeof(typename TypeTraits<T>::PointeeType) ? 1 : -1 ];
-            delete ptr; 
-            ptr = 0;
-        }
-    };
-
-    template<class T>
-    struct DontDeletePimpl
-    {
-        static void Destroy(T)
+		Pimpl() : ptr_(new T)
         {}
-    };
 
-    /////////////////////
-    // error handling
-    /////////////////////
-    template<class T>
-    struct ExceptionOnPimplError
-    {
-        struct Exception : public std::exception
+		T* operator->()
         {
-            const char* what() const throw() { return "error in loki/Pimpl.h"; }
-        };
-        
-        static void PimplError()
-        {
-            throw Exception();
+            return ptr_.operator->();
         }
-        
+
+        T& operator*()
+        {
+            return ptr_.operator*();
+        }
+
+        const T* operator->() const
+        {
+            return ptr_.operator->();
+        }
+
+        const T& operator*() const
+        {
+            return ptr_.operator*();
+        }
+
+		Pointer& wrapped()
+		{
+			return ptr_;
+		}
+
+		const Pointer& wrapped() const
+		{
+			return ptr_;
+		}
+
+
+    private:
+		Pimpl(const Pimpl&);
+        Pimpl& operator=(const Pimpl&);
+
+		Pointer ptr_;
     };
 
-    template<class T>
-    struct IgnorPimplError
-    {
-        static void PimplError()
-        {}
-        
-    };
 
-    /////////////////////
-    // Helper class AutoPtrHolder to manage pimpl lifetime
-    /////////////////////
-
-    namespace Private
-    {
-        // does not work with std::auto_ptr
-        template
-        <
-            class Impl,
-            class Ptr,
-            template<class> class Del
-        >
-        struct AutoPtrHolder
-        {
-            AutoPtrHolder() : ptr(Ptr())
-            {}              
-
-            // defined in #include<loki/PimplDef.h>
-            ~AutoPtrHolder(); 
-            
-           
-            Ptr Create()
-            {
-                ptr = Ptr( new Impl );
-                return ptr;
-            }
-
-            Ptr ptr;
-        };
-
-        // don't compile with std::auto_ptr
-        template<class Impl,template<class> class Del>
-        struct AutoPtrHolder<Impl,std::auto_ptr<Impl>,Del>{};
-
-
-        template
-        <
-            class Impl,
-            class Ptr,
-            template<class> class Del,
-            template<class> class ErrorPolicy = ExceptionOnPimplError
-        >
-        struct AutoPtrHolderChecked : AutoPtrHolder<Impl,Ptr,Del>
-        {
-            static bool init_;
-
-            AutoPtrHolderChecked()
-            {
-                init_ = true;
-            }              
-
-            template<class T>
-            operator T&()
-            {
-                // if this throws change the declaration order
-                // of the DeclaredRimpl construct
-                if(!init_)
-                    ErrorPolicy<T>::PimplError();
-                AutoPtrHolder<Impl,Ptr,Del>::Create();
-                return *AutoPtrHolder<Impl,Ptr,Del>::ptr;
-            }
-        };
-
-        template
-        <
-            class Impl,
-            class Ptr,
-            template<class> class Del,
-            template<class> class Err
-        >
-        bool AutoPtrHolderChecked<Impl,Ptr,Del,Err>::init_ = false;
-
-
-        template<class T> 
-        struct HavePtrHolder
-        {
-            T ptr;
-        };
-    }
-
-
-
-    /////////////////////
-    // Pimpl usage policies
-    /////////////////////
-
-    template<class Impl, typename Ptr, template<class> class Del>
-    class InheritedPimpl : private 
-        Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> >
+	template<class T, typename Pointer = ConstPropPtr<T> >
+    struct PimplOwner 
     {    
-        typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
-
-    public:
-        Ptr LOKI_INHERITED_PIMPL_NAME;
-
-    protected:
-        InheritedPimpl() : LOKI_INHERITED_PIMPL_NAME(PtrHolder::ptr.Create())
-        {}
-
-    private:
-        InheritedPimpl& operator=(const InheritedPimpl&);
-    };
-
-    template<class Impl, typename Ptr, template<class> class Del>
-    class DeclaredPimpl : private 
-        Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> >
-    {
-        typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
-
-#if defined(LOKI_DEFAULT_CONSTNESS) 
-		typedef typename LOKI_DEFAULT_CONSTNESS<Ptr>::Type ConstPtr;
-		typedef typename LOKI_DEFAULT_CONSTNESS<Impl>::Type ConstImpl;
-#else // default: enable 
-		typedef const Ptr ConstPtr;
-		typedef const Impl ConstImpl;
-#endif
-
-    public:
-
-		Ptr operator->()
-        {
-            return ptr;
-        }
-
-        Impl& operator*()
-        {
-            return *ptr;
-        }
-
-        ConstPtr operator->() const
-        {
-            return ptr;
-        }
-
-        ConstImpl& operator*() const
-        {
-            return *ptr;
-        }
-    
-    protected:
-        DeclaredPimpl() : ptr(PtrHolder::ptr.Create())
-        {}
-
-    private:
-        DeclaredPimpl& operator=(const DeclaredPimpl&);
-        const Ptr ptr;
-    };
-
-    /////////////////////
-    // Rimpl usage policies
-    /////////////////////
-
-
-    template<class Impl, typename Ptr, template<class> class Del>
-    class InheritedRimpl : private 
-        Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> >
-    {
-        typedef Private::HavePtrHolder<Private::AutoPtrHolder<Impl,Ptr,Del> > PtrHolder;
-
-    public:
-        Impl& LOKI_INHERITED_RIMPL_NAME;
-
-    protected:
-        InheritedRimpl() :
-            LOKI_INHERITED_RIMPL_NAME(*PtrHolder::ptr.Create())
-        {}
-
-    private:
-        InheritedRimpl& operator=(const InheritedRimpl&);
-    };
-
-    template<class Impl, typename PointerPolicy, template<class> class DeletePolicy>
-    class DeclaredRimpl : public Impl
-    {
-    protected:
-        DeclaredRimpl()
-        {}
+        Pimpl<T,Pointer> LOKI_INHERITED_PIMPL_NAME;
     };
 
 
-    /////////////////////
-    // Wrapper for "pointer to implementation" alias pimpl.
-    // Impl: implementation class
-    // PointerTypePolicy: arbitrary pointer implementation
-    // DeletePolicy: delete implementation object on destruction of PtrImpl
-    // UsagePolicy: how to access the stored pointer, as pointer, checked, unchecked
-    /////////////////////
-
-
-    template
-    <
-        class Impl,
-        class PointerPolicy = Impl*,
-        template<class> class DeletePolicy = AutoDeletePimpl,
-        template<class,class,template<class> class> class UsagePolicy = InheritedPimpl
-    >
-    class PtrImpl : public UsagePolicy<Impl,PointerPolicy,DeletePolicy>
-    {
-    public:
-
-        typedef Impl ImplType;
-        typedef PointerPolicy PointerType;
-    
-        PtrImpl() : UsagePolicy<Impl,PointerPolicy,DeletePolicy>()
-        {}
-
-    private:
-        PtrImpl& operator=(const PtrImpl&);
-
-    };
-
-    
-    /////////////////////
-    // Predefined convenience "templated typedef"
-    /////////////////////
-
+	//////////////////////////////////////////
+    //  template for the implementations
+    //////////////////////////////////////////
 
     template<class T>
-    struct Pimpl
+    struct ImplT;
+
+
+
+    template<class T, template<class> class Ptr = ConstPropPtr>
+    struct PimplT
     {
+		typedef T Impl;
+
         // declare pimpl
-        typedef PtrImpl
-        <
-            Impl<T>,
-            Impl<T>*,
-            AutoDeletePimpl,
-            DeclaredPimpl
-        >
-        Type;
+        typedef Pimpl<ImplT<T>, Ptr<ImplT<T> > > Type;
 
         // inherit pimpl
-        typedef PtrImpl
-        <
-            Impl<T>,
-            Impl<T>*,
-            AutoDeletePimpl,
-            InheritedPimpl
-        >
-        Owner;
-    };
+        typedef PimplOwner<ImplT<T>, Ptr<ImplT<T> > > Owner;
+	};
 
 
-    template<class T>
-    struct Rimpl
+	template<class T, class UsedPimpl = typename PimplT<T>::Type >
+    struct RimplT
     {
+		typedef typename UsedPimpl::Impl & Type;
 
-        // declare rimpl
-        typedef PtrImpl
-        <
-            Impl<T>,
-            Impl<T>*,
-            DontDeletePimpl,
-            DeclaredRimpl
-        >
-        Ptr;
+        class Owner
+		{
+			UsedPimpl pimpl;
 
-        // init declared rimpl
-        typedef Private::AutoPtrHolderChecked
-        <
-            Ptr,
-            Ptr*,
-            AutoDeletePimpl
-        >
-        Init;
+		public:
+			Owner() : LOKI_INHERITED_RIMPL_NAME(*pimpl)
+			{}
 
-        typedef Ptr & Type;
-
-
-        // inherit rimpl
-        typedef PtrImpl
-        <
-            Impl<T>,
-            Impl<T>*,
-            AutoDeletePimpl,
-            InheritedRimpl
-        >
-        Owner;
+			Type LOKI_INHERITED_RIMPL_NAME;
+		};
 
     };
-    
-
+  
 }
 
 #endif
 
 // $Log$
+// Revision 1.15  2006/01/28 20:12:56  syntheticpp
+// replace implementation with a auto-create and propagating-const wrapper for smart pointers which auto delete the holded pointer on destruction
+//
 // Revision 1.14  2006/01/26 14:28:59  syntheticpp
 // remove wrong 'typename'
 //

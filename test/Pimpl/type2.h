@@ -15,10 +15,6 @@
 
 #include <loki/Pimpl.h>
 
-using Loki::Pimpl;
-using Loki::Rimpl;
-
-
 /////////////////////////////////////////
 // class A2 declaration
 /////////////////////////////////////////
@@ -30,7 +26,7 @@ public:
     void foo();
 
 private:
-    Pimpl<A2>::Type d;
+    PimplT<A2> d;
 };
 
 
@@ -38,12 +34,13 @@ private:
 // class B2 declaration
 /////////////////////////////////////////
 
-class B2 : private Pimpl<B2>::Owner
+class B2 : private PimplT<B2>::Owner
 {
 public:
     B2();
     void foo();
 };
+
 
 
 /////////////////////////////////////////
@@ -57,8 +54,8 @@ public:
     void foo();
 
 private:
-    Rimpl<C2>::Init rint; 
-    Rimpl<C2>::Type d; 
+    PimplT<C2>::Type rint; 
+    RimplT<C2>::Type d; 
 };
 
 
@@ -66,10 +63,9 @@ private:
 // class D2 declaration
 /////////////////////////////////////////
 
-class D2 : private Rimpl<D2>::Owner
+class D2 : private RimplT<D2>::Owner
 {
 public:
     D2();
     void foo();
 };
-
