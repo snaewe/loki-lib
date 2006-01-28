@@ -12,9 +12,6 @@
 
 // $Header:
 
-//#define LOKI_DEFAULT_CONSTNESS DeepConstness //default
-//#define LOKI_DEFAULT_CONSTNESS FlatConstness
-
 #include <loki/Pimpl.h>
 
 
@@ -22,12 +19,11 @@
 #ifdef TEST_WITH_BOOST
 #include <boost/shared_ptr.hpp>
 #endif
+
 #include <loki/SmartPtr.h>
 #include <loki/SmallObj.h>
 
-using Loki::Pimpl;
-using Loki::Rimpl;
-
+using namespace Loki;
 
 /////////////////////////////////////////
 // class A declaration
@@ -40,7 +36,7 @@ public:
     void foo();
 
 private:
-    Pimpl<A>::Type d;
+	PimplT<A>::Type d;
 };
 
 
@@ -48,7 +44,7 @@ private:
 // class B declaration
 /////////////////////////////////////////
 
-class B : private Pimpl<B>::Owner
+class B : private PimplT<B>::Owner
 {
 public:
     B();
@@ -67,8 +63,8 @@ public:
     void foo();
 
 private:
-    Rimpl<C>::Init rinit; 
-    Rimpl<C>::Type d; 
+    PimplT<C>::Type p;
+    RimplT<C>::Type d; 
 };
 
 
@@ -76,7 +72,7 @@ private:
 // class D declaration
 /////////////////////////////////////////
 
-class D : private Rimpl<D>::Owner
+class D : private RimplT<D>::Owner
 {
 public:
     D();
@@ -92,190 +88,78 @@ public:
 
 struct E;
 
+typedef SmartPtr<ImplT<E> > LokiPtr;
+typedef ConstPropPtr<ImplT<E> > CPropPtr;
+typedef std::auto_ptr<ImplT<E> > StdAutoPtr;
+
+#ifdef TEST_WITH_BOOST
+    typedef boost::shared_ptr<ImplT<E> > BoostPtr;
+#else
+    typedef LokiPtr BoostPtr;
+#endif
+
+
+
 // Pimpl
 
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>
->
-Pimpl1;
+typedef Pimpl<ImplT<E> >			Pimpl1;
+typedef Pimpl<ImplT<E>, CPropPtr>	Pimpl2;
+typedef Pimpl<ImplT<E>, LokiPtr>	Pimpl3;
+typedef Pimpl<ImplT<E>, BoostPtr>	Pimpl4;
+typedef Pimpl<ImplT<E>, StdAutoPtr>	Pimpl5;
+
+struct P1 {Pimpl1 d;        P1();void f();void f()const;};
+struct P2 {Pimpl2 d;        P2();void f();void f()const;};
+struct P3 {Pimpl3 d;        P3();void f();void f()const;};
+struct P4 {Pimpl4 d;        P4();void f();void f()const;};
+struct P5 {Pimpl5 d;        P5();void f();void f()const;};
 
 
+// PimplOwner
 
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    Loki::SmartPtr<Loki::Impl<E> >,
-    Loki::DontDeletePimpl
->
-Pimpl2;
+typedef PimplOwner<ImplT<E> >			PimplOwner1;
+typedef PimplOwner<ImplT<E>, CPropPtr>	PimplOwner2;
+typedef PimplOwner<ImplT<E>, LokiPtr>	PimplOwner3;
+typedef PimplOwner<ImplT<E>, BoostPtr>	PimplOwner4;
+typedef PimplOwner<ImplT<E>, StdAutoPtr>PimplOwner5;
 
+struct PO1 : private PimplOwner1 {PO1();void f();void f()const;};
+struct PO2 : private PimplOwner2 {PO2();void f();void f()const;};
+struct PO3 : private PimplOwner3 {PO3();void f();void f()const;};
+struct PO4 : private PimplOwner4 {PO4();void f();void f()const;};
+struct PO5 : private PimplOwner5 {PO5();void f();void f()const;};
 
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-#ifdef TEST_WITH_BOOST
-    boost::shared_ptr<Loki::Impl<E> >,
-#else
-    Loki::SmartPtr<Loki::Impl<E> >,
-#endif
-    Loki::DontDeletePimpl
->
-Pimpl3;
-
-
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    Loki::SmartPtr<Loki::Impl<E> >,
-    Loki::DontDeletePimpl,
-    Loki::DeclaredPimpl
->
-Pimpl4;
-
-
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-#ifdef TEST_WITH_BOOST
-    boost::shared_ptr<Loki::Impl<E> >,
-#else
-    Loki::SmartPtr<Loki::Impl<E> >,
-#endif
-    Loki::DontDeletePimpl,
-    Loki::DeclaredPimpl
->
-Pimpl5;
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    Loki::Impl<E>*,
-    Loki::AutoDeletePimpl,
-    Loki::DeclaredPimpl
->
-Pimpl6;
 
 
 // Rimpl
 
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    Loki::Impl<E>*,
-    Loki::AutoDeletePimpl,
-    Loki::InheritedRimpl
+typedef RimplT<ImplT<E>,Pimpl1> Rimpl1;
+typedef RimplT<ImplT<E>,Pimpl2> Rimpl2;
+typedef RimplT<ImplT<E>,Pimpl3> Rimpl3;
+typedef RimplT<ImplT<E>,Pimpl4> Rimpl4;
+typedef RimplT<ImplT<E>,Pimpl5> Rimpl5;
 
->
-Rimpl1;
-
-
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    Loki::SmartPtr<Loki::Impl<E> >,
-    Loki::DontDeletePimpl,
-    Loki::InheritedRimpl
->
-Rimpl2;
+struct R1 {Pimpl1 p; Rimpl1::Type d; R1();void f();void f()const;};
+struct R2 {Pimpl2 p; Rimpl2::Type d; R2();void f();void f()const;};
+struct R3 {Pimpl3 p; Rimpl3::Type d; R3();void f();void f()const;};
+struct R4 {Pimpl4 p; Rimpl4::Type d; R4();void f();void f()const;};
+struct R5 {Pimpl5 p; Rimpl5::Type d; R5();void f();void f()const;};
 
 
+// RimplOwner
 
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-#ifdef TEST_WITH_BOOST
-    boost::shared_ptr<Loki::Impl<E> >,
-#else
-    Loki::SmartPtr<Loki::Impl<E> >,
-#endif
-    Loki::DontDeletePimpl,
-    Loki::InheritedRimpl
->
-Rimpl3;
+typedef RimplT<ImplT<E>,Pimpl1>::Owner RimplO1;
+typedef RimplT<ImplT<E>,Pimpl2>::Owner RimplO2;
+typedef RimplT<ImplT<E>,Pimpl3>::Owner RimplO3;
+typedef RimplT<ImplT<E>,Pimpl4>::Owner RimplO4;
+typedef RimplT<ImplT<E>,Pimpl5>::Owner RimplO5;
 
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    Loki::Impl<E>*,
-    Loki::AutoDeletePimpl,
-    Loki::DeclaredRimpl
->
-Rimpl4;
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    Loki::SmartPtr<Loki::Impl<E> >,
-    Loki::DontDeletePimpl,
-    Loki::DeclaredRimpl
->
-Rimpl5;
+struct RO1 : private RimplO1 {RO1();void f();void f()const;};
+struct RO2 : private RimplO2 {RO2();void f();void f()const;};
+struct RO3 : private RimplO3 {RO3();void f();void f()const;};
+struct RO4 : private RimplO4 {RO4();void f();void f()const;};
+struct RO5 : private RimplO5 {RO5();void f();void f()const;};
 
 
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-#ifdef TEST_WITH_BOOST
-    boost::shared_ptr<Loki::Impl<E> >,
-#else
-    Loki::SmartPtr<Loki::Impl<E> >,
-#endif
-    Loki::DontDeletePimpl,
-    Loki::DeclaredRimpl
->
-Rimpl6;
-
-
-
-typedef Loki::PtrImpl
-<
-    Loki::Impl<E>,
-    
-    //Loki::Impl<E>*,
-    Loki::SmartPtr<Loki::Impl<E> >,
-    //boost::shared_ptr<Loki::Impl<E> >,
-    
-    //Loki::AutoDeletePimpl,     // compiler error when used with smart pointers, this is o.k.
-    Loki::DontDeletePimpl,
-
-    Loki::DeclaredPimpl
-    //Loki::InheritedPimpl,
-> 
-Pimpl8;
-
-
-template<class T>
-struct R
-{
-    typedef Loki::Private::AutoPtrHolderChecked
-    <
-        T,
-        T*,
-        Loki::AutoDeletePimpl
-    >
-    Init;
-};
-
-
-struct P1 : private Pimpl1 {P1();void f();void f()const;};
-struct P2 : private Pimpl2 {P2();void f();void f()const;};
-struct P3 : private Pimpl3 {P3();void f();void f()const;};
-struct P4 {Pimpl4 d;        P4();void f();void f()const;};
-struct P5 {Pimpl5 d;        P5();void f();void f()const;};
-struct P6 {Pimpl6 d;        P6();void f();void f()const;};
-
-struct R1 : private Rimpl1 {R1();void f();void f()const;};
-struct R2 : private Rimpl2 {R2();void f();void f()const;};
-struct R3 : private Rimpl3 {R3();void f();void f()const;};
-struct R4 {R<Rimpl4>::Init rinit; Rimpl4& d; R4();void f();void f()const;};
-struct R5 {R<Rimpl5>::Init rinit; Rimpl5& d; R5();void f();void f()const;};
-struct R6 {R<Rimpl6>::Init rinit; Rimpl6& d; R6();void f();void f()const;};
 
 
