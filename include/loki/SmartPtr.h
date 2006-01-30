@@ -102,7 +102,7 @@ namespace Loki
         StoredType pointee_;
     };
 
-	
+    
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class ArrayStorage
 ///
@@ -110,7 +110,7 @@ namespace Loki
 ///  Implementation of the ArrayStorage used by SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
 
-	template <class T>
+    template <class T>
     class ArrayStorage
     {
     public:
@@ -231,7 +231,7 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
     
     template <template <class, class> class ThreadingModel,
-	          class MX = LOKI_DEFAULT_MUTEX >
+              class MX = LOKI_DEFAULT_MUTEX >
     struct RefCountedMTAdj
     {
         template <class P>
@@ -837,11 +837,11 @@ namespace Loki
 ///  Don't propagate constness of pointed object (like a plain pointer)
 ////////////////////////////////////////////////////////////////////////////////
 
-	template<class T>
-	struct DontPropagateConst
-	{
-		typedef T Type;
-	};
+    template<class T>
+    struct DontPropagateConst
+    {
+        typedef T Type;
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class PropagateConst
@@ -849,12 +849,12 @@ namespace Loki
 ///  \ingroup SmartPointerConstGroup 
 ///  Propagate constness of pointed object (unlike a plain pointer)
 ////////////////////////////////////////////////////////////////////////////////
-	
-	template<class T>
-	struct PropagateConst
-	{
-		typedef const T Type;
-	};
+    
+    template<class T>
+    struct PropagateConst
+    {
+        typedef const T Type;
+    };
 
 // default will not break exisiting code
 #ifndef LOKI_DEFAULT_CONSTNESS
@@ -867,16 +867,16 @@ namespace Loki
 // The reason for all the fuss above
 ////////////////////////////////////////////////////////////////////////////////
 
-	template
-	<
-		typename T,
-		template <class> class OwnershipPolicy = RefCounted,
-		class ConversionPolicy = DisallowConversion,
-		template <class> class CheckingPolicy = AssertCheck,
-		template <class> class StoragePolicy = DefaultSPStorage,
-		template<class> class ConstnessPolicy = LOKI_DEFAULT_CONSTNESS 
-	 >
-	 class SmartPtr;
+    template
+    <
+        typename T,
+        template <class> class OwnershipPolicy = RefCounted,
+        class ConversionPolicy = DisallowConversion,
+        template <class> class CheckingPolicy = AssertCheck,
+        template <class> class StoragePolicy = DefaultSPStorage,
+        template<class> class ConstnessPolicy = LOKI_DEFAULT_CONSTNESS 
+     >
+     class SmartPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template SmartPtrDef (definition)
@@ -930,7 +930,7 @@ namespace Loki
         class ConversionPolicy,
         template <class> class CheckingPolicy,
         template <class> class StoragePolicy,
-		template<class> class ConstnessPolicy
+        template<class> class ConstnessPolicy
     >
     class SmartPtr
         : public StoragePolicy<T>
@@ -944,8 +944,8 @@ namespace Loki
         typedef ConversionPolicy CP;
         
     public:
-		typedef typename ConstnessPolicy<T>::Type* ConstPointerType;
-		typedef typename ConstnessPolicy<T>::Type& ConstReferenceType;
+        typedef typename ConstnessPolicy<T>::Type* ConstPointerType;
+        typedef typename ConstnessPolicy<T>::Type& ConstReferenceType;
 
         typedef typename SP::PointerType PointerType;
         typedef typename SP::StoredType StoredType;
@@ -1438,6 +1438,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.14  2006/01/30 20:07:38  syntheticpp
+// replace tabss
+//
 // Revision 1.13  2006/01/30 20:01:37  syntheticpp
 // add ArrayStorage and propagating constness policies
 //
