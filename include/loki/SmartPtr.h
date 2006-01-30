@@ -28,7 +28,8 @@
 ///  \ingroup   SmartPointerGroup
 ///  \defgroup  SmartPointerCheckingGroup Checking policies
 ///  \ingroup   SmartPointerGroup
-
+///  \defgroup  SmartPointerConstGroup Propagating constness policies
+///  \ingroup   SmartPointerGroup
 
 #include "SmallObj.h"
 #include "TypeManip.h"
@@ -100,6 +101,69 @@ namespace Loki
         // Data
         StoredType pointee_;
     };
+
+	
+////////////////////////////////////////////////////////////////////////////////
+///  \class ArrayStorage
+///
+///  \ingroup  SmartPointerStorageGroup 
+///  Implementation of the ArrayStorage used by SmartPtr
+////////////////////////////////////////////////////////////////////////////////
+
+	template <class T>
+    class ArrayStorage
+    {
+    public:
+        typedef T* StoredType;    // the type of the pointee_ object
+        typedef T* PointerType;   // type returned by operator->
+        typedef T& ReferenceType; // type returned by operator*
+
+        ArrayStorage() : pointee_(Default()) 
+        {}
+
+        // The storage policy doesn't initialize the stored pointer 
+        //     which will be initialized by the OwnershipPolicy's Clone fn
+        ArrayStorage(const ArrayStorage&) : pointee_(0)
+        {}
+
+        template <class U>
+        ArrayStorage(const ArrayStorage<U>&) : pointee_(0)
+        {}
+        
+        ArrayStorage(const StoredType& p) : pointee_(p) {}
+        
+        PointerType operator->() const { return pointee_; }
+        
+        ReferenceType operator*() const { return *pointee_; }
+        
+        void Swap(ArrayStorage& rhs)
+        { std::swap(pointee_, rhs.pointee_); }
+    
+        // Accessors
+        friend inline PointerType GetImpl(const ArrayStorage& sp)
+        { return sp.pointee_; }
+        
+        friend inline const StoredType& GetImplRef(const ArrayStorage& sp)
+        { return sp.pointee_; }
+
+        friend inline StoredType& GetImplRef(ArrayStorage& sp)
+        { return sp.pointee_; }
+
+    protected:
+        // Destroys the data stored
+        // (Destruction might be taken over by the OwnershipPolicy)
+        void Destroy()
+        { delete [] pointee_; }
+        
+        // Default value to initialize the pointer
+        static StoredType Default()
+        { return 0; }
+    
+    private:
+        // Data
+        StoredType pointee_;
+    };
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class RefCounted
@@ -767,19 +831,52 @@ namespace Loki
     };
 
 ////////////////////////////////////////////////////////////////////////////////
+///  \class DontPropagateConst
+///
+///  \ingroup SmartPointerConstGroup 
+///  Don't propagate constness of pointed object (like a plain pointer)
+////////////////////////////////////////////////////////////////////////////////
+
+	template<class T>
+	struct DontPropagateConst
+	{
+		typedef T Type;
+	};
+
+////////////////////////////////////////////////////////////////////////////////
+///  \class PropagateConst
+///
+///  \ingroup SmartPointerConstGroup 
+///  Propagate constness of pointed object (unlike a plain pointer)
+////////////////////////////////////////////////////////////////////////////////
+	
+	template<class T>
+	struct PropagateConst
+	{
+		typedef const T Type;
+	};
+
+// default will not break exisiting code
+#ifndef LOKI_DEFAULT_CONSTNESS
+#define LOKI_DEFAULT_CONSTNESS DontPropagateConst
+#endif
+
+
+////////////////////////////////////////////////////////////////////////////////
 // class template SmartPtr (declaration)
 // The reason for all the fuss above
 ////////////////////////////////////////////////////////////////////////////////
 
-    template
-    <
-        typename T,
-        template <class> class OwnershipPolicy = RefCounted,
-        class ConversionPolicy = DisallowConversion,
-        template <class> class CheckingPolicy = AssertCheck,
-        template <class> class StoragePolicy = DefaultSPStorage
-    >
-    class SmartPtr;
+	template
+	<
+		typename T,
+		template <class> class OwnershipPolicy = RefCounted,
+		class ConversionPolicy = DisallowConversion,
+		template <class> class CheckingPolicy = AssertCheck,
+		template <class> class StoragePolicy = DefaultSPStorage,
+		template<class> class ConstnessPolicy = LOKI_DEFAULT_CONSTNESS 
+	 >
+	 class SmartPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template SmartPtrDef (definition)
@@ -832,7 +929,8 @@ namespace Loki
         template <class> class OwnershipPolicy,
         class ConversionPolicy,
         template <class> class CheckingPolicy,
-        template <class> class StoragePolicy
+        template <class> class StoragePolicy,
+		template<class> class ConstnessPolicy
     >
     class SmartPtr
         : public StoragePolicy<T>
@@ -846,6 +944,9 @@ namespace Loki
         typedef ConversionPolicy CP;
         
     public:
+		typedef typename ConstnessPolicy<T>::Type* ConstPointerType;
+		typedef typename ConstnessPolicy<T>::Type& ConstReferenceType;
+
         typedef typename SP::PointerType PointerType;
         typedef typename SP::StoredType StoredType;
         typedef typename SP::ReferenceType ReferenceType;
@@ -980,7 +1081,7 @@ namespace Loki
             return SP::operator->();
         }
 
-        PointerType operator->() const
+        ConstPointerType operator->() const
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator->();
@@ -992,7 +1093,7 @@ namespace Loki
             return SP::operator*();
         }
         
-        ReferenceType operator*() const
+        ConstReferenceType operator*() const
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator*();
@@ -1337,6 +1438,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.13  2006/01/30 20:01:37  syntheticpp
+// add ArrayStorage and propagating constness policies
+//
 // Revision 1.12  2006/01/27 08:58:17  syntheticpp
 // replace unsigned int with the platform independent uintptr_t to make it more 64bit portable, and work around for mac gcc 4.0.0 bug in assert
 //
