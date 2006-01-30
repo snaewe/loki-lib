@@ -10,15 +10,37 @@ General:
 	- improved make.msvc.bat files (pk)
 	- cvs LOG keywords added (rs)
 	- removed old c style casts (lf)
+	- more warning enabled on gcc (lf)
 
 Singleton:
 	- support of allocators with a standard interface added (Thanks to Miguel A. Figueroa-Villanueva, pk)
+
+SmartPtr:
+	- ArrayStorage policy added (Thanks to Sam Miller, pk)
+	- fix in RefCounted for Mac OSX gcc 4.0.0 (Thanks to Sam Miller, pk)
+	- RefCounted ported to 64 bit (pk)
+	- add mutex policy (pk)
 	
 LockingPtr:
 	- wrong return types fixed (rs)
+	- add mutex policy (rs,pk)
+	- Locking::Ptr and Locking::ConstPtr added (rs,pk)
+	- use propagating const policy of SmartPtr.h (pk)
+	- macro switch LOKI_DEFAULT_CONSTNESS added for propagating constness (pk)
+	- multi threaded example added 
 	
 SafeFormat:
 	- definition moved to src/SafeFormat.cpp, it's now part of the library
+	
+Singleton:
+	- add mutex policy (pk)
+
+SmallObj:
+	- add mutex policy (pk)
+
+Threads:
+	- Mutex added (rs,pk)
+	- use Loki::Mutex instead of win32/posix mutexes in threading classes (rs,pk)
 
 
 CVS commits by Rich Sposato (rs), Lukas Fittl (lf)
