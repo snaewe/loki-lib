@@ -16,23 +16,10 @@
 #ifndef LOKI_LOCKING_PTR_INC_
 #define LOKI_LOCKING_PTR_INC_
 
+#include <loki/SmartPtr.h>
+
 namespace Loki
 {
-
-    template<class T>
-    struct NonConstObject
-    {
-        typedef T Type;
-    };
-
-    template<class T>
-    struct ConstObject
-    {
-        typedef const T Type;
-    };
-
-
-
     /** @class LockingPtr
      Locks a volatile object and casts away volatility so that the object
      can be safely used in a single-threaded region of code.
@@ -42,7 +29,7 @@ namespace Loki
      LockingPolicy class are to provide Lock and Unlock methods.
      */
     template < typename SharedObject, typename LockingPolicy = LOKI_DEFAULT_MUTEX, 
-               template<class> class ConstPolicy = NonConstObject >
+               template<class> class ConstPolicy = LOKI_DEFAULT_CONSTNESS >
     class LockingPtr
     {
     public:
@@ -101,72 +88,9 @@ namespace Loki
     template<typename SharedObject,    typename LockingPolicy = LOKI_DEFAULT_MUTEX>
     struct Locking
     {
-        typedef LockingPtr<SharedObject, LockingPolicy, NonConstObject> Ptr;
-        typedef LockingPtr<SharedObject, LockingPolicy, ConstObject>    ConstPtr;
+        typedef LockingPtr<SharedObject, LockingPolicy, DontPropagateConst> Ptr;
+        typedef LockingPtr<SharedObject, LockingPolicy, PropagateConst>    ConstPtr;
     };
-
-
-#if 0
-    /** @class ConstLockingPtr
-     Similar to LockingPtr, except that it returns pointers and references to
-     a const SharedObject instead of a mutuable SharedObject.
-     @see LockingPtr
-     */
-    template < typename SharedObject, typename LockingPolicy = LOKI_DEFAULT_MUTEX >
-    class ConstLockingPtr
-    {
-    public:
-
-        /** Constructor locks mutex associated with an object.
-         @param obj Reference to const object.
-         @param mtx Mutex used to control thread access to object.
-         */
-        ConstLockingPtr( volatile const SharedObject & object,
-            LockingPolicy & mutex )
-            : pObject_( const_cast< const SharedObject * >( &object ) ),
-            pMutex_( &mutex )
-        {
-            mutex.Lock();
-        }
-
-        /// Destructor unlocks the mutex.
-        ~ConstLockingPtr()
-        {
-            pMutex_->Unlock();
-        }
-
-        /// Star-operator dereferences pointer.
-        const SharedObject & operator * ()
-        {
-            return *pObject_;
-        }
-
-        /// Point-operator returns pointer to object.
-        const SharedObject * operator -> ()
-        {
-            return pObject_;
-        }
-
-    private:
-
-        /// Default constructor is not implemented.
-        ConstLockingPtr();
-
-        /// Copy-constructor is not implemented.
-        ConstLockingPtr( const ConstLockingPtr & );
-
-        /// Copy-assignment-operator is not implemented.
-        ConstLockingPtr & operator = ( const ConstLockingPtr & );
-
-        /// Pointer to the shared object.
-        const SharedObject * pObject_;
-
-        /// Pointer to the mutex.
-        LockingPolicy * pMutex_;
-
-    }; // end class ConstLockingPtr
-#endif
-
 
 } // namespace Loki
 
@@ -175,6 +99,9 @@ namespace Loki
 
 
 // $Log$
+// Revision 1.8  2006/01/30 20:33:01  syntheticpp
+// use policies from SmartPtr.h, clean up
+//
 // Revision 1.7  2006/01/22 13:37:33  syntheticpp
 // use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
 //
