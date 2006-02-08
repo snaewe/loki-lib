@@ -387,17 +387,28 @@ namespace Loki
             
             bool Release()
             {
-                if (next_ == this)
+                if ( NULL == next_ )
+                {
+                    assert( NULL == prev_ );
+                    // Return false so it does not try to destroy shared object
+                    // more than once.
+                    return false;
+                }
+                else if (next_ == this)
                 {   
                     assert(prev_ == this);
+                    // Set these to NULL to prevent re-entrancy.
+                    prev_ = NULL;
+                    next_ = NULL;
                     return true;
                 }
+                assert( this != prev_ );
+                assert( NULL != prev_ );
                 prev_->next_ = next_;
                 next_->prev_ = prev_;
                 return false;
-
             }
-            
+
             void Swap(RefLinkedBase& rhs)
             {
                 if (next_ == this)
@@ -1438,6 +1449,10 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.15  2006/02/08 18:12:29  rich_sposato
+// Fixed bug 1425890.  Last SmartPtr in linked chain NULLs its prev & next
+// pointers to prevent infinite recursion.  Added asserts.
+//
 // Revision 1.14  2006/01/30 20:07:38  syntheticpp
 // replace tabss
 //
