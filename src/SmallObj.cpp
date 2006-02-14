@@ -555,6 +555,10 @@ FixedAllocator::FixedAllocator()
 
 FixedAllocator::~FixedAllocator()
 {
+#ifdef DO_EXTRA_LOKI_TESTS
+    TrimEmptyChunk();
+    assert( chunks_.empty() && "Memory leak detected!" );
+#endif
     for ( ChunkIter i( chunks_.begin() ); i != chunks_.end(); ++i )
        i->Release();
 }
@@ -1222,6 +1226,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.28  2006/02/14 18:20:21  rich_sposato
+// Added check for memory leak inside destructor.
+//
 // Revision 1.27  2006/01/19 23:11:56  lfittl
 // - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
 // - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
