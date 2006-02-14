@@ -34,6 +34,8 @@
 #include "SmallObj.h"
 #include "TypeManip.h"
 #include "static_check.h"
+#include "RefToValue.h"
+
 #include <functional>
 #include <stdexcept>
 #include <cassert>
@@ -820,26 +822,6 @@ namespace Loki
         {}        
     };
 
-////////////////////////////////////////////////////////////////////////////////
-///  \class ByRef
-///
-///  \ingroup SmartPointerGroup 
-///  Transports a reference as a value
-///  Serves to implement the Colvin/Gibbons trick for SmartPtr
-////////////////////////////////////////////////////////////////////////////////
-
-    template <class T>
-    class ByRef
-    {
-    public:
-        ByRef(T& v) : value_(v) {}
-        operator T&() { return value_; }
-        // gcc doesn't like this:
-        // operator const T&() const { return value_; }
-    private:
-        ByRef& operator=(const ByRef &);
-        T& value_;
-    };
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class DontPropagateConst
@@ -1017,12 +999,12 @@ namespace Loki
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
 
-        SmartPtr(ByRef<SmartPtr> rhs)
+        SmartPtr(RefToValue<SmartPtr> rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {}
         
-        operator ByRef<SmartPtr>()
-        { return ByRef<SmartPtr>(*this); }
+        operator RefToValue<SmartPtr>()
+        { return RefToValue<SmartPtr>(*this); }
 
         SmartPtr& operator=(CopyArg& rhs)
         {
@@ -1449,6 +1431,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.16  2006/02/14 11:54:46  syntheticpp
+// rename SmartPtr-ByRef and ScopeGuard-ByRefHolder into RefToValue and move it to loki/RefToValue.h
+//
 // Revision 1.15  2006/02/08 18:12:29  rich_sposato
 // Fixed bug 1425890.  Last SmartPtr in linked chain NULLs its prev & next
 // pointers to prevent infinite recursion.  Added asserts.
