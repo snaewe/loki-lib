@@ -14,7 +14,6 @@
 
 
 #include <loki/ScopeGuard.h>
-#include <loki/RefToValue.h>
 
 #include <vector>
 #include <string>

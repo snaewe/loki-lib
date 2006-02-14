@@ -17,6 +17,8 @@
 
 // $Header$
 
+#include <loki/RefToValue.h>
+
 /// \defgroup ExceptionGroup Exception-safe code
 
 namespace Loki
@@ -361,6 +363,9 @@ namespace Loki
 #endif //LOKI_SCOPEGUARD_H_
 
 // $Log$
+// Revision 1.6  2006/02/14 12:11:06  syntheticpp
+// don't break old ScopeGuard code
+//
 // Revision 1.5  2006/02/14 11:54:46  syntheticpp
 // rename SmartPtr-ByRef and ScopeGuard-ByRefHolder into RefToValue and move it to loki/RefToValue.h
 //
