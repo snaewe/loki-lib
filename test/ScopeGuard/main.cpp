@@ -13,8 +13,9 @@
 // $Header:
 
 
-
 #include <loki/ScopeGuard.h>
+#include <loki/RefToValue.h>
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -22,7 +23,7 @@
 
 void Decrement(int& x) 
 { 
-	--x; 
+    --x; 
 }
 
 struct UserDatabase
@@ -37,7 +38,7 @@ class User
 {
 public:
     User(UserDatabase* db) : fCount(0), pDB_(db)
-	{}
+    {}
 
     std::string GetName();
 
@@ -78,10 +79,10 @@ void User::AddFriendGuarded(User& newFriend)
     
     fCount++;
     Loki::ScopeGuard guardRef = Loki::MakeGuard(Decrement, Loki::ByRef(fCount));
-    (void) guardRef;
 
     pDB_->AddFriend(GetName(), newFriend.GetName());
     guard.Dismiss();
+    guardRef.Dismiss();
 }
 
 
@@ -95,12 +96,12 @@ int main()
     try{ u1.AddFriend(u2); }
     catch (...){}
     std::cout << "u1 countFriends: " << u1.countFriends() << "\n";
-	std::cout << "u1 fCount      : " << u1.fCount << "\n";
+    std::cout << "u1 fCount      : " << u1.fCount << "\n";
 
     try{ u2.AddFriendGuarded(u1); }
     catch (...){}
     std::cout << "u2 countFriends: " << u2.countFriends() << "\n";
-	std::cout << "u2 fCount      : " << u2.fCount << "\n";
+    std::cout << "u2 fCount      : " << u2.fCount << "\n";
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");
