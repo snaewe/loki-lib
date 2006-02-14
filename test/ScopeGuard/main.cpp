@@ -19,6 +19,12 @@
 #include <string>
 #include <iostream>
 
+
+void Decrement(int& x) 
+{ 
+	--x; 
+}
+
 struct UserDatabase
 {
     void AddFriend(const std::string&, const std::string&)
@@ -30,7 +36,8 @@ struct UserDatabase
 class User
 {
 public:
-    User(UserDatabase* db) : pDB_(db){}
+    User(UserDatabase* db) : fCount(0), pDB_(db)
+	{}
 
     std::string GetName();
 
@@ -38,6 +45,8 @@ public:
     void AddFriendGuarded(User& newFriend);
 
     size_t countFriends();
+   
+    int fCount;
 
 private:
     typedef std::vector<User*> UserCont;
@@ -58,6 +67,7 @@ size_t User::countFriends()
 void User::AddFriend(User& newFriend)
 {
     friends_.push_back(&newFriend);
+    fCount++;
     pDB_->AddFriend(GetName(), newFriend.GetName());
 }
 
@@ -65,6 +75,11 @@ void User::AddFriendGuarded(User& newFriend)
 {
     friends_.push_back(&newFriend);
     Loki::ScopeGuard guard = Loki::MakeObjGuard(friends_, &UserCont::pop_back);
+    
+    fCount++;
+    Loki::ScopeGuard guardRef = Loki::MakeGuard(Decrement, Loki::ByRef(fCount));
+    (void) guardRef;
+
     pDB_->AddFriend(GetName(), newFriend.GetName());
     guard.Dismiss();
 }
@@ -80,10 +95,12 @@ int main()
     try{ u1.AddFriend(u2); }
     catch (...){}
     std::cout << "u1 countFriends: " << u1.countFriends() << "\n";
+	std::cout << "u1 fCount      : " << u1.fCount << "\n";
 
     try{ u2.AddFriendGuarded(u1); }
     catch (...){}
     std::cout << "u2 countFriends: " << u2.countFriends() << "\n";
+	std::cout << "u2 fCount      : " << u2.fCount << "\n";
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");
