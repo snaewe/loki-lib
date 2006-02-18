@@ -39,7 +39,7 @@ namespace Loki
     namespace Private
     {
         template <typename R, template <class, class> class ThreadingModel>
-        struct FunctorImplBase : public SmallObject<ThreadingModel>
+        struct FunctorImplBase : public SmallValueObject<ThreadingModel>
         {
             typedef R ResultType;
             
@@ -59,8 +59,10 @@ namespace Loki
             typedef EmptyType Parm14;
             typedef EmptyType Parm15;
 
-            inline FunctorImplBase(){};
-            inline FunctorImplBase(const FunctorImplBase&){};
+            inline FunctorImplBase() :
+                SmallValueObject() {};
+            inline FunctorImplBase(const FunctorImplBase&) :
+                SmallValueObject() {};
 
             virtual FunctorImplBase* DoClone() const = 0;
             template <class U>
@@ -1662,6 +1664,10 @@ namespace Loki
 #endif  // FUNCTOR_INC_
 
 // $Log$
+// Revision 1.16  2006/02/18 19:37:40  rich_sposato
+// Added explicit call to base copy-constructor.  Changed base class from
+// SmallObject to SmallValueObject.
+//
 // Revision 1.15  2006/01/22 13:31:45  syntheticpp
 // add additional template parameter for the changed threading classes
 //
