@@ -16,7 +16,7 @@
 #ifndef LOKI_LOCKING_PTR_INC_
 #define LOKI_LOCKING_PTR_INC_
 
-#include <loki/SmartPtr.h>
+#include <loki/ConstPolicy.h>
 
 namespace Loki
 {
@@ -99,6 +99,9 @@ namespace Loki
 
 
 // $Log$
+// Revision 1.9  2006/02/19 22:04:28  rich_sposato
+// Moved Const-policy structs from SmartPtr.h to ConstPolicy.h.
+//
 // Revision 1.8  2006/01/30 20:33:01  syntheticpp
 // use policies from SmartPtr.h, clean up
 //

@@ -28,13 +28,12 @@
 ///  \ingroup   SmartPointerGroup
 ///  \defgroup  SmartPointerCheckingGroup Checking policies
 ///  \ingroup   SmartPointerGroup
-///  \defgroup  SmartPointerConstGroup Propagating constness policies
-///  \ingroup   SmartPointerGroup
 
 #include "SmallObj.h"
 #include "TypeManip.h"
 #include "static_check.h"
 #include "RefToValue.h"
+#include "ConstPolicy.h"
 
 #include <functional>
 #include <stdexcept>
@@ -824,38 +823,6 @@ namespace Loki
 
 
 ////////////////////////////////////////////////////////////////////////////////
-///  \class DontPropagateConst
-///
-///  \ingroup SmartPointerConstGroup 
-///  Don't propagate constness of pointed object (like a plain pointer)
-////////////////////////////////////////////////////////////////////////////////
-
-    template<class T>
-    struct DontPropagateConst
-    {
-        typedef T Type;
-    };
-
-////////////////////////////////////////////////////////////////////////////////
-///  \class PropagateConst
-///
-///  \ingroup SmartPointerConstGroup 
-///  Propagate constness of pointed object (unlike a plain pointer)
-////////////////////////////////////////////////////////////////////////////////
-    
-    template<class T>
-    struct PropagateConst
-    {
-        typedef const T Type;
-    };
-
-// default will not break exisiting code
-#ifndef LOKI_DEFAULT_CONSTNESS
-#define LOKI_DEFAULT_CONSTNESS DontPropagateConst
-#endif
-
-
-////////////////////////////////////////////////////////////////////////////////
 // class template SmartPtr (declaration)
 // The reason for all the fuss above
 ////////////////////////////////////////////////////////////////////////////////
@@ -1431,6 +1398,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.17  2006/02/19 22:04:28  rich_sposato
+// Moved Const-policy structs from SmartPtr.h to ConstPolicy.h.
+//
 // Revision 1.16  2006/02/14 11:54:46  syntheticpp
 // rename SmartPtr-ByRef and ScopeGuard-ByRefHolder into RefToValue and move it to loki/RefToValue.h
 //
