@@ -60,10 +60,11 @@ namespace Loki
             typedef EmptyType Parm15;
 
             inline FunctorImplBase() :
-                SmallValueObject() {};
+                SmallValueObject<ThreadingModel>() {}
             inline FunctorImplBase(const FunctorImplBase&) :
-                SmallValueObject() {};
-
+                SmallValueObject<ThreadingModel>() {}
+            
+            virtual ~FunctorImplBase(){}
             virtual FunctorImplBase* DoClone() const = 0;
             template <class U>
             static U* Clone(U* pObj)
@@ -1664,6 +1665,9 @@ namespace Loki
 #endif  // FUNCTOR_INC_
 
 // $Log$
+// Revision 1.17  2006/02/20 16:08:32  syntheticpp
+// gcc needs the template parameter, gcc warns about missing virtual destructor (because there is already a virtual function)
+//
 // Revision 1.16  2006/02/18 19:37:40  rich_sposato
 // Added explicit call to base copy-constructor.  Changed base class from
 // SmallObject to SmallValueObject.
