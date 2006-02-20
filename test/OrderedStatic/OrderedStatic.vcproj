@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="OrderedStatic"
 	ProjectGUID="{0DCBE03A-DAC7-4669-B29B-102D8F563736}"
 	RootNamespace="OrderedStatic"
@@ -324,6 +324,10 @@
 			>
 			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\OrderedStatic.cpp"
 				>
 			</File>
 		</Filter>
