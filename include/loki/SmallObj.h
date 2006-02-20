@@ -41,7 +41,7 @@
 #endif
 
 #if defined(LOKI_SMALL_OBJECT_USE_NEW_ARRAY) && defined(_MSC_VER)
-#pragma message("Don't define LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a Microsoft compiler to prevet memory leaks.")
+#pragma message("Don't define LOKI_SMALL_OBJECT_USE_NEW_ARRAY when using a Microsoft compiler to prevent memory leaks.")
 #pragma message("now calling '#undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY'")
 #undef LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 #endif
@@ -633,6 +633,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.27  2006/02/20 21:56:06  rich_sposato
+// Fixed typo.
+//
 // Revision 1.26  2006/01/22 13:37:33  syntheticpp
 // use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
 //
