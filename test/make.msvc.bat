@@ -3,10 +3,6 @@ cd Factory
 call make.msvc.bat
 cd ..
 
-cd flex_string
-call make.msvc.bat
-cd ..
-
 cd Longevity
 call make.msvc.bat
 cd ..
@@ -43,3 +39,6 @@ cd Visitor
 call make.msvc.bat
 cd ..
 
+cd flex_string
+call make.msvc.bat
+cd ..
