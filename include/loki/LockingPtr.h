@@ -84,14 +84,6 @@ namespace Loki
 
     }; // end class LockingPtr
 
-
-    template<typename SharedObject,    typename LockingPolicy = LOKI_DEFAULT_MUTEX>
-    struct Locking
-    {
-        typedef LockingPtr<SharedObject, LockingPolicy, DontPropagateConst> Ptr;
-        typedef LockingPtr<SharedObject, LockingPolicy, PropagateConst>    ConstPtr;
-    };
-
 } // namespace Loki
 
 #endif  // end file guardian
@@ -99,6 +91,9 @@ namespace Loki
 
 
 // $Log$
+// Revision 1.10  2006/02/20 21:45:40  rich_sposato
+// Removed struct Locking - no longer needed.
+//
 // Revision 1.9  2006/02/19 22:04:28  rich_sposato
 // Moved Const-policy structs from SmartPtr.h to ConstPolicy.h.
 //
