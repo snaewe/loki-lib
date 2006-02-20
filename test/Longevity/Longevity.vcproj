@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Longevity"
 	ProjectGUID="{1333D945-B228-4845-9C91-C1B67AEEAED5}"
 	RootNamespace="Longevity"
@@ -324,6 +324,10 @@
 			>
 			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\Singleton.cpp"
 				>
 			</File>
 		</Filter>

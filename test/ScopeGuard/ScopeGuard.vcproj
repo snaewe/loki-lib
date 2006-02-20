@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="ScopeGuard"
 	ProjectGUID="{D5E7BAC2-A961-4ECC-ADA4-82D7510952BA}"
 	RootNamespace="ScopeGuard"
@@ -214,18 +214,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\loki\NullType.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\ScopeGuard.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\ScopeGuard.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\ScopeGuard.h"
 				>
 			</File>
 			<File
