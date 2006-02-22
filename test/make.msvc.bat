@@ -1,4 +1,8 @@
 
+cd DeletableSingleton
+call make.msvc.bat
+cd ..
+
 cd Factory
 call make.msvc.bat
 cd ..
