@@ -720,6 +720,9 @@ namespace Loki
         void OnDereference(P val)
         { OnInit(val); }
         
+        void OnDereference(P val) const
+        { OnInit(val); }
+
         void Swap(RejectNull&)
         {}        
     };
@@ -751,7 +754,10 @@ namespace Loki
 
         void OnDereference(P val)
         { OnInit(val); }
-        
+
+        void OnDereference(P val) const
+        { OnInit(val); }
+
         void Swap(RejectNullStrict&)
         {}        
     };
@@ -1353,6 +1359,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.19  2006/02/25 13:01:40  syntheticpp
+// add const member function OnDereference to non static RejectNull policies
+//
 // Revision 1.18  2006/02/25 01:52:17  rich_sposato
 // Moved a monolithic base class from header file to new source file.
 //
