@@ -1,4 +1,4 @@
-OBJ = Singleton.o SmallObj.o OrderedStatic.o SafeFormat.o
+OBJ = OrderedStatic.o  SafeFormat.o Singleton.o SmallObj.o  SmartPtr.o
 BIN = ../lib/libloki.a
 CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2
 CPPFLAGS = -I../include -DNDEBUG
