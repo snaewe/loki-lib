@@ -1,5 +1,5 @@
-SUBTARGETS = DeletableSingleton Factory Longevity OrderedStatic Pimpl RegressionTest \
-	SafeFormat ScopeGuard Singleton SmallObj Visitor flex_string
+SUBTARGETS = \DeletableSingleton Factory Longevity OrderedStatic Pimpl RegressionTest \
+	SafeFormat ScopeGuard Singleton SmallObj SmartPtr Visitor flex_string
 SUBTARGETS_CLEAN = $(foreach SUBTARGET,$(SUBTARGETS),$(SUBTARGET)-clean)
 
 .PHONY: clean all $(SUBTARGETS) $(SUBTARGETS_CLEAN)
