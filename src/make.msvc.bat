@@ -1,7 +1,7 @@
 
-cl -c -Zm200 -O2 -DNDEBUG -MT -EHsc -GR -W4 -I"." -I"..\include" SmallObj.cpp Singleton.cpp OrderedStatic.cpp SafeFormat.cpp
+cl -c -Zm200 -O2 -DNDEBUG -MT -EHsc -GR -W4 -I"." -I"..\include" OrderedStatic.cpp SafeFormat.cpp SmallObj.cpp SmartPtr.cpp Singleton.cpp
 
-link /lib /NOLOGO /OUT:"..\lib\loki.lib" SmallObj.obj Singleton.obj OrderedStatic.obj SafeFormat.obj
+link /lib /NOLOGO /OUT:"..\lib\loki.lib" OrderedStatic.obj SafeFormat.obj SmallObj.obj SmartPtr.obj Singleton.obj
 
 del *.obj
 
