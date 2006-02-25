@@ -311,6 +311,10 @@
 				RelativePath=".\SmallObj.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\SmartPtr.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
