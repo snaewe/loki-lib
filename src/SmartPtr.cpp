@@ -111,13 +111,16 @@ void RefLinkedBase::Swap(RefLinkedBase& rhs)
 
 // ----------------------------------------------------------------------------
 
-}; // end namespace Private
+} // end namespace Private
 
-}; // end namespace Loki
+} // end namespace Loki
 
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.2  2006/02/25 13:07:15  syntheticpp
+// gcc does not like ; when closing a namespace
+//
 // Revision 1.1  2006/02/25 01:52:17  rich_sposato
 // Moved a monolithic base class from header file to new source file.
 //
