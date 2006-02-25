@@ -39,6 +39,10 @@ cd SmallObj
 call make.msvc.bat
 cd ..
 
+cd SmartPtr
+call make.msvc.bat
+cd ..
+
 cd Visitor
 call make.msvc.bat
 cd ..
