@@ -41,6 +41,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeletableSingleton", "test\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DefaultAlloc", "test\SmallObj\DefaultAlloc.vcproj", "{D490B134-B794-42CF-8AF8-9FDA524B9D3B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartPtr", "test\SmartPtr\SmartPtr.vcproj", "{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -103,6 +105,10 @@ Global
 		{D490B134-B794-42CF-8AF8-9FDA524B9D3B}.Debug|Win32.Build.0 = Debug|Win32
 		{D490B134-B794-42CF-8AF8-9FDA524B9D3B}.Release|Win32.ActiveCfg = Release|Win32
 		{D490B134-B794-42CF-8AF8-9FDA524B9D3B}.Release|Win32.Build.0 = Release|Win32
+		{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}.Debug|Win32.Build.0 = Debug|Win32
+		{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}.Release|Win32.ActiveCfg = Release|Win32
+		{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
