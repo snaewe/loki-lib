@@ -207,6 +207,7 @@ namespace Loki
             if (!--*pCount_)
             {
                 SmallObject<>::operator delete(pCount_, sizeof(uintptr_t));
+                pCount_ = NULL;
                 return true;
             }
             return false;
@@ -353,7 +354,7 @@ namespace Loki
         static P Clone(const P& val)
         { return val->Clone(); }
         
-        static bool Release(const P& val)
+        static bool Release(const P&)
         { return true; }
         
         static void Swap(DeepCopy&)
@@ -377,79 +378,13 @@ namespace Loki
         public:
             RefLinkedBase() 
             { prev_ = next_ = this; }
-            
-            RefLinkedBase(const RefLinkedBase& rhs) 
-            {
-                prev_ = &rhs;
-                next_ = rhs.next_;
-                prev_->next_ = this;
-                next_->prev_ = this;
-            }
-            
-            bool Release()
-            {
-                if ( NULL == next_ )
-                {
-                    assert( NULL == prev_ );
-                    // Return false so it does not try to destroy shared object
-                    // more than once.
-                    return false;
-                }
-                else if (next_ == this)
-                {   
-                    assert(prev_ == this);
-                    // Set these to NULL to prevent re-entrancy.
-                    prev_ = NULL;
-                    next_ = NULL;
-                    return true;
-                }
-                assert( this != prev_ );
-                assert( NULL != prev_ );
-                prev_->next_ = next_;
-                next_->prev_ = prev_;
-                return false;
-            }
 
-            void Swap(RefLinkedBase& rhs)
-            {
-                if (next_ == this)
-                {
-                    assert(prev_ == this);
-                    if (rhs.next_ == &rhs)
-                    {
-                        assert(rhs.prev_ == &rhs);
-                        // both lists are empty, nothing 2 do
-                        return;
-                    }
-                    prev_ = rhs.prev_;
-                    next_ = rhs.next_;
-                    prev_->next_ = next_->prev_ = this;
-                    rhs.next_ = rhs.prev_ = &rhs;
-                    return;
-                }
-                if (rhs.next_ == &rhs)
-                {
-                    rhs.Swap(*this);
-                    return;
-                }
-                if (next_ == &rhs ) // neighbours
-                {
-                    std::swap(prev_, next_);
-                    std::swap(rhs.prev_, rhs.next_);
-                    std::swap(rhs.prev_, next_);
-                    std::swap(rhs.prev_->next_,next_->prev_);
-                }
-                else                
-                {
-                    std::swap(prev_, rhs.prev_);
-                    std::swap(next_, rhs.next_);
-                    std::swap(prev_->next_, rhs.prev_->next_);
-                    std::swap(next_->prev_, rhs.next_->prev_);
-                }
-                
-                assert( next_ == this ? prev_ == this : prev_ != this);
-            }
-                
+            RefLinkedBase(const RefLinkedBase& rhs);
+
+            bool Release();
+
+            void Swap(RefLinkedBase& rhs);
+
             enum { destructiveCopy = false };
 
         private:
@@ -890,7 +825,7 @@ namespace Loki
         class ConversionPolicy,
         template <class> class CheckingPolicy,
         template <class> class StoragePolicy,
-        template<class> class ConstnessPolicy
+        template <class> class ConstnessPolicy
     >
     class SmartPtr
         : public StoragePolicy<T>
@@ -948,9 +883,10 @@ namespace Loki
             template <class> class OP1,
             class CP1,
             template <class> class KP1,
-            template <class> class SP1
+            template <class> class SP1,
+            template <class> class CNP1
         >
-        SmartPtr(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+        SmartPtr(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
 
@@ -960,9 +896,10 @@ namespace Loki
             template <class> class OP1,
             class CP1,
             template <class> class KP1,
-            template <class> class SP1
+            template <class> class SP1,
+            template <class> class CNP1
         >
-        SmartPtr(SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+        SmartPtr(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
 
@@ -986,9 +923,10 @@ namespace Loki
             template <class> class OP1,
             class CP1,
             template <class> class KP1,
-            template <class> class SP1
+            template <class> class SP1,
+            template <class> class CNP1
         >
-        SmartPtr& operator=(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+        SmartPtr& operator=(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         {
             SmartPtr temp(rhs);
             temp.Swap(*this);
@@ -1001,9 +939,10 @@ namespace Loki
             template <class> class OP1,
             class CP1,
             template <class> class KP1,
-            template <class> class SP1
+            template <class> class SP1,
+            template <class> class CNP1
         >
-        SmartPtr& operator=(SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs)
+        SmartPtr& operator=(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         {
             SmartPtr temp(rhs);
             temp.Swap(*this);
@@ -1070,9 +1009,10 @@ namespace Loki
             template <class> class OP1,
             class CP1,
             template <class> class KP1,
-            template <class> class SP1
+            template <class> class SP1,
+            template <class> class CNP1
         >
-        bool operator==(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs) const
+        bool operator==(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs) const
         { return GetImpl(*this) == GetImpl(rhs); }
 
         // Ambiguity buster
@@ -1082,9 +1022,10 @@ namespace Loki
             template <class> class OP1,
             class CP1,
             template <class> class KP1,
-            template <class> class SP1
+            template <class> class SP1,
+            template <class> class CNP1
         >
-        bool operator!=(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs) const
+        bool operator!=(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs) const
         { return !(*this == rhs); }
 
         // Ambiguity buster
@@ -1094,9 +1035,10 @@ namespace Loki
             template <class> class OP1,
             class CP1,
             template <class> class KP1,
-            template <class> class SP1
+            template <class> class SP1,
+            template <class> class CNP1
         >
-        bool operator<(const SmartPtr<T1, OP1, CP1, KP1, SP1>& rhs) const
+        bool operator<(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs) const
         { return GetImpl(*this) < GetImpl(rhs); }
 
     private:
@@ -1150,9 +1092,10 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
-    inline bool operator==(const SmartPtr<T, OP, CP, KP, SP>& lhs,
+    inline bool operator==(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs)
     { return GetImpl(lhs) == rhs; }
     
@@ -1168,10 +1111,11 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
     inline bool operator==(U* lhs,
-        const SmartPtr<T, OP, CP, KP, SP>& rhs)
+        const SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs)
     { return rhs == lhs; }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1186,9 +1130,10 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
-    inline bool operator!=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
+    inline bool operator!=(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs)
     { return !(lhs == rhs); }
     
@@ -1204,10 +1149,11 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
     inline bool operator!=(U* lhs,
-        const SmartPtr<T, OP, CP, KP, SP>& rhs)
+        const SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs)
     { return rhs != lhs; }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1222,9 +1168,10 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
-    inline bool operator<(const SmartPtr<T, OP, CP, KP, SP>& lhs,
+    inline bool operator<(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs);
         
 ////////////////////////////////////////////////////////////////////////////////
@@ -1239,10 +1186,11 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
     inline bool operator<(U* lhs,
-        const SmartPtr<T, OP, CP, KP, SP>& rhs);
+        const SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs);
         
 ////////////////////////////////////////////////////////////////////////////////
 //  operator> for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
@@ -1256,9 +1204,10 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
-    inline bool operator>(const SmartPtr<T, OP, CP, KP, SP>& lhs,
+    inline bool operator>(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs)
     { return rhs < lhs; }
         
@@ -1274,10 +1223,11 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
     inline bool operator>(U* lhs,
-        const SmartPtr<T, OP, CP, KP, SP>& rhs)
+        const SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs)
     { return rhs < lhs; }
   
 ////////////////////////////////////////////////////////////////////////////////
@@ -1292,9 +1242,10 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
-    inline bool operator<=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
+    inline bool operator<=(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs)
     { return !(rhs < lhs); }
         
@@ -1310,10 +1261,11 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
     inline bool operator<=(U* lhs,
-        const SmartPtr<T, OP, CP, KP, SP>& rhs)
+        const SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs)
     { return !(rhs < lhs); }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1328,9 +1280,10 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
-    inline bool operator>=(const SmartPtr<T, OP, CP, KP, SP>& lhs,
+    inline bool operator>=(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs)
     { return !(lhs < rhs); }
         
@@ -1346,10 +1299,11 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
+        template <class> class CNP1,
         typename U
     >
     inline bool operator>=(U* lhs,
-        const SmartPtr<T, OP, CP, KP, SP>& rhs)
+        const SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs)
     { return !(lhs < rhs); }
 
 } // namespace Loki
@@ -1367,14 +1321,15 @@ namespace std
         template <class> class OP,
         class CP,
         template <class> class KP,
-        template <class> class SP
+        template <class> class SP,
+        template <class> class CNP1
     >
-    struct less< Loki::SmartPtr<T, OP, CP, KP, SP> >
-        : public binary_function<Loki::SmartPtr<T, OP, CP, KP, SP>,
-            Loki::SmartPtr<T, OP, CP, KP, SP>, bool>
+    struct less< Loki::SmartPtr<T, OP, CP, KP, SP, CNP1 > >
+        : public binary_function<Loki::SmartPtr<T, OP, CP, KP, SP, CNP1 >,
+            Loki::SmartPtr<T, OP, CP, KP, SP, CNP1 >, bool>
     {
-        bool operator()(const Loki::SmartPtr<T, OP, CP, KP, SP>& lhs,
-            const Loki::SmartPtr<T, OP, CP, KP, SP>& rhs) const
+        bool operator()(const Loki::SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
+            const Loki::SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs) const
         { return less<T*>()(GetImpl(lhs), GetImpl(rhs)); }
     };
 }
@@ -1398,6 +1353,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.18  2006/02/25 01:52:17  rich_sposato
+// Moved a monolithic base class from header file to new source file.
+//
 // Revision 1.17  2006/02/19 22:04:28  rich_sposato
 // Moved Const-policy structs from SmartPtr.h to ConstPolicy.h.
 //
