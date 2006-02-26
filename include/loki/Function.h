@@ -9,6 +9,8 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_FUNCTION_INC_
+#define LOKI_FUNCTION_INC_
 
 #define LOKI_ENABLE_FUNCTION
 
@@ -349,7 +351,12 @@ namespace Loki
 
 }// namespace Loki
 
+#endif
+
 // $Log$
+// Revision 1.9  2006/02/26 23:39:59  syntheticpp
+// guard including
+//
 // Revision 1.8  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
