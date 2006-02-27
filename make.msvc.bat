@@ -68,6 +68,7 @@ if defined LOKI_TMP (
 
 cd src
 call make.msvc.bat
+call make.msvc.dll.bat
 cd ..
 
 cd test

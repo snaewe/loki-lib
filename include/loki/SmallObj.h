@@ -19,6 +19,7 @@
 #ifndef LOKI_SMALLOBJ_INC_
 #define LOKI_SMALLOBJ_INC_
 
+#include "LokiExport.h"
 #include "Threads.h"
 #include "Singleton.h"
 #include <cstddef>
@@ -83,7 +84,7 @@ namespace Loki
      Designed to be a non-templated base class of AllocatorSingleton so that
      implementation details can be safely hidden in the source code file.
      */
-    class SmallObjAllocator
+    class LOKI_EXPORT SmallObjAllocator
     {
     protected:
         /** The only available constructor needs certain parameters in order to
@@ -633,6 +634,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.28  2006/02/27 19:59:20  syntheticpp
+// add support of loki.dll
+//
 // Revision 1.27  2006/02/20 21:56:06  rich_sposato
 // Fixed typo.
 //
