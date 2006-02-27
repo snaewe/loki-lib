@@ -18,6 +18,7 @@
 
 // $Header$
 
+#include "LokiExport.h"
 #include "Threads.h"
 #include <algorithm>
 #include <stdexcept>
@@ -27,7 +28,6 @@
 #include <vector>
 #include <list>
 #include <memory>
-
 
 #ifdef _MSC_VER
 #define LOKI_C_CALLING_CONVENTION_QUALIFIER __cdecl 
@@ -48,7 +48,12 @@ namespace Loki
 
     namespace Private
     {
+
+#ifndef LOKI_MAKE_DLL
         void LOKI_C_CALLING_CONVENTION_QUALIFIER AtExitFn(); // declaration needed below   
+#else
+		void LOKI_EXPORT AtExitFn();
+#endif
 
         class LifetimeTracker;
 
@@ -58,7 +63,7 @@ namespace Loki
         // Helper data
         // std::list because of the inserts
         typedef std::list<LifetimeTracker*> TrackerArray;
-        extern TrackerArray* pTrackerArray;
+        extern LOKI_EXPORT TrackerArray* pTrackerArray;
 #else
         // Helper data
         typedef LifetimeTracker** TrackerArray;
@@ -841,6 +846,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.25  2006/02/27 19:59:20  syntheticpp
+// add support of loki.dll
+//
 // Revision 1.24  2006/01/22 13:37:33  syntheticpp
 // use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
 //

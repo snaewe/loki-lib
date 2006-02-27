@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
-// Copyright (c) 2005 Peter Kmmel
+// Copyright (c) 2005 Peter Kümmel
 // Permission to use, copy, modify, distribute and sell this software for any 
 //     purpose is hereby granted without fee, provided that the above copyright 
 //     notice appear in all copies and that both that copyright notice and this 
@@ -10,19 +10,21 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// usage: see test/OrderedStatic
-
 #ifndef LOKI_ORDEREDSTATIC_H_
 #define LOKI_ORDEREDSTATIC_H_
 
 // $Header$
 
+
 #include <vector>
 #include <iostream>
 
+#include "LokiExport.h"
 #include "Singleton.h"
 #include "Typelist.h"
 #include "Sequence.h"
+
+// usage: see test/OrderedStatic
 
 namespace Loki
 {
@@ -32,7 +34,7 @@ namespace Loki
         // polymorph base class for OrderedStatic template,
         // necessary because of the creator
         ////////////////////////////////////////////////////////////////////////////////
-        class OrderedStaticCreatorFunc
+        class LOKI_EXPORT OrderedStaticCreatorFunc
         {
         public:
             virtual void createObject() = 0;
@@ -92,7 +94,7 @@ namespace Loki
         // OrderedStaticManagerClass implements details 
         // OrderedStaticManager is then defined as a Singleton
         ////////////////////////////////////////////////////////////////////////////////
-        class OrderedStaticManagerClass
+        class LOKI_EXPORT OrderedStaticManagerClass
         {
         public:
             OrderedStaticManagerClass();
@@ -223,6 +225,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.10  2006/02/27 19:59:20  syntheticpp
+// add support of loki.dll
+//
 // Revision 1.9  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //

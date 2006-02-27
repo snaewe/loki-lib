@@ -29,6 +29,7 @@
 ///  \defgroup  SmartPointerCheckingGroup Checking policies
 ///  \ingroup   SmartPointerGroup
 
+#include "LokiExport.h"
 #include "SmallObj.h"
 #include "TypeManip.h"
 #include "static_check.h"
@@ -373,7 +374,7 @@ namespace Loki
 
     namespace Private
     {
-        class RefLinkedBase
+        class LOKI_EXPORT RefLinkedBase
         {
         public:
             RefLinkedBase() 
@@ -1361,6 +1362,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.21  2006/02/27 19:59:20  syntheticpp
+// add support of loki.dll
+//
 // Revision 1.20  2006/02/25 13:48:54  syntheticpp
 // add constness policy to doc
 //
