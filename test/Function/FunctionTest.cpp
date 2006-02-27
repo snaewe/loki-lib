@@ -13,13 +13,18 @@
 #include <utility>
 #include <boost/test/minimal.hpp>
 
-//#define TEST_LOKI_FUNCTION
+#define TEST_LOKI_FUNCTION
 #ifndef TEST_LOKI_FUNCTION
 
 #include <boost/function.hpp>
 using namespace boost;
 
 #else
+
+#define LOKI_CLASS_LEVEL_THREADING
+
+// disable to see "static instantiation order fiasco" crash
+#define LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
 
 #include <boost/ref.hpp>
 #include <loki/Function.h>
@@ -64,6 +69,12 @@ struct add_to_obj
     int value;
 };
 
+function<void()> static_func(write_five);
+
+static void test_static_function()
+{
+    static_func();
+}
 
 static void test_zero_args()
 {
@@ -754,6 +765,7 @@ static void test_call()
 
 int test_main(int, char* [])
 {
+    test_static_function();
     test_zero_args();
     test_one_arg();
     test_two_args();
