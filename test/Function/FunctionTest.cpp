@@ -13,7 +13,7 @@
 #include <utility>
 #include <boost/test/minimal.hpp>
 
-#define TEST_LOKI_FUNCTION
+//#define TEST_LOKI_FUNCTION
 #ifndef TEST_LOKI_FUNCTION
 
 #include <boost/function.hpp>
@@ -713,33 +713,21 @@ static void test_ref()
 
 static void test_exception()
 {
-#ifndef TEST_LOKI_FUNCTION
-    boost::function<int (int, int)> f;
-#else
-    Loki::Function<int (int, int)> f;
-#endif
+    function<int (int, int)> f;
 
     try
     {
         f(5, 4);
         BOOST_CHECK(false);
     }
-#ifndef TEST_LOKI_FUNCTION
-    catch(boost::bad_function_call)
-#else
-    catch(Loki::bad_function_call)
-#endif
+    catch(bad_function_call)
     {
         // okay
     }
 }
 
 
-#ifndef TEST_LOKI_FUNCTION
-typedef boost::function< void * (void * reader) > reader_type;
-#else
-typedef Loki::Function< void * (void * reader) > reader_type;
-#endif
+typedef function< void * (void * reader) > reader_type;
 typedef std::pair<int, reader_type> mapped_type;
 
 static void test_implicit()
@@ -748,20 +736,12 @@ static void test_implicit()
     m = mapped_type();
 }
 
-#ifndef TEST_LOKI_FUNCTION
-static void test_call_obj(boost::function<int (int, int)> f)
-#else
-static void test_call_obj(Loki::function<int (int, int)> f)
-#endif
+static void test_call_obj(function<int (int, int)> f)
 {
     assert(!f.empty());
 }
 
-#ifndef TEST_LOKI_FUNCTION
-static void test_call_cref(const boost::function<int (int, int)>& f)
-#else
-static void test_call_cref(const Loki::Function<int (int, int)>& f)
-#endif
+static void test_call_cref(const function<int (int, int)>& f)
 {
     assert(!f.empty());
 }
