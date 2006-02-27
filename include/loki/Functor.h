@@ -30,6 +30,18 @@
 
 ///  \defgroup FunctorGroup Function objects
 
+/// \def LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
+/// \ingroup FunctorGroup
+/// Define to avoid static instantiation/delete order problems.
+/// Removes crashes when using static Functors and multi threading.
+/// Defining also removes problems when unloading Dlls which defines
+/// static Functor objects.
+/// So being a Loki::SmallValueObj limits the value of Functor
+/// and Function and makes them more different to tr1::function.
+#ifndef LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
+//#define LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
+#endif
+
 namespace Loki
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,8 +51,18 @@ namespace Loki
     namespace Private
     {
         template <typename R, template <class, class> class ThreadingModel>
-        struct FunctorImplBase : public SmallValueObject<ThreadingModel>
+        struct FunctorImplBase 
+#ifdef LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
         {
+#else
+            : public SmallValueObject<ThreadingModel>
+        {
+            inline FunctorImplBase() :
+                SmallValueObject<ThreadingModel>() {}
+            inline FunctorImplBase(const FunctorImplBase&) :
+                SmallValueObject<ThreadingModel>() {}
+#endif
+
             typedef R ResultType;
             
             typedef EmptyType Parm1;
@@ -59,13 +81,12 @@ namespace Loki
             typedef EmptyType Parm14;
             typedef EmptyType Parm15;
 
-            inline FunctorImplBase() :
-                SmallValueObject<ThreadingModel>() {}
-            inline FunctorImplBase(const FunctorImplBase&) :
-                SmallValueObject<ThreadingModel>() {}
-            
-            virtual ~FunctorImplBase(){}
+
+            virtual ~FunctorImplBase()
+            {}
+
             virtual FunctorImplBase* DoClone() const = 0;
+
             template <class U>
             static U* Clone(U* pObj)
             {
@@ -1665,6 +1686,9 @@ namespace Loki
 #endif  // FUNCTOR_INC_
 
 // $Log$
+// Revision 1.18  2006/02/27 18:53:41  syntheticpp
+// make it possible for Functor not to be a small object because it introduces sometimes problems, add documentation
+//
 // Revision 1.17  2006/02/20 16:08:32  syntheticpp
 // gcc needs the template parameter, gcc warns about missing virtual destructor (because there is already a virtual function)
 //
