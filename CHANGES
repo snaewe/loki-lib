@@ -5,42 +5,70 @@ Version 0.1.4
 _____________________________________
 
 General:
-	- helper templates for Pimpl/Rimpl implementations added (pk)
-	- improved Makefiles (lf)
-	- improved make.msvc.bat files (pk)
-	- cvs LOG keywords added (rs)
-	- removed old c style casts (lf)
-	- more warning enabled on gcc (lf)
-
+    - helper templates for Pimpl/Rimpl implementations added (pk)
+    - improved Makefiles (lf)
+    - improved make.msvc.bat files (pk)
+    - cvs LOG keywords added (rs)
+    - removed old c style casts (lf)
+    - more warning enabled on gcc (lf)
+    - new header added: ConstPolicy.h (rs,pk)
+    - new header added: RefToValue.h (rs,pk)
+    - standard RPM specification file for integrated installation 
+      on OpenSUSE Linux added (Thanks to Andreas Scherer, pk)
+    
+    
+Function:
+    - guard including (pk)
+    - test stsic functions (pk)
+    - test LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT  (pk)
+    
+Functor:
+    - Added explicit call to base copy-constructor.  
+    - Changed base class from SmallObject to SmallValueObject. (Thanks to Sam Miller, rs)
+    - add possibility to disable inheritance from SmallValueObject: LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
+    
+ScopeGuard:
+    - naming conflict with SmartPtr removed (rs,pk)
+    - ByRef moved to RefByVale (rs,pk)
+  
+    
 Singleton:
-	- support of allocators with a standard interface added (Thanks to Miguel A. Figueroa-Villanueva, pk)
+    - support of allocators with a standard interface added (Thanks to Miguel A. Figueroa-Villanueva, pk)
 
 SmartPtr:
-	- ArrayStorage policy added (Thanks to Sam Miller, pk)
-	- fix in RefCounted for Mac OSX gcc 4.0.0 (Thanks to Sam Miller, pk)
-	- RefCounted ported to 64 bit (pk)
-	- add mutex policy (pk)
-	
+    - supports propagating constness by additional policy (rs,pk)
+    - ArrayStorage policy added (Thanks to Sam Miller, pk)
+    - fix in RefCounted for Mac OSX gcc 4.0.0 (Thanks to Sam Miller, pk)
+    - RefCounted ported to 64 bit (pk)
+    - add mutex policy (pk)
+    - new test code (rs)
+    - RecjectNullStrict const member function added (Thanks to Sam Miller, pk)
+    - Moved a monolithic RefLinkedBase class from header file to new source file. (rs)
+    - ByRef moved to RefToVale (rs,pk)
+    - Fixed bug 1425890.  Last SmartPtr in linked chain NULLs its prev & next
+      pointers to prevent infinite recursion.  Added asserts. (rs)
+    - Bug fix: infinite recursion in SmartPtr destructor (rs)
+    
 LockingPtr:
-	- wrong return types fixed (rs)
-	- add mutex policy (rs,pk)
-	- Locking::Ptr and Locking::ConstPtr added (rs,pk)
-	- use propagating const policy of SmartPtr.h (pk)
-	- macro switch LOKI_DEFAULT_CONSTNESS added for propagating constness (pk)
-	- multi threaded example added 
-	
+    - wrong return types fixed (rs)
+    - add mutex policy (rs,pk)
+    - supports now propagating constness (pk,rs)
+    - macro switch LOKI_DEFAULT_CONSTNESS added for propagating constness (pk)
+    - multi threaded example added 
+    
 SafeFormat:
-	- definition moved to src/SafeFormat.cpp, it's now part of the library
-	
+    - definition moved to src/SafeFormat.cpp, it's now part of the library
+    
 Singleton:
-	- add mutex policy (pk)
+    - add mutex policy (pk)
 
 SmallObj:
-	- add mutex policy (pk)
+    - add mutex policy (pk)
+    - Added check for memory leak inside destructor. (Thanks to Kwak Jae Hyuk, rs)
 
 Threads:
-	- Mutex added (rs,pk)
-	- use Loki::Mutex instead of win32/posix mutexes in threading classes (rs,pk)
+    - Mutex added (rs,pk)
+    - use Loki::Mutex instead of win32/posix mutexes in threading classes (rs,pk)
 
 
 CVS commits by Rich Sposato (rs), Lukas Fittl (lf)
@@ -72,7 +100,7 @@ SafeFormat:
     - ported to 64-bit Windows, not tested (pk)
     - Printf/SPrintfing of std::strings added (pk)
     - all warnings removed gcc and msvc (pk)
-	- use snprintf for "%p"
+    - use snprintf for "%p"
     - test program: speed comparison added (pk)
 
 SmallObject:
