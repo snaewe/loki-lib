@@ -52,7 +52,7 @@ namespace Loki
 #ifndef LOKI_MAKE_DLL
         void LOKI_C_CALLING_CONVENTION_QUALIFIER AtExitFn(); // declaration needed below   
 #else
-		void LOKI_EXPORT AtExitFn();
+        void LOKI_EXPORT AtExitFn();
 #endif
 
         class LifetimeTracker;
@@ -838,33 +838,33 @@ namespace Loki
     ///  \class  Singleton
     ///
     ///  \ingroup SingletonGroup
-	///
-	///  Convenience template to implement a getter function for a singleton object.
-    ///  Often needed in a shared library which hosts singletons.
-	///  
-	///  \par Usage
-	///
-	///  see test/SingletonDll
     ///
-	////////////////////////////////////////////////////////////////////////////////
+    ///  Convenience template to implement a getter function for a singleton object.
+    ///  Often needed in a shared library which hosts singletons.
+    ///  
+    ///  \par Usage
+    ///
+    ///  see test/SingletonDll
+    ///
+    ////////////////////////////////////////////////////////////////////////////////
 
-	template<class T>
-	class Singleton
-	{
-	public:
-		static T& Instance();
-	};
+    template<class T>
+    class Singleton
+    {
+    public:
+        static T& Instance();
+    };
 
-	/// \def LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)
-	/// Convenience macro for the definition of the static Instance member function
-	/// Put this macro called with a SingletonHolder typedef into your cpp file.
+    /// \def LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)
+    /// Convenience macro for the definition of the static Instance member function
+    /// Put this macro called with a SingletonHolder typedef into your cpp file.
 
 #define LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)                          \
-	                                                                         \
-	SHOLDER::ObjectType&  ::Loki::Singleton<SHOLDER::ObjectType>::Instance() \
-	{                                                                        \
-		return SHOLDER::Instance();                                          \
-	} 
+                                                                             \
+    SHOLDER::ObjectType&  ::Loki::Singleton<SHOLDER::ObjectType>::Instance() \
+    {                                                                        \
+        return SHOLDER::Instance();                                          \
+    } 
 
 } // namespace Loki
 
@@ -883,6 +883,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.27  2006/02/28 10:31:01  syntheticpp
+// replace tabs
+//
 // Revision 1.26  2006/02/28 10:30:17  syntheticpp
 // add singleton object getter function template
 //
