@@ -35,6 +35,10 @@ cd Singleton
 call make.msvc.bat
 cd ..
 
+cd SingletonDll
+call make.msvc.bat
+cd ..
+
 cd SmallObj
 call make.msvc.bat
 cd ..
