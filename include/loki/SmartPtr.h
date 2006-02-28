@@ -712,17 +712,17 @@ namespace Loki
         RejectNull(const RejectNull<P1>&)
         {}
         
-        static void OnInit(P val)
+        static void OnInit(P)
         {}
 
-        static void OnDefault(P val)
+        static void OnDefault(P)
         {}
         
         void OnDereference(P val)
-        { OnInit(val); }
+        { if (!val) throw NullPointerException(); }
         
         void OnDereference(P val) const
-        { OnInit(val); }
+        { if (!val) throw NullPointerException(); }
 
         void Swap(RejectNull&)
         {}        
@@ -1362,6 +1362,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.23  2006/02/28 16:55:56  syntheticpp
+// undo disabling checking, remove warnings, many thanks to Sam Miller
+//
 // Revision 1.22  2006/02/28 12:59:59  syntheticpp
 // fix wrong RejectNull implementation, thanks to Sam Miller
 //
