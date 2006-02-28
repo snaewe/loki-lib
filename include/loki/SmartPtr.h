@@ -713,10 +713,10 @@ namespace Loki
         {}
         
         static void OnInit(P val)
-        { if (!val) throw NullPointerException(); }
+        {}
 
         static void OnDefault(P val)
-        { OnInit(val); }
+        {}
         
         void OnDereference(P val)
         { OnInit(val); }
@@ -1362,6 +1362,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.22  2006/02/28 12:59:59  syntheticpp
+// fix wrong RejectNull implementation, thanks to Sam Miller
+//
 // Revision 1.21  2006/02/27 19:59:20  syntheticpp
 // add support of loki.dll
 //
