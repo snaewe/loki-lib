@@ -718,6 +718,9 @@ namespace Loki
     {
     public:
 
+        ///  Type of the singleton object
+        typedef T ObjectType;
+
         ///  Returns a reference to singleton object
         static T& Instance();
         
@@ -829,6 +832,40 @@ namespace Loki
         pInstance_ = 0;
         destroyed_ = true;
     }
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class  Singleton
+    ///
+    ///  \ingroup SingletonGroup
+	///
+	///  Convenience template to implement a getter function for a singleton object.
+    ///  Often needed in a shared library which hosts singletons.
+	///  
+	///  \par Usage
+	///
+	///  see test/SingletonDll
+    ///
+	////////////////////////////////////////////////////////////////////////////////
+
+	template<class T>
+	class Singleton
+	{
+	public:
+		static T& Instance();
+	};
+
+	/// \def LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)
+	/// Convenience macro for the definition of the static Instance member function
+	/// Put this macro called with a SingletonHolder typedef into your cpp file.
+
+#define LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)                          \
+	                                                                         \
+	SHOLDER::ObjectType&  ::Loki::Singleton<SHOLDER::ObjectType>::Instance() \
+	{                                                                        \
+		return SHOLDER::Instance();                                          \
+	} 
+
 } // namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -846,6 +883,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.26  2006/02/28 10:30:17  syntheticpp
+// add singleton object getter function template
+//
 // Revision 1.25  2006/02/27 19:59:20  syntheticpp
 // add support of loki.dll
 //
