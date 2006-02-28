@@ -28,6 +28,8 @@
 #include <cassert>
 #include <locale>
 
+#include <loki/LokiExport.h>
+
 
 // long is 32 bit on 64-bit Windows!
 #if defined(_WIN32) || defined(_WIN64)
@@ -47,10 +49,12 @@ namespace Loki
 
     // Crude writing method: writes straight to the file, unbuffered
     // Must be combined with a buffer to work properly (and efficiently)
-    void write(std::FILE* f, const char* from, const char* to);
+    LOKI_EXPORT
+	void write(std::FILE* f, const char* from, const char* to);
 
 
     // Write to a string
+	LOKI_EXPORT
     void write(std::string& s, const char* from, const char* to);
 
     // Write to a fixed-size buffer
@@ -528,16 +532,22 @@ namespace Loki
         LOKI_SAFEFORMAT_SIGNED_LONG result_;
     };
 
+	LOKI_EXPORT
     PrintfState<std::FILE*, char> Printf(const char* format);
 
+	LOKI_EXPORT
     PrintfState<std::FILE*, char> Printf(const std::string format);
 
+	LOKI_EXPORT
     PrintfState<std::FILE*, char> FPrintf(FILE* f, const char* format);
 
+	LOKI_EXPORT
     PrintfState<std::FILE*, char> FPrintf(FILE* f, const std::string& format);
 
+	LOKI_EXPORT
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format);
 
+	LOKI_EXPORT
     PrintfState<std::string&, char> SPrintf(std::string& s, const std::string& format);
 
     template <class T, class Char>
@@ -563,6 +573,9 @@ namespace Loki
 #endif //SAFEFORMAT_H_
 
 // $Log$
+// Revision 1.24  2006/02/28 11:13:20  syntheticpp
+// add export specifier
+//
 // Revision 1.23  2006/01/18 17:21:31  lfittl
 // - Compile library with -Weffc++ and -pedantic (gcc)
 // - Fix most issues raised by using -Weffc++ (initialization lists)
