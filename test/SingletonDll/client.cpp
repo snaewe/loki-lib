@@ -10,11 +10,25 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
+/*
+
+Test for singletons in a shared libraries:
+
+- there is a Foo class in Foo.dll/so
+- there is a Foo singleton object which is exported by SingletonDll.dll/so
+- the Foo singleton object is  managed by a Loki::SingletonHolder typedef
+- the declaration of the Loki::SingletonHolder type is visiable only
+  in singletondll.cpp
+- a client (this file) imports the singleton object from SingletonDll.dll/so
+
+*/
 
 #include "singletondll.h"
 #include "foo.h"
+
+
 
 int main()
 {
