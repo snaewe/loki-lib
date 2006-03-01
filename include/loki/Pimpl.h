@@ -34,6 +34,10 @@ namespace Loki
 		explicit ConstPropPtr(T* p) : ptr_(p){}
 		~ConstPropPtr()
 		{ 
+			// If compilation brakes here make sure
+			// you've declared the destructor of the class 
+			// hosting the pimpl, also don't inline the 
+			// destructor.
 			typedef char T_must_be_defined[sizeof(T) ? 1 : -1 ];
             delete ptr_; 
             ptr_ = 0;
@@ -161,6 +165,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.16  2006/03/01 15:20:19  syntheticpp
+// add documenation how to avoid the -deletion of pointer to incomplete type- error
+//
 // Revision 1.15  2006/01/28 20:12:56  syntheticpp
 // replace implementation with a auto-create and propagating-const wrapper for smart pointers which auto delete the holded pointer on destruction
 //
