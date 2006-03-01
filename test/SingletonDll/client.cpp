@@ -36,4 +36,11 @@ int main()
 	Foo& lokifoo = Loki::Singleton<Foo>::Instance();
 	foo.foo();
 	lokifoo.foo();
+
+
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
+#endif
+
+	return 0;
 }
