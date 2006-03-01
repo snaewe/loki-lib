@@ -578,7 +578,43 @@ void DoRefLinkSwapTests( void )
     assert( p5 == p5 );
     assert( p6 == p6 );
 
-    p5 = p3;
+    p5 = p3;  // p6 <---> p2 <---> p3 <---> p5   and    p4 <---> p1
+    assert( p6 == p5 );
+    assert( p6 == p2 );
+    assert( p6 == p3 );
+    assert( p5 == p3 );
+    assert( p2 == p3 );
+    assert( p1 == p4 );
+    assert( p2 != p4 );
+    assert( p1 != p5 );
+    assert( p2 != p1 );
+    assert( p3 != p1 );
+    assert( p1 == p1 );
+    assert( p2 == p2 );
+    assert( p3 == p3 );
+    assert( p4 == p4 );
+    assert( p5 == p5 );
+    assert( p6 == p6 );
+
+    p5.Swap( p3 );  // p6 <---> p2 <---> p5 <---> p3   and    p4 <---> p1
+    assert( p6 == p5 );
+    assert( p6 == p2 );
+    assert( p6 == p3 );
+    assert( p5 == p3 );
+    assert( p2 == p3 );
+    assert( p1 == p4 );
+    assert( p2 != p4 );
+    assert( p1 != p5 );
+    assert( p2 != p1 );
+    assert( p3 != p1 );
+    assert( p1 == p1 );
+    assert( p2 == p2 );
+    assert( p3 == p3 );
+    assert( p4 == p4 );
+    assert( p5 == p5 );
+    assert( p6 == p6 );
+
+    p2.Swap( p3 );  // p6 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
     assert( p6 == p5 );
     assert( p6 == p2 );
     assert( p6 == p3 );
@@ -621,6 +657,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.2  2006/03/01 02:08:11  rich_sposato
+// Fixed bug 1440694 by adding check if rhs is previous neighbor.
+//
 // Revision 1.1  2006/02/25 01:53:20  rich_sposato
 // Added test project for Loki::SmartPtr class.
 //
