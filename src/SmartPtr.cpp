@@ -89,7 +89,7 @@ void RefLinkedBase::Swap(RefLinkedBase& rhs)
         rhs.Swap(*this);
         return;
     }
-    if (next_ == &rhs ) // neighbours
+    if (next_ == &rhs ) // rhs is next neighbour
     {
         if ( prev_ == &rhs )
             return;  // cycle of 2 pointers - no need to swap.
@@ -98,14 +98,23 @@ void RefLinkedBase::Swap(RefLinkedBase& rhs)
         std::swap(rhs.prev_, next_);
         std::swap(rhs.prev_->next_,next_->prev_);
     }
-    else                
+    else if ( prev_ == &rhs ) // rhs is prev neighbor
+    {
+        if ( next_ == &rhs )
+            return;  // cycle of 2 pointers - no need to swap.
+        std::swap( prev_, next_ );
+        std::swap( rhs.next_, rhs.prev_ );
+        std::swap( rhs.next_, prev_ );
+        std::swap( rhs.next_->prev_, prev_->next_ );
+    }
+    else // not neighhbors
     {
         std::swap(prev_, rhs.prev_);
         std::swap(next_, rhs.next_);
         std::swap(prev_->next_, rhs.prev_->next_);
         std::swap(next_->prev_, rhs.next_->prev_);
     }
-    
+
     assert( next_ == this ? prev_ == this : prev_ != this);
 }
 
@@ -118,6 +127,9 @@ void RefLinkedBase::Swap(RefLinkedBase& rhs)
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.3  2006/03/01 02:08:10  rich_sposato
+// Fixed bug 1440694 by adding check if rhs is previous neighbor.
+//
 // Revision 1.2  2006/02/25 13:07:15  syntheticpp
 // gcc does not like ; when closing a namespace
 //
