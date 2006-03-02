@@ -10,7 +10,7 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header:
+// $Header$
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4512)
@@ -165,6 +165,13 @@ int main()
 ////////////////////
 // more test code
 ////////////////////
+
+// incomplete type test
+// this must give errors
+
+//Incomplete1 ii; // compiler error
+//Incomplete2 i2; // linker error
+//Incomplete4 i4; // compiler error
 
 /////////////////////////////////////////
 // Definition  of ImplT<E>

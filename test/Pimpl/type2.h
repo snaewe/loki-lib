@@ -19,14 +19,18 @@
 // class A2 declaration
 /////////////////////////////////////////
 
+template< class T>
+class Impl;
+
 class A2
 {
 public:
     A2();
+	~A2();
     void foo();
 
 private:
-    PimplT<A2> d;
+	PimplT<A2>::Type d;
 };
 
 
@@ -38,6 +42,7 @@ class B2 : private PimplT<B2>::Owner
 {
 public:
     B2();
+	~B2();
     void foo();
 };
 
@@ -51,6 +56,7 @@ class C2
 {
 public:
     C2();
+	~C2();
     void foo();
 
 private:
@@ -67,5 +73,62 @@ class D2 : private RimplT<D2>::Owner
 {
 public:
     D2();
+	~D2();
     void foo();
+};
+
+
+/////////////////////////////////////////
+// incomplete type test
+/////////////////////////////////////////
+class Incomplete1
+{
+public:
+    Incomplete1();
+    void foo();
+private:
+	PimplT<Incomplete1>::Type d;
+};
+
+class Incomplete2
+{
+public:
+    Incomplete2();
+	~Incomplete2();
+    void foo();
+private:
+	PimplT<Incomplete2>::Type d;
+};
+
+
+// Test: don't compile with inline destructor 
+#if 0
+
+class Incomplete3
+{
+public:
+    Incomplete3();
+	~Incomplete3()
+	{
+		// inline destructor
+	}
+    void foo();
+private:
+	PimplT<Incomplete3>::Type d;
+};
+#endif
+
+
+// Test: don't compile with incomplete type and auto_ptr
+
+#include <memory>
+
+class Impl4;
+class Incomplete4
+{
+public:
+    Incomplete4();
+    void foo();
+private:
+	Pimpl<Impl4, std::auto_ptr<Impl4> > d;
 };
