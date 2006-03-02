@@ -31,22 +31,12 @@ namespace Loki
 	template<class T>
 	struct ConstPropPtr
 	{
-		explicit ConstPropPtr(T* p) : ptr_(p){}
-		~ConstPropPtr()
-		{ 
-			// If compilation brakes here make sure
-			// you've declared the destructor of the class 
-			// hosting the pimpl, also don't inline the 
-			// destructor.
-			typedef char T_must_be_defined[sizeof(T) ? 1 : -1 ];
-            delete ptr_; 
-            ptr_ = 0;
-		}
-
-		T* operator->()	{return ptr_;}
-		T& operator*()	{return *ptr_;}
-		const T* operator->() const	{return ptr_;}
-		const T& operator*()  const	{return *ptr_;}
+		explicit ConstPropPtr(T* p) : ptr_(p) {}
+		~ConstPropPtr() { delete  ptr_; ptr_ = 0; }
+		T* operator->()	{ return  ptr_; }
+		T& operator*()	{ return *ptr_; }
+		const T* operator->() const	{ return  ptr_; }
+		const T& operator*()  const	{ return *ptr_; }
 	
 	private:
 		ConstPropPtr();
@@ -73,6 +63,19 @@ namespace Loki
 
 		Pimpl() : ptr_(new T)
         {}
+
+		~Pimpl()
+        {
+			// Don't compile with incomplete type
+			//
+			// If compilation brakes here make sure
+			// the compiler does not auto-generate the 
+			// destructor of the class hosting the pimpl:
+			// - implement the destructor of the class 
+			// - don't inline the destructor
+			typedef char T_must_be_defined[sizeof(T) ? 1 : -1 ];
+		}
+
 
 		T* operator->()
         {
@@ -165,6 +168,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.17  2006/03/02 09:55:37  syntheticpp
+// don't compile with incomplete types
+//
 // Revision 1.16  2006/03/01 15:20:19  syntheticpp
 // add documenation how to avoid the -deletion of pointer to incomplete type- error
 //
