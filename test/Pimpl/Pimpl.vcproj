@@ -332,6 +332,10 @@
 				RelativePath=".\type.h"
 				>
 			</File>
+			<File
+				RelativePath=".\type2.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
