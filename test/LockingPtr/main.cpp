@@ -60,8 +60,8 @@ struct A
     }
 };
 
-typedef Loki::Locking<A>::Ptr LPtr;
-typedef Loki::Locking<A>::ConstPtr CLPtr;
+typedef Loki::LockingPtr<A,LOKI_DEFAULT_MUTEX,DontPropagateConst> LPtr;
+typedef Loki::LockingPtr<A,LOKI_DEFAULT_MUTEX,PropagateConst> CLPtr;
 
 void* RunLocked(void *id)
 {
