@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="Library"
 	ProjectGUID="{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}"
 	RootNamespace="Library"
@@ -150,107 +150,127 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\loki\include\loki\AbstractFactory.h"
+				RelativePath="..\include\loki\AbstractFactory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\AssocVector.h"
+				RelativePath="..\include\loki\AssocVector.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\DataGenerators.h"
+				RelativePath="..\include\loki\ConstPolicy.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\EmptyType.h"
+				RelativePath="..\include\loki\DataGenerators.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Factory.h"
+				RelativePath="..\include\loki\EmptyType.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Function.h"
+				RelativePath="..\include\loki\Factory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Functor.h"
+				RelativePath="..\include\loki\Function.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\HierarchyGenerators.h"
+				RelativePath="..\include\loki\Functor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\LokiTypeInfo.h"
+				RelativePath="..\include\loki\HierarchyGenerators.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\MultiMethods.h"
+				RelativePath="..\include\loki\LockingPtr.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\NullType.h"
+				RelativePath="..\include\loki\LokiExport.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\OrderedStatic.h"
+				RelativePath="..\include\loki\LokiTypeInfo.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\SafeFormat.h"
+				RelativePath="..\include\loki\MultiMethods.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\ScopeGuard.h"
+				RelativePath="..\include\loki\NullType.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Sequence.h"
+				RelativePath="..\include\loki\OrderedStatic.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Singleton.h"
+				RelativePath="..\include\loki\Pimpl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\SmallObj.h"
+				RelativePath="..\include\loki\RefToValue.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\SmartPtr.h"
+				RelativePath="..\include\loki\SafeFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\static_check.h"
+				RelativePath="..\include\loki\ScopeGuard.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Threads.h"
+				RelativePath="..\include\loki\Sequence.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Tuple.h"
+				RelativePath="..\include\loki\Singleton.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Typelist.h"
+				RelativePath="..\include\loki\SmallObj.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\TypelistMacros.h"
+				RelativePath="..\include\loki\SmartPtr.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\TypeManip.h"
+				RelativePath="..\include\loki\static_check.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\TypeTraits.h"
+				RelativePath="..\include\loki\Threads.h"
 				>
 			</File>
 			<File
-				RelativePath="..\loki\include\loki\Visitor.h"
+				RelativePath="..\include\loki\Tuple.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\loki\Typelist.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\loki\TypelistMacros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\loki\TypeManip.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\loki\TypeTraits.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\loki\Visitor.h"
 				>
 			</File>
 			<Filter

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="SmallObjSingleton"
 	ProjectGUID="{78536B46-8307-4AE5-933E-0CADE2887AFB}"
 	Keyword="Win32Proj"
@@ -178,96 +178,78 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{BFF4AEA3-8EE0-4150-A20E-4A2B41BEF2F2}"
+		<File
+			RelativePath="..\..\src\Singleton.cpp"
 			>
-			<File
-				RelativePath="..\..\src\Singleton.cpp"
+			<FileConfiguration
+				Name="Debug|Win32"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="../../include/loki"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="../../include/loki"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\src\SmallObj.cpp"
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalIncludeDirectories="../../include/loki"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="../../include/loki"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="../../include/loki"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\SmallObjSingleton.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="../../include/loki"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="../../include/loki"
-					/>
-				</FileConfiguration>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{1EC2C51F-E58B-4aca-BA46-1652627A1C16}"
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalIncludeDirectories="../../include/loki"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\Singleton.h"
 			>
-			<File
-				RelativePath="..\..\include\loki\Singleton.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\SmallObj.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\Threads.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{7382056C-47B1-45eb-85F8-CB0489ED355F}"
+		</File>
+		<File
+			RelativePath="..\..\src\SmallObj.cpp"
 			>
-		</Filter>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalIncludeDirectories="../../include/loki"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalIncludeDirectories="../../include/loki"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\SmallObj.h"
+			>
+		</File>
+		<File
+			RelativePath=".\SmallObjSingleton.cpp"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalIncludeDirectories="../../include/loki"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalIncludeDirectories="../../include/loki"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\Threads.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

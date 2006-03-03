@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="DeletableSingleton"
 	ProjectGUID="{B87B3522-7DAA-400D-A47D-A74B9B8B3552}"
 	>
@@ -145,34 +145,22 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+		<File
+			RelativePath=".\DeletableSingleton.cpp"
 			>
-			<File
-				RelativePath=".\DeletableSingleton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\Singleton.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+		</File>
+		<File
+			RelativePath="..\..\src\Singleton.cpp"
 			>
-			<File
-				RelativePath="..\..\include\loki\Singleton.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\Threads.h"
-				>
-			</File>
-		</Filter>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\Singleton.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\Threads.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
