@@ -860,7 +860,7 @@ namespace Loki
     /// Put this macro called with a SingletonHolder typedef into your cpp file.
 
 #define LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)                          \
-                                                                             \
+    template<>                                                               \
     SHOLDER::ObjectType&  ::Loki::Singleton<SHOLDER::ObjectType>::Instance() \
     {                                                                        \
         return SHOLDER::Instance();                                          \
@@ -883,6 +883,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.28  2006/03/03 11:58:24  syntheticpp
+// also compile with gcc
+//
 // Revision 1.27  2006/02/28 10:31:01  syntheticpp
 // replace tabs
 //
