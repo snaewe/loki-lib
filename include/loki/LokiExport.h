@@ -15,12 +15,27 @@
 // $Header: 
 
 
+
+#ifdef __GNUC__
+
+#ifdef _HAVE_GCC_VISIBILITY
+#define LOKI_EXPORT_SPEC __attribute__ ((visibility("default")))
+#define LOKI_IMPORT_SPEC 
+#else
+#define LOKI_EXPORT_SPEC
+#define LOKI_IMPORT_SPEC 
+#endif
+
+#else
+
 #ifdef _WIN32
 #define LOKI_EXPORT_SPEC __declspec(dllexport)
 #define LOKI_IMPORT_SPEC __declspec(dllimport)
 #else
 #define LOKI_EXPORT_SPEC 
 #define LOKI_IMPORT_SPEC 
+#endif
+
 #endif
 
 
