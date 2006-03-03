@@ -123,6 +123,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="../lib/loki.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
