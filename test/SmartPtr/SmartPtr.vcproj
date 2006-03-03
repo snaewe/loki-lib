@@ -104,7 +104,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\Projects\loki\include"
+				AdditionalIncludeDirectories="..\..\include"
+				RuntimeLibrary="2"
 				WarningLevel="4"
 			/>
 			<Tool

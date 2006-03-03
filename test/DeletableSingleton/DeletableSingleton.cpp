@@ -60,7 +60,7 @@ public:
 };
 
 
-int main(int argc, char *argv[])
+int main()
 {
     // Instantiate both singletons by calling them...
     LogBook::Instance().print("LogClass singleton instantiated");
