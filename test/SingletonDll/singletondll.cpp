@@ -12,13 +12,12 @@
 
 // $Header:
 
-#include <singletondll.h>
+#include "singletondll.h"
 
 #include "foo.h"
 
 
 typedef Loki::SingletonHolder<Foo> FooSingleton;
-
 
 LOKI_SINGLETON_INSTANCE_DEFINITION(FooSingleton)
 /*
@@ -29,11 +28,11 @@ Foo&  Loki::Singleton<Foo>::Instance()
 };
 */
 
-
+template<>
 Foo&  Singleton<Foo>::Instance()
 {
 	return FooSingleton::Instance();
-};
+}
 
 
 
