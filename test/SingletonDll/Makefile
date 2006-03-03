@@ -16,7 +16,7 @@ $(LIB1): foo.cpp
 	$(CXX) --shared $(CXXFLAGS) $(CPPFLAGS) -o $(LIB1) foo.cpp 
 
 $(LIB2): singletondll.cpp
-	$(CXX) --shared $(CXXFLAGS) $(CPPFLAGS) -o $(LIB2) foo.cpp
+	$(CXX) --shared $(CXXFLAGS) $(CPPFLAGS) -o $(LIB2) singletondll.cpp
 
 clean:
 	rm -f $(BIN) $(LIB1) $(LIB2)
