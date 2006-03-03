@@ -306,4 +306,10 @@ private:
   typedef SmartPtr<TestClass, NoCopy, DisallowConversion, NoCheck, DefaultSPStorage> p103;
 } smartPtrTest;
 
+
+#ifndef SMARTPTR_CPP
+#    define SMARTPTR_CPP
+#    include "../../src/SmartPtr.cpp"
+#endif
+
 #endif

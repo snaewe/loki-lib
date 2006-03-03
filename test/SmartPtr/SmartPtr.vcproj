@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="SmartPtr"
 	ProjectGUID="{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}"
 	RootNamespace="SmartPtr"
@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Projects\loki\include"
+				AdditionalIncludeDirectories="..\..\include"
 				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
@@ -149,56 +149,38 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+		<File
+			RelativePath=".\main.cpp"
 			>
-			<File
-				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\Singleton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\SmallObj.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\SmartPtr.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+		</File>
+		<File
+			RelativePath="..\..\src\Singleton.cpp"
 			>
-			<File
-				RelativePath="..\..\include\loki\Singleton.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\SmallObj.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\SmartPtr.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\loki\Threads.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+		</File>
+		<File
+			RelativePath="..\..\include\loki\Singleton.h"
 			>
-		</Filter>
+		</File>
+		<File
+			RelativePath="..\..\src\SmallObj.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\SmallObj.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\SmartPtr.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\SmartPtr.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\Threads.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
