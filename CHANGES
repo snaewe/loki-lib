@@ -15,6 +15,7 @@ General:
     - new header added: RefToValue.h (rs,pk)
     - standard RPM specification file for integrated installation 
       on OpenSUSE Linux added (Thanks to Andreas Scherer, pk)
+    - using Loki as shared library is now possible (pk,lf)
     
     
 Function:
@@ -23,17 +24,18 @@ Function:
     - test LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT  (pk)
     
 Functor:
-    - Added explicit call to base copy-constructor.  
+    - Added explicit call to base copy-constructor (rs)  
     - Changed base class from SmallObject to SmallValueObject. (Thanks to Sam Miller, rs)
-    - add possibility to disable inheritance from SmallValueObject: LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
+    - add possibility to disable inheritance from SmallValueObject: LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT (pk)
     
 ScopeGuard:
     - naming conflict with SmartPtr removed (rs,pk)
     - ByRef moved to RefByVale (rs,pk)
   
-    
 Singleton:
     - support of allocators with a standard interface added (Thanks to Miguel A. Figueroa-Villanueva, pk)
+    - convenience template Singleton added for shared libraries (Thanks to Marcus Lindblom, pk)
+    - example added which shows how to use Singletons with shared libraries added (Thanks to Marcus Lindblom, pk)
 
 SmartPtr:
     - supports propagating constness by additional policy (rs,pk)
