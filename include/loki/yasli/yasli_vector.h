@@ -316,13 +316,13 @@ namespace yasli {
        }
        const_reference at(size_type n) const
        {
-		   // Fix by Joseph Canedo
+           // Fix by Joseph Canedo
            if (n >= size()) throw std::range_error("vector<>::at");
            return ebo_.beg_[n];
        }
        reference at(size_type n)
        {
-		   // Fix by Joseph Canedo
+           // Fix by Joseph Canedo
            if (n >= size()) throw std::range_error("vector<>::at");
            return ebo_.beg_[n];
        }

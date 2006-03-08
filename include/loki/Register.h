@@ -22,98 +22,98 @@
 namespace Loki
 {
 
-	////////////////////////////////////////////////////////////////////////////////
-	//
-	//  Helper classes/functions for RegisterByCreateSet
-	//
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    //
+    //  Helper classes/functions for RegisterByCreateSet
+    //
+    ////////////////////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////////////////////
-	///  \ingroup Register
-	///  Must be specialized be the user
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \ingroup Register
+    ///  Must be specialized be the user
+    ////////////////////////////////////////////////////////////////////////////////
 	template<class t> bool RegisterFunction();
 
-	////////////////////////////////////////////////////////////////////////////////
-	///  \ingroup Register
-	///  Must be specialized be the user
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \ingroup Register
+    ///  Must be specialized be the user
+    ////////////////////////////////////////////////////////////////////////////////
 	template<class t> bool UnRegisterFunction();
 
 	namespace Private
-	{
-		template<class T> 
-		struct RegisterOnCreate
-		{
-			RegisterOnCreate()  { RegisterFunction<T>(); }
-		};
+    {
+    	template<class T> 
+    	struct RegisterOnCreate
+        {
+        	RegisterOnCreate()  { RegisterFunction<T>(); }
+        };
 
-		template<class T> 
-		struct UnRegisterOnDelete
-		{
-			~UnRegisterOnDelete() { UnRegisterFunction<T>(); }
-		};	
+    	template<class T> 
+    	struct UnRegisterOnDelete
+        {
+            ~UnRegisterOnDelete() { UnRegisterFunction<T>(); }
+        };    
 
-		template<class T>
-		struct RegisterOnCreateElement
-		{
-			RegisterOnCreate<T> registerObj;
-		};
+    	template<class T>
+    	struct RegisterOnCreateElement
+        {
+        	RegisterOnCreate<T> registerObj;
+        };
 
-		template<class T>
-		struct UnRegisterOnDeleteElement
-		{
-			UnRegisterOnDelete<T> unregisterObj;
-		};
-	}
+    	template<class T>
+    	struct UnRegisterOnDeleteElement
+        {
+        	UnRegisterOnDelete<T> unregisterObj;
+        };
+    }
 
-	////////////////////////////////////////////////////////////////////////////////
-	///  \class RegisterOnCreateSet
-	///
-	///  \ingroup Register
-	///  Implements a generic register class which registers classes of a typelist
-	///
-	///  \par Usage
-	///  see test/Register
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class RegisterOnCreateSet
+    ///
+    ///  \ingroup Register
+    ///  Implements a generic register class which registers classes of a typelist
+    ///
+    ///  \par Usage
+    ///  see test/Register
+    ////////////////////////////////////////////////////////////////////////////////
 
 	template<typename ElementList>
 	struct RegisterOnCreateSet 
-		: GenScatterHierarchy<ElementList, Private::RegisterOnCreateElement>
-	{};
+        : GenScatterHierarchy<ElementList, Private::RegisterOnCreateElement>
+    {};
 
-	////////////////////////////////////////////////////////////////////////////////
-	///  \class UnRegisterOnDeleteSet
-	///
-	///  \ingroup Register
-	///  Implements a generic register class which unregisters classes of a typelist
-	///
-	///  \par Usage
-	///  see test/Register
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class UnRegisterOnDeleteSet
+    ///
+    ///  \ingroup Register
+    ///  Implements a generic register class which unregisters classes of a typelist
+    ///
+    ///  \par Usage
+    ///  see test/Register
+    ////////////////////////////////////////////////////////////////////////////////
 	template<typename ElementList>
 	struct UnRegisterOnDeleteSet 
-		: GenScatterHierarchy<ElementList, Private::UnRegisterOnDeleteElement>
-	{};
+        : GenScatterHierarchy<ElementList, Private::UnRegisterOnDeleteElement>
+    {};
 
 
-	////////////////////////////////////////////////////////////////////////////////
-	///  \def  LOKI_CHECK_CLASS_IN_LIST( CLASS , LIST )
-	///
-	///  \ingroup Register
-	///  Check if CLASS is in the typelist LIST.
-	///
-	///  \par Usage
-	///  see test/Register
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \def  LOKI_CHECK_CLASS_IN_LIST( CLASS , LIST )
+    ///
+    ///  \ingroup Register
+    ///  Check if CLASS is in the typelist LIST.
+    ///
+    ///  \par Usage
+    ///  see test/Register
+    ////////////////////////////////////////////////////////////////////////////////
 
-#define LOKI_CHECK_CLASS_IN_LIST( CLASS , LIST )								\
-																				\
+#define LOKI_CHECK_CLASS_IN_LIST( CLASS , LIST )                                \
+                                                                                \
 	struct Loki_##CLASS##LIST_OK{typedef int class_##CLASS##_is_not_in_##LIST;};\
-	typedef Loki::Select<Loki::TL::IndexOf<LIST, CLASS>::value == -1,			\
-	CLASS,Loki_##CLASS##LIST_OK >::Result IsInList##CLASS##LIST;				\
-	typedef IsInList##CLASS##LIST::class_##CLASS##_is_not_in_##LIST				\
-													isInListTest##CLASS##LIST;
+	typedef Loki::Select<Loki::TL::IndexOf<LIST, CLASS>::value == -1,            \
+	CLASS,Loki_##CLASS##LIST_OK >::Result IsInList##CLASS##LIST;                \
+	typedef IsInList##CLASS##LIST::class_##CLASS##_is_not_in_##LIST	            \
+                                                	isInListTest##CLASS##LIST;
 
 } // namespace Loki
 

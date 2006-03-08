@@ -310,7 +310,7 @@ void test_more()
 	delete p9;
 	delete p10;
     
-	
+    
     Loki::Printf("\nCreating Rimpls\n");
     R1* r1 =  new R1;
     R2* r2 =  new R2;

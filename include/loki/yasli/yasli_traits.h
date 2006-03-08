@@ -60,7 +60,7 @@ namespace yasli_nstd
         enum { value = int(!is_class<T>::value) };
     };
 
-	
+    
    template <typename T> struct is_memmoveable
     {
         enum { value = int(!is_class<T>::value) };

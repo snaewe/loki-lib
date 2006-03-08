@@ -19,13 +19,13 @@ namespace flex_string_details
 {
 	template <class InIt, class OutIt>
 	OutIt copy_n(InIt b, typename std::iterator_traits<InIt>::difference_type n, OutIt d)
-	{
-		for (; n != 0; --n, ++b, ++d)
-		{
-			*d = *b;
-		}
-		return d;
-	}
+    {
+    	for (; n != 0; --n, ++b, ++d)
+        {
+            *d = *b;
+        }
+    	return d;
+    }
 
     template <class Pod, class T>
     inline void pod_fill(Pod* b, Pod* e, T c)

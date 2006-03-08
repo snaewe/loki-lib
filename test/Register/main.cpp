@@ -39,7 +39,7 @@ int main()
 {
 	Base* foo = BaseFactory::Instance().CreateObject("Foo");
 	Base* boo = BaseFactory::Instance().CreateObject("Boo");
-	
+    
 	foo->foo();
 	boo->foo();
 
