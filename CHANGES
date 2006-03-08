@@ -16,6 +16,7 @@ General:
     - standard RPM specification file for integrated installation 
       on OpenSUSE Linux added (Thanks to Andreas Scherer, pk)
     - using Loki as shared library is now possible (pk,lf)
+    - Register.h added (pk)
     
     
 Function:
