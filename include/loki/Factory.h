@@ -10,13 +10,10 @@
 // The authors make no representations about the suitability of this software
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// $Header$
-
 #ifndef LOKI_FACTORYPARM_INC_
 #define LOKI_FACTORYPARM_INC_
 
-// $Header$
+// $Header$ /cvsroot/loki-lib/loki/include/loki/Factory.h,v 1.15 2006/01/19 23:11:55 lfittl Exp $
 
 #include "LokiTypeInfo.h"
 #include "Functor.h"
@@ -1036,6 +1033,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.16  2006/03/08 16:41:38  syntheticpp
+// remove second $
+//
 // Revision 1.15  2006/01/19 23:11:55  lfittl
 // - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
 // - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
