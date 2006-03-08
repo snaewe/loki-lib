@@ -12,6 +12,9 @@
 #ifndef LOKI_PIMPL_H
 #define LOKI_PIMPL_H
 
+// $Header$
+
+///  \defgroup PimplGroup Pimpl 
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
 #define LOKI_INHERITED_PIMPL_NAME d
@@ -25,7 +28,11 @@ namespace Loki
 {
 
 	//////////////////////////////////////////
-    //  simple const propagating pointer
+	///  \class ConstPropPtr
+	///
+	///  \ingroup PimplGroup
+    ///   Simple const propagating smart pointer
+	///   Is the default smart pointer of Pimpl.
     //////////////////////////////////////////
 
 	template<class T>
@@ -46,9 +53,18 @@ namespace Loki
 	};
 
 
-    /////////////////////
-    // Pimpl
-    /////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	///  \class Pimpl
+	///
+	///  \ingroup PimplGroup
+	///
+	///  Implements the Pimpl idiom. It's a wrapper for a smart pointer which
+	///  automatically creates and deletes the implementation object and adds
+	///  const propagation to the smart pointer.
+	///  
+	///  \par Usage
+	///  see test/Pimpl
+	////////////////////////////////////////////////////////////////////////////////
 
 	template
 	<	
@@ -124,12 +140,24 @@ namespace Loki
 
 
 	//////////////////////////////////////////
-    //  template for the implementations
+    /// \class  ImplT
+	///
+	///  \ingroup PimplGroup
+	/// Convenience template for the 
+	/// implementations which PimplT points to.
     //////////////////////////////////////////
 
     template<class T>
     struct ImplT;
 
+
+	//////////////////////////////////////////
+    /// \class  PImplT
+	///
+	///  \ingroup PimplGroup
+	/// Convenience template which uses ImplT
+	/// as implementation structure
+    //////////////////////////////////////////
 
 
     template<class T, template<class> class Ptr = ConstPropPtr>
@@ -168,6 +196,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.18  2006/03/08 16:39:27  syntheticpp
+// add documenation
+//
 // Revision 1.17  2006/03/02 09:55:37  syntheticpp
 // don't compile with incomplete types
 //
