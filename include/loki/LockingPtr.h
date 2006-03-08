@@ -37,8 +37,8 @@ namespace Loki
         typedef typename ConstPolicy<SharedObject>::Type ConstOrNotType;
 
         /** Constructor locks mutex associated with an object.
-         @param obj Reference to object.
-         @param mtx Mutex used to control thread access to object.
+         @param object Reference to object.
+         @param mutex Mutex used to control thread access to object.
          */
         LockingPtr( volatile ConstOrNotType & object, LockingPolicy & mutex )
            : pObject_( const_cast< SharedObject * >( &object ) ),
@@ -91,6 +91,9 @@ namespace Loki
 
 
 // $Log$
+// Revision 1.11  2006/03/08 18:22:42  syntheticpp
+// doxygen fixes
+//
 // Revision 1.10  2006/02/20 21:45:40  rich_sposato
 // Removed struct Locking - no longer needed.
 //

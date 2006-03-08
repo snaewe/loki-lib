@@ -42,6 +42,8 @@
 //#define LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
 #endif
 
+/// \namespace Loki
+/// All classes of Loki are in the Loki namespace
 namespace Loki
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -1686,6 +1688,9 @@ namespace Loki
 #endif  // FUNCTOR_INC_
 
 // $Log$
+// Revision 1.19  2006/03/08 18:22:42  syntheticpp
+// doxygen fixes
+//
 // Revision 1.18  2006/02/27 18:53:41  syntheticpp
 // make it possible for Functor not to be a small object because it introduces sometimes problems, add documentation
 //
