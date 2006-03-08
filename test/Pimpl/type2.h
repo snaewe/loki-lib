@@ -26,7 +26,7 @@ class A2
 {
 public:
     A2();
-	~A2();
+    ~A2();
     void foo();
 
 private:
@@ -42,7 +42,7 @@ class B2 : private PimplT<B2>::Owner
 {
 public:
     B2();
-	~B2();
+    ~B2();
     void foo();
 };
 
@@ -56,7 +56,7 @@ class C2
 {
 public:
     C2();
-	~C2();
+    ~C2();
     void foo();
 
 private:
@@ -73,7 +73,7 @@ class D2 : private RimplT<D2>::Owner
 {
 public:
     D2();
-	~D2();
+    ~D2();
     void foo();
 };
 
@@ -94,7 +94,7 @@ class Incomplete2
 {
 public:
     Incomplete2();
-	~Incomplete2();
+    ~Incomplete2();
     void foo();
 private:
 	PimplT<Incomplete2>::Type d;
@@ -108,10 +108,10 @@ class Incomplete3
 {
 public:
     Incomplete3();
-	~Incomplete3()
-	{
-		// inline destructor
-	}
+    ~Incomplete3()
+    {
+        // inline destructor
+    }
     void foo();
 private:
 	PimplT<Incomplete3>::Type d;

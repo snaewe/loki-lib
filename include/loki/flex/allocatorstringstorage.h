@@ -234,9 +234,9 @@ public:
 	template <class ForwardIterator>
 	void append(ForwardIterator b, ForwardIterator e)
     {
-		const size_type 
-			sz = std::distance(b, e),
-			neededCapacity = size() + sz;
+    	const size_type 
+        	sz = std::distance(b, e),
+        	neededCapacity = size() + sz;
 
         if (capacity() < neededCapacity)
         {
@@ -245,7 +245,7 @@ public:
             assert(!(le(begin(), &*b) && le(&*b, end())));
             reserve(neededCapacity);
         }
-		std::copy(b, e, end());
+    	std::copy(b, e, end());
         pData_->pEnd_ += sz;
     }
     

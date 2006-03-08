@@ -27,73 +27,73 @@
 namespace Loki
 {
 
-	//////////////////////////////////////////
-	///  \class ConstPropPtr
-	///
-	///  \ingroup PimplGroup
+    //////////////////////////////////////////
+    ///  \class ConstPropPtr
+    ///
+    ///  \ingroup PimplGroup
     ///   Simple const propagating smart pointer
-	///   Is the default smart pointer of Pimpl.
+    ///   Is the default smart pointer of Pimpl.
     //////////////////////////////////////////
 
 	template<class T>
 	struct ConstPropPtr
-	{
-		explicit ConstPropPtr(T* p) : ptr_(p) {}
-		~ConstPropPtr() { delete  ptr_; ptr_ = 0; }
-		T* operator->()	{ return  ptr_; }
-		T& operator*()	{ return *ptr_; }
-		const T* operator->() const	{ return  ptr_; }
-		const T& operator*()  const	{ return *ptr_; }
-	
+    {
+    	explicit ConstPropPtr(T* p) : ptr_(p) {}
+        ~ConstPropPtr() { delete  ptr_; ptr_ = 0; }
+    	T* operator->()    { return  ptr_; }
+    	T& operator*()    { return *ptr_; }
+    	const T* operator->() const	{ return  ptr_; }
+    	const T& operator*()  const	{ return *ptr_; }
+    
 	private:
-		ConstPropPtr();
-		ConstPropPtr(const ConstPropPtr&);
-		ConstPropPtr& operator=(const ConstPropPtr&);
-		T* ptr_;
-	};
+    	ConstPropPtr();
+    	ConstPropPtr(const ConstPropPtr&);
+    	ConstPropPtr& operator=(const ConstPropPtr&);
+    	T* ptr_;
+    };
 
 
-	////////////////////////////////////////////////////////////////////////////////
-	///  \class Pimpl
-	///
-	///  \ingroup PimplGroup
-	///
-	///  Implements the Pimpl idiom. It's a wrapper for a smart pointer which
-	///  automatically creates and deletes the implementation object and adds
-	///  const propagation to the smart pointer.
-	///  
-	///  \par Usage
-	///  see test/Pimpl
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  \class Pimpl
+    ///
+    ///  \ingroup PimplGroup
+    ///
+    ///  Implements the Pimpl idiom. It's a wrapper for a smart pointer which
+    ///  automatically creates and deletes the implementation object and adds
+    ///  const propagation to the smart pointer.
+    ///  
+    ///  \par Usage
+    ///  see test/Pimpl
+    ////////////////////////////////////////////////////////////////////////////////
 
 	template
-	<	
-		class T, 
-		typename Pointer = ConstPropPtr<T>
-	>
+    <    
+    	class T, 
+    	typename Pointer = ConstPropPtr<T>
+    >
     class Pimpl 
-	{
+    {
     public:
 
-		typedef T Impl;
+    	typedef T Impl;
 
-		Pimpl() : ptr_(new T)
+    	Pimpl() : ptr_(new T)
         {}
 
-		~Pimpl()
+        ~Pimpl()
         {
-			// Don't compile with incomplete type
-			//
-			// If compilation brakes here make sure
-			// the compiler does not auto-generate the 
-			// destructor of the class hosting the pimpl:
-			// - implement the destructor of the class 
-			// - don't inline the destructor
-			typedef char T_must_be_defined[sizeof(T) ? 1 : -1 ];
-		}
+            // Don't compile with incomplete type
+            //
+            // If compilation brakes here make sure
+            // the compiler does not auto-generate the 
+            // destructor of the class hosting the pimpl:
+            // - implement the destructor of the class 
+            // - don't inline the destructor
+        	typedef char T_must_be_defined[sizeof(T) ? 1 : -1 ];
+        }
 
 
-		T* operator->()
+    	T* operator->()
         {
             return ptr_.operator->();
         }
@@ -113,22 +113,22 @@ namespace Loki
             return ptr_.operator*();
         }
 
-		Pointer& wrapped()
-		{
-			return ptr_;
-		}
+    	Pointer& wrapped()
+        {
+        	return ptr_;
+        }
 
-		const Pointer& wrapped() const
-		{
-			return ptr_;
-		}
+    	const Pointer& wrapped() const
+        {
+        	return ptr_;
+        }
 
 
     private:
-		Pimpl(const Pimpl&);
+    	Pimpl(const Pimpl&);
         Pimpl& operator=(const Pimpl&);
 
-		Pointer ptr_;
+    	Pointer ptr_;
     };
 
 
@@ -139,55 +139,55 @@ namespace Loki
     };
 
 
-	//////////////////////////////////////////
+    //////////////////////////////////////////
     /// \class  ImplT
-	///
-	///  \ingroup PimplGroup
-	/// Convenience template for the 
-	/// implementations which PimplT points to.
+    ///
+    ///  \ingroup PimplGroup
+    /// Convenience template for the 
+    /// implementations which PimplT points to.
     //////////////////////////////////////////
 
     template<class T>
     struct ImplT;
 
 
-	//////////////////////////////////////////
+    //////////////////////////////////////////
     /// \class  PImplT
-	///
-	///  \ingroup PimplGroup
-	/// Convenience template which uses ImplT
-	/// as implementation structure
+    ///
+    ///  \ingroup PimplGroup
+    /// Convenience template which uses ImplT
+    /// as implementation structure
     //////////////////////////////////////////
 
 
     template<class T, template<class> class Ptr = ConstPropPtr>
     struct PimplT
     {
-		typedef T Impl;
+    	typedef T Impl;
 
         // declare pimpl
         typedef Pimpl<ImplT<T>, Ptr<ImplT<T> > > Type;
 
         // inherit pimpl
         typedef PimplOwner<ImplT<T>, Ptr<ImplT<T> > > Owner;
-	};
+    };
 
 
 	template<class T, class UsedPimpl = typename PimplT<T>::Type >
     struct RimplT
     {
-		typedef typename UsedPimpl::Impl & Type;
+    	typedef typename UsedPimpl::Impl & Type;
 
         class Owner
-		{
-			UsedPimpl pimpl;
+        {
+        	UsedPimpl pimpl;
 
-		public:
-			Owner() : LOKI_INHERITED_RIMPL_NAME(*pimpl)
-			{}
+    	public:
+        	Owner() : LOKI_INHERITED_RIMPL_NAME(*pimpl)
+            {}
 
-			Type LOKI_INHERITED_RIMPL_NAME;
-		};
+        	Type LOKI_INHERITED_RIMPL_NAME;
+        };
 
     };
   
@@ -196,6 +196,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.19  2006/03/08 17:07:11  syntheticpp
+// replace tabs with 4 spaces in all files
+//
 // Revision 1.18  2006/03/08 16:39:27  syntheticpp
 // add documenation
 //

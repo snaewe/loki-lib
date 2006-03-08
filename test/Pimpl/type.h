@@ -102,7 +102,7 @@ typedef std::auto_ptr<ImplT<E> > StdAutoPtr;
 
 // Pimpl
 
-typedef Pimpl<ImplT<E> >			Pimpl1;
+typedef Pimpl<ImplT<E> >        	Pimpl1;
 typedef Pimpl<ImplT<E>, CPropPtr>	Pimpl2;
 typedef Pimpl<ImplT<E>, LokiPtr>	Pimpl3;
 typedef Pimpl<ImplT<E>, BoostPtr>	Pimpl4;
@@ -117,7 +117,7 @@ struct P5 {Pimpl5 d;        P5();void f();void f()const;};
 
 // PimplOwner
 
-typedef PimplOwner<ImplT<E> >			PimplOwner1;
+typedef PimplOwner<ImplT<E> >        	PimplOwner1;
 typedef PimplOwner<ImplT<E>, CPropPtr>	PimplOwner2;
 typedef PimplOwner<ImplT<E>, LokiPtr>	PimplOwner3;
 typedef PimplOwner<ImplT<E>, BoostPtr>	PimplOwner4;

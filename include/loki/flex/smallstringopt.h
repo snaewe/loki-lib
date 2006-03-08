@@ -97,7 +97,7 @@ private:
 
 public:
     enum { maxSmallString = 
-		(temp2 + sizeof(value_type) - 1) / sizeof(value_type) };
+        (temp2 + sizeof(value_type) - 1) / sizeof(value_type) };
     
 private:
     enum { magic = maxSmallString + 1 };
@@ -260,14 +260,14 @@ public:
         else
         {
             // append to a small string
-			const size_type 
-				sz = std::distance(b, e),
-				neededCapacity = maxSmallString - buf_[maxSmallString] + sz;
+        	const size_type 
+            	sz = std::distance(b, e),
+            	neededCapacity = maxSmallString - buf_[maxSmallString] + sz;
 
             if (maxSmallString < neededCapacity)
             {
                 // need to change storage strategy
-				allocator_type alloc;
+            	allocator_type alloc;
                 Storage temp(alloc);
                 temp.reserve(neededCapacity);
                 temp.append(buf_, buf_ + maxSmallString - buf_[maxSmallString]);
@@ -278,7 +278,7 @@ public:
             }
             else
             {
-				std::copy(b, e, buf_ + maxSmallString - buf_[maxSmallString]);
+            	std::copy(b, e, buf_ + maxSmallString - buf_[maxSmallString]);
                 buf_[maxSmallString] = buf_[maxSmallString] - value_type(sz);
             }
         }

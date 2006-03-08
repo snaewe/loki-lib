@@ -137,32 +137,32 @@ public: // protected:
 
     void reserve(size_type res_arg)
     { 
-		assert(res_arg < max_size());
+    	assert(res_arg < max_size());
         base::reserve(res_arg + 1); 
     }
     
     template <class ForwardIterator>
     void append(ForwardIterator b, ForwardIterator e)
     {
-		const typename std::iterator_traits<ForwardIterator>::difference_type
-			sz = std::distance(b, e);
-		assert(sz >= 0);
-		if (sz == 0) return;
-		base::reserve(base::size() + sz);
-		const value_type & v = *b;
-		struct OnBlockExit
-		{
-			VectorStringStorage * that;
-			~OnBlockExit()
-			{
-				that->base::push_back(value_type());
-			}
-		} onBlockExit = { this };
-		(void) onBlockExit;
-		assert(!base::empty());
-		assert(base::back() == value_type());
-		base::back() = v;
-		base::insert(base::end(), ++b, e);
+    	const typename std::iterator_traits<ForwardIterator>::difference_type
+        	sz = std::distance(b, e);
+    	assert(sz >= 0);
+    	if (sz == 0) return;
+    	base::reserve(base::size() + sz);
+    	const value_type & v = *b;
+    	struct OnBlockExit
+        {
+        	VectorStringStorage * that;
+            ~OnBlockExit()
+            {
+            	that->base::push_back(value_type());
+            }
+        } onBlockExit = { this };
+        (void) onBlockExit;
+    	assert(!base::empty());
+    	assert(base::back() == value_type());
+    	base::back() = v;
+    	base::insert(base::end(), ++b, e);
     }
 
     void resize(size_type n, E c)

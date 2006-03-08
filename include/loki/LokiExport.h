@@ -40,8 +40,8 @@
 
 
 #if (defined(LOKI_MAKE_DLL) && defined(LOKI_DLL)) || \
-	(defined(LOKI_MAKE_DLL) && defined(LOKI_STATIC)) || \
-	(defined(LOKI_DLL) && defined(LOKI_STATIC))
+    (defined(LOKI_MAKE_DLL) && defined(LOKI_STATIC)) || \
+    (defined(LOKI_DLL) && defined(LOKI_STATIC))
 #error export macro error: you could not build AND use the library
 #endif
 

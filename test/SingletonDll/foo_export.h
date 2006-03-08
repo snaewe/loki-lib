@@ -15,8 +15,8 @@
 #include <loki/LokiExport.h>
 
 #if (defined(FOO_MAKE_DLL) && defined(FOO_DLL)) || \
-	(defined(FOO_MAKE_DLL) && defined(FOO_STATIC)) || \
-	(defined(FOO_DLL) && defined(FOO_STATIC))
+    (defined(FOO_MAKE_DLL) && defined(FOO_STATIC)) || \
+    (defined(FOO_DLL) && defined(FOO_STATIC))
 #error export macro error: you could not build AND use the library
 #endif
 
