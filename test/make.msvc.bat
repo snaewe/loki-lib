@@ -19,6 +19,10 @@ cd Pimpl
 call make.msvc.bat
 cd ..
 
+cd Register
+call make.msvc.bat
+cd ..
+
 cd RegressionTest
 call make.msvc.bat
 cd ..
