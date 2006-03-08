@@ -6,7 +6,5 @@ if defined LOKI_TMP (
 set LOKI_TMP=
 @ECHO ON
 
-if not exist lib\ mkdir lib
-
 mingw32-make check
 
