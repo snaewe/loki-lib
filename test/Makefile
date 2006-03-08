@@ -4,6 +4,7 @@ SUBTARGETS = \
 		Longevity \
 		OrderedStatic \
 		Pimpl \
+		Register \
 		RegressionTest \
 		SafeFormat \
 		ScopeGuard \
@@ -11,7 +12,8 @@ SUBTARGETS = \
 		SmallObj \
 		SmartPtr \
 		Visitor \
-		flex_string
+		flex_string \
+		SingletonDll
 	
 SUBTARGETS_CLEAN = $(foreach SUBTARGET,$(SUBTARGETS),$(SUBTARGET)-clean)
 
