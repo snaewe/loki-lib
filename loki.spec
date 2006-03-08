@@ -4,9 +4,9 @@ Version: 0.1.4
 Release: 1
 License: MIT License
 Group: Productivity/Development
-URL: http://prdownloads.sourceforge.net/loki-lib/loki-0.1.4.tar.bz2
+URL: http://prdownloads.sourceforge.net/loki-lib/loki-0.1.4.tar.gz
 Distribution: SuSE 10.0 (i586)
-Source0: %{name}-%{version}.tar.bz2
+Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: i586
 
