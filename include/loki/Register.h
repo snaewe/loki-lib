@@ -29,13 +29,13 @@ namespace Loki
     ////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////
-    ///  \ingroup Register
+    ///  \ingroup RegisterGroup
     ///  Must be specialized be the user
     ////////////////////////////////////////////////////////////////////////////////
 	template<class t> bool RegisterFunction();
 
     ////////////////////////////////////////////////////////////////////////////////
-    ///  \ingroup Register
+    ///  \ingroup RegisterGroup
     ///  Must be specialized be the user
     ////////////////////////////////////////////////////////////////////////////////
 	template<class t> bool UnRegisterFunction();
@@ -70,7 +70,7 @@ namespace Loki
     ////////////////////////////////////////////////////////////////////////////////
     ///  \class RegisterOnCreateSet
     ///
-    ///  \ingroup Register
+    ///  \ingroup RegisterGroup
     ///  Implements a generic register class which registers classes of a typelist
     ///
     ///  \par Usage
@@ -85,7 +85,7 @@ namespace Loki
     ////////////////////////////////////////////////////////////////////////////////
     ///  \class UnRegisterOnDeleteSet
     ///
-    ///  \ingroup Register
+    ///  \ingroup RegisterGroup
     ///  Implements a generic register class which unregisters classes of a typelist
     ///
     ///  \par Usage
@@ -100,7 +100,7 @@ namespace Loki
     ////////////////////////////////////////////////////////////////////////////////
     ///  \def  LOKI_CHECK_CLASS_IN_LIST( CLASS , LIST )
     ///
-    ///  \ingroup Register
+    ///  \ingroup RegisterGroup
     ///  Check if CLASS is in the typelist LIST.
     ///
     ///  \par Usage
