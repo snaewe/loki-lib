@@ -34,6 +34,7 @@ Compatibility:
 Supported Compilers:
 Gcc v3.4
 Gcc v4.0
+Gcc v4.1
 Microsoft Visual C++ v7.1
 Microsoft Visual C++ v8.0
 
