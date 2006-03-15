@@ -855,18 +855,24 @@ namespace Loki
         static T& Instance();
     };
 
-    /// \def LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)
-    /// Convenience macro for the definition of the static Instance member function
-    /// Put this macro called with a SingletonHolder typedef into your cpp file.
-
-#define LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)                          \
-    template<>                                                               \
-    SHOLDER::ObjectType&  ::Loki::Singleton<SHOLDER::ObjectType>::Instance() \
-    {                                                                        \
-        return SHOLDER::Instance();                                          \
-    } 
-
 } // namespace Loki
+
+
+/// \def LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)
+/// Convenience macro for the definition of the static Instance member function
+/// Put this macro called with a SingletonHolder typedef into your cpp file.
+
+#define LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)                     \
+namespace Loki                                                          \
+{																		\
+	template<>                                                          \
+	SHOLDER::ObjectType&  Singleton<SHOLDER::ObjectType>::Instance()	\
+	{                                                                   \
+        return SHOLDER::Instance();                                     \
+	}																	\
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
@@ -883,6 +889,9 @@ namespace Loki
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.29  2006/03/15 08:47:18  syntheticpp
+// gcc: specialization only in the correct namespace, thx to Sam Miller
+//
 // Revision 1.28  2006/03/03 11:58:24  syntheticpp
 // also compile with gcc
 //
