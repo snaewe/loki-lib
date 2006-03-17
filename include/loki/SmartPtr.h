@@ -39,7 +39,10 @@
 #include <functional>
 #include <stdexcept>
 #include <cassert>
-#include <stdint.h>
+
+#if !defined(_MSC_VER)
+    #include <stdint.h>
+#endif
 
 namespace Loki
 {
@@ -94,8 +97,10 @@ namespace Loki
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
         void Destroy()
-        { delete pointee_; }
-        
+        {
+            delete pointee_;
+        }
+
         // Default value to initialize the pointer
         static StoredType Default()
         { return 0; }
@@ -387,9 +392,16 @@ namespace Loki
 
             void Swap(RefLinkedBase& rhs);
 
+            bool Merge( RefLinkedBase & rhs );
+
             enum { destructiveCopy = false };
 
         private:
+            static unsigned int CountPrevCycle( const RefLinkedBase * pThis );
+            static unsigned int CountNextCycle( const RefLinkedBase * pThis );
+            bool HasPrevNode( const RefLinkedBase * p ) const;
+            bool HasNextNode( const RefLinkedBase * p ) const;
+
             mutable const RefLinkedBase* prev_;
             mutable const RefLinkedBase* next_;
         };
@@ -412,6 +424,12 @@ namespace Loki
 
         bool Release(const P&)
         { return Private::RefLinkedBase::Release(); }
+
+        template < class P1 >
+        bool Merge( RefLinked< P1 > & rhs )
+        {
+            return Private::RefLinkedBase::Merge( rhs );
+        }
     };
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -984,6 +1002,24 @@ namespace Loki
         friend inline void Reset(SmartPtr& sp, typename SP::StoredType p)
         { SmartPtr(p).Swap(sp); }
 
+        template
+        <
+            typename T1,
+            template <class> class OP1,
+            class CP1,
+            template <class> class KP1,
+            template <class> class SP1,
+            template <class> class CNP1
+        >
+        bool Merge( SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs )
+        {
+            if ( GetImpl( *this ) != GetImpl( rhs ) )
+            {
+                return false;
+            }
+            return OP::Merge( rhs );
+        }
+
         PointerType operator->()
         {
             KP::OnDereference(GetImplRef(*this));
@@ -1010,7 +1046,9 @@ namespace Loki
         
         bool operator!() const // Enables "if (!sp) ..."
         { return GetImpl(*this) == 0; }
-        
+
+        static inline T * GetPointer( const SmartPtr & sp )
+        { return GetImpl( sp ); }
 
         // Ambiguity buster
         template
@@ -1050,6 +1088,51 @@ namespace Loki
         >
         bool operator<(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs) const
         { return GetImpl(*this) < GetImpl(rhs); }
+
+        // Ambiguity buster
+        template
+        <
+            typename T1,
+            template <class> class OP1,
+            class CP1,
+            template <class> class KP1,
+            template <class> class SP1,
+            template <class> class CNP1
+        >
+        inline bool operator > ( const SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs )
+        {
+            return ( GetImpl( rhs ) < GetImpl( *this ) );
+        }
+
+        // Ambiguity buster
+        template
+        <
+            typename T1,
+            template <class> class OP1,
+            class CP1,
+            template <class> class KP1,
+            template <class> class SP1,
+            template <class> class CNP1
+        >
+        inline bool operator <= ( const SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs )
+        {
+            return !( GetImpl( rhs ) < GetImpl( *this ) );
+        }
+
+        // Ambiguity buster
+        template
+        <
+            typename T1,
+            template <class> class OP1,
+            class CP1,
+            template <class> class KP1,
+            template <class> class SP1,
+            template <class> class CNP1
+        >
+        inline bool operator >= ( const SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs )
+        {
+            return !( GetImpl( *this ) < GetImpl( rhs ) );
+        }
 
     private:
         // Helper for enabling 'if (sp)'
@@ -1108,7 +1191,7 @@ namespace Loki
     inline bool operator==(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs)
     { return GetImpl(lhs) == rhs; }
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 ///  operator== for lhs = raw pointer, rhs = SmartPtr
 ///  \ingroup SmartPointerGroup
@@ -1167,7 +1250,7 @@ namespace Loki
     { return rhs != lhs; }
 
 ////////////////////////////////////////////////////////////////////////////////
-///  operator< for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
+///  operator< for lhs = SmartPtr, rhs = raw pointer
 ///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1182,10 +1265,13 @@ namespace Loki
         typename U
     >
     inline bool operator<(const SmartPtr<T, OP, CP, KP, SP, CNP >& lhs,
-        U* rhs);
-        
+        U* rhs)
+    {
+        return ( GetImpl( lhs ) < rhs );
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
-///  operator< for lhs = raw pointer, rhs = SmartPtr -- NOT DEFINED
+///  operator< for lhs = raw pointer, rhs = SmartPtr
 ///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1200,10 +1286,13 @@ namespace Loki
         typename U
     >
     inline bool operator<(U* lhs,
-        const SmartPtr<T, OP, CP, KP, SP, CNP >& rhs);
-        
+        const SmartPtr<T, OP, CP, KP, SP, CNP >& rhs)
+    {
+        return ( GetImpl( rhs ) < lhs );
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
-//  operator> for lhs = SmartPtr, rhs = raw pointer -- NOT DEFINED
+//  operator> for lhs = SmartPtr, rhs = raw pointer
 ///  \ingroup SmartPointerGroup
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1363,6 +1452,10 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.26  2006/03/17 22:52:55  rich_sposato
+// Fixed bugs 1452805 and 1451835.  Added Merge ability for RefLink policy.
+// Added more tests for SmartPtr.
+//
 // Revision 1.25  2006/03/17 20:22:14  syntheticpp
 // patch undefined uintptr_t, thx to Regis Desgroppes
 //

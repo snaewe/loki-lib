@@ -20,6 +20,11 @@
 
 #include <cassert>
 
+//#define DO_EXTRA_LOKI_TESTS
+#ifdef DO_EXTRA_LOKI_TESTS
+    #include <iostream>
+#endif
+
 
 // ----------------------------------------------------------------------------
 
@@ -37,12 +42,25 @@ RefLinkedBase::RefLinkedBase(const RefLinkedBase& rhs)
     next_ = rhs.next_;
     prev_->next_ = this;
     next_->prev_ = this;
+
+#ifdef DO_EXTRA_LOKI_TESTS
+    assert( prev_->HasPrevNode( this ) );
+    assert( next_->HasNextNode( this ) );
+    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
+#endif
 }
 
 // ----------------------------------------------------------------------------
 
 bool RefLinkedBase::Release()
 {
+
+#ifdef DO_EXTRA_LOKI_TESTS
+    assert( prev_->HasPrevNode( this ) );
+    assert( next_->HasNextNode( this ) );
+    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
+#endif
+
     if ( NULL == next_ )
     {
         assert( NULL == prev_ );
@@ -58,10 +76,24 @@ bool RefLinkedBase::Release()
         next_ = NULL;
         return true;
     }
+
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( this != prev_ );
     assert( NULL != prev_ );
+    assert( prev_->HasPrevNode( this ) );
+    assert( next_->HasNextNode( this ) );
+#endif
+
     prev_->next_ = next_;
     next_->prev_ = prev_;
+
+#ifdef DO_EXTRA_LOKI_TESTS
+    next_ = this;
+    prev_ = this;
+    assert( 1 == CountNextCycle( this ) );
+    assert( 1 == CountPrevCycle( this ) );
+#endif
+
     return false;
 }
 
@@ -69,6 +101,13 @@ bool RefLinkedBase::Release()
 
 void RefLinkedBase::Swap(RefLinkedBase& rhs)
 {
+
+#ifdef DO_EXTRA_LOKI_TESTS
+    assert( prev_->HasPrevNode( this ) );
+    assert( next_->HasNextNode( this ) );
+    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
+#endif
+
     if (next_ == this)
     {
         assert(prev_ == this);
@@ -115,7 +154,155 @@ void RefLinkedBase::Swap(RefLinkedBase& rhs)
         std::swap(next_->prev_, rhs.next_->prev_);
     }
 
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( next_ == this ? prev_ == this : prev_ != this);
+    assert( prev_ == this ? next_ == this : next_ != this);
+    assert( prev_->HasPrevNode( this ) );
+    assert( next_->HasNextNode( this ) );
+    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
+    assert( rhs.prev_->HasPrevNode( &rhs ) );
+    assert( rhs.next_->HasNextNode( &rhs ) );
+    assert( CountPrevCycle( &rhs ) == CountNextCycle( &rhs ) );
+#endif
+
+}
+
+// ----------------------------------------------------------------------------
+
+unsigned int RefLinkedBase::CountPrevCycle( const RefLinkedBase * pThis )
+{
+    if ( NULL == pThis )
+        return 0;
+    const RefLinkedBase * p = pThis->prev_;
+    if ( NULL == p )
+        return 0;
+    if ( pThis == p )
+        return 1;
+
+    unsigned int count = 1;
+    do
+    {
+        p = p->prev_;
+        ++count;
+    } while ( p != pThis );
+
+    return count;
+}
+
+// ----------------------------------------------------------------------------
+
+unsigned int RefLinkedBase::CountNextCycle( const RefLinkedBase * pThis )
+{
+    if ( NULL == pThis )
+        return 0;
+    const RefLinkedBase * p = pThis->next_;
+    if ( NULL == p )
+        return 0;
+    if ( pThis == p )
+        return 1;
+
+    unsigned int count = 1;
+    while ( p != pThis )
+    {
+        p = p->next_;
+        ++count;
+    }
+
+    return count;
+}
+
+// ----------------------------------------------------------------------------
+
+bool RefLinkedBase::HasPrevNode( const RefLinkedBase * p ) const
+{
+    if ( this == p )
+        return true;
+    const RefLinkedBase * prev = prev_;
+    if ( NULL == prev )
+        return false;
+    while ( prev != this )
+    {
+        if ( p == prev )
+            return true;
+        prev = prev->prev_;
+    }
+    return false;
+}
+
+// ----------------------------------------------------------------------------
+
+bool RefLinkedBase::HasNextNode( const RefLinkedBase * p ) const
+{
+    if ( this == p )
+        return true;
+    const RefLinkedBase * next = next_;
+    if ( NULL == next )
+        return false;
+    while ( next != this )
+    {
+        if ( p == next )
+            return true;
+        next = next->next_;
+    }
+    return false;
+}
+
+// ----------------------------------------------------------------------------
+
+bool RefLinkedBase::Merge( RefLinkedBase & rhs )
+{
+
+    if ( NULL == next_ )
+    {
+        assert( NULL == prev_ );
+        return false;
+    }
+    RefLinkedBase * prhs = &rhs;
+    if ( prhs == this )
+        return true;
+    if ( NULL == prhs->next_ )
+    {
+        assert( NULL == prhs->prev_ );
+        return true;
+    }
+
+    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
+    assert( CountPrevCycle( prhs ) == CountNextCycle( prhs ) );
+    // If rhs node is already in this cycle, then no need to merge.
+    if ( HasPrevNode( &rhs ) )
+    {
+        assert( HasNextNode( &rhs ) );
+        return true;
+    }
+
+    if ( prhs == prhs->next_ )
+    {
+        /// rhs is in a cycle with 1 node.
+        assert( prhs->prev_ == prhs );
+        prhs->prev_ = prev_;
+        prhs->next_ = this;
+        prev_->next_ = prhs;
+        prev_ = prhs;
+    }
+    else if ( this == next_ )
+    {
+        /// this is in a cycle with 1 node.
+        assert( prev_ == this );
+        prev_ = prhs->prev_;
+        next_ = prhs;
+        prhs->prev_->next_ = this;
+        prhs->prev_ = this;
+    }
+    else
+    {
+        next_->prev_ = prhs->prev_;
+        prhs->prev_->next_ = prev_;
+        next_ = prhs;
+        prhs->prev_ = this;
+    }
+
+    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
+    return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -127,6 +314,10 @@ void RefLinkedBase::Swap(RefLinkedBase& rhs)
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.4  2006/03/17 22:52:56  rich_sposato
+// Fixed bugs 1452805 and 1451835.  Added Merge ability for RefLink policy.
+// Added more tests for SmartPtr.
+//
 // Revision 1.3  2006/03/01 02:08:10  rich_sposato
 // Fixed bug 1440694 by adding check if rhs is previous neighbor.
 //
