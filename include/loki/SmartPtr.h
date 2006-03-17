@@ -39,6 +39,7 @@
 #include <functional>
 #include <stdexcept>
 #include <cassert>
+#include <stdint.h>
 
 namespace Loki
 {
@@ -1362,6 +1363,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.25  2006/03/17 20:22:14  syntheticpp
+// patch undefined uintptr_t, thx to Regis Desgroppes
+//
 // Revision 1.24  2006/03/08 17:07:11  syntheticpp
 // replace tabs with 4 spaces in all files
 //
