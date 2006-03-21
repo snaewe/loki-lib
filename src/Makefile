@@ -1,11 +1,22 @@
 SRC = $(wildcard *.cpp)
 STATIC_OBJ = $(SRC:.cpp=.o)
 SHARED_OBJ = $(SRC:.cpp=.lo)
+_OS = $(shell uname -s)
 
 LOKI_VERSION = 0.1.4
 
 STATIC_LIB = ../lib/libloki.a
-SHARED_LIB = ../lib/libloki.so.$(LOKI_VERSION)
+ifeq ($(_OS), Darwin)
+  SHARED_LIB_INSTALL = 
+  SHARED_LIB_FLAG = -dynamiclib
+  SHARED_LIB = ../lib/libloki.$(LOKI_VERSION).dylib
+else
+  SHARED_LIB_FLAG = --shared
+  SHARED_LIB_INSTALL = -Wl,-soname=libloki.$(SHARED_LIB_EXTENSION).$(LOKI_VERSION)
+  SHARED_LIB = ../lib/libloki.so.$(LOKI_VERSION)
+endif
+
+
 CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2
 CPPFLAGS = -I../include -DNDEBUG
 
@@ -13,7 +24,7 @@ $(STATIC_LIB): $(STATIC_OBJ)
 	ar rs $(STATIC_LIB) $(STATIC_OBJ)
 
 $(SHARED_LIB): $(SHARED_OBJ)
-	g++ --shared -Wl,-soname=libloki.so.$(LOKI_VERSION) -o $(SHARED_LIB) $(SHARED_OBJ)
+	g++ $(SHARED_LIB_FLAG) $(SHARED_LIB_INSTALL) -o $(SHARED_LIB) $(SHARED_OBJ)
 
 %.lo : %.cpp
 	$(CXX) -c $(CXXFLAGS) -fPIC $(CPPFLAGS) -o $@ $<
