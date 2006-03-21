@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-#include "Base.h"
+#include "base.h"
 
 // ----------------------------------------------------------------------------
 
@@ -930,6 +930,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.4  2006/03/21 20:50:22  syntheticpp
+// fix include error
+//
 // Revision 1.3  2006/03/17 22:52:56  rich_sposato
 // Fixed bugs 1452805 and 1451835.  Added Merge ability for RefLink policy.
 // Added more tests for SmartPtr.
