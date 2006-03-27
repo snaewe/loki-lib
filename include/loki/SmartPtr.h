@@ -99,8 +99,11 @@ namespace Loki
         // (Destruction might be taken over by the OwnershipPolicy)
         void Destroy()
         {
-            pointee_->~T();
-            ::free( pointee_ );
+            if ( 0 != pointee_ )
+            {
+                pointee_->~T();
+                ::free( pointee_ );
+            }
         }
 
         // Default value to initialize the pointer
@@ -1517,6 +1520,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.28  2006/03/27 18:38:30  rich_sposato
+// Added check for NULL pointer in HeapStorage policy.
+//
 // Revision 1.27  2006/03/27 18:34:36  rich_sposato
 // Added HeapStorage policy as mentioned in Feature Request 1441024.
 //
