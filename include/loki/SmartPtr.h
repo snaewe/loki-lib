@@ -48,6 +48,71 @@ namespace Loki
 {
 
 ////////////////////////////////////////////////////////////////////////////////
+///  \class HeapStorage
+///
+///  \ingroup  SmartPointerStorageGroup 
+///  Implementation of the StoragePolicy used by SmartPtr.  Uses explicit call
+///   to T's destructor followed by call to free.
+////////////////////////////////////////////////////////////////////////////////
+
+    template <class T>
+    class HeapStorage
+    {
+    public:
+        typedef T* StoredType;    // the type of the pointee_ object
+        typedef T* PointerType;   // type returned by operator->
+        typedef T& ReferenceType; // type returned by operator*
+
+        HeapStorage() : pointee_(Default()) 
+        {}
+
+        // The storage policy doesn't initialize the stored pointer 
+        //     which will be initialized by the OwnershipPolicy's Clone fn
+        HeapStorage(const HeapStorage&) : pointee_(0)
+        {}
+
+        template <class U>
+        HeapStorage(const HeapStorage<U>&) : pointee_(0)
+        {}
+        
+        HeapStorage(const StoredType& p) : pointee_(p) {}
+        
+        PointerType operator->() const { return pointee_; }
+        
+        ReferenceType operator*() const { return *pointee_; }
+        
+        void Swap(HeapStorage& rhs)
+        { std::swap(pointee_, rhs.pointee_); }
+    
+        // Accessors
+        friend inline PointerType GetImpl(const HeapStorage& sp)
+        { return sp.pointee_; }
+        
+        friend inline const StoredType& GetImplRef(const HeapStorage& sp)
+        { return sp.pointee_; }
+
+        friend inline StoredType& GetImplRef(HeapStorage& sp)
+        { return sp.pointee_; }
+
+    protected:
+        // Destroys the data stored
+        // (Destruction might be taken over by the OwnershipPolicy)
+        void Destroy()
+        {
+            pointee_->~T();
+            ::free( pointee_ );
+        }
+
+        // Default value to initialize the pointer
+        static StoredType Default()
+        { return 0; }
+    
+    private:
+        // Data
+        StoredType pointee_;
+    };
+
+////////////////////////////////////////////////////////////////////////////////
 ///  \class DefaultSPStorage
 ///
 ///  \ingroup  SmartPointerStorageGroup 
@@ -1452,6 +1517,9 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.27  2006/03/27 18:34:36  rich_sposato
+// Added HeapStorage policy as mentioned in Feature Request 1441024.
+//
 // Revision 1.26  2006/03/17 22:52:55  rich_sposato
 // Fixed bugs 1452805 and 1451835.  Added Merge ability for RefLink policy.
 // Added more tests for SmartPtr.
