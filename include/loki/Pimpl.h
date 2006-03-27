@@ -84,7 +84,7 @@ namespace Loki
         {
             // Don't compile with incomplete type
             //
-            // If compilation brakes here make sure
+            // If compilation breaks here make sure
             // the compiler does not auto-generate the 
             // destructor of the class hosting the pimpl:
             // - implement the destructor of the class 
@@ -196,6 +196,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.20  2006/03/27 15:33:24  syntheticpp
+// fix spelling
+//
 // Revision 1.19  2006/03/08 17:07:11  syntheticpp
 // replace tabs with 4 spaces in all files
 //
