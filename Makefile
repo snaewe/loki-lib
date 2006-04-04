@@ -1,4 +1,4 @@
-.PHONY: build-static build-shared check install clean-tmp clean
+.PHONY: build-static build-shared check install install-includes install-shared clean-tmp clean
 build-static:
 	$(MAKE) -C src build-static
 
@@ -8,11 +8,13 @@ build-shared:
 check: build-static
 	$(MAKE) -C test
 
-install:
+install: install-includes
 	$(MAKE) -C src install-static
+
+install-includes:
 	$(MAKE) -C include install
 
-install-shared:
+install-shared: install-includes
 	$(MAKE) -C src install-shared
 
 clean-tmp:

@@ -1,30 +1,34 @@
 SRC = $(wildcard *.cpp)
 STATIC_OBJ = $(SRC:.cpp=.o)
 SHARED_OBJ = $(SRC:.cpp=.lo)
-_OS = $(shell uname -s)
 
-LOKI_VERSION = 0.1.4
-
-STATIC_LIB = ../lib/libloki.a
-ifeq ($(_OS), Darwin)
-  SHARED_LIB_INSTALL = 
-  SHARED_LIB_FLAG = -dynamiclib
-  SHARED_LIB = ../lib/libloki.$(LOKI_VERSION).dylib
-else
-  SHARED_LIB_FLAG = --shared
-  SHARED_LIB_INSTALL = -Wl,-soname=libloki.$(SHARED_LIB_EXTENSION).$(LOKI_VERSION)
-  SHARED_LIB = ../lib/libloki.so.$(LOKI_VERSION)
-endif
-
+VERSION = 0.1.4
+DESTDIR = /usr
 
 CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2
 CPPFLAGS = -I../include -DNDEBUG
 
+STATIC_LIB = ../lib/libloki.a
+
+ifeq ($(shell uname -s), Darwin)
+  SO_EXT = dylib
+  INSTALL_FLAGS =
+  INSTALL_TARGET = libloki.$(VERSION).$(SO_EXT)
+  LDFLAGS = -dynamiclib -single_module -install_name $(INSTALL_TARGET)
+else
+  SO_EXT = so
+  INSTALL_FLAGS = -s
+  INSTALL_TARGET = libloki.$(SO_EXT).$(VERSION)
+  LDFLAGS = --shared -Wl,-soname=$(INSTALL_TARGET)
+endif
+
+SHARED_LIB = ../lib/$(INSTALL_TARGET)
+
 $(STATIC_LIB): $(STATIC_OBJ)
-	ar rs $(STATIC_LIB) $(STATIC_OBJ)
+	$(AR) $(ARFLAGS) $@ $^
 
 $(SHARED_LIB): $(SHARED_OBJ)
-	g++ $(SHARED_LIB_FLAG) $(SHARED_LIB_INSTALL) -o $(SHARED_LIB) $(SHARED_OBJ)
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 %.lo : %.cpp
 	$(CXX) -c $(CXXFLAGS) -fPIC $(CPPFLAGS) -o $@ $<
@@ -34,18 +38,18 @@ build-static: $(STATIC_LIB)
 build-shared: $(SHARED_LIB)
 
 install-static: $(STATIC_LIB)
-	mkdir -p $(DESTDIR)/usr/lib
-	install -m 644 $(STATIC_LIB) $(DESTDIR)/usr/lib
+	mkdir -p $(DESTDIR)/lib
+	install -m 644 $< $(DESTDIR)/lib
 
 install-shared: $(SHARED_LIB)
-	mkdir -p $(DESTDIR)/usr/lib
-	install -m 644 -s $(SHARED_LIB) $(DESTDIR)/usr/lib
-	cd $(DESTDIR)/usr/lib/; ln -s libloki.so.$(LOKI_VERSION) libloki.so
+	mkdir -p $(DESTDIR)/lib
+	install -m 644 $(INSTALL_FLAGS) $< $(DESTDIR)/lib
+	cd $(DESTDIR)/lib/ && $(RM) libloki.$(SO_EXT) && ln -s $(INSTALL_TARGET) libloki.$(SO_EXT)
 
 clean-tmp:
-	rm -f $(STATIC_OBJ)
-	rm -f $(SHARED_OBJ)
+	$(RM) $(STATIC_OBJ)
+	$(RM) $(SHARED_OBJ)
 
 clean: clean-tmp
-	rm -f $(STATIC_LIB)
-	rm -f $(SHARED_LIB)
+	$(RM) $(STATIC_LIB)
+	$(RM) $(SHARED_LIB)
