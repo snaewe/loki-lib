@@ -27,9 +27,30 @@ using namespace Loki;
 
 extern void DoStrongRefCountTests( void );
 extern void DoStrongRefLinkTests( void );
+extern void DoStrongReleaseTests( void );
+extern void DoWeakCycleTests( void );
+extern void DoStrongConstTests( void );
+extern void DoStrongForwardReferenceTest( void );
 
 unsigned int BaseClass::s_constructions = 0;
 unsigned int BaseClass::s_destructions = 0;
+
+unsigned int MimicCOM::s_constructions = 0;
+unsigned int MimicCOM::s_destructions = 0;
+
+
+// ----------------------------------------------------------------------------
+
+/// Used to check if SmartPtr can be used with a forward-reference.
+class Thingy;
+
+typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
+    AssertCheck, DefaultSPStorage, PropagateConst >
+    Thingy_DefaultStorage_ptr;
+
+typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
+    AssertCheck, HeapStorage, PropagateConst >
+    Thingy_HeapStorage_ptr;
 
 
 // ----------------------------------------------------------------------------
@@ -53,6 +74,8 @@ typedef Loki::SmartPtr< BaseClass, RefCounted, DisallowConversion,
     NonConstBase_RefCount_NoConvert_Assert_Propagate_ptr;
 
 
+// ----------------------------------------------------------------------------
+
 /// @note These 5 are used for testing ownership policies.
 typedef Loki::SmartPtr< BaseClass, COMRefCounted, DisallowConversion,
     AssertCheck, DefaultSPStorage, DontPropagateConst >
@@ -74,6 +97,9 @@ typedef Loki::SmartPtr< BaseClass, NoCopy, DisallowConversion,
     AssertCheck, DefaultSPStorage, DontPropagateConst >
     NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr;
 
+
+// ----------------------------------------------------------------------------
+
 /// @note These 2 are used for testing inheritance.
 typedef Loki::SmartPtr< PublicSubClass, RefCounted, DisallowConversion,
     AssertCheck, DefaultSPStorage, DontPropagateConst >
@@ -82,6 +108,14 @@ typedef Loki::SmartPtr< PublicSubClass, RefCounted, DisallowConversion,
 typedef Loki::SmartPtr< PrivateSubClass, RefCounted, DisallowConversion,
     AssertCheck, DefaultSPStorage, DontPropagateConst >
     PrivateSub_RefCount_NoConvert_Assert_DontPropagate_ptr;
+
+
+// ----------------------------------------------------------------------------
+
+/// @note Used for testing how well SmartPtr works with COM objects.
+typedef Loki::SmartPtr< MimicCOM, COMRefCounted, DisallowConversion,
+    AssertCheck, DefaultSPStorage, DontPropagateConst >
+    MimicCOM_ptr;
 
 
 // ----------------------------------------------------------------------------
@@ -303,6 +337,8 @@ void DoRefLinkSwapTests( void )
     BaseClass * pBaseClass = new BaseClass;
     NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p1( pBaseClass );
     NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p2( new BaseClass );
+    p1->DoThat();
+    p2->DoThat();
 
     NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p3( p1 );
     NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p4( p2 );
@@ -785,6 +821,7 @@ void DoRefLinkTests( void )
         assert( w3 );
         assert( w4 );
         assert( dtorCount + 1 == BaseClass::GetDtorCount() );
+        w3->DoThat();
     }
     assert( ctorCount + 2 == BaseClass::GetCtorCount() );
     assert( dtorCount + 2 == BaseClass::GetDtorCount() );
@@ -902,16 +939,80 @@ void DoRefLinkNullPointerTests( void )
 
 // ----------------------------------------------------------------------------
 
+void DoComRefTest( void )
+{
+
+    const unsigned int ctorCount = MimicCOM::GetCtorCount();
+    const unsigned int dtorCount = MimicCOM::GetDtorCount();
+    assert( MimicCOM::AllDestroyed() );
+    {
+        MimicCOM_ptr p1;
+    }
+    assert( MimicCOM::AllDestroyed() );
+    assert( ctorCount == MimicCOM::GetCtorCount() );
+    assert( dtorCount == MimicCOM::GetDtorCount() );
+
+    {
+        MimicCOM_ptr p1( new MimicCOM );
+    }
+    assert( ctorCount+1 == MimicCOM::GetCtorCount() );
+    assert( dtorCount+1 == MimicCOM::GetDtorCount() );
+
+    {
+        MimicCOM_ptr p2( new MimicCOM );
+        MimicCOM_ptr p3( p2 );
+        MimicCOM_ptr p4;
+        p4 = p2;
+    }
+    assert( ctorCount+2 == MimicCOM::GetCtorCount() );
+    assert( dtorCount+2 == MimicCOM::GetDtorCount() );
+}
+
+// ----------------------------------------------------------------------------
+
+void DoForwardReferenceTest( void )
+{
+    /** @note These lines should cause the compiler to make a warning message
+     about attempting to delete an undefined type.  But it should not produce
+     any error messages.
+     */
+    Thingy_DefaultStorage_ptr p1;
+    Thingy_DefaultStorage_ptr p2( p1 );
+    Thingy_DefaultStorage_ptr p3;
+    p3 = p2;
+
+    /** @note These lines should cause the compiler to make an error message
+     about attempting to call the destructor for an undefined type.
+     */
+    //Thingy_HeapStorage_ptr p4;
+    //Thingy_HeapStorage_ptr p5( p4 );
+    //Thingy_HeapStorage_ptr p6;
+    //p6 = p5;
+}
+
+// ----------------------------------------------------------------------------
+
 int main( unsigned int , const char * [] )
 {
 
     DoRefLinkTests();
+    DoStrongRefCountTests();
+    DoStrongRefLinkTests();
+    DoStrongReleaseTests();
+    DoWeakCycleTests();
+
+    DoForwardReferenceTest();
+    DoStrongForwardReferenceTest();
 
     DoRefCountNullPointerTests();
     DoRefLinkNullPointerTests();
 
     DoRefCountSwapTests();
     DoRefLinkSwapTests();
+
+    DoComRefTest();
+
+    DoStrongConstTests();
     DoConstConversionTests();
     DoOwnershipConversionTests();
     DoInheritanceConversionTests();
@@ -930,6 +1031,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.5  2006/04/05 22:53:12  rich_sposato
+// Added StrongPtr class to Loki along with tests for StrongPtr.
+//
 // Revision 1.4  2006/03/21 20:50:22  syntheticpp
 // fix include error
 //

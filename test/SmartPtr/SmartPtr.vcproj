@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="SmartPtr"
 	ProjectGUID="{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}"
 	RootNamespace="SmartPtr"
@@ -151,6 +151,10 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\base.h"
+			>
+		</File>
+		<File
 			RelativePath=".\main.cpp"
 			>
 		</File>
@@ -176,6 +180,18 @@
 		</File>
 		<File
 			RelativePath="..\..\include\loki\SmartPtr.h"
+			>
+		</File>
+		<File
+			RelativePath=".\strong.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\StrongPtr.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\include\loki\StrongPtr.h"
 			>
 		</File>
 		<File
