@@ -260,7 +260,15 @@ namespace Loki
             assert(pCount_!=0);
             *pCount_ = 1;
         }
-        
+
+        RefCounted( const P & )
+            : pCount_(static_cast<uintptr_t*>(
+                SmallObject<>::operator new(sizeof(uintptr_t))))
+        {
+            assert(pCount_!=0);
+            *pCount_ = 1;
+        }
+
         RefCounted(const RefCounted& rhs) 
         : pCount_(rhs.pCount_)
         {}
@@ -329,6 +337,16 @@ namespace Loki
                 ThreadingModel<RefCountedMT, MX>::AtomicAssign(*pCount_, 1);
             }
 
+            RefCountedMT( const P & ) 
+            {
+                pCount_ = static_cast<CountPtrType>(
+                    SmallObject<LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>::operator new(
+                        sizeof(*pCount_)));
+                assert(pCount_);
+                //*pCount_ = 1;
+                ThreadingModel<RefCountedMT, MX>::AtomicAssign(*pCount_, 1);
+            }
+
             RefCountedMT(const RefCountedMT& rhs) 
             : pCount_(rhs.pCount_)
             {}
@@ -382,7 +400,13 @@ namespace Loki
     public:
         COMRefCounted()
         {}
-        
+
+        COMRefCounted(const P& val)
+        {
+            if(val!=0)
+                val->AddRef();
+        }
+
         template <class U>
         COMRefCounted(const COMRefCounted<U>&)
         {}
@@ -421,7 +445,10 @@ namespace Loki
     {
         DeepCopy()
         {}
-        
+
+        DeepCopy( const P & )
+        {}
+
         template <class P1>
         DeepCopy(const DeepCopy<P1>&)
         {}
@@ -481,7 +508,10 @@ namespace Loki
     public:
         RefLinked()
         {}
-        
+
+        RefLinked( const P & )
+        {}
+
         template <class P1>
         RefLinked(const RefLinked<P1>& rhs) 
         : Private::RefLinkedBase(rhs)
@@ -514,7 +544,10 @@ namespace Loki
     public:
         DestructiveCopy()
         {}
-        
+
+        DestructiveCopy( const P & )
+        {}
+
         template <class P1>
         DestructiveCopy(const DestructiveCopy<P1>&)
         {}
@@ -550,7 +583,10 @@ namespace Loki
     public:
         NoCopy()
         {}
-        
+
+        NoCopy( const P & )
+        {}
+
         template <class P1>
         NoCopy(const NoCopy<P1>&)
         {}
@@ -619,6 +655,8 @@ namespace Loki
 ///  Well, it's clear what it does :o)
 ////////////////////////////////////////////////////////////////////////////////
 
+    template < class P > struct AssertCheck;
+
     template <class P>
     struct NoCheck
     {
@@ -629,6 +667,10 @@ namespace Loki
         NoCheck(const NoCheck<P1>&)
         {}
         
+        template <class P1>
+        NoCheck(const AssertCheck<P1>&)
+        {}
+
         static void OnDefault(const P&)
         {}
 
@@ -963,10 +1005,10 @@ namespace Loki
         { KP::OnDefault(GetImpl(*this)); }
         
         explicit
-        SmartPtr(ExplicitArg p) : SP(p)
+        SmartPtr(ExplicitArg p) : SP(p), OP(p)
         { KP::OnInit(GetImpl(*this)); }
 
-        SmartPtr(ImplicitArg p) : SP(p)
+        SmartPtr(ImplicitArg p) : SP(p), OP(p)
         { KP::OnInit(GetImpl(*this)); }
 
         SmartPtr(CopyArg& rhs)
@@ -1520,6 +1562,10 @@ namespace std
 #endif // SMARTPTR_INC_
 
 // $Log$
+// Revision 1.29  2006/04/05 22:41:43  rich_sposato
+// Fixed bug 1459838 using fix made by Thomas Albrecht.  (Thanks!)
+// Also added a constructor for NoCheck policy.
+//
 // Revision 1.28  2006/03/27 18:38:30  rich_sposato
 // Added check for NULL pointer in HeapStorage policy.
 //
