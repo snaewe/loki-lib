@@ -933,3 +933,8 @@ void DoStrongForwardReferenceTest( void )
 }
 
 // ----------------------------------------------------------------------------
+
+// $Log$
+// Revision 1.2  2006/04/06 18:19:58  rich_sposato
+// Added CVS Log keyword.
+//
