@@ -1,7 +1,7 @@
 [Project]
 FileName=Loki_Debug.dev
 Name=Loki
-UnitCount=37
+UnitCount=39
 Type=2
 Ver=1
 ObjFiles=
@@ -409,6 +409,26 @@ BuildCmd=
 
 [Unit37]
 FileName=include\loki\TypeTraits.h
+CompileCpp=1
+Folder=Headers
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit38]
+FileName=src\StrongPtr.cpp
+CompileCpp=1
+Folder=Sources
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit39]
+FileName=include\loki\StrongPtr.h
 CompileCpp=1
 Folder=Headers
 Compile=1
