@@ -300,7 +300,7 @@ namespace Private
 ///   for each set of copointers.  This class is small, trivial, and inline.
 ////////////////////////////////////////////////////////////////////////////////
 
-class TwoRefCountInfo
+class LOKI_EXPORT TwoRefCountInfo
 {
 public:
 
@@ -400,7 +400,8 @@ private:
 ///   for each set of copointers.  This class is small, trivial, and inline.
 ////////////////////////////////////////////////////////////////////////////////
 
-class LockableTwoRefCountInfo : private Loki::Private::TwoRefCountInfo
+class LOKI_EXPORT LockableTwoRefCountInfo
+    : private Loki::Private::TwoRefCountInfo
 {
 public:
 
@@ -522,7 +523,7 @@ private:
 ///   intended for single-threaded environments.
 ////////////////////////////////////////////////////////////////////////////////
 
-class TwoRefCounts
+class LOKI_EXPORT TwoRefCounts
 {
 protected:
 
@@ -587,7 +588,7 @@ private:
 ///   trivial enough to be inline, while others are implemented in elsewhere.
 ////////////////////////////////////////////////////////////////////////////////
 
-class LockableTwoRefCounts
+class LOKI_EXPORT LockableTwoRefCounts
 {
 protected:
 
@@ -662,7 +663,7 @@ private:
 ///   safe, and is intended for single-threaded environments.
 ////////////////////////////////////////////////////////////////////////////////
 
-class TwoRefLinks
+class LOKI_EXPORT TwoRefLinks
 {
 protected:
 
@@ -1454,6 +1455,9 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.2  2006/04/06 06:05:20  rich_sposato
+// Added LOKI_EXPORT macro.
+//
 // Revision 1.1  2006/04/05 22:56:58  rich_sposato
 // Added StrongPtr class to Loki along with tests for StrongPtr.
 //
