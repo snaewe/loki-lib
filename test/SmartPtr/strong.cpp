@@ -14,7 +14,7 @@
 
 // ----------------------------------------------------------------------------
 
-#include <loki/StrongPtr.h>
+#include <Loki/StrongPtr.h>
 
 #include <iostream>
 #include <cassert>
@@ -935,6 +935,9 @@ void DoStrongForwardReferenceTest( void )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.3  2006/04/07 16:27:11  vizowl
+// adding an XCode build project
+//
 // Revision 1.2  2006/04/06 18:19:58  rich_sposato
 // Added CVS Log keyword.
 //
