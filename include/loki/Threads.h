@@ -159,16 +159,28 @@ namespace Loki
     class Mutex
     {
     public:
-        Mutex()       { LOKI_THREADS_MUTEX_INIT  ( (&mtx_) ); }
-        ~Mutex()      { LOKI_THREADS_MUTEX_DELETE( (&mtx_) ); }
-        void Lock()   { LOKI_THREADS_MUTEX_LOCK  ( (&mtx_) ); }
-        void Unlock() { LOKI_THREADS_MUTEX_UNLOCK( (&mtx_) ); }
+        Mutex()
+        {
+            LOKI_THREADS_MUTEX_INIT( (&mtx_) );
+        }
+        ~Mutex()
+        {
+            LOKI_THREADS_MUTEX_DELETE( (&mtx_) );
+        }
+        void Lock()
+        {
+            LOKI_THREADS_MUTEX_LOCK( (&mtx_) );
+        }
+        void Unlock()
+        {
+            LOKI_THREADS_MUTEX_UNLOCK( (&mtx_) );
+        }
     private:
         /// Copy-constructor not implemented.
         Mutex( const Mutex & );
         /// Copy-assignement operator not implemented.
         Mutex & operator = ( const Mutex & );
-        LOKI_THREADS_MUTEX(mtx_;)
+        LOKI_THREADS_MUTEX( mtx_; )
     };
 
 
@@ -395,6 +407,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.28  2006/04/15 00:39:50  rich_sposato
+// Stylistic change so I can put breakpoint on lines within Mutex functions.
+//
 // Revision 1.27  2006/01/22 15:33:41  syntheticpp
 // a -pedantic fix
 //
