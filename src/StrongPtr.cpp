@@ -260,6 +260,7 @@ bool TwoRefLinks::Release( bool strong )
 {
 
     assert( strong == m_strong );
+    (void)strong;
 #ifdef DO_EXTRA_LOKI_TESTS
     assert( m_prev->HasPrevNode( this ) );
     assert( m_next->HasNextNode( this ) );
@@ -614,6 +615,9 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.2  2006/04/15 00:46:46  rich_sposato
+// Added line to remove compiler warning about unused parameter.
+//
 // Revision 1.1  2006/04/05 22:53:10  rich_sposato
 // Added StrongPtr class to Loki along with tests for StrongPtr.
 //
