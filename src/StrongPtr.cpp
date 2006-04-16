@@ -193,8 +193,8 @@ void LockableTwoRefCounts::ZapPointer( void )
 // ----------------------------------------------------------------------------
 
 TwoRefLinks::TwoRefLinks( const void * p, bool strong )
-    : m_strong( strong )
-    , m_pointer( const_cast< void * >( p ) )
+    : m_pointer( const_cast< void * >( p ) )
+    , m_strong( strong )
 {
     m_prev = m_next = this;
 #ifdef DO_EXTRA_LOKI_TESTS
@@ -205,10 +205,10 @@ TwoRefLinks::TwoRefLinks( const void * p, bool strong )
 // ----------------------------------------------------------------------------
 
 TwoRefLinks::TwoRefLinks( const TwoRefLinks & rhs, bool strong )
-    : m_strong( strong )
+    : m_pointer( rhs.m_pointer )
     , m_prev( const_cast< TwoRefLinks * >( &rhs ) )
     , m_next( rhs.m_next )
-    , m_pointer( rhs.m_pointer )
+    , m_strong( strong )
 {
     m_prev->m_next = this;
     m_next->m_prev = this;
@@ -615,6 +615,9 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.3  2006/04/16 13:33:36  syntheticpp
+// change init order to declarartion order
+//
 // Revision 1.2  2006/04/15 00:46:46  rich_sposato
 // Added line to remove compiler warning about unused parameter.
 //
