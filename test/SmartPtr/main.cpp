@@ -799,8 +799,8 @@ void DoRefLinkSwapTests( void )
 void DoRefLinkTests( void )
 {
 
-    const unsigned int ctorCount = BaseClass::GetCtorCount();
-    const unsigned int dtorCount = BaseClass::GetDtorCount();
+    const unsigned int ctorCount = BaseClass::GetCtorCount(); (void) ctorCount;
+    const unsigned int dtorCount = BaseClass::GetDtorCount(); (void) dtorCount;
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
     {
@@ -833,9 +833,9 @@ void DoRefLinkTests( void )
 
 void DoRefCountNullPointerTests( void )
 {
-    BaseClass * pNull = NULL;
-    const unsigned int ctorCount = BaseClass::GetCtorCount();
-    const unsigned int dtorCount = BaseClass::GetDtorCount();
+    BaseClass * pNull = NULL; (void) pNull;
+    const unsigned int ctorCount = BaseClass::GetCtorCount(); (void) ctorCount;
+    const unsigned int dtorCount = BaseClass::GetDtorCount(); (void) dtorCount;
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
     {
@@ -887,9 +887,9 @@ void DoRefCountNullPointerTests( void )
 
 void DoRefLinkNullPointerTests( void )
 {
-    BaseClass * pNull = NULL;
-    const unsigned int ctorCount = BaseClass::GetCtorCount();
-    const unsigned int dtorCount = BaseClass::GetDtorCount();
+    BaseClass * pNull = NULL; (void) pNull;
+    const unsigned int ctorCount = BaseClass::GetCtorCount(); (void) ctorCount;
+    const unsigned int dtorCount = BaseClass::GetDtorCount(); (void) dtorCount;
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
     {
@@ -942,8 +942,8 @@ void DoRefLinkNullPointerTests( void )
 void DoComRefTest( void )
 {
 
-    const unsigned int ctorCount = MimicCOM::GetCtorCount();
-    const unsigned int dtorCount = MimicCOM::GetDtorCount();
+    const unsigned int ctorCount = MimicCOM::GetCtorCount(); (void) ctorCount;
+    const unsigned int dtorCount = MimicCOM::GetDtorCount(); (void) dtorCount;
     assert( MimicCOM::AllDestroyed() );
     {
         MimicCOM_ptr p1;
@@ -1031,6 +1031,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.6  2006/04/16 14:05:39  syntheticpp
+// remove warnings
+//
 // Revision 1.5  2006/04/05 22:53:12  rich_sposato
 // Added StrongPtr class to Loki along with tests for StrongPtr.
 //
