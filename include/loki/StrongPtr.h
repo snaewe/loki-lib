@@ -757,9 +757,9 @@ class StrongPtr
 {
 
     typedef OwnershipPolicy OP;
+    typedef ConversionPolicy CP;
     typedef CheckingPolicy< T * > KP;
     typedef ResetPolicy< T > RP;
-    typedef ConversionPolicy CP;
     typedef DeletePolicy< T > DP;
 
 public:
@@ -800,7 +800,7 @@ public:
     }
 
     StrongPtr( const StrongPtr & rhs )
-        : OP( rhs, Strong ), DP( rhs ), KP( rhs ), CP( rhs )
+        : OP( rhs, Strong ), CP( rhs ), KP( rhs ), DP( rhs )
     {
     }
 
@@ -817,7 +817,7 @@ public:
     >
     StrongPtr(
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
-        : OP( rhs, Strong ), KP( rhs ), CP( rhs ), DP( rhs )
+        : OP( rhs, Strong ), CP( rhs ), KP( rhs ), DP( rhs )
     {
     }
 
@@ -834,7 +834,7 @@ public:
     >
     StrongPtr(
         StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
-        : OP( rhs, Strong ), KP( rhs ), CP( rhs ), DP( rhs )
+        : OP( rhs, Strong ), CP( rhs ), KP( rhs ), DP( rhs )
     {
     }
 
@@ -1455,6 +1455,9 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.4  2006/04/16 14:08:46  syntheticpp
+// change init order to inheritance order
+//
 // Revision 1.3  2006/04/16 13:36:26  syntheticpp
 // gcc pedantic fix
 //
