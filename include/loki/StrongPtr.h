@@ -713,7 +713,7 @@ private:
     TwoRefLinks & operator = ( const TwoRefLinks & );
 
     bool HasPrevNode( const TwoRefLinks * p ) const;
-    bool HasNextNode( const TwoRefLinks * p ) const;;
+    bool HasNextNode( const TwoRefLinks * p ) const;
     bool AllNodesHaveSamePointer( void ) const;
     void ZapAllNodes( void );
 
@@ -1455,6 +1455,9 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.3  2006/04/16 13:36:26  syntheticpp
+// gcc pedantic fix
+//
 // Revision 1.2  2006/04/06 06:05:20  rich_sposato
 // Added LOKI_EXPORT macro.
 //
