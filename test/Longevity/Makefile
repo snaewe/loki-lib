@@ -1,11 +1,21 @@
-BIN1 = main
-BIN2 = main2
-CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wsign-compare -Wconversion -Wpointer-arith -pedantic -fexpensive-optimizations -O3
-CPPFLAGS = -I../../include -DNDEBUG
-LDFLAGS = -L../../lib
-LDLIBS = -lloki
+BIN1 = main$(BIN_SUFFIX)
+SRC1 = main.cpp
+OBJ1 = $(SRC1:.cpp=.o)
+BIN2 = main2$(BIN_SUFFIX)
+SRC2 = main2.cpp
+OBJ2 = $(SRC2:.cpp=.o)
+override CXXFLAGS = $(CXXWARNFLAGS) -g -fexpensive-optimizations -O3
 
-.PHONY: build clean
-build: $(BIN1) $(BIN2)
+.PHONY: all clean
+all: $(BIN1) $(BIN2)
 clean:
-	rm -f $(BIN1) $(BIN2) $(BIN1).exe $(BIN1).o $(BIN2).exe $(BIN2).o
+	$(RM) $(BIN1)
+	$(RM) $(OBJ1)
+	$(RM) $(BIN2)
+	$(RM) $(OBJ2)
+
+$(BIN1): $(OBJ1)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+$(BIN2): $(OBJ2)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)

@@ -1,10 +1,12 @@
-BIN = main
-CXXFLAGS = -Wall -Wold-style-cast -Wundef -pedantic -O2
-CPPFLAGS = -I../../include -DNDEBUG
-LDFLAGS = -L../../lib
-LDLIBS = -lloki
+BIN = main$(BIN_SUFFIX)
+SRC = main.cpp
+OBJ = $(SRC:.cpp=.o)
 
-.PHONY: build clean
-build: $(BIN)
+.PHONY: all clean
+all: $(BIN)
 clean:
-	rm -f $(BIN) $(BIN).exe $(BIN).o
+	$(RM) $(BIN)
+	$(RM) $(OBJ)
+
+$(BIN): $(OBJ)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
