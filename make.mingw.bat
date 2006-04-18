@@ -6,5 +6,5 @@ if defined LOKI_TMP (
 set LOKI_TMP=
 @ECHO ON
 
-mingw32-make check
+mingw32-make check OS=Windows
 

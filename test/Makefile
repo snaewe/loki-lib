@@ -1,23 +1,20 @@
-SUBTARGETS = \
-		DeletableSingleton \
-		Factory \
-		Longevity \
-		OrderedStatic \
-		Pimpl \
-		Register \
-		RegressionTest \
-		SafeFormat \
-		ScopeGuard \
-		Singleton \
-		SmallObj \
-		SmartPtr \
-		Visitor \
-		flex_string \
-		SingletonDll
-	
-SUBTARGETS_CLEAN = $(foreach SUBTARGET,$(SUBTARGETS),$(SUBTARGET)-clean)
+export CPPFLAGS = -I../../include -DNDEBUG
+export LDFLAGS = -L../../lib
+export LDLIBS = -lloki
 
-.PHONY: clean all $(SUBTARGETS) $(SUBTARGETS_CLEAN)
+ifeq ($(OS),Windows)
+export BIN_SUFFIX = .exe
+else
+export BIN_SUFFIX =
+endif
+
+SUBTARGETS_ORIG := $(patsubst %/,%,$(dir $(wildcard */Makefile)))
+SUBTARGETS_FILTER_OUT = Function
+SUBTARGETS := $(filter-out $(SUBTARGETS_FILTER_OUT),$(SUBTARGETS_ORIG))
+	
+SUBTARGETS_CLEAN := $(addsuffix -clean,$(SUBTARGETS))
+
+.PHONY: all clean $(SUBTARGETS) $(SUBTARGETS_CLEAN)
 all: $(SUBTARGETS)
 clean: $(SUBTARGETS_CLEAN)
 

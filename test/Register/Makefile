@@ -1,21 +1,22 @@
-BIN = main
+BIN1 = main$(BIN_SUFFIX)
+SRC1 = main.cpp
+OBJ1 = $(SRC1:.cpp=.o)
 LIB1 = libfoo.a
-CXXFLAGS = -Wall -Wold-style-cast -Wundef -Wsign-compare -Wconversion -Wpointer-arith -pedantic -O2 -DLOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
-CPPFLAGS = -I../../include -DNDEBUG
-LDFLAGS = -L../../lib
-LDLIBS = -lloki
+SRC2 = foo.cpp
+OBJ2 = $(SRC2:.cpp=.o)
+override CPPFLAGS += -DLOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
 
-.PHONY: build clean
-build: $(BIN)
+.PHONY: all clean
+all: $(BIN1)
 
-$(BIN): $(LIB1) 
-	$(CXX) $(CXXFLAGS) -L. $(LDFLAGS) $(CPPFLAGS) -o $(BIN) main.cpp $(LDLIBS) -lfoo
+$(BIN1): $(OBJ1) $(LIB1) 
+	$(CXX) $(CXXFLAGS) -L. $(LDFLAGS) $(CPPFLAGS) -o $@ $(OBJ1) $(LDLIBS) -lfoo
 
-$(LIB1): foo.o
-	ar rs $(LIB1) foo.o
+$(LIB1): $(OBJ2)
+	$(AR) $(ARFLAGS) $@ $^
 
-%.a : %.cpp
-	$(CXX) -c $(CXXFLAGS) -fPIC $(CPPFLAGS) -o $@ $<
-	
 clean:
-	rm -f $(BIN) $(LIB1)
+	$(RM) $(BIN1)
+	$(RM) $(OBJ1)
+	$(RM) $(LIB1)
+	$(RM) $(OBJ2)

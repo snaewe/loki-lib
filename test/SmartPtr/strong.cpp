@@ -14,7 +14,7 @@
 
 // ----------------------------------------------------------------------------
 
-#include <Loki/StrongPtr.h>
+#include <loki/StrongPtr.h>
 
 #include <iostream>
 #include <cassert>
@@ -935,6 +935,10 @@ void DoStrongForwardReferenceTest( void )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.4  2006/04/18 07:29:41  lfittl
+// - Various makefile improvements (better mingw support, easier to add new sources)
+// - Include loki/StrongPtr.hpp, not Loki/StrongPtr.hpp (test/SmartPtr)
+//
 // Revision 1.3  2006/04/07 16:27:11  vizowl
 // adding an XCode build project
 //
