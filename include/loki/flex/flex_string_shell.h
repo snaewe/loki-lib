@@ -217,6 +217,8 @@ public:
 private:
     static size_type Min(size_type lhs, size_type rhs)
     { return lhs < rhs ? lhs : rhs; }
+	static size_type Max(size_type lhs, size_type rhs)
+    { return lhs > rhs ? lhs : rhs; }
 	static void Procust(size_type& n, size_type nmax)
     { if (n > nmax) n = nmax; }
     
@@ -1093,7 +1095,7 @@ public:
 
     int compare(const value_type* s) const
     { 
-    	return traits_type::compare(data(), s, traits_type::length(s)); 
+    	return traits_type::compare(data(), s, Max(length(),traits_type::length(s))); 
     }
 };
 
