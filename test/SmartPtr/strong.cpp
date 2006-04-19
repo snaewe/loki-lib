@@ -907,13 +907,13 @@ void DoWeakCycleTests( void )
 void DoStrongForwardReferenceTest( void )
 {
     /** @note These lines should cause the compiler to make a warning message
-     about attempting to delete an undefined type.  But it should not produce
-     any error messages.
+     about attempting to delete an undefined type.  They should also cause
+     an error message about a negative subscript since 
      */
-    Thingy_DeleteSingle_ptr p1;
-    Thingy_DeleteSingle_ptr p2( p1 );
-    Thingy_DeleteSingle_ptr p3;
-    p3 = p1;
+    //Thingy_DeleteSingle_ptr p1;
+    //Thingy_DeleteSingle_ptr p2( p1 );
+    //Thingy_DeleteSingle_ptr p3;
+    //p3 = p1;
 
     /** @note These lines should cause the compiler to make an error message
      about attempting to call the destructor for an undefined type.
@@ -935,6 +935,10 @@ void DoStrongForwardReferenceTest( void )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.5  2006/04/19 01:04:25  rich_sposato
+// Changed DeleteSingle and DeleteArray policy to not allow use of incomplete
+// types.
+//
 // Revision 1.4  2006/04/18 07:29:41  lfittl
 // - Various makefile improvements (better mingw support, easier to add new sources)
 // - Include loki/StrongPtr.hpp, not Loki/StrongPtr.hpp (test/SmartPtr)
