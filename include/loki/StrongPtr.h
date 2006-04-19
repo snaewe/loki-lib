@@ -182,6 +182,12 @@ class DeleteSingle
 public:
     inline static void Delete( const P * p )
     {
+        /** @note If you see an error message about a negative subscript, that
+         means your are attempting to use Loki to delete an incomplete type.
+         Please don't use this policy with incomplete types; you may want to
+         use DeleteNothing instead.
+         */
+        typedef char Type_Must_Be_Defined[ sizeof(P) ? 1 : -1 ];
         delete p;
     }
 
@@ -207,6 +213,12 @@ class DeleteArray
 public:
     inline static void Delete( const P * p )
     {
+        /** @note If you see an error message about a negative subscript, that
+         means your are attempting to use Loki to delete an incomplete type.
+         Please don't use this policy with incomplete types; you may want to
+         use DeleteNothing instead.
+         */
+        typedef char Type_Must_Be_Defined[ sizeof(P) ? 1 : -1 ];
         delete [] p;
     }
 
@@ -1455,6 +1467,10 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.5  2006/04/19 01:04:26  rich_sposato
+// Changed DeleteSingle and DeleteArray policy to not allow use of incomplete
+// types.
+//
 // Revision 1.4  2006/04/16 14:08:46  syntheticpp
 // change init order to inheritance order
 //
