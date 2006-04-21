@@ -531,8 +531,8 @@ private:
 ///   This implementation of StrongPtr's OwnershipPolicy uses a pointer to a
 ///   shared instance of TwoRefCountInfo.  This is the default policy for
 ///   OwnershipPolicy.  Some functions are trivial enough to be inline, while
-///   others are implemented in elsewhere.  It is not thread safe, and is
-///   intended for single-threaded environments.
+///   others are implemented elsewhere.  It is not thread safe, and is intended
+///   for single-threaded environments.
 ////////////////////////////////////////////////////////////////////////////////
 
 class LOKI_EXPORT TwoRefCounts
@@ -572,14 +572,16 @@ protected:
 
     void ZapPointer( void );
 
-    inline void * GetPointer( void ) const
-    {
-        return m_counts->GetPointer();
-    }
-
     inline void * & GetPointerRef( void ) const
     {
         return m_counts->GetPointerRef();
+    }
+
+public:
+
+    inline void * GetPointer( void ) const
+    {
+        return m_counts->GetPointer();
     }
 
 private:
@@ -597,7 +599,7 @@ private:
 ///   This implementation of StrongPtr's OwnershipPolicy uses a pointer to a
 ///   shared instance of LockableTwoRefCountInfo.  It behaves very similarly to
 ///   TwoRefCounts, except that it provides thread-safety.  Some functions are
-///   trivial enough to be inline, while others are implemented in elsewhere.
+///   trivial enough to be inline, while others are implemented elsewhere.
 ////////////////////////////////////////////////////////////////////////////////
 
 class LOKI_EXPORT LockableTwoRefCounts
@@ -767,14 +769,14 @@ class StrongPtr
     , public ResetPolicy< T >
     , public DeletePolicy< T >
 {
-
-    typedef OwnershipPolicy OP;
     typedef ConversionPolicy CP;
     typedef CheckingPolicy< T * > KP;
     typedef ResetPolicy< T > RP;
     typedef DeletePolicy< T > DP;
 
 public:
+
+    typedef OwnershipPolicy OP;
 
     typedef T * StoredType;    // the type of the pointer
     typedef T * PointerType;   // type returned by operator->
@@ -829,7 +831,7 @@ public:
     >
     StrongPtr(
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
-        : OP( rhs, Strong ), CP( rhs ), KP( rhs ), DP( rhs )
+        : OP( rhs, Strong )
     {
     }
 
@@ -846,7 +848,7 @@ public:
     >
     StrongPtr(
         StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
-        : OP( rhs, Strong ), CP( rhs ), KP( rhs ), DP( rhs )
+        : OP( rhs, Strong )
     {
     }
 
@@ -866,6 +868,16 @@ public:
         {
             StrongPtr temp( rhs );
             temp.Swap( *this );
+        }
+        return *this;
+    }
+
+    StrongPtr & operator = ( T * p )
+    {
+        if ( GetPointer() != p )
+        {
+            StrongPtr temp( p );
+            Swap( temp );
         }
         return *this;
     }
@@ -915,8 +927,11 @@ public:
             // undefined behavior.  Therefore, this must get pointer before
             // zapping it, and then delete the temp pointer.
             T * p = GetPointer();
-            OP::ZapPointer();
-            DP::Delete( p );
+            if ( p != 0 )
+            {
+                OP::ZapPointer();
+                DP::Delete( p );
+            }
         }
     }
 
@@ -1467,6 +1482,10 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.6  2006/04/21 21:45:17  rich_sposato
+// Corrected comments.  Added operator= function.  Improved efficiency of
+// dtor.  Other minor changes.
+//
 // Revision 1.5  2006/04/19 01:04:26  rich_sposato
 // Changed DeleteSingle and DeleteArray policy to not allow use of incomplete
 // types.
