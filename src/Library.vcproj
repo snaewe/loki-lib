@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="../lib/loki.lib"
+				OutputFile="../lib/loki_D.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
