@@ -32,6 +32,8 @@ extern void DoWeakCycleTests( void );
 extern void DoStrongConstTests( void );
 extern void DoStrongForwardReferenceTest( void );
 
+extern void DoLockedPtrTest( void );
+
 unsigned int BaseClass::s_constructions = 0;
 unsigned int BaseClass::s_destructions = 0;
 
@@ -1016,6 +1018,8 @@ int main( unsigned int , const char * [] )
     DoConstConversionTests();
     DoOwnershipConversionTests();
     DoInheritanceConversionTests();
+    
+    DoLockedPtrTest();
 
     // Check that nothing was leaked.
     assert( BaseClass::AllDestroyed() );
@@ -1031,6 +1035,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.7  2006/04/28 00:34:21  rich_sposato
+// Added test for thread-safe StrongPtr policy.
+//
 // Revision 1.6  2006/04/16 14:05:39  syntheticpp
 // remove warnings
 //
