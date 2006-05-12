@@ -9,14 +9,22 @@
 //
 // This software is provided "as is" without express or implied warranty.
 //
-// Last update: September 16, 2002
 ///////////////////////////////////////////////////////////////////////////////
+
+// $Header:
 
 #ifndef SMARTPTRTEST_H
 #define SMARTPTRTEST_H
 
 #include "UnitTest.h"
 #include <loki/SmartPtr.h>
+#include <cassert>
+
+#if 0 // throw assert on failed test
+#define LOKI_assert(x) assert(x)
+#else
+#define LOKI_assert(x) 
+#endif
 
 using namespace Loki;
 
@@ -78,102 +86,102 @@ public:
 
     bool test1=TestClass::instances == 0;
 
-    { p0 p(new TestClass); }
-    { p1 p(new TestClass); }
-    { p2 p(new TestClass); p2 pp(p); }
-    { p3 p(new TestClass); }
-    { p4 p(new TestClass); }
-    { p5 p(new TestClass); }
-    { p6 p(new TestClass); }
-    { p7 p(new TestClass); }
-    { p8 p(new TestClass); }
-    { p9 p(new TestClass); }
-    { p10 p(new TestClass); }
-    { p11 p(new TestClass); }
-    { p12 p(new TestClass); }
-    { p13 p(new TestClass); }
-    { p14 p(new TestClass); }
-    { p15 p(new TestClass); }
-    { p16 p(new TestClass); }
-    { p17 p(new TestClass); }
-    { p18 p(new TestClass); }
-    { p19 p(new TestClass); }
-    { p20 p(new TestClass); }
-    { p21 p(new TestClass); }
-    { p22 p(new TestClass); }
-    { p23 p(new TestClass); }
-    { p24 p(new TestClass); }
-    { p25 p(new TestClass); }
-    { p26 p(new TestClass); }
-    { p27 p(new TestClass); }
-    { p28 p(new TestClass); }
-    { p29 p(new TestClass); }
-    { p30 p(new TestClass); }
-    { p31 p(new TestClass); }
-    { p40 p(new TestClass); }
-    { p41 p(new TestClass); }
-    { p42 p(new TestClass); }
-    { p43 p(new TestClass); }
-    { p44 p(new TestClass); }
-    { p45 p(new TestClass); }
-    { p46 p(new TestClass); }
-    { p47 p(new TestClass); }
-    { p48 p(new TestClass); }
-    { p49 p(new TestClass); }
-    { p50 p(new TestClass); }
-    { p51 p(new TestClass); }
-    { p52 p(new TestClass); }
-    { p53 p(new TestClass); }
-    { p54 p(new TestClass); }
-    { p55 p(new TestClass); }
-    { p56 p(new TestClass); }
-    { p57 p(new TestClass); }
-    { p58 p(new TestClass); }
-    { p59 p(new TestClass); }
-    { p60 p(new TestClass); }
-    { p61 p(new TestClass); }
-    { p62 p(new TestClass); }
-    { p63 p(new TestClass); }
-    { p64 p(new TestClass); }
-    { p65 p(new TestClass); }
-    { p66 p(new TestClass); }
-    { p67 p(new TestClass); }
-    { p68 p(new TestClass); }
-    { p69 p(new TestClass); }
-    { p70 p(new TestClass); }
-    { p71 p(new TestClass); }
-    { p72 p(new TestClass); }
-    { p73 p(new TestClass); }
-    { p74 p(new TestClass); }
-    { p75 p(new TestClass); }
-    { p76 p(new TestClass); }
-    { p77 p(new TestClass); }
-    { p78 p(new TestClass); }
-    { p79 p(new TestClass); }
-    { p80 p(new TestClass); }
-    { p81 p(new TestClass); }
-    { p82 p(new TestClass); }
-    { p83 p(new TestClass); }
-    { p84 p(new TestClass); }
-    { p85 p(new TestClass); }
-    { p86 p(new TestClass); }
-    { p87 p(new TestClass); }
-    { p88 p(new TestClass); }
-    { p89 p(new TestClass); }
-    { p90 p(new TestClass); }
-    { p91 p(new TestClass); }
-    { p92 p(new TestClass); }
-    { p93 p(new TestClass); }
-    { p94 p(new TestClass); }
-    { p95 p(new TestClass); }
-    { p96 p(new TestClass); }
-    { p97 p(new TestClass); }
-    { p98 p(new TestClass); }
-    { p99 p(new TestClass); }
-    { p100 p(new TestClass); }
-    { p101 p(new TestClass); }
-    { p102 p(new TestClass); }
-    { p103 p(new TestClass); }
+	{ p0 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p1 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p2 p(new TestClass); p2 pp(p); } LOKI_assert(TestClass::instances==0);
+	{ p3 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p4 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p5 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p6 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p7 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p8 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p9 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p10 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p11 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p12 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p13 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p14 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p15 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p16 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p17 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p18 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p19 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p20 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p21 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p22 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p23 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p24 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p25 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p26 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p27 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p28 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p29 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p30 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p31 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p40 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p41 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p42 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p43 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p44 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p45 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p46 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p47 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p48 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p49 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p50 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p51 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p52 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p53 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p54 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p55 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p56 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p57 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p58 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p59 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p60 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p61 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p62 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p63 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p64 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p65 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p66 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p67 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p68 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p69 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p70 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p71 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p72 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p73 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p74 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p75 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p76 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p77 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p78 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p79 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p80 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p81 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p82 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p83 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p84 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p85 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p86 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p87 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p88 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p89 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p90 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p91 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p92 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p93 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p94 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p95 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p96 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p97 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p98 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p99 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p100 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p101 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p102 p(new TestClass); } LOKI_assert(TestClass::instances==0);
+	{ p103 p(new TestClass); }
 
     bool test2=TestClass::instances==0;
 
