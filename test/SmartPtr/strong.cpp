@@ -254,9 +254,9 @@ typedef Loki::StrongPtr< const BaseClass, false, TwoRefCounts, DisallowConversio
 void DoStrongRefCountTests( void )
 {
 
-    BaseClass * pNull = NULL;
-    const unsigned int ctorCount = BaseClass::GetCtorCount();
-    const unsigned int dtorCount = BaseClass::GetDtorCount();
+    BaseClass * pNull = NULL; (void)pNull;
+    const unsigned int ctorCount = BaseClass::GetCtorCount(); (void)ctorCount;
+    const unsigned int dtorCount = BaseClass::GetDtorCount(); (void)dtorCount;
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
     {
@@ -462,8 +462,8 @@ void DoStrongRefCountTests( void )
 void DoStrongConstTests( void )
 {
 
-    const unsigned int ctorCount = BaseClass::GetCtorCount();
-    const unsigned int dtorCount = BaseClass::GetDtorCount();
+    const unsigned int ctorCount = BaseClass::GetCtorCount(); (void)ctorCount;
+    const unsigned int dtorCount = BaseClass::GetDtorCount(); (void)dtorCount;
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
     {
@@ -530,9 +530,9 @@ void DoStrongConstTests( void )
 void DoStrongReleaseTests( void )
 {
 
-    BaseClass * pNull = NULL;
-    const unsigned int ctorCount = BaseClass::GetCtorCount();
-    const unsigned int dtorCount = BaseClass::GetDtorCount();
+    BaseClass * pNull = NULL; (void)pNull;
+    const unsigned int ctorCount = BaseClass::GetCtorCount(); (void)ctorCount;
+    const unsigned int dtorCount = BaseClass::GetDtorCount(); (void)dtorCount;
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
     {
@@ -656,9 +656,9 @@ void DoStrongReleaseTests( void )
 void DoStrongRefLinkTests( void )
 {
 
-    BaseClass * pNull = NULL;
-    const unsigned int ctorCount = BaseClass::GetCtorCount();
-    const unsigned int dtorCount = BaseClass::GetDtorCount();
+    BaseClass * pNull = NULL; (void)pNull;
+    const unsigned int ctorCount = BaseClass::GetCtorCount(); (void)ctorCount;
+    const unsigned int dtorCount = BaseClass::GetDtorCount(); (void)dtorCount;
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
     {
@@ -762,11 +762,11 @@ void DoStrongRefLinkTests( void )
 void DoWeakCycleTests( void )
 {
 
-    const unsigned int ctorCountMoon = Moon::GetCtorCount();
-    const unsigned int dtorCountMoon = Moon::GetDtorCount();
+    const unsigned int ctorCountMoon = Moon::GetCtorCount(); (void)ctorCountMoon;
+    const unsigned int dtorCountMoon = Moon::GetDtorCount(); (void)dtorCountMoon;
     assert( Moon::AllDestroyed() );
-    const unsigned int ctorCountEarth = Earth::GetCtorCount();
-    const unsigned int dtorCountEarth = Earth::GetDtorCount();
+    const unsigned int ctorCountEarth = Earth::GetCtorCount(); (void)ctorCountEarth;
+    const unsigned int dtorCountEarth = Earth::GetDtorCount(); (void)dtorCountEarth;
     assert( Earth::AllDestroyed() );
 
     {
@@ -935,6 +935,9 @@ void DoStrongForwardReferenceTest( void )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.6  2006/05/17 16:23:39  syntheticpp
+// remove gcc warnings
+//
 // Revision 1.5  2006/04/19 01:04:25  rich_sposato
 // Changed DeleteSingle and DeleteArray policy to not allow use of incomplete
 // types.
