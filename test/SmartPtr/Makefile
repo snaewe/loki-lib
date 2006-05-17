@@ -1,5 +1,5 @@
 BIN = main$(BIN_SUFFIX)
-SRC = main.cpp strong.cpp
+SRC = main.cpp strong.cpp LockTest.cpp
 OBJ = $(SRC:.cpp=.o)
 
 .PHONY: all clean
