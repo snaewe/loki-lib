@@ -955,13 +955,13 @@ void DoComRefTest( void )
     assert( dtorCount == MimicCOM::GetDtorCount() );
 
     {
-        MimicCOM_ptr p1( new MimicCOM );
+        MimicCOM_ptr p1( MimicCOM::QueryInterface() );
     }
     assert( ctorCount+1 == MimicCOM::GetCtorCount() );
     assert( dtorCount+1 == MimicCOM::GetDtorCount() );
 
     {
-        MimicCOM_ptr p2( new MimicCOM );
+        MimicCOM_ptr p2( MimicCOM::QueryInterface() );
         MimicCOM_ptr p3( p2 );
         MimicCOM_ptr p4;
         p4 = p2;
@@ -999,7 +999,7 @@ int main( unsigned int , const char * [] )
 
     DoRefLinkTests();
     DoStrongRefCountTests();
-    DoStrongRefLinkTests();
+    DoStrongReleaseTests();
     DoStrongReleaseTests();
     DoWeakCycleTests();
 
@@ -1035,6 +1035,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.8  2006/05/18 05:05:21  rich_sposato
+// Added QueryInterface function to MimicCOM class.
+//
 // Revision 1.7  2006/04/28 00:34:21  rich_sposato
 // Added test for thread-safe StrongPtr policy.
 //
