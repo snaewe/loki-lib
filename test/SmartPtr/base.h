@@ -110,12 +110,12 @@ public:
 class MimicCOM
 {
 public:
-    MimicCOM( void )
-        : m_count( 0 )
-        , m_AddRefCount( 0 )
-        , m_ReleaseCount( 0 )
+
+    static MimicCOM * QueryInterface( void )
     {
-        s_constructions++;
+        MimicCOM * p = new MimicCOM;
+        p->AddRef();
+        return p;
     }
 
     virtual ~MimicCOM( void )
@@ -176,6 +176,14 @@ private:
     /// Not implemented.
     MimicCOM & operator = ( const MimicCOM & );
 
+    MimicCOM( void )
+        : m_count( 0 )
+        , m_AddRefCount( 0 )
+        , m_ReleaseCount( 0 )
+    {
+        s_constructions++;
+    }
+
     static unsigned int s_constructions;
     static unsigned int s_destructions;
 
@@ -187,6 +195,9 @@ private:
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.3  2006/05/18 05:05:21  rich_sposato
+// Added QueryInterface function to MimicCOM class.
+//
 // Revision 1.2  2006/04/05 22:53:12  rich_sposato
 // Added StrongPtr class to Loki along with tests for StrongPtr.
 //
