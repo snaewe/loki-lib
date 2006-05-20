@@ -5,7 +5,7 @@ export CXXWARNFLAGS = -Wall -Wold-style-cast -Wundef -Wsign-compare -Wconversion
 export CXXFLAGS = $(CXXWARNFLAGS) -g -O2
 
 .PHONY: all build-static build-shared check clean distclean
-all: build-static build-shared
+all: build-static build-shared check
 build-static:
 	$(MAKE) -C src build-static
 
