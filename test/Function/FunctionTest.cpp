@@ -11,27 +11,42 @@
 #include <cassert>
 #include <string>
 #include <utility>
-#include <boost/test/minimal.hpp>
+
+//***********************************************************
+//#include <boost/test/minimal.hpp>
+#include <iostream>
+#define BOOST_CHECK(exp)							\
+	( (exp)											\
+		? static_cast<void>(0)						\
+		: report_error(#exp,__FILE__,__LINE__) )
+
+#define BOOST_ERROR(x) std::cout << x << "\n"
+inline void
+report_error( const char* msg, const char* file, int line, bool is_msg = false )
+{
+    std::cout << file << "(" << line << "): ";
+
+    if( is_msg )
+        std::cout << msg;
+    else
+        std::cout << "test " << msg << " failed";
+
+    std::cout << std::endl;
+}
+//***********************************************************
 
 #define TEST_LOKI_FUNCTION
 #ifndef TEST_LOKI_FUNCTION
-
-#include <boost/function.hpp>
-using namespace boost;
-
+	#include <boost/function.hpp>
+	using namespace boost;
 #else
-
-#define LOKI_CLASS_LEVEL_THREADING
-
-// disable to see "static instantiation order fiasco" crash
-#define LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
-
-#include <boost/ref.hpp>
-#include <loki/Function.h>
-using namespace Loki;
-#define BOOST_FUNCTION_TARGET_FIX(x) x
-#define function Function
-
+	#define BOOST_FUNCTION_TARGET_FIX(x) x
+	#define LOKI_CLASS_LEVEL_THREADING
+	// disable to see "static instantiation order fiasco" crash
+	#define LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
+	#include <loki/Function.h>
+	using namespace Loki;
+	#define function Function
 #endif
 
 
@@ -718,7 +733,9 @@ static void test_ref()
     }
     catch(runtime_error e)
     {
-        BOOST_ERROR("Nonthrowing constructor threw an exception");
+#ifndef TEST_LOKI_FUNCTION
+		BOOST_ERROR("Nonthrowing constructor threw an exception");
+#endif
     }
 }
 
@@ -763,7 +780,7 @@ static void test_call()
     test_call_cref(std::plus<int>());
 }
 
-int test_main(int, char* [])
+int main()
 {
     test_static_function();
     test_zero_args();
