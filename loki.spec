@@ -1,7 +1,7 @@
 %define source_name loki
 Name: %{source_name}-lib
 Summary: Loki C++ Library
-Version: 0.1.4
+Version: 0.1.5
 Release: 2
 License: MIT License
 Group: Productivity/Development
