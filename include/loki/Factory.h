@@ -686,6 +686,13 @@ template <typename AP, typename Id, typename P1 >
 ///  
 ///  Create functions can have up to 15 parameters.
 ///    
+///  \par Singleton lifetime when used with Loki::SingletonHolder
+///  Because Factory uses internally Functors which inherits from 
+///  SmallObject you must use the singleton lifetime
+///  \code Loki::LongevityLifetime::DieAsSmallObjectChild \endcode
+///  Alternatively you could suppress for Functor the inheritance 
+///  from SmallObject by defining the macro:
+/// \code LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT \endcode
 ////////////////////////////////////////////////////////////////////////////////
     template
     <
@@ -1033,6 +1040,9 @@ template <typename AP, typename Id, typename P1 >
 #endif // FACTORY_INC_
 
 // $Log$
+// Revision 1.17  2006/05/20 10:23:07  syntheticpp
+// add warnings in the documentation about the special lifetime when using SmallObjects
+//
 // Revision 1.16  2006/03/08 16:41:38  syntheticpp
 // remove second $
 //

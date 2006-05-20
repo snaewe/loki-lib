@@ -40,6 +40,14 @@
 ///  \ingroup   SingletonGroup
 ///  \defgroup  LifetimeGroup Lifetime policies
 ///  \ingroup   SingletonGroup
+///  The lifetimes of the singleton.
+///  \par Special lifetime for SmallObjects
+///  When the holded object is a Small(Value)Object or the holded object 
+///  uses objects which are or inherit from Small(Value)Object
+///  then you can't use the default lifetime: you must use the lifetime
+///  \code Loki::LongevityLifetime::DieAsSmallObjectChild \endcode
+///  Be aware of this when you use Loki::Factory, Loki::Functor, or Loki::Function.
+
 
 
 namespace Loki
@@ -889,6 +897,9 @@ namespace Loki                                                          \
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.30  2006/05/20 10:23:07  syntheticpp
+// add warnings in the documentation about the special lifetime when using SmallObjects
+//
 // Revision 1.29  2006/03/15 08:47:18  syntheticpp
 // gcc: specialization only in the correct namespace, thx to Sam Miller
 //

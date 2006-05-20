@@ -30,14 +30,6 @@
 
 ///  \defgroup FunctorGroup Function objects
 
-/// \def LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
-/// \ingroup FunctorGroup
-/// Define to avoid static instantiation/delete order problems.
-/// Removes crashes when using static Functors and multi threading.
-/// Defining also removes problems when unloading Dlls which defines
-/// static Functor objects.
-/// So being a Loki::SmallValueObj limits the value of Functor
-/// and Function and makes them more different to tr1::function.
 #ifndef LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
 //#define LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
 #endif
@@ -1161,6 +1153,15 @@ namespace Loki
 ///
 ///  \ingroup FunctorGroup
 ///  A generalized functor implementation with value semantics
+///
+/// \par Macro: LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
+/// Define 
+/// \code LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT \endcode
+/// to avoid static instantiation/delete 
+/// order problems.
+/// It often helps against crashes when using static Functors and multi threading.
+/// Defining also removes problems when unloading Dlls which hosts
+/// static Functor objects.
 ////////////////////////////////////////////////////////////////////////////////
     template <typename R = void, class TList = NullType,
         template<class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
@@ -1688,6 +1689,9 @@ namespace Loki
 #endif  // FUNCTOR_INC_
 
 // $Log$
+// Revision 1.20  2006/05/20 10:23:07  syntheticpp
+// add warnings in the documentation about the special lifetime when using SmallObjects
+//
 // Revision 1.19  2006/03/08 18:22:42  syntheticpp
 // doxygen fixes
 //
