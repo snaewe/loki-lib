@@ -1445,13 +1445,12 @@ inline bool operator >= ( U * lhs,
 
 } // namespace Loki
 
-////////////////////////////////////////////////////////////////////////////////
-///  specialization of std::less for StrongPtr
-///  \ingroup SmartPointerGroup
-////////////////////////////////////////////////////////////////////////////////
-
 namespace std
 {
+    ////////////////////////////////////////////////////////////////////////////////
+    ///  specialization of std::less for StrongPtr
+    ///  \ingroup SmartPointerGroup
+    ////////////////////////////////////////////////////////////////////////////////
     template
     <
         typename T,
@@ -1482,6 +1481,9 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.7  2006/05/20 10:25:08  syntheticpp
+// enable documentation by removing doxygen warning
+//
 // Revision 1.6  2006/04/21 21:45:17  rich_sposato
 // Corrected comments.  Added operator= function.  Improved efficiency of
 // dtor.  Other minor changes.
