@@ -4,6 +4,40 @@ Version 0.1.5
 ???, 2006
 _____________________________________
 
+General:
+    - new Strong/Weak smart pointer added. (rs)
+    - loki.spec (Thanks to Regis Desgroppes and Andreas Scherer, pk)
+    - build shared lib also on mac osx (Thanks to Sam Miller, lf)
+    - added MinGW .dev files for the library (rs)
+    - some makefile improvements (Thanks to Sam Miller, lf)
+    - adding an XCode build project (kx)
+    
+    
+flex_string:
+    - compar bug fixed in flex_string_shell.h (Thanks to David A. Capello, pk)
+    
+Function:
+    - test is doesn't need boost any more (pk)
+    
+OrderedStatic:
+    - undef all min/max macros (Thanks to Shen Lei, pk)
+    
+Singleton:
+    - Singleton<> moved into correct namespace (Thanks to Sam Miller, pk)
+    
+SmartPtr:
+    - patch for RedHat 9: undefined uintptr_t (Thanks to Regis Desgroppes, pk)
+    - more tests (rs)
+    - bugs 1452805 and 1451835 fixed (rs)
+    - addded HeapStorage policy as mentioned in Feature Request 1441024 (rs)
+    - added MinGW test project for SmartPtr (rs)
+    
+
+CVS commits by Rich Sposato (rs), Lukas Fittl (lf),
+Christopher Knox (kx), and Peter Kümmel (pk)
+
+
+
 _____________________________________
 
 Version 0.1.4
