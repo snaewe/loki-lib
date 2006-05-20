@@ -9,7 +9,6 @@ export BIN_SUFFIX =
 endif
 
 SUBTARGETS_ORIG := $(patsubst %/,%,$(dir $(wildcard */Makefile)))
-SUBTARGETS_FILTER_OUT = Function
 SUBTARGETS := $(filter-out $(SUBTARGETS_FILTER_OUT),$(SUBTARGETS_ORIG))
 	
 SUBTARGETS_CLEAN := $(addsuffix -clean,$(SUBTARGETS))
