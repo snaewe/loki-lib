@@ -46,6 +46,10 @@ unsigned int MimicCOM::s_destructions = 0;
 /// Used to check if SmartPtr can be used with a forward-reference.
 class Thingy;
 
+#ifdef __GNUC__
+#warning The warnings are by design: Check if SmartPtr can be used with a forward-reference.
+#endif
+
 typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
     AssertCheck, DefaultSPStorage, PropagateConst >
     Thingy_DefaultStorage_ptr;
@@ -1035,6 +1039,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.9  2006/05/30 14:17:05  syntheticpp
+// don't confuse with warnings
+//
 // Revision 1.8  2006/05/18 05:05:21  rich_sposato
 // Added QueryInterface function to MimicCOM class.
 //
