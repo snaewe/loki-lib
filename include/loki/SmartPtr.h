@@ -305,6 +305,10 @@ namespace Loki
 ///  Implementation of the OwnershipPolicy used by SmartPtr
 ///  Implements external reference counting for multithreaded programs
 ///  Policy Usage: RefCountedMTAdj<ThreadingModel>::RefCountedMT
+///
+///  \par Warning
+///  There could be a race condition, see bug "Race condition in RefCountedMTAdj::Release"
+///  http://sourceforge.net/tracker/index.php?func=detail&aid=1408845&group_id=29557&atid=396644
 ////////////////////////////////////////////////////////////////////////////////
     
     template <template <class, class> class ThreadingModel,
@@ -1521,6 +1525,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.31  2006/05/30 14:30:19  syntheticpp
+// add warning about mt bug
+//
 // Revision 1.30  2006/05/17 16:04:32  syntheticpp
 // undo commit 1.29, reject bug: [ 1459838 ] Loki::COMRefCounted doesn't call AddRef() on assignment
 //
