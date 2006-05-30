@@ -15,8 +15,15 @@
 #include "foo.h"
 #include <iostream>
 
+Base::~Base(){}
+
 Foo::Foo(){}
 Boo::Boo(){}
+
+
+Foo::~Foo(){}
+Boo::~Boo(){}
+
 
 void Foo::foo(){std::cout << "Foo::foo() called,  this: " << this << "\n"; }
 void Boo::foo(){std::cout << "Boo::foo() called,  this: " << this << "\n"; }

@@ -20,12 +20,14 @@
 struct Foo : Base
 {
 	Foo();
+	virtual ~Foo();
 	void foo();
 };
 
 struct Boo : Base
 {
 	Boo();
+	virtual ~Boo();
 	void foo();
 };
 

@@ -22,6 +22,7 @@
 struct Base
 {
 	virtual void foo() = 0;
+	virtual ~Base();
 };
 
 bool registerClass(std::string, Base*(*)() );
