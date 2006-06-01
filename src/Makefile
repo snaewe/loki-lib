@@ -23,7 +23,7 @@ else
   SHARED_LIB_BASE = libloki.dll
   LDFLAGS = --shared
   LDLIBS =
-  RESULT_DIR = ..\lib\\
+  RESULT_DIR = ../lib/
 endif
 endif
 
