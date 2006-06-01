@@ -2,15 +2,17 @@
 // Unit Test for Loki
 //
 // Copyright Terje Slettebø and Pavel Vozenilek 2002.
-//
+// Copyright Peter Kümmel, 2006
+
 // Permission to use, copy, modify, and distribute this software for any
 // purpose is hereby granted without fee, provided that this copyright and
 // permissions notice appear in all copies and derivatives.
 //
 // This software is provided "as is" without express or implied warranty.
 //
-// Last update: September 16, 2002
 ///////////////////////////////////////////////////////////////////////////////
+
+// $Header:
 
 #ifndef FUNCTORTEST_H
 #define FUNCTORTEST_H
@@ -20,6 +22,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 // FunctorTest
 ///////////////////////////////////////////////////////////////////////////////
+
+void free_function(bool &result)
+{
+	result=true;
+}
 
 class FunctorTest : public Test
 {
@@ -40,16 +47,33 @@ public:
 
 #ifndef LOKI_DISABLE_TYPELIST_MACROS
     Functor<void,LOKI_TYPELIST_1(bool &)> function(testFunction);
+	Functor<void,LOKI_TYPELIST_1(bool &)> function2(testFunction);
     Functor<void,LOKI_TYPELIST_1(bool &)> functor(testFunctor);
+	Functor<void,LOKI_TYPELIST_1(bool &)> functor2(testFunctor);
     Functor<void,LOKI_TYPELIST_1(bool &)> classFunctor(&testClass,&TestClass::member);
+	Functor<void,LOKI_TYPELIST_1(bool &)> classFunctor2(&testClass,&TestClass::member);
     Functor<void,LOKI_TYPELIST_1(bool &)> functorCopy(function);
+	Functor<void,LOKI_TYPELIST_1(bool &)> functorCopy2(function);
+
     Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
+	Functor<void,NullType> bindFunctor2(BindFirst(function,testResult));
+
     Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
+	Functor<void> chainFunctor2(Chain(bindFunctor,bindFunctor));
+
+	Functor<void,LOKI_TYPELIST_1(bool &)> member_func(&testClass,&TestClass::member);
+	Functor<void,LOKI_TYPELIST_1(bool &)> free_func(&free_function);
+	Functor<void,LOKI_TYPELIST_1(bool &)> NULL_func;
+	Functor<void,LOKI_TYPELIST_1(bool &)> NULL_func0;
 #else
     Functor<void,Seq<bool &> > function(testFunction);
+	Functor<void,Seq<bool &> > function2(testFunction);
     Functor<void,Seq<bool &> > functor(testFunctor);
+	Functor<void,Seq<bool &> > functor2(testFunctor);
     Functor<void,Seq<bool &> > classFunctor(&testClass,&TestClass::member);
+	Functor<void,Seq<bool &> > classFunctor2(&testClass,&TestClass::member);
     Functor<void,Seq<bool &> > functorCopy(function);
+	Functor<void,Seq<bool &> > functorCopy2(function);
     //TODO:
     //Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
     //Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
@@ -71,7 +95,52 @@ public:
     functorCopy(testResult);
     bool functorCopyResult=testResult;
 
+#ifdef LOKI_FUNCTORS_ARE_COMPARABLE    
+
+    bool functionCompare = function==function2;
+	bool functorCompare = functor!=functor2;  // is this a bug?
+	bool classFunctorCompare = classFunctor==classFunctor2;
+	bool functorCopyCompare = functorCopy==functorCopy2;
+
+	bool free_mem = free_func!=member_func;
+	bool mem_free = member_func!=free_func;
+
+	bool null0 = NULL_func == NULL_func0;
+	bool null1 = NULL_func != free_func;
+	bool null2 = NULL_func != member_func;
+	bool null3 = free_func != NULL_func;
+	bool null4 = member_func != NULL_func;
+
+
+#ifdef LOKI_DISABLE_TYPELIST_MACROS
+	bool bindFunctorCompare = bindFunctor==bindFunctor2;
+	bool chainFunctorCompare = chainFunctor==chainFunctor2;
+#endif
+
+	bool compare =  functionCompare &&
+					functorCompare &&
+					classFunctorCompare &&
+					functorCopyCompare &&
+					mem_free &&
+					free_mem &&
+					null0 &&
+					null1 &&
+					null2 &&
+					null3 &&
+					null4
 #ifndef LOKI_DISABLE_TYPELIST_MACROS
+					;
+#else
+					&& bindFunctorCompare 
+					&& chainFunctorCompare;
+#endif
+
+#else
+	bool compare=true;
+#endif //LOKI_FUNCTORS_ARE_COMPARABLE
+
+
+#ifdef LOKI_DISABLE_TYPELIST_MACROS
     testResult=false;
     bindFunctor();
     bool bindFunctorResult=testResult;
@@ -80,13 +149,12 @@ public:
     chainFunctor();
     bool chainFunctorResult=testResult;
 
-    r=functionResult && functorResult && classFunctorResult && functorCopyResult && bindFunctorResult &&
-      chainFunctorResult;
-#else
-    //TODO!
-     r=functionResult && functorResult && classFunctorResult && functorCopyResult;
-#endif
-
+     r=functionResult && functorResult && classFunctorResult && functorCopyResult && bindFunctorResult &&
+     chainFunctorResult && compare;
+ #else
+     //TODO!
+	r=functionResult && functorResult && classFunctorResult && functorCopyResult && compare;
+ #endif
     testAssert("Functor",r,result);
 
     std::cout << '\n';
@@ -107,6 +175,11 @@ private:
       {
       result=true;
       }
+	bool operator==(const TestFunctor& rhs) const
+	{
+		const TestFunctor* p = &rhs;
+		return this==p;
+	}
   };
 
   class TestClass
@@ -123,6 +196,6 @@ bool FunctorTest::testResult;
 
 #ifndef SMALLOBJ_CPP
 # define SMALLOBJ_CPP
-# include "../../SmallObj.cpp"
+# include "../../src/SmallObj.cpp"
 #endif
 #endif
