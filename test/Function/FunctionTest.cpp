@@ -7,6 +7,8 @@
 
 // For more information, see http://www.boost.org
 
+
+
 #include <functional>
 #include <cassert>
 #include <string>
@@ -48,6 +50,9 @@ report_error( const char* msg, const char* file, int line, bool is_msg = false )
 	using namespace Loki;
 	#define function Function
 #endif
+
+
+#ifndef LOKI_FUNCTORS_ARE_COMPARABLE
 
 
 using namespace std;
@@ -799,3 +804,11 @@ int main()
 
     return 0;
 }
+
+
+#else // #ifndef LOKI_FUNCTORS_ARE_COMPARABLE
+int main()
+{
+	return 0;
+}
+#endif
