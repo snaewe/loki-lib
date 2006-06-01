@@ -5,6 +5,7 @@ Version 0.1.5
 _____________________________________
 
 General:
+    - operator== added to Functor, initiated by Eric Beyeler (pk)
     - new Strong/Weak smart pointer added. (rs)
     - loki.spec (Thanks to Regis Desgroppes and Andreas Scherer, pk)
     - build shared lib also on mac osx (Thanks to Sam Miller, lf)
