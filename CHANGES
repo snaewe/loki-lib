@@ -15,7 +15,7 @@ General:
     
     
 flex_string:
-    - compar bug fixed in flex_string_shell.h (Thanks to David A. Capello, pk)
+    - compare bug fixed in flex_string_shell.h (Thanks to David A. Capello, pk)
     
 Function:
     - test is doesn't need boost any more (pk)
