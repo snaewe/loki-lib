@@ -62,7 +62,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="loki.lib"
 				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
 			/>
