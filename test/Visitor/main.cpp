@@ -32,8 +32,11 @@ class VariableVisitor :
     public Loki::BaseVisitor, 
     //public Loki::Visitor<Base>,
     //public Loki::Visitor<Type1>
-    public Loki::Visitor<LOKI_TYPELIST_2(Base,Type1)>
-    //public Loki::Visitor<Loki::Seq<Base,Type1>::Type>
+#ifndef LOKI_DISABLE_TYPELIST_MACROS
+	public Loki::Visitor<LOKI_TYPELIST_2(Base,Type1)>
+#else
+    public Loki::Visitor<Loki::Seq<Base,Type1>::Type>
+#endif
 { 
 public: 
     void Visit(Base&){std::cout << "void Visit(Base&)\n";}
@@ -57,8 +60,11 @@ class CVariableVisitor :
     public Loki::BaseVisitor, 
     //public Loki::Visitor<CBase,void,true>,
     //public Loki::Visitor<CType1,void,true>
-    public Loki::Visitor<LOKI_TYPELIST_2(CBase,CType1),void,true>
-    //public Loki::Visitor<Loki::Seq<CBase,CType1>::Type,void,true>
+#ifndef LOKI_DISABLE_TYPELIST_MACROS
+	public Loki::Visitor<LOKI_TYPELIST_2(CBase,CType1),void,true>
+#else
+    public Loki::Visitor<Loki::Seq<CBase,CType1>::Type,void,true>
+#endif
 { 
 public: 
     void Visit(const CBase&){std::cout << "void Visit(CBase&)\n";}
