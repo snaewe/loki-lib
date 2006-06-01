@@ -77,9 +77,14 @@ public:
         Functor<void,Seq<bool &> > classFunctor2(&testClass,&TestClass::member);
         Functor<void,Seq<bool &> > functorCopy(function);
         Functor<void,Seq<bool &> > functorCopy2(function);
+
         //TODO:
-        //Functor<void,NullType> bindFunctor(BindFirst(function,testResult));
-        //Functor<void> chainFunctor(Chain(bindFunctor,bindFunctor));
+        // BindFirst and Chainer
+
+		Functor<void,Seq<bool &> > member_func(&testClass,&TestClass::member);
+        Functor<void,Seq<bool &> > free_func(&free_function);
+        Functor<void,Seq<bool &> > NULL_func;
+        Functor<void,Seq<bool &> > NULL_func0;
 #endif
 
         testResult=false;
@@ -115,7 +120,7 @@ public:
         bool null4 = member_func != NULL_func;
 
 
-#ifdef LOKI_DISABLE_TYPELIST_MACROS
+#ifndef LOKI_DISABLE_TYPELIST_MACROS
 
         bool bindFunctorCompare = bindFunctor==bindFunctor2;
         bool chainFunctorCompare = chainFunctor==chainFunctor2;
@@ -133,11 +138,10 @@ public:
                         null3 &&
                         null4
 #ifndef LOKI_DISABLE_TYPELIST_MACROS
-                        ;
-#else
-
                         && bindFunctorCompare
                         && chainFunctorCompare;
+#else
+						;
 #endif
 
 #else
@@ -146,7 +150,7 @@ public:
 #endif //LOKI_FUNCTORS_ARE_COMPARABLE
 
 
-#ifdef LOKI_DISABLE_TYPELIST_MACROS
+#ifndef LOKI_DISABLE_TYPELIST_MACROS
 
         testResult=false;
         bindFunctor();
