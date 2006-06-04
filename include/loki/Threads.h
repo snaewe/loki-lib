@@ -102,7 +102,7 @@
 
 
 
-#elif defined(_PTHREAD_H) //POSIX threads (pthread.h)
+#elif defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) //POSIX threads (pthread.h)
 
 
 #define LOKI_THREADS_MUTEX(x)           pthread_mutex_t x
@@ -234,7 +234,7 @@ namespace Loki
     };
     
 
-#if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
+#if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
 
     ////////////////////////////////////////////////////////////////////////////////
     ///  \class ObjectLevelLockable
@@ -298,7 +298,7 @@ namespace Loki
         
     };
 
-#if defined(_PTHREAD_H) 
+#if defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
     template <class Host, class MutexPolicy>
     pthread_mutex_t ObjectLevelLockable<Host, MutexPolicy>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
@@ -382,7 +382,7 @@ namespace Loki
         
     };
 
-#if defined(_PTHREAD_H) 
+#if defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
     template <class Host, class MutexPolicy>
     pthread_mutex_t ClassLevelLockable<Host, MutexPolicy>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
@@ -391,7 +391,7 @@ namespace Loki
     typename ClassLevelLockable< Host, MutexPolicy >::Initializer 
     ClassLevelLockable< Host, MutexPolicy >::initializer_;
 
-#endif // defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) 
+#endif // defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
   
 } // namespace Loki
 
@@ -407,6 +407,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.29  2006/06/04 20:18:39  vizowl
+// added a check for _POSIX_PTHREAD_H to detect pthread.h on OS X
+//
 // Revision 1.28  2006/04/15 00:39:50  rich_sposato
 // Stylistic change so I can put breakpoint on lines within Mutex functions.
 //
