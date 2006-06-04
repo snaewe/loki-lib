@@ -8,9 +8,9 @@ In order to use this project you can open it using XCode and build it. However, 
 
 sudo xcodebuild clean install -configuration Release DSTROOT=/ INSTALL_PATH=/Library/Frameworks DEPLOYMENT_LOCATION=YES
 
-Be warned the clean part of the command with erase any previous directory called /Library/Frameworks/Loki.framework. Documentation for xcodebuild can be found by searching for xcodebuild in the xcode documentation.
+Be warned the clean part of the command with erase any previous directory called /Library/Frameworks/loki.framework. Documentation for xcodebuild can be found by searching for xcodebuild in the xcode documentation.
 
-Once you have Loki installed as a framework you can use it by adding the framework to your projects or if you are building from the command line by adding '-framework Loki' to your build command. Include the Loki framework header files in the following way #include<Loki/SmartPtr.h>. Note that depending on how you created your Xcode project you may need to manually set the framework search path to include /Library/Frameworks - if you include Loki headers in the above manner and xcode cannot find them then that is a likely source of the problem. Of course you should also check that the Loki framework actually is in /Library/Frameworks.
+Once you have Loki installed as a framework you can use it by adding the framework to your projects or if you are building from the command line by adding '-framework loki' to your build command. Include the Loki framework header files in the following way #include<loki/SmartPtr.h>. Note that depending on how you created your Xcode project you may need to manually set the framework search path to include /Library/Frameworks - if you include Loki headers in the above manner and xcode cannot find them then that is a likely source of the problem. Of course you should also check that the Loki framework actually is in /Library/Frameworks.
 
 The Xcode project does not currently build the yasli and flex parts of Loki. If anyone would like that then please post a request on the loki developers forum.
 
