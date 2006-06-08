@@ -29,7 +29,7 @@
     #define LOKI_pthread_create(handle,attr,func,arg) \
         (int)((*handle=(HANDLE) _beginthreadex (NULL,0,(ThreadFunction_)func,arg,0,NULL))==NULL)
 
-    #define LOKI_pthread_join(thread, result) \
+    #define LOKI_pthread_join(thread) \
         ((WaitForSingleObject((thread),INFINITE)!=WAIT_OBJECT_0) || !CloseHandle(thread))
 
 #else
@@ -38,8 +38,8 @@
                  pthread_t
     #define LOKI_pthread_create(handle,attr,func,arg) \
                  pthread_create(handle,attr,func,arg)
-    #define LOKI_pthread_join(thread, result) \
-                 pthread_join(thread, result)
+    #define LOKI_pthread_join(thread) \
+                 pthread_join(thread, NULL)
 
 #endif
   
@@ -72,15 +72,11 @@ namespace Loki
 
         static int WaitForThread(const Thread& thread)
         {
-            int status = 0;
-            (void) status;
-            return LOKI_pthread_join(thread.pthread_, reinterpret_cast<void **>(&status));
+            return LOKI_pthread_join(thread.pthread_);
         }
 
         static void JoinThreads(const std::vector<Thread*>& threads)
         {
-            int status = 0;
-            (void) status;
             for(size_t i=0; i<threads.size(); i++)
                 WaitForThread(*threads.at(i));
         }
@@ -108,6 +104,10 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.5  2006/06/08 19:15:27  lfittl
+// - Simplify some threading code by not saving the return status
+//   (also fixes 2 gcc warnings)
+//
 // Revision 1.4  2006/01/21 14:11:59  syntheticpp
 // remove gcc warnings
 //

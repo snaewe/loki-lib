@@ -45,7 +45,7 @@
     #define LOKI_pthread_create(handle,attr,func,arg) \
         (int)((*handle=(HANDLE) _beginthreadex (NULL,0,(ThreadFunction_)func,arg,0,NULL))==NULL)
 
-    #define LOKI_pthread_join(thread, result) \
+    #define LOKI_pthread_join(thread) \
         ((::WaitForSingleObject((thread),INFINITE)!=WAIT_OBJECT_0) || !CloseHandle(thread))
 
 #else
@@ -54,8 +54,8 @@
                  pthread_t
     #define LOKI_pthread_create(handle,attr,func,arg) \
                  pthread_create(handle,attr,func,arg)
-    #define LOKI_pthread_join(thread, result) \
-                 pthread_join(thread, result)
+    #define LOKI_pthread_join(thread) \
+                 pthread_join(thread, NULL)
 
 #endif
 
@@ -90,10 +90,7 @@ public:
 
     int WaitForThread( void ) const
     {
-        int status = 0;
-        (void) status;
-        return LOKI_pthread_join( pthread_,
-            reinterpret_cast< void * * >( &status ) );
+        return LOKI_pthread_join( pthread_ );
     }
 
 private:
@@ -326,6 +323,10 @@ void DoLockedPtrTest( void )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.2  2006/06/08 19:15:27  lfittl
+// - Simplify some threading code by not saving the return status
+//   (also fixes 2 gcc warnings)
+//
 // Revision 1.1  2006/04/28 00:34:21  rich_sposato
 // Added test for thread-safe StrongPtr policy.
 //
