@@ -37,10 +37,9 @@ namespace Loki
     ///
     ///  see also test/Function/FunctionTest.cpp (the modified test program from boost)
     ////////////////////////////////////////////////////////////////////////////////
+    
     template<class R = void()>
-    struct Function : public Functor<R>
-    {
-    };
+    struct Function;
 
 
     template<class R>
@@ -124,6 +123,19 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 // repetitions
 ////////////////////////////////////////////////////////////////////////////////
+
+    template<>
+    struct Function<>
+        : public Loki::Functor<>
+    {
+        typedef Functor<> FBase;
+        
+        template<class R2>
+        Function(Function<void()> func) 
+            LOKI_FUNCTION_R2_CTOR_BODY
+
+        LOKI_FUNCTION_BODY
+    };
 
     template<class R,class P01>
     struct Function<R(P01)> 
@@ -354,6 +366,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.10  2006/06/09 12:04:40  syntheticpp
+// fix wrong default value handling
+//
 // Revision 1.9  2006/02/26 23:39:59  syntheticpp
 // guard including
 //
