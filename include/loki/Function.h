@@ -131,7 +131,7 @@ namespace Loki
         typedef Functor<> FBase;
         
         template<class R2>
-        Function(Function<void()> func) 
+        Function(Function<R2()> func) 
             LOKI_FUNCTION_R2_CTOR_BODY
 
         LOKI_FUNCTION_BODY
@@ -366,6 +366,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.11  2006/06/09 12:57:15  syntheticpp
+// fix wrong default value handling, gcc fix
+//
 // Revision 1.10  2006/06/09 12:04:40  syntheticpp
 // fix wrong default value handling
 //
