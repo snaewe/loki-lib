@@ -19,6 +19,7 @@ flex_string:
     
 Function:
     - test is doesn't need boost any more (pk)
+    - wrong default parameter fixed (pk)
     
 OrderedStatic:
     - undef all min/max macros (Thanks to Shen Lei, pk)
