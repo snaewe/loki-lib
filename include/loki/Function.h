@@ -134,7 +134,10 @@ namespace Loki
         Function(Function<R2()> func) 
             LOKI_FUNCTION_R2_CTOR_BODY
 
-        LOKI_FUNCTION_BODY
+        LOKI_FUNCTION_BODY // if compilation breaks here then 
+                           // Function.h was not included before
+                           // Functor.h, check your include order
+                           // or define LOKI_ENABLE_FUNCTION 
     };
 
     template<class R,class P01>
@@ -366,6 +369,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.12  2006/06/19 12:18:44  syntheticpp
+// add hint to fix broken build
+//
 // Revision 1.11  2006/06/09 12:57:15  syntheticpp
 // fix wrong default value handling, gcc fix
 //
