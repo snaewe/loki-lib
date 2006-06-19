@@ -43,25 +43,25 @@ Base* createBoo(){ return new Boo; }
 
 namespace Loki
 {
-	template<> bool RegisterFunction<Foo>()
+    template<> bool RegisterFunction<Foo>()
     {
-    	std::cout << "RegisterFunction<Foo>\n";
-    	return registerClass("Foo", &createFoo);
+        std::cout << "RegisterFunction<Foo>\n";
+        return registerClass("Foo", &createFoo);
     }
-	template<> bool RegisterFunction<Boo>()
+    template<> bool RegisterFunction<Boo>()
     {
-    	std::cout << "RegisterFunction<Boo>\n";
-    	return registerClass("Boo", &createBoo);
+        std::cout << "RegisterFunction<Boo>\n";
+        return registerClass("Boo", &createBoo);
     }
 
-	template<> bool UnRegisterFunction<Foo>()
+    template<> bool UnRegisterFunction<Foo>()
     {
-    	std::cout << "UnRegisterFunction<Foo>\n";
-    	return true;
+        std::cout << "UnRegisterFunction<Foo>\n";
+        return true;
     }
-	template<> bool UnRegisterFunction<Boo>()
+    template<> bool UnRegisterFunction<Boo>()
     {
-    	std::cout << "UnRegisterFunction<Boo>\n";
-    	return true;
+        std::cout << "UnRegisterFunction<Boo>\n";
+        return true;
     }
 }

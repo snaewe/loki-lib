@@ -21,16 +21,16 @@
 
 struct Base
 {
-	virtual void foo() = 0;
-	virtual ~Base();
+    virtual void foo() = 0;
+    virtual ~Base();
 };
 
 bool registerClass(std::string, Base*(*)() );
 
 typedef Loki::Seq
 <
-	struct Foo,
-	struct Boo
+    struct Foo,
+    struct Boo
 
 >::Type ClassList;
 

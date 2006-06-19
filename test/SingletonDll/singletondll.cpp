@@ -22,12 +22,12 @@ typedef Loki::SingletonHolder<Foo> FooSingleton;
 LOKI_SINGLETON_INSTANCE_DEFINITION(FooSingleton)
 /*
 namespace Loki                                                          
-{																		
-	template<>                                                          
-	FooSingleton::ObjectType&  Singleton<FooSingleton::ObjectType>::Instance()	
-	{                                                                   
+{                                                                        
+    template<>                                                          
+    FooSingleton::ObjectType&  Singleton<FooSingleton::ObjectType>::Instance()    
+    {                                                                   
         return FooSingleton::Instance();                                     
-	}																	
+    }                                                                    
 }
 */
 
@@ -35,7 +35,7 @@ namespace Loki
 template<>
 Foo&  Singleton<Foo>::Instance()
 {
-	return FooSingleton::Instance();
+    return FooSingleton::Instance();
 }
 
 

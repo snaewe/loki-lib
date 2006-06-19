@@ -21,9 +21,9 @@
 class FOO_EXPORT Foo
 {
 public:
-	Foo();
+    Foo();
 
-	void foo();
+    void foo();
 };
 
 

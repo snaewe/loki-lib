@@ -275,16 +275,16 @@ void test_more()
     Loki::Printf("\n\nMore tests:\n");
 
     Loki::Printf("\nCreating Pimpls\n");
-	P1* p1 =  new P1;
+    P1* p1 =  new P1;
     P2* p2 =  new P2;
     P3* p3 =  new P3;
     P4* p4 =  new P4;
     P5* p5 =  new P5;
-	PO1* p6 =  new PO1;
-	PO2* p7 =  new PO2;
+    PO1* p6 =  new PO1;
+    PO2* p7 =  new PO2;
     PO3* p8 =  new PO3;
-	PO4* p9 =  new PO4;
-	PO5* p10 = new PO5;
+    PO4* p9 =  new PO4;
+    PO5* p10 = new PO5;
 
     Loki::Printf("\nConst check\n");
     p1->f();
@@ -292,11 +292,11 @@ void test_more()
     p3->f();
     p4->f();
     p5->f();
-	p6->f();
-	p7->f();
+    p6->f();
+    p7->f();
     p8->f();
-	p9->f();
-	p10->f();
+    p9->f();
+    p10->f();
 
     Loki::Printf("\nDeleting Pimpls\n");
     delete p1;
@@ -305,10 +305,10 @@ void test_more()
     delete p4;
     delete p5;
     delete p6;
-	delete p7;
-	delete p8;
-	delete p9;
-	delete p10;
+    delete p7;
+    delete p8;
+    delete p9;
+    delete p10;
     
     
     Loki::Printf("\nCreating Rimpls\n");
@@ -318,22 +318,22 @@ void test_more()
     R4* r4 =  new R4;
     R5* r5 =  new R5;
 
-	RO1* r6 =  new RO1;
+    RO1* r6 =  new RO1;
     RO2* r7 =  new RO2;
     RO3* r8 =  new RO3;
     RO4* r9 =  new RO4;
     RO5* r10 =  new RO5;
 
-	r1->f();
+    r1->f();
     r2->f();
     r3->f();
     r4->f();
     r5->f();
     r6->f();
-	r7->f();
-	r8->f();
-	r9->f();
-	r10->f();
+    r7->f();
+    r8->f();
+    r9->f();
+    r10->f();
 
     Loki::Printf("\nDeleting Rimpls\n");
     delete r1;
@@ -342,10 +342,10 @@ void test_more()
     delete r4;
     delete r5;
     delete r6;
-	delete r7;
-	delete r8;
-	delete r9;
-	delete r10;
+    delete r7;
+    delete r8;
+    delete r9;
+    delete r10;
 
 
     Loki::Printf("\nCreating const Pimpls\n");
@@ -356,10 +356,10 @@ void test_more()
     const P5* cp5 =  new P5;
 
     const PO1* cp6 =  new PO1;
-	const PO2* cp7 =  new PO2;
+    const PO2* cp7 =  new PO2;
     const PO3* cp8 =  new PO3;
-	const PO4* cp9 =  new PO4;
-	const PO5* cp10 =  new PO5;
+    const PO4* cp9 =  new PO4;
+    const PO5* cp10 =  new PO5;
 
     Loki::Printf("\nConst check\n");
     cp1->f();
@@ -368,10 +368,10 @@ void test_more()
     cp4->f();
     cp5->f();
     cp6->f();
-	cp7->f();
-	cp8->f();
-	cp9->f();
-	cp10->f();
+    cp7->f();
+    cp8->f();
+    cp9->f();
+    cp10->f();
 
     Loki::Printf("\nDeleting const Pimpls\n");
     delete cp1;
@@ -379,9 +379,9 @@ void test_more()
     delete cp3;
     delete cp4;
     delete cp5;
-	delete cp6;
-	delete cp7;
-	delete cp8;
+    delete cp6;
+    delete cp7;
+    delete cp8;
     delete cp9;
-	delete cp10;
+    delete cp10;
 }

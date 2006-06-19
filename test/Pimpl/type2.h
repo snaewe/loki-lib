@@ -30,7 +30,7 @@ public:
     void foo();
 
 private:
-	PimplT<A2>::Type d;
+    PimplT<A2>::Type d;
 };
 
 
@@ -87,7 +87,7 @@ public:
     Incomplete1();
     void foo();
 private:
-	PimplT<Incomplete1>::Type d;
+    PimplT<Incomplete1>::Type d;
 };
 
 class Incomplete2
@@ -97,7 +97,7 @@ public:
     ~Incomplete2();
     void foo();
 private:
-	PimplT<Incomplete2>::Type d;
+    PimplT<Incomplete2>::Type d;
 };
 
 
@@ -114,7 +114,7 @@ public:
     }
     void foo();
 private:
-	PimplT<Incomplete3>::Type d;
+    PimplT<Incomplete3>::Type d;
 };
 #endif
 
@@ -130,5 +130,5 @@ public:
     Incomplete4();
     void foo();
 private:
-	Pimpl<Impl4, std::auto_ptr<Impl4> > d;
+    Pimpl<Impl4, std::auto_ptr<Impl4> > d;
 };

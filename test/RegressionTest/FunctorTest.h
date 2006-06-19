@@ -81,7 +81,7 @@ public:
         //TODO:
         // BindFirst and Chainer
 
-		Functor<void,Seq<bool &> > member_func(&testClass,&TestClass::member);
+        Functor<void,Seq<bool &> > member_func(&testClass,&TestClass::member);
         Functor<void,Seq<bool &> > free_func(&free_function);
         Functor<void,Seq<bool &> > NULL_func;
         Functor<void,Seq<bool &> > NULL_func0;
@@ -141,7 +141,7 @@ public:
                         && bindFunctorCompare
                         && chainFunctorCompare;
 #else
-						;
+                        ;
 #endif
 
 #else

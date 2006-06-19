@@ -36,7 +36,7 @@ public:
     void foo();
 
 private:
-	PimplT<A>::Type d;
+    PimplT<A>::Type d;
 };
 
 
@@ -102,11 +102,11 @@ typedef std::auto_ptr<ImplT<E> > StdAutoPtr;
 
 // Pimpl
 
-typedef Pimpl<ImplT<E> >        	Pimpl1;
-typedef Pimpl<ImplT<E>, CPropPtr>	Pimpl2;
-typedef Pimpl<ImplT<E>, LokiPtr>	Pimpl3;
-typedef Pimpl<ImplT<E>, BoostPtr>	Pimpl4;
-typedef Pimpl<ImplT<E>, StdAutoPtr>	Pimpl5;
+typedef Pimpl<ImplT<E> >            Pimpl1;
+typedef Pimpl<ImplT<E>, CPropPtr>    Pimpl2;
+typedef Pimpl<ImplT<E>, LokiPtr>    Pimpl3;
+typedef Pimpl<ImplT<E>, BoostPtr>    Pimpl4;
+typedef Pimpl<ImplT<E>, StdAutoPtr>    Pimpl5;
 
 struct P1 {Pimpl1 d;        P1();void f();void f()const;};
 struct P2 {Pimpl2 d;        P2();void f();void f()const;};
@@ -117,10 +117,10 @@ struct P5 {Pimpl5 d;        P5();void f();void f()const;};
 
 // PimplOwner
 
-typedef PimplOwner<ImplT<E> >        	PimplOwner1;
-typedef PimplOwner<ImplT<E>, CPropPtr>	PimplOwner2;
-typedef PimplOwner<ImplT<E>, LokiPtr>	PimplOwner3;
-typedef PimplOwner<ImplT<E>, BoostPtr>	PimplOwner4;
+typedef PimplOwner<ImplT<E> >            PimplOwner1;
+typedef PimplOwner<ImplT<E>, CPropPtr>    PimplOwner2;
+typedef PimplOwner<ImplT<E>, LokiPtr>    PimplOwner3;
+typedef PimplOwner<ImplT<E>, BoostPtr>    PimplOwner4;
 typedef PimplOwner<ImplT<E>, StdAutoPtr>PimplOwner5;
 
 struct PO1 : private PimplOwner1 {PO1();void f();void f()const;};
