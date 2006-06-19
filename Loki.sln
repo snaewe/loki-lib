@@ -53,6 +53,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LockingPtr", "test\LockingP
 		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Function", "test\Function\Function.vcproj", "{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -127,6 +129,10 @@ Global
 		{25766C3F-C0D8-429F-A212-5FA3537B3E1C}.Debug|Win32.Build.0 = Debug|Win32
 		{25766C3F-C0D8-429F-A212-5FA3537B3E1C}.Release|Win32.ActiveCfg = Release|Win32
 		{25766C3F-C0D8-429F-A212-5FA3537B3E1C}.Release|Win32.Build.0 = Release|Win32
+		{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}.Debug|Win32.Build.0 = Debug|Win32
+		{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}.Release|Win32.ActiveCfg = Release|Win32
+		{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
