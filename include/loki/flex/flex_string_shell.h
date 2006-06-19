@@ -170,7 +170,7 @@ class flex_string : private Storage
     struct Invariant
     {
 #ifndef NDEBUG
-    	Invariant(const flex_string& s) : s_(s)
+        Invariant(const flex_string& s) : s_(s)
         {
             assert(s_.Sane());
         }
@@ -181,9 +181,9 @@ class flex_string : private Storage
     private:
         const flex_string& s_;
 #else
-    	Invariant(const flex_string&) {} 
+        Invariant(const flex_string&) {} 
 #endif
-	Invariant& operator=(const Invariant&);
+    Invariant& operator=(const Invariant&);
     };
     
 public:
@@ -217,9 +217,9 @@ public:
 private:
     static size_type Min(size_type lhs, size_type rhs)
     { return lhs < rhs ? lhs : rhs; }
-	static size_type Max(size_type lhs, size_type rhs)
+    static size_type Max(size_type lhs, size_type rhs)
     { return lhs > rhs ? lhs : rhs; }
-	static void Procust(size_type& n, size_type nmax)
+    static void Procust(size_type& n, size_type nmax)
     { if (n > nmax) n = nmax; }
     
 public:    
@@ -364,7 +364,7 @@ public:
 
     flex_string& operator+=(const value_type c)
     { 
-    	push_back(c);
+        push_back(c);
         return *this;
     }
     
@@ -376,20 +376,20 @@ public:
     { 
         const size_type sz = str.size();
         Enforce(pos <= sz, static_cast<std::out_of_range*>(0), "");
-    	Procust(n, sz - pos);
+        Procust(n, sz - pos);
         return append(str.data() + pos, n); 
     }
     
     flex_string& append(const value_type* s, const size_type n)
     { 
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker; 
         static std::less_equal<const value_type*> le;
-    	if (le(&*begin(), s) && le(s, &*end())) // aliasing
+        if (le(&*begin(), s) && le(s, &*end())) // aliasing
         {
-        	const size_type offset = s - &*begin();
-        	Storage::reserve(size() + n);
-        	s = &*begin() + offset;
+            const size_type offset = s - &*begin();
+            Storage::reserve(size() + n);
+            s = &*begin() + offset;
         }
         Storage::append(s, s + n); 
         return *this;
@@ -407,7 +407,7 @@ public:
     template<class InputIterator>
     flex_string& append(InputIterator first, InputIterator last)
     {
-    	insert(end(), first, last);
+        insert(end(), first, last);
         return *this;
     }
     
@@ -418,7 +418,7 @@ public:
         {
             reserve(cap << 1u);
         }
-    	Storage::append(&c, &c + 1);
+        Storage::append(&c, &c + 1);
     }
 
     flex_string& assign(const flex_string& str)
@@ -430,25 +430,25 @@ public:
     flex_string& assign(const flex_string& str, const size_type pos,
         size_type n)
     { 
-    	const size_type sz = str.size();
+        const size_type sz = str.size();
         Enforce(pos <= sz, static_cast<std::out_of_range*>(0), "");
-    	Procust(n, sz - pos);
+        Procust(n, sz - pos);
         return assign(str.data() + pos, n);
     }
     
     flex_string& assign(const value_type* s, const size_type n)
     {
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker; 
         if (size() >= n)
         {
-        	std::copy(s, s + n, begin());
+            std::copy(s, s + n, begin());
             resize(n);
         }
         else
         {
-        	const value_type *const s2 = s + size();
-        	std::copy(s, s2, begin());
+            const value_type *const s2 = s + size();
+            std::copy(s, s2, begin());
             append(s2, n - size());
         }
         return *this;
@@ -468,15 +468,15 @@ public:
         size_type pos2, size_type n)
     { 
         Enforce(pos2 <= str.length(), static_cast<std::out_of_range*>(0), "");
-    	Procust(n, str.length() - pos2);
-    	return insert(pos1, str.data() + pos2, n); 
+        Procust(n, str.length() - pos2);
+        return insert(pos1, str.data() + pos2, n); 
     }
     
     flex_string& insert(size_type pos, const value_type* s, size_type n)
     { 
         Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
-    	insert(begin() + pos, s, s + n); 
-    	return *this;
+        insert(begin() + pos, s, s + n); 
+        return *this;
     }
     
     flex_string& insert(size_type pos, const value_type* s)
@@ -485,13 +485,13 @@ public:
     flex_string& insert(size_type pos, size_type n, value_type c)
     {
         Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
-    	insert(begin() + pos, n, c);
-    	return *this;
+        insert(begin() + pos, n, c);
+        return *this;
     }
     
     iterator insert(const iterator p, const value_type c) 
     {
-    	const size_type pos = p - begin();
+        const size_type pos = p - begin();
         insert(p, 1, c);
         return begin() + pos;
     }
@@ -502,122 +502,122 @@ private:
     flex_string& InsertImplDiscr(iterator p, 
         size_type n, value_type c, Selector<1>)
     { 
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker; 
-    	assert(p >= begin() && p <= end());
-    	if (capacity() - size() < n)
+        assert(p >= begin() && p <= end());
+        if (capacity() - size() < n)
         {
-        	const size_type sz = p - begin();
-        	reserve(size() + n);
-        	p = begin() + sz;
+            const size_type sz = p - begin();
+            reserve(size() + n);
+            p = begin() + sz;
         }
-    	const iterator oldEnd = end();
+        const iterator oldEnd = end();
         //if (p + n < oldEnd) // replaced because of crash (pk)
-    	if( n < size_type(oldEnd - p))
+        if( n < size_type(oldEnd - p))
         {
-        	append(oldEnd - n, oldEnd);
+            append(oldEnd - n, oldEnd);
             //std::copy(
-            //	reverse_iterator(oldEnd - n), 
-            //	reverse_iterator(p), 
-            //	reverse_iterator(oldEnd));
-        	flex_string_details::pod_move(&*p, &*oldEnd - n, &*p + n);
-        	std::fill(p, p + n, c);
+            //    reverse_iterator(oldEnd - n), 
+            //    reverse_iterator(p), 
+            //    reverse_iterator(oldEnd));
+            flex_string_details::pod_move(&*p, &*oldEnd - n, &*p + n);
+            std::fill(p, p + n, c);
         }
-    	else
+        else
         {
-        	append(n - (end() - p), c);
-        	append(p, oldEnd);
-        	std::fill(p, oldEnd, c);
+            append(n - (end() - p), c);
+            append(p, oldEnd);
+            std::fill(p, oldEnd, c);
         }
-    	return *this;
+        return *this;
     }    
 
     template<class InputIterator>
     flex_string& InsertImplDiscr(iterator i,
         InputIterator b, InputIterator e, Selector<0>)
     { 
-    	InsertImpl(i, b, e, 
-        	typename std::iterator_traits<InputIterator>::iterator_category());
+        InsertImpl(i, b, e, 
+            typename std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
 
-	template <class FwdIterator>
+    template <class FwdIterator>
     void InsertImpl(iterator i,
-    	FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
+        FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
     { 
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker;
-    	const size_type pos = i - begin();
-    	const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
-        	std::distance(s1, s2);
-    	assert(n2 >= 0);
+        const size_type pos = i - begin();
+        const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
+            std::distance(s1, s2);
+        assert(n2 >= 0);
         using namespace flex_string_details;
         assert(pos <= size());
 
-    	const typename std::iterator_traits<FwdIterator>::difference_type maxn2 = 
-        	capacity() - size();
+        const typename std::iterator_traits<FwdIterator>::difference_type maxn2 = 
+            capacity() - size();
         if (maxn2 < n2)
         {
             // realloc the string
             static const std::less_equal<const value_type*> le = 
-            	std::less_equal<const value_type*>();
+                std::less_equal<const value_type*>();
             assert(!(le(&*begin(), &*s1) && le(&*s1, &*end())));
             reserve(size() + n2);
-        	i = begin() + pos;
+            i = begin() + pos;
         }
-    	if (pos + n2 <= size())
+        if (pos + n2 <= size())
         {
             //const iterator oldEnd = end();
             //Storage::append(oldEnd - n2, n2);
             //std::copy(i, oldEnd - n2, i + n2);
-        	const iterator tailBegin = end() - n2;
-        	Storage::append(tailBegin, tailBegin + n2);
+            const iterator tailBegin = end() - n2;
+            Storage::append(tailBegin, tailBegin + n2);
             //std::copy(i, tailBegin, i + n2);
-        	std::copy(reverse_iterator(tailBegin), reverse_iterator(i), 
-            	reverse_iterator(tailBegin + n2));
-        	std::copy(s1, s2, i);
+            std::copy(reverse_iterator(tailBegin), reverse_iterator(i), 
+                reverse_iterator(tailBegin + n2));
+            std::copy(s1, s2, i);
         }
-    	else
+        else
         {
-        	FwdIterator t = s1;
-        	const size_type old_size = size();
-        	std::advance(t, old_size - pos);
-        	assert(std::distance(t, s2) >= 0);
-        	Storage::append(t, s2);
-        	Storage::append(data() + pos, data() + old_size);
-        	std::copy(s1, t, i);
+            FwdIterator t = s1;
+            const size_type old_size = size();
+            std::advance(t, old_size - pos);
+            assert(std::distance(t, s2) >= 0);
+            Storage::append(t, s2);
+            Storage::append(data() + pos, data() + old_size);
+            std::copy(s1, t, i);
         }
     }
 
-	template <class InputIterator>
+    template <class InputIterator>
     void InsertImpl(iterator i1, iterator i2,
-    	InputIterator b, InputIterator e, std::input_iterator_tag)
+        InputIterator b, InputIterator e, std::input_iterator_tag)
     { 
-    	flex_string temp(begin(), i1);
+        flex_string temp(begin(), i1);
         for (; b != e; ++b)
         {
-        	temp.push_back(*b);
+            temp.push_back(*b);
         }
-    	temp.append(i2, end());
-    	swap(temp);
+        temp.append(i2, end());
+        swap(temp);
     }
 
 public:
     template <class ItOrLength, class ItOrChar>
     void insert(iterator p, ItOrLength first_or_n, ItOrChar last_or_c)
     { 
-    	Selector<std::numeric_limits<ItOrLength>::is_specialized> sel;
-    	InsertImplDiscr(p, first_or_n, last_or_c, sel);
+        Selector<std::numeric_limits<ItOrLength>::is_specialized> sel;
+        InsertImplDiscr(p, first_or_n, last_or_c, sel);
     }
     
     flex_string& erase(size_type pos = 0, size_type n = npos)
     { 
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker;
         Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
-    	Procust(n, length() - pos);
-    	std::copy(begin() + pos + n, end(), begin() + pos);
-    	resize(length() - n);
+        Procust(n, length() - pos);
+        std::copy(begin() + pos + n, end(), begin() + pos);
+        resize(length() - n);
         return *this;
     }
     
@@ -653,28 +653,28 @@ public:
     // Replaces at most n1 chars of *this, starting with pos,
     // with at most n2 chars of str.
     // str must have at least n2 chars.
-	flex_string& replace(const size_type pos, size_type n1, 
-    	const value_type* s1, const size_type n2)
+    flex_string& replace(const size_type pos, size_type n1, 
+        const value_type* s1, const size_type n2)
     {
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker;
         Enforce(pos <= size(), (std::out_of_range*)0, "");
         Procust(n1, size() - pos);
-    	const iterator b = begin() + pos;
-    	return replace(b, b + n1, s1, s1 + n2);
+        const iterator b = begin() + pos;
+        return replace(b, b + n1, s1, s1 + n2);
         using namespace flex_string_details;
         const int delta = int(n2 - n1);
         static const std::less_equal<const value_type*> le;
         const bool aliased = le(&*begin(), s1) && le(s1, &*end());
 
         // From here on we're dealing with an aliased replace
-    	if (delta <= 0)
+        if (delta <= 0)
         {
             // simple case, we're shrinking
             pod_move(s1, s1 + n2, &*begin() + pos);
             pod_move(&*begin() + pos + n1, &*end(), &*begin() + pos + n1 + delta);
             resize(size() + delta);
-        	return *this;
+            return *this;
         }
 
         // From here on we deal with aliased growth
@@ -739,14 +739,14 @@ public:
     // str must have at least n2 chars.
     template <class StrOrLength, class NumOrChar>
     flex_string& replace(size_type pos, size_type n1, 
-    	StrOrLength s_or_n2, NumOrChar n_or_c)
+        StrOrLength s_or_n2, NumOrChar n_or_c)
     {
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker;
-    	Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
-    	Procust(n1, length() - pos);
-    	const iterator b = begin() + pos;
-    	return replace(b, b + n1, s_or_n2, n_or_c);
+        Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
+        Procust(n1, length() - pos);
+        const iterator b = begin() + pos;
+        return replace(b, b + n1, s_or_n2, n_or_c);
     }
         
     flex_string& replace(iterator i1, iterator i2, const flex_string& str)
@@ -759,87 +759,87 @@ private:
     flex_string& ReplaceImplDiscr(iterator i1, iterator i2, 
         const value_type* s, size_type n, Selector<2>)
     { 
-    	assert(i1 <= i2);
-    	assert(begin() <= i1 && i1 <= end());
-    	assert(begin() <= i2 && i2 <= end());
-    	return replace(i1, i2, s, s + n); 
+        assert(i1 <= i2);
+        assert(begin() <= i1 && i1 <= end());
+        assert(begin() <= i2 && i2 <= end());
+        return replace(i1, i2, s, s + n); 
     }
     
     flex_string& ReplaceImplDiscr(iterator i1, iterator i2,
         size_type n2, value_type c, Selector<1>)
     { 
-    	const size_type n1 = i2 - i1;
-    	if (n1 > n2)
+        const size_type n1 = i2 - i1;
+        if (n1 > n2)
         {
-        	std::fill(i1, i1 + n2, c);
-        	erase(i1 + n2, i2);
+            std::fill(i1, i1 + n2, c);
+            erase(i1 + n2, i2);
         }
-    	else
+        else
         {
-        	std::fill(i1, i2, c);
-        	insert(i2, n2 - n1, c);
+            std::fill(i1, i2, c);
+            insert(i2, n2 - n1, c);
         }
         return *this;
     }    
 
-	template <class InputIterator>
-	flex_string& ReplaceImplDiscr(iterator i1, iterator i2,
+    template <class InputIterator>
+    flex_string& ReplaceImplDiscr(iterator i1, iterator i2,
         InputIterator b, InputIterator e, Selector<0>)
     { 
-    	ReplaceImpl(i1, i2, b, e, 
-        	typename std::iterator_traits<InputIterator>::iterator_category());
+        ReplaceImpl(i1, i2, b, e, 
+            typename std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
 
-	template <class FwdIterator>
+    template <class FwdIterator>
     void ReplaceImpl(iterator i1, iterator i2,
-    	FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
+        FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
     { 
-    	Invariant checker(*this); 
+        Invariant checker(*this); 
         (void) checker;
-    	const typename std::iterator_traits<iterator>::difference_type n1 = 
-        	i2 - i1;
-    	assert(n1 >= 0);
-    	const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
-        	std::distance(s1, s2);
-    	assert(n2 >= 0);
+        const typename std::iterator_traits<iterator>::difference_type n1 = 
+            i2 - i1;
+        assert(n1 >= 0);
+        const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
+            std::distance(s1, s2);
+        assert(n2 >= 0);
 
         // Handle aliased replace
         static const std::less_equal<const value_type*> le = 
-        	std::less_equal<const value_type*>();
+            std::less_equal<const value_type*>();
         const bool aliased = le(&*begin(), &*s1) && le(&*s1, &*end());
-    	if (aliased /* && capacity() < size() - n1 + n2 */)
+        if (aliased /* && capacity() < size() - n1 + n2 */)
         {
             // Aliased replace, copy to new string
-        	flex_string temp;
-        	temp.reserve(size() - n1 + n2);
-        	temp.append(begin(), i1).append(s1, s2).append(i2, end());
-        	swap(temp);
-        	return;
+            flex_string temp;
+            temp.reserve(size() - n1 + n2);
+            temp.append(begin(), i1).append(s1, s2).append(i2, end());
+            swap(temp);
+            return;
         }
 
-    	if (n1 > n2)
+        if (n1 > n2)
         {
             // shrinks
-        	std::copy(s1, s2, i1);
-        	erase(i1 + n2, i2);
+            std::copy(s1, s2, i1);
+            erase(i1 + n2, i2);
         }
-    	else
+        else
         {
             // grows
-        	flex_string_details::copy_n(s1, n1, i1);
-        	std::advance(s1, n1);
-        	insert(i2, s1, s2);
+            flex_string_details::copy_n(s1, n1, i1);
+            std::advance(s1, n1);
+            insert(i2, s1, s2);
         }
     }
 
-	template <class InputIterator>
+    template <class InputIterator>
     void ReplaceImpl(iterator i1, iterator i2,
-    	InputIterator b, InputIterator e, std::input_iterator_tag)
+        InputIterator b, InputIterator e, std::input_iterator_tag)
     {
-    	flex_string temp(begin(), i1);
-    	temp.append(b, e).append(i2, end());
-    	swap(temp);
+        flex_string temp(begin(), i1);
+        temp.append(b, e).append(i2, end());
+        swap(temp);
     }
 
 public:
@@ -847,11 +847,11 @@ public:
     flex_string& replace(iterator i1, iterator i2,
         T1 first_or_n_or_s, T2 last_or_c_or_n)
     { 
-    	const bool 
-        	num1 = std::numeric_limits<T1>::is_specialized,
-        	num2 = std::numeric_limits<T2>::is_specialized;
+        const bool 
+            num1 = std::numeric_limits<T1>::is_specialized,
+            num2 = std::numeric_limits<T2>::is_specialized;
         return ReplaceImplDiscr(i1, i2, first_or_n_or_s, last_or_c_or_n, 
-        	Selector<num1 ? (num2 ? 1 : -1) : (num2 ? 2 : 0)>()); 
+            Selector<num1 ? (num2 ? 1 : -1) : (num2 ? 2 : 0)>()); 
     }
        
     size_type copy(value_type* s, size_type n, size_type pos = 0) const
@@ -1055,7 +1055,7 @@ public:
     int compare(const flex_string& str) const
     { 
         // FIX due to Goncalo N M de Carvalho July 18, 2005
-    	return compare(0, size(), str);
+        return compare(0, size(), str);
     }
     
     int compare(size_type pos1, size_type n1,
@@ -1069,20 +1069,20 @@ public:
     int compare(size_type pos1, size_type n1,
         const value_type* s) const
     {
-    	return compare(pos1, n1, s, traits_type::length(s));
+        return compare(pos1, n1, s, traits_type::length(s));
     }
     
     int compare(size_type pos1, size_type n1,
         const value_type* s, size_type n2) const
     {
         Enforce(pos1 <= size(), static_cast<std::out_of_range*>(0), "");
-    	Procust(n1, size() - pos1);
-    	const int r = traits_type::compare(data(), s, Min(n1, n2));
-    	return 
-        	r != 0 ? r :
-        	n1 > n2 ? 1 :
-        	n1 < n2 ? -1 :
-        	0;
+        Procust(n1, size() - pos1);
+        const int r = traits_type::compare(data(), s, Min(n1, n2));
+        return 
+            r != 0 ? r :
+            n1 > n2 ? 1 :
+            n1 < n2 ? -1 :
+            0;
     }
     
     int compare(size_type pos1, size_type n1,
@@ -1095,7 +1095,7 @@ public:
 
     int compare(const value_type* s) const
     { 
-    	return traits_type::compare(data(), s, Max(length(),traits_type::length(s))); 
+        return traits_type::compare(data(), s, Max(length(),traits_type::length(s))); 
     }
 };
 
@@ -1257,7 +1257,7 @@ std::basic_istream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 operator>>(
     std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
-    	typename flex_string<E, T, A, S>::traits_type>& is,
+        typename flex_string<E, T, A, S>::traits_type>& is,
     flex_string<E, T, A, S>& str);
 
 template <typename E, class T, class A, class S>
@@ -1265,7 +1265,7 @@ std::basic_ostream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 operator<<(
     std::basic_ostream<typename flex_string<E, T, A, S>::value_type, 
-    	typename flex_string<E, T, A, S>::traits_type>& os,
+        typename flex_string<E, T, A, S>::traits_type>& os,
     const flex_string<E, T, A, S>& str)
 { return os << str.c_str(); }
 

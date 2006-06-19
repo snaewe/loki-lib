@@ -872,12 +872,12 @@ namespace Loki
 
 #define LOKI_SINGLETON_INSTANCE_DEFINITION(SHOLDER)                     \
 namespace Loki                                                          \
-{																		\
-	template<>                                                          \
-	SHOLDER::ObjectType&  Singleton<SHOLDER::ObjectType>::Instance()	\
-	{                                                                   \
+{                                                                        \
+    template<>                                                          \
+    SHOLDER::ObjectType&  Singleton<SHOLDER::ObjectType>::Instance()    \
+    {                                                                   \
         return SHOLDER::Instance();                                     \
-	}																	\
+    }                                                                    \
 }
 
 
@@ -897,6 +897,9 @@ namespace Loki                                                          \
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.31  2006/06/19 12:39:08  syntheticpp
+// replace tabs with 4 spaces
+//
 // Revision 1.30  2006/05/20 10:23:07  syntheticpp
 // add warnings in the documentation about the special lifetime when using SmallObjects
 //

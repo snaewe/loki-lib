@@ -7,7 +7,7 @@
 namespace yasli_nstd
 {
     template <class T>
-	class fill_iterator_base
+    class fill_iterator_base
         : public std::iterator<
             std::random_access_iterator_tag,
             T,
@@ -18,7 +18,7 @@ namespace yasli_nstd
     };
 
     template <class T>
-	class fill_iterator_base<T&>
+    class fill_iterator_base<T&>
         : public std::iterator<
             std::random_access_iterator_tag,
             T,
@@ -50,7 +50,7 @@ namespace yasli_nstd
         }
 
         template<class U>
-    	fill_iterator(const fill_iterator<U>& rhs)
+        fill_iterator(const fill_iterator<U>& rhs)
         : value_(rhs.value_), count_(rhs.count_)
         {
         }
@@ -140,7 +140,7 @@ namespace yasli_nstd
     template <class T> 
     inline bool operator!=(
         const fill_iterator<T>& lhs,
-    	const fill_iterator<T>& rhs)
+        const fill_iterator<T>& rhs)
     {    // test for fill_iterator inequality
         return !(lhs == rhs);
     }
@@ -148,7 +148,7 @@ namespace yasli_nstd
     template <class T> 
     inline bool operator<(
         const fill_iterator<T>& lhs,
-    	const fill_iterator<T>& rhs)
+        const fill_iterator<T>& rhs)
     {
         return lhs.count_ < rhs.count_;
     }

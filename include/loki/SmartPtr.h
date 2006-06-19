@@ -884,7 +884,7 @@ namespace Loki
         class ConversionPolicy = DisallowConversion,
         template <class> class CheckingPolicy = AssertCheck,
         template <class> class StoragePolicy = DefaultSPStorage,
-    	template<class> class ConstnessPolicy = LOKI_DEFAULT_CONSTNESS 
+        template<class> class ConstnessPolicy = LOKI_DEFAULT_CONSTNESS 
     >
     struct SmartPtrDef
     {
@@ -895,7 +895,7 @@ namespace Loki
             ConversionPolicy,
             CheckingPolicy,
             StoragePolicy,
-        	ConstnessPolicy
+            ConstnessPolicy
         >
         type;
     };
@@ -1525,6 +1525,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.32  2006/06/19 12:39:08  syntheticpp
+// replace tabs with 4 spaces
+//
 // Revision 1.31  2006/05/30 14:30:19  syntheticpp
 // add warning about mt bug
 //

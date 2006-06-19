@@ -218,7 +218,7 @@ namespace Loki
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
-    	class MutexPolicy = LOKI_DEFAULT_MUTEX
+        class MutexPolicy = LOKI_DEFAULT_MUTEX
     >
     class AllocatorSingleton : public SmallObjAllocator
     {
@@ -283,7 +283,7 @@ namespace Loki
         std::size_t MSOS,
         std::size_t OAS,
         template <class> class LP,
-    	class MX
+        class MX
     >
     void AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX >::ClearExtraMemory( void )
     {
@@ -299,7 +299,7 @@ namespace Loki
         std::size_t MSOS,
         std::size_t OAS,
         template <class> class LP,
-    	class MX
+        class MX
     >
     bool AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX >::IsCorrupted( void )
     {
@@ -327,7 +327,7 @@ namespace Loki
         std::size_t MSOS,
         std::size_t OAS,
         template <class> class LP,
-    	class MX
+        class MX
     >
     inline unsigned int GetLongevity(
         AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX > * )
@@ -421,7 +421,7 @@ namespace Loki
         std::size_t maxSmallObjectSize,
         std::size_t objectAlignSize,
         template <class> class LifetimePolicy,
-    	class MutexPolicy
+        class MutexPolicy
     >
     class SmallObjectBase
     {
@@ -578,7 +578,7 @@ namespace Loki
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
-    	class MutexPolicy = LOKI_DEFAULT_MUTEX
+        class MutexPolicy = LOKI_DEFAULT_MUTEX
     >
     class SmallObject : public SmallObjectBase< ThreadingModel, chunkSize,
             maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy >
@@ -614,7 +614,7 @@ namespace Loki
         std::size_t maxSmallObjectSize = LOKI_MAX_SMALL_OBJECT_SIZE,
         std::size_t objectAlignSize = LOKI_DEFAULT_OBJECT_ALIGNMENT,
         template <class> class LifetimePolicy = LOKI_DEFAULT_SMALLOBJ_LIFETIME,
-    	class MutexPolicy = LOKI_DEFAULT_MUTEX
+        class MutexPolicy = LOKI_DEFAULT_MUTEX
     >
     class SmallValueObject : public SmallObjectBase< ThreadingModel, chunkSize,
             maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy >
@@ -634,6 +634,9 @@ namespace Loki
 // Nov. 26, 2004: re-implemented by Rich Sposato.
 //
 // $Log$
+// Revision 1.30  2006/06/19 12:39:08  syntheticpp
+// replace tabs with 4 spaces
+//
 // Revision 1.29  2006/03/08 17:07:11  syntheticpp
 // replace tabs with 4 spaces in all files
 //
