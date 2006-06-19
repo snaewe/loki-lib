@@ -120,7 +120,7 @@ public:
     typedef E* iterator;
     typedef const E* const_iterator;
     typedef A allocator_type;
-	typedef typename A::reference reference;
+    typedef typename A::reference reference;
 
     
     SimpleStringStorage(const SimpleStringStorage& rhs) 
@@ -219,14 +219,14 @@ public:
     template <class InputIterator>
     void append(InputIterator b, InputIterator e)
     {
-    	const size_type 
-        	sz = std::distance(b, e),
-        	neededCapacity = size() + sz;
+        const size_type 
+            sz = std::distance(b, e),
+            neededCapacity = size() + sz;
         if (capacity() < neededCapacity)
         {
-        	static std::less_equal<const E*> le;
+            static std::less_equal<const E*> le;
             (void) le;
-        	assert(!(le(begin(), &*b) && le(&*b, end()))); // no aliasing
+            assert(!(le(begin(), &*b) && le(&*b, end()))); // no aliasing
             reserve(neededCapacity);
         }
         std::copy(b, e, end());
@@ -272,8 +272,8 @@ template <typename E, class A>
 const typename SimpleStringStorage<E, A>::Data
 SimpleStringStorage<E, A>::emptyString_;
 //{ 
-//	const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_), 
-//	const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_), 
+//    const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_), 
+//    const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_), 
 //    { E() }
 //};
 

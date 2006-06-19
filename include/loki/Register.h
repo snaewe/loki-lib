@@ -32,38 +32,38 @@ namespace Loki
     ///  \ingroup RegisterGroup
     ///  Must be specialized be the user
     ////////////////////////////////////////////////////////////////////////////////
-	template<class t> bool RegisterFunction();
+    template<class t> bool RegisterFunction();
 
     ////////////////////////////////////////////////////////////////////////////////
     ///  \ingroup RegisterGroup
     ///  Must be specialized be the user
     ////////////////////////////////////////////////////////////////////////////////
-	template<class t> bool UnRegisterFunction();
+    template<class t> bool UnRegisterFunction();
 
-	namespace Private
+    namespace Private
     {
-    	template<class T> 
-    	struct RegisterOnCreate
+        template<class T> 
+        struct RegisterOnCreate
         {
-        	RegisterOnCreate()  { RegisterFunction<T>(); }
+            RegisterOnCreate()  { RegisterFunction<T>(); }
         };
 
-    	template<class T> 
-    	struct UnRegisterOnDelete
+        template<class T> 
+        struct UnRegisterOnDelete
         {
             ~UnRegisterOnDelete() { UnRegisterFunction<T>(); }
         };    
 
-    	template<class T>
-    	struct RegisterOnCreateElement
+        template<class T>
+        struct RegisterOnCreateElement
         {
-        	RegisterOnCreate<T> registerObj;
+            RegisterOnCreate<T> registerObj;
         };
 
-    	template<class T>
-    	struct UnRegisterOnDeleteElement
+        template<class T>
+        struct UnRegisterOnDeleteElement
         {
-        	UnRegisterOnDelete<T> unregisterObj;
+            UnRegisterOnDelete<T> unregisterObj;
         };
     }
 
@@ -77,8 +77,8 @@ namespace Loki
     ///  see test/Register
     ////////////////////////////////////////////////////////////////////////////////
 
-	template<typename ElementList>
-	struct RegisterOnCreateSet 
+    template<typename ElementList>
+    struct RegisterOnCreateSet 
         : GenScatterHierarchy<ElementList, Private::RegisterOnCreateElement>
     {};
 
@@ -91,8 +91,8 @@ namespace Loki
     ///  \par Usage
     ///  see test/Register
     ////////////////////////////////////////////////////////////////////////////////
-	template<typename ElementList>
-	struct UnRegisterOnDeleteSet 
+    template<typename ElementList>
+    struct UnRegisterOnDeleteSet 
         : GenScatterHierarchy<ElementList, Private::UnRegisterOnDeleteElement>
     {};
 
@@ -109,11 +109,11 @@ namespace Loki
 
 #define LOKI_CHECK_CLASS_IN_LIST( CLASS , LIST )                                \
                                                                                 \
-	struct Loki_##CLASS##LIST_OK{typedef int class_##CLASS##_is_not_in_##LIST;};\
-	typedef Loki::Select<Loki::TL::IndexOf<LIST, CLASS>::value == -1,            \
-	CLASS,Loki_##CLASS##LIST_OK >::Result IsInList##CLASS##LIST;                \
-	typedef IsInList##CLASS##LIST::class_##CLASS##_is_not_in_##LIST	            \
-                                                	isInListTest##CLASS##LIST;
+    struct Loki_##CLASS##LIST_OK{typedef int class_##CLASS##_is_not_in_##LIST;};\
+    typedef Loki::Select<Loki::TL::IndexOf<LIST, CLASS>::value == -1,            \
+    CLASS,Loki_##CLASS##LIST_OK >::Result IsInList##CLASS##LIST;                \
+    typedef IsInList##CLASS##LIST::class_##CLASS##_is_not_in_##LIST                \
+                                                    isInListTest##CLASS##LIST;
 
 } // namespace Loki
 

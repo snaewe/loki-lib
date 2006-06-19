@@ -86,10 +86,10 @@ public:
     typedef const value_type* const_iterator;
     typedef typename Storage::allocator_type allocator_type;
     typedef typename allocator_type::size_type size_type;
-	typedef typename Storage::reference reference;
+    typedef typename Storage::reference reference;
     
 private:
-	enum { temp1 = threshold * sizeof(value_type) > sizeof(Storage) 
+    enum { temp1 = threshold * sizeof(value_type) > sizeof(Storage) 
         ? threshold  * sizeof(value_type) 
         : sizeof(Storage) };
     
@@ -128,7 +128,7 @@ private:
     }
         
 public:
-	SmallStringOpt(const SmallStringOpt& s)
+    SmallStringOpt(const SmallStringOpt& s)
     {
         if (s.Small())
         {
@@ -260,14 +260,14 @@ public:
         else
         {
             // append to a small string
-        	const size_type 
-            	sz = std::distance(b, e),
-            	neededCapacity = maxSmallString - buf_[maxSmallString] + sz;
+            const size_type 
+                sz = std::distance(b, e),
+                neededCapacity = maxSmallString - buf_[maxSmallString] + sz;
 
             if (maxSmallString < neededCapacity)
             {
                 // need to change storage strategy
-            	allocator_type alloc;
+                allocator_type alloc;
                 Storage temp(alloc);
                 temp.reserve(neededCapacity);
                 temp.append(buf_, buf_ + maxSmallString - buf_[maxSmallString]);
@@ -278,7 +278,7 @@ public:
             }
             else
             {
-            	std::copy(b, e, buf_ + maxSmallString - buf_[maxSmallString]);
+                std::copy(b, e, buf_ + maxSmallString - buf_[maxSmallString]);
                 buf_[maxSmallString] = buf_[maxSmallString] - value_type(sz);
             }
         }
