@@ -32,7 +32,7 @@ template<class T>
 class Singleton
 {
 public:
-	static T& Instance();
+    static T& Instance();
 };
 
 template class SINGLETONDLL_EXPORT Singleton<Foo>;

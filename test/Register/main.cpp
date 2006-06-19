@@ -21,14 +21,14 @@
 
 typedef Loki::SingletonHolder
 <
-	Loki::Factory<Base, std::string>
+    Loki::Factory<Base, std::string>
 >
 BaseFactory;
 
 
 bool registerClass(std::string key, Base*(*creator)() )
 {
-	return BaseFactory::Instance().Register(key,creator);
+    return BaseFactory::Instance().Register(key,creator);
 }
 
 Loki::RegisterOnCreateSet<ClassList> registerAllClasses;
@@ -37,18 +37,18 @@ Loki::UnRegisterOnDeleteSet<ClassList> unregisterAllClasses;
 
 int main()
 {
-	Base* foo = BaseFactory::Instance().CreateObject("Foo");
-	Base* boo = BaseFactory::Instance().CreateObject("Boo");
+    Base* foo = BaseFactory::Instance().CreateObject("Foo");
+    Base* boo = BaseFactory::Instance().CreateObject("Boo");
     
-	foo->foo();
-	boo->foo();
+    foo->foo();
+    boo->foo();
 
-	delete foo;
-	delete boo;
+    delete foo;
+    delete boo;
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");
 #endif
 
-	return 0;
+    return 0;
 }
