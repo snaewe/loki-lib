@@ -23,7 +23,7 @@ namespace Loki
 
     void write(std::FILE* f, const char* from, const char* to) {
         assert(from <= to);
-        fwrite(from, 1, to - from, f);
+        ::std::fwrite(from, 1, to - from, f);
     }
 
     // Write to a string
@@ -50,11 +50,11 @@ namespace Loki
         return PrintfState<std::FILE*, char>(stdout, format.c_str());
     }
 
-    PrintfState<std::FILE*, char> FPrintf(FILE* f, const char* format) {
+    PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const char* format) {
         return PrintfState<std::FILE*, char>(f, format);
     }
 
-    PrintfState<std::FILE*, char> FPrintf(FILE* f, const std::string& format) {
+    PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const std::string& format) {
         return PrintfState<std::FILE*, char>(f, format.c_str());
     }
 
@@ -70,6 +70,9 @@ namespace Loki
 }// namespace Loki
 
 // $Log$
+// Revision 1.3  2006/06/28 08:04:21  syntheticpp
+// use standard conforming naming, SUN's compiler needs it
+//
 // Revision 1.2  2006/01/16 20:59:53  rich_sposato
 // Added cvs keywords.
 //

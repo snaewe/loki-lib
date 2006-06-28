@@ -312,7 +312,7 @@ bool Chunk::Init( std::size_t blockSize, unsigned char blocks )
 #else
     // malloc can't throw, so its only way to indicate an error is to return
     // a NULL pointer, so we have to check for that.
-    pData_ = static_cast< unsigned char * >( ::malloc( allocSize ) );
+    pData_ = static_cast< unsigned char * >( ::std::malloc( allocSize ) );
     if ( NULL == pData_ ) return false;
 #endif
 
@@ -347,7 +347,7 @@ void Chunk::Release()
 #ifdef USE_NEW_TO_ALLOCATE
     ::operator delete ( pData_ );
 #else
-    ::free( static_cast< void * >( pData_ ) );
+    ::std::free( static_cast< void * >( pData_ ) );
 #endif
 }
 
@@ -1022,7 +1022,7 @@ void * DefaultAllocator( std::size_t numBytes, bool doThrow )
     return doThrow ? ::operator new( numBytes ) :
         ::operator new( numBytes, std::nothrow_t() );
 #else
-    void * p = ::malloc( numBytes );
+    void * p = ::std::malloc( numBytes );
     if ( doThrow && ( NULL == p ) )
         throw std::bad_alloc();
     return p;
@@ -1042,7 +1042,7 @@ void DefaultDeallocator( void * p )
 #ifdef USE_NEW_TO_ALLOCATE
     ::operator delete( p );
 #else
-    ::free( p );
+    ::std::free( p );
 #endif
 }
 
@@ -1226,6 +1226,9 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // $Log$
+// Revision 1.29  2006/06/28 08:04:21  syntheticpp
+// use standard conforming naming, SUN's compiler needs it
+//
 // Revision 1.28  2006/02/14 18:20:21  rich_sposato
 // Added check for memory leak inside destructor.
 //

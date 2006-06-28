@@ -539,10 +539,10 @@ namespace Loki
     PrintfState<std::FILE*, char> Printf(const std::string format);
 
     LOKI_EXPORT
-    PrintfState<std::FILE*, char> FPrintf(FILE* f, const char* format);
+    PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const char* format);
 
     LOKI_EXPORT
-    PrintfState<std::FILE*, char> FPrintf(FILE* f, const std::string& format);
+    PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const std::string& format);
 
     LOKI_EXPORT
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format);
@@ -573,6 +573,9 @@ namespace Loki
 #endif //SAFEFORMAT_H_
 
 // $Log$
+// Revision 1.26  2006/06/28 08:04:21  syntheticpp
+// use standard conforming naming, SUN's compiler needs it
+//
 // Revision 1.25  2006/06/19 12:39:08  syntheticpp
 // replace tabs with 4 spaces
 //
