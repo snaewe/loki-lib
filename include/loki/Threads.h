@@ -108,9 +108,9 @@
 #define LOKI_THREADS_MUTEX(x)           pthread_mutex_t (x);
 
 // use reentrance support
-#ifdef PTHREAD_MUTEX_RECURSIVE 
+#if defined(PTHREAD_MUTEX_RECURSIVE)
 #define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, PTHREAD_MUTEX_RECURSIVE)
-#elif PTHREAD_MUTEX_RECURSIVE_NP
+#elif defined(PTHREAD_MUTEX_RECURSIVE_NP)
 #define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, PTHREAD_MUTEX_RECURSIVE_NP)
 #else
 #define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, 0)
@@ -417,6 +417,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.31  2006/07/01 10:30:03  syntheticpp
+// add reentrance support to the pthread mutex, thx to Shen Lei
+//
 // Revision 1.30  2006/07/01 10:26:25  syntheticpp
 // add reentrance support to the pthread mutex, thx to Shen Lei
 //
