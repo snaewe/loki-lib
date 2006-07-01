@@ -61,7 +61,7 @@
         #define LOKI_DEFAULT_THREADING ::Loki::ObjectLevelLockable
     #endif
      
-    #if defined(_WIN32)
+    #if defined(_WIN32) || defined(_WIN64)
         #include <windows.h> 
     #else
         #include <pthread.h>
@@ -80,11 +80,11 @@
 
 #if defined(_WINDOWS_) || defined(_WINDOWS_H) 
 
-#define LOKI_THREADS_MUTEX(x)           CRITICAL_SECTION x
-#define LOKI_THREADS_MUTEX_INIT(x)      ::InitializeCriticalSection x
-#define LOKI_THREADS_MUTEX_DELETE(x)    ::DeleteCriticalSection x
-#define LOKI_THREADS_MUTEX_LOCK(x)      ::EnterCriticalSection x
-#define LOKI_THREADS_MUTEX_UNLOCK(x)    ::LeaveCriticalSection x
+#define LOKI_THREADS_MUTEX(x)           CRITICAL_SECTION (x);
+#define LOKI_THREADS_MUTEX_INIT(x)      ::InitializeCriticalSection (x)
+#define LOKI_THREADS_MUTEX_DELETE(x)    ::DeleteCriticalSection (x)
+#define LOKI_THREADS_MUTEX_LOCK(x)      ::EnterCriticalSection (x)
+#define LOKI_THREADS_MUTEX_UNLOCK(x)    ::LeaveCriticalSection (x)
 #define LOKI_THREADS_LONG               LONG
 
 #define LOKI_THREADS_ATOMIC_FUNCTIONS                                   \
@@ -105,11 +105,20 @@
 #elif defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) //POSIX threads (pthread.h)
 
 
-#define LOKI_THREADS_MUTEX(x)           pthread_mutex_t x
-#define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x,0)
-#define LOKI_THREADS_MUTEX_DELETE(x)    ::pthread_mutex_destroy x
-#define LOKI_THREADS_MUTEX_LOCK(x)      ::pthread_mutex_lock x
-#define LOKI_THREADS_MUTEX_UNLOCK(x)    ::pthread_mutex_unlock x
+#define LOKI_THREADS_MUTEX(x)           pthread_mutex_t (x);
+
+// use reentrance support
+#ifdef PTHREAD_MUTEX_RECURSIVE 
+#define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, PTHREAD_MUTEX_RECURSIVE)
+#elif PTHREAD_MUTEX_RECURSIVE_NP
+#define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, PTHREAD_MUTEX_RECURSIVE_NP)
+#else
+#define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, 0)
+#endif
+
+#define LOKI_THREADS_MUTEX_DELETE(x)    ::pthread_mutex_destroy (x)
+#define LOKI_THREADS_MUTEX_LOCK(x)      ::pthread_mutex_lock (x)
+#define LOKI_THREADS_MUTEX_UNLOCK(x)    ::pthread_mutex_unlock (x)
 #define LOKI_THREADS_LONG               long
 
 #define LOKI_THREADS_ATOMIC(x)                                           \
@@ -161,26 +170,26 @@ namespace Loki
     public:
         Mutex()
         {
-            LOKI_THREADS_MUTEX_INIT( (&mtx_) );
+            LOKI_THREADS_MUTEX_INIT(&mtx_);
         }
         ~Mutex()
         {
-            LOKI_THREADS_MUTEX_DELETE( (&mtx_) );
+            LOKI_THREADS_MUTEX_DELETE(&mtx_);
         }
         void Lock()
         {
-            LOKI_THREADS_MUTEX_LOCK( (&mtx_) );
+            LOKI_THREADS_MUTEX_LOCK(&mtx_);
         }
         void Unlock()
         {
-            LOKI_THREADS_MUTEX_UNLOCK( (&mtx_) );
+            LOKI_THREADS_MUTEX_UNLOCK(&mtx_);
         }
     private:
         /// Copy-constructor not implemented.
-        Mutex( const Mutex & );
+        Mutex(const Mutex &);
         /// Copy-assignement operator not implemented.
-        Mutex & operator = ( const Mutex & );
-        LOKI_THREADS_MUTEX( mtx_; )
+        Mutex & operator = (const Mutex &);
+        LOKI_THREADS_MUTEX(mtx_)
     };
 
 
@@ -322,6 +331,7 @@ namespace Loki
             {
                 init_ = true;
             }
+
             ~Initializer()
             {
                 assert(init_);
@@ -407,6 +417,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.30  2006/07/01 10:26:25  syntheticpp
+// add reentrance support to the pthread mutex, thx to Shen Lei
+//
 // Revision 1.29  2006/06/04 20:18:39  vizowl
 // added a check for _POSIX_PTHREAD_H to detect pthread.h on OS X
 //
