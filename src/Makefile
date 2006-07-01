@@ -2,26 +2,26 @@ SRC = $(wildcard *.cpp)
 STATIC_OBJ = $(SRC:.cpp=.o)
 SHARED_OBJ = $(SRC:.cpp=.lo)
 
-CPPFLAGS = -I../include -DNDEBUG
+override CPPFLAGS += -I../include -DNDEBUG
 
 STATIC_LIB = libloki.a
 
 ifeq ($(OS), Darwin)
   SHARED_LIB_BASE = libloki.dylib
   SHARED_LIB_VERSIONED = libloki.$(VERSION).dylib
-  LDFLAGS = -dynamiclib -single_module -install_name $(SHARED_LIB_VERSIONED) -fPIC
+  override LDFLAGS += -dynamiclib -single_module -install_name $(SHARED_LIB_VERSIONED) -fPIC
   LDLIBS = -lpthread
   RESULT_DIR = ../lib/
 else
 ifeq ($(OS), Linux)
   SHARED_LIB_BASE = libloki.so
   SHARED_LIB_VERSIONED = libloki.so.$(VERSION)
-  LDFLAGS = --shared -Wl,-soname=$(SHARED_LIB_VERSIONED) -fPIC
+  override LDFLAGS += --shared -Wl,-soname=$(SHARED_LIB_VERSIONED) -fPIC
   LDLIBS = -lpthread
   RESULT_DIR = ../lib/
 else
   SHARED_LIB_BASE = libloki.dll
-  LDFLAGS = --shared
+  override LDFLAGS += --shared
   LDLIBS =
   RESULT_DIR = ../lib/
 endif
