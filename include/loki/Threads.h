@@ -46,7 +46,12 @@
 ///  \par Supported platfroms:
 ///
 ///  - Windows (windows.h)
-///  - POSIX (pthread.h)
+///  - POSIX (pthread.h):
+///    No recursive mutex support with pthread. 
+///    This means: calling Lock() on a Loki::Mutex twice from the 
+///    same thread before unlocking the mutex deadlocks the system. 
+///    To avoid this redesign your synchronization. See also:
+///    http://sourceforge.net/tracker/index.php?func=detail&aid=1516182&group_id=29557&atid=396647
 
 
 #include <cassert>
@@ -107,14 +112,8 @@
 
 #define LOKI_THREADS_MUTEX(x)           pthread_mutex_t (x);
 
-// use reentrance support
-#if defined(PTHREAD_MUTEX_RECURSIVE)
-#define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, PTHREAD_MUTEX_RECURSIVE)
-#elif defined(PTHREAD_MUTEX_RECURSIVE_NP)
-#define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, PTHREAD_MUTEX_RECURSIVE_NP)
-#else
+// no recursive mutex support
 #define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, 0)
-#endif
 
 #define LOKI_THREADS_MUTEX_DELETE(x)    ::pthread_mutex_destroy (x)
 #define LOKI_THREADS_MUTEX_LOCK(x)      ::pthread_mutex_lock (x)
@@ -417,6 +416,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.32  2006/07/03 08:43:35  syntheticpp
+// add docu about missing recursive mutex support when using pthreads
+//
 // Revision 1.31  2006/07/01 10:30:03  syntheticpp
 // add reentrance support to the pthread mutex, thx to Shen Lei
 //
