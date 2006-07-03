@@ -61,8 +61,11 @@ namespace Loki
     template <class Char>
     void write(std::pair<Char*, std::size_t>& s, const Char* from, const Char* to) {
         assert(from <= to);
-        if (from + s.second > to) throw std::overflow_error("");
-        s.first = copy(from, to, s.first);
+        if(from + s.second < to)
+            throw std::overflow_error("");
+        // s.first: position one past the final copied element 
+        s.first = std::copy(from, to, s.first);
+        // remaining buffer size
         s.second -= to - from;
     }
 
@@ -573,6 +576,9 @@ namespace Loki
 #endif //SAFEFORMAT_H_
 
 // $Log$
+// Revision 1.27  2006/07/03 09:55:19  syntheticpp
+// fix wrong buffer size check
+//
 // Revision 1.26  2006/06/28 08:04:21  syntheticpp
 // use standard conforming naming, SUN's compiler needs it
 //
