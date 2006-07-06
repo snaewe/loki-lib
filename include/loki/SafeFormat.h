@@ -27,6 +27,7 @@
 #include <utility>
 #include <cassert>
 #include <locale>
+#include <iostream>
 
 #include <loki/LokiExport.h>
 
@@ -52,6 +53,9 @@ namespace Loki
     LOKI_EXPORT
     void write(std::FILE* f, const char* from, const char* to);
 
+    // Write to an ostream
+    LOKI_EXPORT
+    void write(std::ostream& f, const char* from, const char* to);
 
     // Write to a string
     LOKI_EXPORT
@@ -539,13 +543,19 @@ namespace Loki
     PrintfState<std::FILE*, char> Printf(const char* format);
 
     LOKI_EXPORT
-    PrintfState<std::FILE*, char> Printf(const std::string format);
+    PrintfState<std::FILE*, char> Printf(const std::string& format);
 
     LOKI_EXPORT
     PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const char* format);
 
     LOKI_EXPORT
     PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const std::string& format);
+
+    LOKI_EXPORT
+    PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const char* format);
+
+    LOKI_EXPORT
+    PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const std::string& format);
 
     LOKI_EXPORT
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format);
@@ -576,6 +586,9 @@ namespace Loki
 #endif //SAFEFORMAT_H_
 
 // $Log$
+// Revision 1.28  2006/07/06 18:25:28  syntheticpp
+// add writing to ostream, by Tom Browder
+//
 // Revision 1.27  2006/07/03 09:55:19  syntheticpp
 // fix wrong buffer size check
 //

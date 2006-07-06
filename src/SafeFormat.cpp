@@ -32,8 +32,13 @@ namespace Loki
         assert(from <= to);
         s.append(from, to);
     }
-
   
+    // Write to a stream
+
+    void write(std::ostream& f, const char* from, const char* to) {
+        assert(from <= to);
+        f.write(from, to - from);
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // PrintfState class template
@@ -46,7 +51,7 @@ namespace Loki
         return PrintfState<std::FILE*, char>(stdout, format);
     }
 
-    PrintfState<std::FILE*, char> Printf(const std::string format) {
+    PrintfState<std::FILE*, char> Printf(const std::string& format) {
         return PrintfState<std::FILE*, char>(stdout, format.c_str());
     }
 
@@ -56,6 +61,14 @@ namespace Loki
 
     PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const std::string& format) {
         return PrintfState<std::FILE*, char>(f, format.c_str());
+    }
+
+    PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const char* format) {
+        return PrintfState<std::ostream&, char>(f, format);
+    }
+
+    PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const std::string& format) {
+        return PrintfState<std::ostream&, char>(f, format.c_str());
     }
 
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format) {
@@ -70,6 +83,9 @@ namespace Loki
 }// namespace Loki
 
 // $Log$
+// Revision 1.4  2006/07/06 18:25:28  syntheticpp
+// add writing to ostream, by Tom Browder
+//
 // Revision 1.3  2006/06/28 08:04:21  syntheticpp
 // use standard conforming naming, SUN's compiler needs it
 //
