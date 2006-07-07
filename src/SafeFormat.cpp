@@ -37,7 +37,7 @@ namespace Loki
 
     void write(std::ostream& f, const char* from, const char* to) {
         assert(from <= to);
-        f.write(from, to - from);
+        f.write(from, std::streamsize(to - from));
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +83,9 @@ namespace Loki
 }// namespace Loki
 
 // $Log$
+// Revision 1.5  2006/07/07 09:30:48  syntheticpp
+// remove 64 bit warning
+//
 // Revision 1.4  2006/07/06 18:25:28  syntheticpp
 // add writing to ostream, by Tom Browder
 //
