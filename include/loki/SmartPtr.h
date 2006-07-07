@@ -39,6 +39,7 @@
 #include <functional>
 #include <stdexcept>
 #include <cassert>
+#include <string>
 
 #if !defined(_MSC_VER)
     #include <stdint.h>
@@ -731,7 +732,7 @@ namespace Loki
 
     struct NullPointerException : public std::runtime_error
     {
-        NullPointerException() : std::runtime_error("")
+        NullPointerException() : std::runtime_error(std::string(""))
         { }
         const char* what() const throw()
         { return "Null Pointer Exception"; }
@@ -1525,6 +1526,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.33  2006/07/07 09:50:30  syntheticpp
+// also compile when std::string is not implicit included/typedefed by other headers; the SUN compiler needs the explicit include of <string>
+//
 // Revision 1.32  2006/06/19 12:39:08  syntheticpp
 // replace tabs with 4 spaces
 //
