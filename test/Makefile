@@ -1,13 +1,3 @@
-export CPPFLAGS = -I../../include -DNDEBUG
-export LDFLAGS = -L../../lib
-export LDLIBS = -lloki
-
-ifeq ($(OS),Windows)
-export BIN_SUFFIX = .exe
-else
-export BIN_SUFFIX =
-endif
-
 SUBTARGETS_ORIG := $(patsubst %/,%,$(dir $(wildcard */Makefile)))
 SUBTARGETS := $(filter-out $(SUBTARGETS_FILTER_OUT),$(SUBTARGETS_ORIG))
 	

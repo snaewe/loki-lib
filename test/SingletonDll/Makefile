@@ -1,26 +1,29 @@
+include ../Makefile.common
+
 ifeq ($(OS),Darwin)
-  LIB1 = libfoo.dylib
-  LIB2 = libsingletondll.dylib
-  SHARED_LIB_FLAG = -dynamiclib
+  LIB1 := libfoo.dylib
+  LIB2 := libsingletondll.dylib
+  SHARED_LIB_FLAG := -dynamiclib
 else
 ifeq ($(OS),Linux)
-  LIB1 = libfoo.so
-  LIB2 = libsingletondll.so
-  SHARED_LIB_FLAG = --shared
+  LIB1 := libfoo.so
+  LIB2 := libsingletondll.so
+  SHARED_LIB_FLAG := --shared
 else
-  LIB1 = foo.dll
-  LIB2 = singletondll.dll
-  SHARED_LIB_FLAG = --shared
+  LIB1 := foo.dll
+  LIB2 := singletondll.dll
+  SHARED_LIB_FLAG := --shared
 endif
 endif
 
-BIN1 = client$(BIN_SUFFIX)
-SRC1 = client.cpp
-OBJ1 = $(SRC1:.cpp=.o)
-SRC2 = foo.cpp
-OBJ2 = $(SRC2:.cpp=.o)
-SRC3 = singletondll.cpp
-OBJ3 = $(SRC3:.cpp=.o)
+BIN1 := client$(BIN_SUFFIX)
+SRC1 := client.cpp
+OBJ1 := $(SRC1:.cpp=.o)
+SRC2 := foo.cpp
+OBJ2 := $(SRC2:.cpp=.o)
+SRC3 := singletondll.cpp
+OBJ3 := $(SRC3:.cpp=.o)
+override LDFLAGS := -L../../lib
 
 .PHONY: all clean
 all: $(BIN1)
@@ -34,10 +37,12 @@ $(LIB1): $(OBJ2)
 $(LIB2): $(OBJ3)
 	$(CXX) $(SHARED_LIB_FLAG) $(LDFLAGS) -L. -o $@ $^ -lfoo $(LDLIBS)
 
-clean:
+clean: cleandeps
 	$(RM) $(BIN1)
 	$(RM) $(OBJ1)
 	$(RM) $(LIB1)
 	$(RM) $(OBJ2)
 	$(RM) $(LIB2)
 	$(RM) $(OBJ3)
+
+include ../../Makefile.deps

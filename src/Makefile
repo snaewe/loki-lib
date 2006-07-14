@@ -1,29 +1,31 @@
-SRC = $(wildcard *.cpp)
-STATIC_OBJ = $(SRC:.cpp=.o)
-SHARED_OBJ = $(SRC:.cpp=.lo)
+include ../Makefile.common
+
+SRC := $(wildcard *.cpp)
+STATIC_OBJ := $(SRC:.cpp=.o)
+SHARED_OBJ := $(SRC:.cpp=.lo)
 
 override CPPFLAGS += -I../include -DNDEBUG
 
-STATIC_LIB = libloki.a
+STATIC_LIB := libloki.a
 
 ifeq ($(OS), Darwin)
-  SHARED_LIB_BASE = libloki.dylib
-  SHARED_LIB_VERSIONED = libloki.$(VERSION).dylib
+  SHARED_LIB_BASE := libloki.dylib
+  SHARED_LIB_VERSIONED := libloki.$(VERSION).dylib
   override LDFLAGS += -dynamiclib -single_module -install_name $(SHARED_LIB_VERSIONED) -fPIC
-  LDLIBS = -lpthread
-  RESULT_DIR = ../lib/
+  LDLIBS := -lpthread
+  RESULT_DIR := ../lib/
 else
 ifeq ($(OS), Linux)
-  SHARED_LIB_BASE = libloki.so
-  SHARED_LIB_VERSIONED = libloki.so.$(VERSION)
+  SHARED_LIB_BASE := libloki.so
+  SHARED_LIB_VERSIONED := libloki.so.$(VERSION)
   override LDFLAGS += --shared -Wl,-soname=$(SHARED_LIB_VERSIONED) -fPIC
-  LDLIBS = -lpthread
-  RESULT_DIR = ../lib/
+  LDLIBS := -lpthread
+  RESULT_DIR := ../lib/
 else
-  SHARED_LIB_BASE = libloki.dll
+  SHARED_LIB_BASE := libloki.dll
   override LDFLAGS += --shared
-  LDLIBS =
-  RESULT_DIR = ../lib/
+  LDLIBS :=
+  RESULT_DIR := ../lib/
 endif
 endif
 
@@ -38,14 +40,14 @@ ifneq ($(OS), Windows)
 	$(RM) $(SHARED_OBJ)
 endif
 
-distclean: clean
+distclean: clean cleandeps
 	$(RM) $(RESULT_DIR)$(STATIC_LIB)
 	$(RM) $(RESULT_DIR)$(SHARED_LIB_BASE)
 ifneq ($(OS),Windows)
 	$(RM) $(RESULT_DIR)$(SHARED_LIB_VERSIONED)
 
-INSTALL = install
-INSTALL_DATA = $(INSTALL) -m 644
+INSTALL := install
+INSTALL_DATA := $(INSTALL) -m 644
 
 .PHONY: install install-static install-shared
 install: install-static install-shared
@@ -73,3 +75,5 @@ endif
 
 $(RESULT_DIR)$(STATIC_LIB): $(STATIC_OBJ)
 	$(AR) $(ARFLAGS) $@ $^
+
+include ../Makefile.deps

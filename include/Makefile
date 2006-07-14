@@ -1,3 +1,5 @@
+include ../Makefile.common
+
 .PHONY: install
 install:
 	mkdir -p $(prefix)/include/loki
