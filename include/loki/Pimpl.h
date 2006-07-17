@@ -140,41 +140,41 @@ namespace Loki
 
 
     //////////////////////////////////////////
-    /// \class  ImplT
+    /// \class  ImplOf
     ///
-    ///  \ingroup PimplGroup
+    /// \ingroup PimplGroup
     /// Convenience template for the 
-    /// implementations which PimplT points to.
+    /// implementations which Pimpl points to.
     //////////////////////////////////////////
 
     template<class T>
-    struct ImplT;
+    struct ImplOf;
 
 
     //////////////////////////////////////////
-    /// \class  PImplT
+    /// \class  PImplOf
     ///
-    ///  \ingroup PimplGroup
-    /// Convenience template which uses ImplT
+    /// \ingroup PimplGroup
+    /// Convenience template which uses ImplOf
     /// as implementation structure
     //////////////////////////////////////////
 
 
     template<class T, template<class> class Ptr = ConstPropPtr>
-    struct PimplT
+    struct PimplOf
     {
         typedef T Impl;
 
         // declare pimpl
-        typedef Pimpl<ImplT<T>, Ptr<ImplT<T> > > Type;
+        typedef Pimpl<ImplOf<T>, Ptr<ImplOf<T> > > Type;
 
         // inherit pimpl
-        typedef PimplOwner<ImplT<T>, Ptr<ImplT<T> > > Owner;
+        typedef PimplOwner<ImplOf<T>, Ptr<ImplOf<T> > > Owner;
     };
 
 
-    template<class T, class UsedPimpl = typename PimplT<T>::Type >
-    struct RimplT
+    template<class T, class UsedPimpl = typename PimplOf<T>::Type >
+    struct RimplOf
     {
         typedef typename UsedPimpl::Impl & Type;
 
@@ -196,6 +196,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.22  2006/07/17 11:05:44  syntheticpp
+// ImplT/PimplT/RimplT renamed to the more readable version: T->Of
+//
 // Revision 1.21  2006/06/19 12:39:08  syntheticpp
 // replace tabs with 4 spaces
 //

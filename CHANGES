@@ -4,6 +4,10 @@ Version 0.1.6
 ???, 2006
 _____________________________________
 
+Pimpl:
+    - ImplT/PimplT/RimplT renamed to the more readable version: T->Of
+    
+    
 _____________________________________
 
 Version 0.1.5

@@ -30,7 +30,7 @@ public:
     void foo();
 
 private:
-    PimplT<A2>::Type d;
+    PimplOf<A2>::Type d;
 };
 
 
@@ -38,7 +38,7 @@ private:
 // class B2 declaration
 /////////////////////////////////////////
 
-class B2 : private PimplT<B2>::Owner
+class B2 : private PimplOf<B2>::Owner
 {
 public:
     B2();
@@ -60,8 +60,8 @@ public:
     void foo();
 
 private:
-    PimplT<C2>::Type rint; 
-    RimplT<C2>::Type d; 
+    PimplOf<C2>::Type rint; 
+    RimplOf<C2>::Type d; 
 };
 
 
@@ -69,7 +69,7 @@ private:
 // class D2 declaration
 /////////////////////////////////////////
 
-class D2 : private RimplT<D2>::Owner
+class D2 : private RimplOf<D2>::Owner
 {
 public:
     D2();
@@ -87,7 +87,7 @@ public:
     Incomplete1();
     void foo();
 private:
-    PimplT<Incomplete1>::Type d;
+    PimplOf<Incomplete1>::Type d;
 };
 
 class Incomplete2
@@ -97,7 +97,7 @@ public:
     ~Incomplete2();
     void foo();
 private:
-    PimplT<Incomplete2>::Type d;
+    PimplOf<Incomplete2>::Type d;
 };
 
 
@@ -114,7 +114,7 @@ public:
     }
     void foo();
 private:
-    PimplT<Incomplete3>::Type d;
+    PimplOf<Incomplete3>::Type d;
 };
 #endif
 

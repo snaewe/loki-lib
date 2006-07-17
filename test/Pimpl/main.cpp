@@ -28,15 +28,15 @@
 
 
 /////////////////////////////////////////
-// Definition of ImplT<A>
+// Definition of ImplOf<A>
 /////////////////////////////////////////
 namespace Loki // gcc!!
 {
     template<>
-    struct ImplT<A> : public SmallObject<> // inherit SmallObj for speed up
+    struct ImplOf<A> : public SmallObject<> // inherit SmallObj for speed up
     {
-        ImplT() : data(0) {Printf("A created\n");}
-        ~ImplT(){Printf("A destroyed, data=%d\n")(data);}
+        ImplOf() : data(0) {Printf("A created\n");}
+        ~ImplOf(){Printf("A destroyed, data=%d\n")(data);}
         int data;
     };
 }
@@ -54,22 +54,22 @@ void A::foo()
 
 
 /////////////////////////////////////////
-// Definition  of ImplT<B>
+// Definition  of ImplOf<B>
 /////////////////////////////////////////
 namespace Loki // gcc!!
 {
     template<>
-    struct ImplT<B> : public SmallObject<> // inherit SmallObj for speed up
+    struct ImplOf<B> : public SmallObject<> // inherit SmallObj for speed up
     {
-        ImplT() : data(0) {Printf("B created\n");}
-        ~ImplT(){Printf("B destroyed, data=%d\n")(data);}
+        ImplOf() : data(0) {Printf("B created\n");}
+        ~ImplOf(){Printf("B destroyed, data=%d\n")(data);}
         int data;
     };
 }
 /////////////////////////////////////////
 // class B definition
 /////////////////////////////////////////
-B::B() : Loki::PimplT<B>::Owner()
+B::B() : Loki::PimplOf<B>::Owner()
 {}
 
 void B::foo()
@@ -80,15 +80,15 @@ void B::foo()
 
 
 /////////////////////////////////////////
-// Definition  of ImplT<C>
+// Definition  of ImplOf<C>
 /////////////////////////////////////////
 namespace Loki // gcc!!
 {
     template<>
-    struct ImplT<C> : public SmallObject<> // inherit SmallObj for speed up
+    struct ImplOf<C> : public SmallObject<> // inherit SmallObj for speed up
     {
-        ImplT(): data(0) {Printf("C created\n");}
-        ~ImplT(){Printf("C destroyed, data=%d\n")(data);}
+        ImplOf(): data(0) {Printf("C created\n");}
+        ~ImplOf(){Printf("C destroyed, data=%d\n")(data);}
         int data;
     };
 }
@@ -106,15 +106,15 @@ void C::foo()
 
 
 /////////////////////////////////////////
-// Definition  of ImplT<D>
+// Definition  of ImplOf<D>
 /////////////////////////////////////////
 namespace Loki // gcc!!
 {
     template<>
-    struct ImplT<D> : public SmallObject<> // inherit SmallObj for speed up
+    struct ImplOf<D> : public SmallObject<> // inherit SmallObj for speed up
     {
-        ImplT(): data(0) {Printf("D created\n");}
-        ~ImplT(){Printf("D destroyed, data=%d\n")(data);}
+        ImplOf(): data(0) {Printf("D created\n");}
+        ~ImplOf(){Printf("D destroyed, data=%d\n")(data);}
         int data;
     };
 }
@@ -122,7 +122,7 @@ namespace Loki // gcc!!
 /////////////////////////////////////////
 // class D definition
 /////////////////////////////////////////
-D::D() : Loki::RimplT<D>::Owner()
+D::D() : Loki::RimplOf<D>::Owner()
 {}
 
 void D::foo()
@@ -174,15 +174,15 @@ int main()
 //Incomplete4 i4; // compiler error
 
 /////////////////////////////////////////
-// Definition  of ImplT<E>
+// Definition  of ImplOf<E>
 /////////////////////////////////////////
 namespace Loki // gcc!!
 {
     template<>
-    struct ImplT<E> : public SmallObject<> // inherit SmallObj for speed up
+    struct ImplOf<E> : public SmallObject<> // inherit SmallObj for speed up
     {
-        ImplT() : data(0) {Printf("E created\n");}
-        ~ImplT(){Printf("E destroyed, data=%d\n")(data);}
+        ImplOf() : data(0) {Printf("E created\n");}
+        ~ImplOf(){Printf("E destroyed, data=%d\n")(data);}
         int data;
 
         void foo()       {Printf("E  foo() \n");}
