@@ -1,7 +1,12 @@
 include ../../Makefile.common
 
 override CPPFLAGS += -I../../include -DNDEBUG
-override LDFLAGS += -L../../lib -static
+ifeq ($(OS),Darwin)
+  override LDFLAGS += -L../../lib
+else
+  override LDFLAGS += -L../../lib -static
+endif
+
 LDLIBS := -lloki
 
 ifeq ($(OS),Windows)
