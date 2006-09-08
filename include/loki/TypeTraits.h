@@ -25,6 +25,12 @@
 #include <string>
 #endif
 
+
+#ifdef _MSC_VER
+#pragma warning( push ) 
+#pragma warning( disable : 4180 ) //qualifier applied to function type has no meaning; ignored
+#endif
+
 namespace Loki
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -2213,6 +2219,10 @@ namespace Loki
     };
 }
 
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif // _MSC_VER
+
 ////////////////////////////////////////////////////////////////////////////////
 // Change log:
 // June 20,      2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
@@ -2225,6 +2235,9 @@ namespace Loki
 #endif // TYPETRAITS_INC_
 
 // $Log$
+// Revision 1.17  2006/09/08 10:50:18  syntheticpp
+// remove msvc warning
+//
 // Revision 1.16  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
