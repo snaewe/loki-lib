@@ -68,8 +68,10 @@
      
     #if defined(_WIN32) || defined(_WIN64)
         #include <windows.h> 
+        #define LOKI_WINDOWS_H
     #else
         #include <pthread.h>
+        #define LOKI_PTHREAD_H
     #endif
     
 #else
@@ -83,7 +85,7 @@
 #define LOKI_DEFAULT_MUTEX ::Loki::Mutex
 #endif
 
-#if defined(_WINDOWS_) || defined(_WINDOWS_H) 
+#ifdef LOKI_WINDOWS_H
 
 #define LOKI_THREADS_MUTEX(x)           CRITICAL_SECTION (x);
 #define LOKI_THREADS_MUTEX_INIT(x)      ::InitializeCriticalSection (x)
@@ -107,7 +109,7 @@
 
 
 
-#elif defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) //POSIX threads (pthread.h)
+#elif defined(LOKI_PTHREAD_H)
 
 
 #define LOKI_THREADS_MUTEX(x)           pthread_mutex_t (x);
@@ -242,7 +244,7 @@ namespace Loki
     };
     
 
-#if defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
+#if defined(LOKI_WINDOWS_H) || defined(LOKI_PTHREAD_H) 
 
     ////////////////////////////////////////////////////////////////////////////////
     ///  \class ObjectLevelLockable
@@ -306,7 +308,7 @@ namespace Loki
         
     };
 
-#if defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
+#ifdef LOKI_PTHREAD_H
     template <class Host, class MutexPolicy>
     pthread_mutex_t ObjectLevelLockable<Host, MutexPolicy>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
@@ -391,7 +393,7 @@ namespace Loki
         
     };
 
-#if defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
+#ifdef LOKI_PTHREAD_H 
     template <class Host, class MutexPolicy>
     pthread_mutex_t ClassLevelLockable<Host, MutexPolicy>::atomic_mutex_ = PTHREAD_MUTEX_INITIALIZER;
 #endif
@@ -400,7 +402,7 @@ namespace Loki
     typename ClassLevelLockable< Host, MutexPolicy >::Initializer 
     ClassLevelLockable< Host, MutexPolicy >::initializer_;
 
-#endif // defined(_WINDOWS_) || defined(_WINDOWS_H) || defined(_PTHREAD_H) || defined(_POSIX_PTHREAD_H) 
+#endif // #if defined(LOKI_WINDOWS_H) || defined(LOKI_PTHREAD_H) 
   
 } // namespace Loki
 
@@ -416,6 +418,9 @@ namespace Loki
 #endif
 
 // $Log$
+// Revision 1.33  2006/09/08 17:52:58  syntheticpp
+// use LOKI_* macros to check for the including of windows.h/pthread.h
+//
 // Revision 1.32  2006/07/03 08:43:35  syntheticpp
 // add docu about missing recursive mutex support when using pthreads
 //
