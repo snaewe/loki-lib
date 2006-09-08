@@ -25,7 +25,6 @@
 
 using namespace Loki;
 
-
 int g;
 int numThreads = 10;
 int loop = 5;
@@ -60,8 +59,8 @@ struct A
     }
 };
 
-typedef Loki::LockingPtr<A,LOKI_DEFAULT_MUTEX,DontPropagateConst> LPtr;
-typedef Loki::LockingPtr<A,LOKI_DEFAULT_MUTEX,PropagateConst> CLPtr;
+typedef Loki::LockingPtr<A,LOKI_DEFAULT_MUTEX,DontPropagateConst> UserLockingPtr;
+typedef Loki::LockingPtr<A,LOKI_DEFAULT_MUTEX,PropagateConst> ConstUserLockingPtr;
 
 void* RunLocked(void *id)
 {
@@ -69,7 +68,7 @@ void* RunLocked(void *id)
     static Loki::Mutex m;    
     for(int i=0; i<loop; i++)
     {
-        LPtr l(a,m);
+        UserLockingPtr l(a,m);
         l->print(id);
     }
     return 0;
@@ -81,7 +80,7 @@ void* RunConstLocked(void *id)
     static Loki::Mutex m;    
     for(int i=0; i<loop; i++)
     {
-        CLPtr l(a,m);
+        ConstUserLockingPtr l(a,m);
         l->print(id);
     }
     return 0;
@@ -124,6 +123,7 @@ int main ()
 
     Thread::JoinThreads(threads);
     Thread::DeleteThreads(threads);
+
 }
 
 
