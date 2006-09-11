@@ -22,7 +22,7 @@ ifeq ($(OS), Linux)
   LDLIBS := -lpthread
   RESULT_DIR := ../lib/
 else
-  SHARED_LIB_BASE := libloki.dll
+  SHARED_LIB_VERSIONED := libloki.dll
   override LDFLAGS += --shared
   LDLIBS :=
   RESULT_DIR := ../lib/
@@ -32,7 +32,7 @@ endif
 .PHONY: all build-static build-shared clean distclean
 all: build-static build-shared
 build-static: $(RESULT_DIR)$(STATIC_LIB)
-build-shared: $(RESULT_DIR)$(SHARED_LIB_BASE)
+build-shared: $(RESULT_DIR)$(SHARED_LIB_VERSIONED)
 
 clean:
 	$(RM) $(STATIC_OBJ)
@@ -42,10 +42,9 @@ endif
 
 distclean: clean cleandeps
 	$(RM) $(RESULT_DIR)$(STATIC_LIB)
-	$(RM) $(RESULT_DIR)$(SHARED_LIB_BASE)
-ifneq ($(OS),Windows)
 	$(RM) $(RESULT_DIR)$(SHARED_LIB_VERSIONED)
 
+ifneq ($(OS),Windows)
 INSTALL := install
 INSTALL_DATA := $(INSTALL) -m 644
 
@@ -56,20 +55,17 @@ install-static: $(RESULT_DIR)$(STATIC_LIB)
 	mkdir -p $(prefix)/lib
 	$(INSTALL_DATA) $(RESULT_DIR)$(STATIC_LIB) $(prefix)/lib
 
-install-shared: $(RESULT_DIR)$(SHARED_LIB_BASE)
+install-shared: $(RESULT_DIR)$(SHARED_LIB_VERSIONED)
 	mkdir -p $(prefix)/lib
-	$(INSTALL_DATA) $(RESULT_DIR)$(SHARED_LIB_BASE) $(prefix)/lib
 	$(INSTALL_DATA) $(RESULT_DIR)$(SHARED_LIB_VERSIONED) $(prefix)/lib
-
-$(RESULT_DIR)$(SHARED_LIB_BASE): $(RESULT_DIR)$(SHARED_LIB_VERSIONED)
-	ln -sf $^ $@
+	cd $(prefix)/lib; ln -s $(SHARED_LIB_VERSIONED) $(SHARED_LIB_BASE)
 
 %.lo : %.cpp
 	$(CXX) -c $(CXXFLAGS) -fPIC $(CPPFLAGS) -o $@ $<
 
 $(RESULT_DIR)$(SHARED_LIB_VERSIONED): $(SHARED_OBJ)
 else
-$(RESULT_DIR)$(SHARED_LIB_BASE): $(STATIC_OBJ)
+$(RESULT_DIR)$(SHARED_LIB_VERSIONED): $(STATIC_OBJ)
 endif
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
