@@ -14,14 +14,13 @@
 
 /*
 
-Test for singletons in a shared libraries:
+Test for singletons with shared libraries:
 
-- there is a Foo class in Foo.dll/so
-- there is a Foo singleton object which is exported by SingletonDll.dll/so
-- the Foo singleton object is  managed by a Loki::SingletonHolder typedef
-- the declaration of the Loki::SingletonHolder type is visiable only
-  in singletondll.cpp
-- a client (this file) imports the singleton object from SingletonDll.dll/so
+- the Foo class is in the shared library Foo.dll/so
+- the Foo singleton object is in another shared library: SingletonDll.dll/so
+- the Foo singleton object is  managed by Loki::SingletonHolder
+- Loki::SingletonHolder is only used in singletondll.cpp
+- the client (this file) imports the singleton object from SingletonDll.dll/so
 
 */
 

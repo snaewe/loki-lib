@@ -856,8 +856,12 @@ namespace Loki
     ///
     ////////////////////////////////////////////////////////////////////////////////
 
+#ifndef LOKI_SINGLETON_EXPORT
+#define LOKI_SINGLETON_EXPORT
+#endif
+
     template<class T>
-    class Singleton
+    class LOKI_SINGLETON_EXPORT Singleton
     {
     public:
         static T& Instance();
@@ -897,6 +901,9 @@ namespace Loki                                                          \
 #endif // SINGLETON_INC_
 
 // $Log$
+// Revision 1.32  2006/09/15 06:30:16  syntheticpp
+// move instantiation to the source file (fixes linker error with gcc 4.0.1 on the mac), Thanks to Idar Tollefsen and Sam Miller
+//
 // Revision 1.31  2006/06/19 12:39:08  syntheticpp
 // replace tabs with 4 spaces
 //
