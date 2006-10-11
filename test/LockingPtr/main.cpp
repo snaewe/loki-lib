@@ -124,6 +124,16 @@ int main ()
     Thread::JoinThreads(threads);
     Thread::DeleteThreads(threads);
 
+    
+    // test pair ctor
+    volatile A a;
+    Loki::Mutex m;
+    UserLockingPtr::Pair pair(&a,&m);    
+    UserLockingPtr l( pair );
+    
+    ConstUserLockingPtr::Pair cpair(&a,&m);    
+    ConstUserLockingPtr cl( cpair );
+
 }
 
 

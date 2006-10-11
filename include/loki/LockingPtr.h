@@ -47,6 +47,18 @@ namespace Loki
             mutex.Lock();
         }
 
+        typedef typename std::pair<volatile ConstOrNotType *, LockingPolicy *> Pair;
+
+        /** Constructor locks mutex associated with an object.
+         @param lockpair a std::pair of pointers to the object and the mutex
+         */
+        LockingPtr( Pair lockpair )
+           : pObject_( const_cast< SharedObject * >( lockpair.first ) ),
+            pMutex_( lockpair.second )
+        {
+            lockpair.second->Lock();
+        }
+
         /// Destructor unlocks the mutex.
         ~LockingPtr()
         {
@@ -91,6 +103,9 @@ namespace Loki
 
 
 // $Log$
+// Revision 1.12  2006/10/11 08:51:40  syntheticpp
+// add ctor with std::pair argument
+//
 // Revision 1.11  2006/03/08 18:22:42  syntheticpp
 // doxygen fixes
 //
