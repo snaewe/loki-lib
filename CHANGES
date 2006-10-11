@@ -11,6 +11,10 @@ General:
     - Build all tests except SingletonDll with the static library (linux, macosx) (lf)
     - use standard conforming naming, SUN's compiler needs it (pk)
 
+LockingPtr:
+    - constructor added which gets a std::pair of pointers 
+      to the object and the mutex (pk)
+    
 Pimpl:
     - ImplT/PimplT/RimplT renamed to a more readable version: ImplOf (pk)
 
