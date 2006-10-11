@@ -998,8 +998,20 @@ void DoForwardReferenceTest( void )
 
 // ----------------------------------------------------------------------------
 
+struct Foo
+{
+    void AddRef ()
+    {}
+    void Release ()
+    {}
+};
+
+
 int main( unsigned int , const char * [] )
 {
+    // injected friends test
+    Loki::SmartPtr<Foo, Loki::COMRefCounted> sp;
+    Foo* p = Loki::GetImpl (sp); (void) p;
 
     DoRefLinkTests();
     DoStrongRefCountTests();
@@ -1039,6 +1051,9 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.10  2006/10/11 11:17:53  syntheticpp
+// test injected friends. Thanks to Sigoure Benoit
+//
 // Revision 1.9  2006/05/30 14:17:05  syntheticpp
 // don't confuse with warnings
 //
