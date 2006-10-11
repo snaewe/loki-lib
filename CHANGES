@@ -4,10 +4,30 @@ Version 0.1.6
 ???, 2006
 _____________________________________
 
+General:
+    - Mac linker errrors fixed (lf)
+    - Makefiles can now be called from sub directories (lf)
+    - Makefiles know includes and recompile if they are changed (linux, macosx) (lf)
+    - Build all tests except SingletonDll with the static library (linux, macosx) (lf)
+    - use standard conforming naming, SUN's compiler needs it (pk)
+
 Pimpl:
-    - ImplT/PimplT/RimplT renamed to the more readable version: T->Of
+    - ImplT/PimplT/RimplT renamed to a more readable version: ImplOf (pk)
+
+SafeFormat:
+    - add writing to ostream, by Tom Browder (pk)
     
-    
+Singleton
+    - example: move instantiation to the source file 
+      fixes linker error with gcc 4.0.1 on the mac, 
+      (Thanks to Idar Tollefsen and Sam Miller, pk)
+      
+Threads:
+    - reentrance support added to the pthread mutex (Thanks to Shen Lei, pk)
+      
+
+CVS commits by Lukas Fittl (lf), Peter Kümmel (pk)
+
 _____________________________________
 
 Version 0.1.5
