@@ -19,6 +19,8 @@
 #include "UnitTest.h"
 #include <loki/SmartPtr.h>
 #include <cassert>
+#include <algorithm>
+
 
 #if 0 // throw assert on failed test
 #define LOKI_assert(x) assert(x)
@@ -27,6 +29,27 @@
 #endif
 
 using namespace Loki;
+
+// friend injection
+// see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=28597
+class TestClass;
+typedef SmartPtr<TestClass, DeepCopy, DisallowConversion, AssertCheck, DefaultSPStorage> Class;
+
+bool Compare( const Class& a, const Class& b )
+{
+    return true; 
+}
+
+void  friend_injection()
+{
+    std::vector<Class> vec;
+    std::sort( vec.begin(), vec.end(), Compare );
+    std::nth_element( vec.begin(), vec.begin(), vec.end(), Compare );
+    std::search( vec.begin(), vec.end(),
+        vec.begin(), vec.end(), Compare );
+    Class a, b;
+    Compare( a, b );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // SmartPtrTest
@@ -62,6 +85,8 @@ public:
   {
     return new TestClass(*this);
   }
+
+
 
 public:
   static int instances;
