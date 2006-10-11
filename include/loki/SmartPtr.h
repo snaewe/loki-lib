@@ -56,6 +56,7 @@ namespace Loki
 ///   to T's destructor followed by call to free.
 ////////////////////////////////////////////////////////////////////////////////
 
+
     template <class T>
     class HeapStorage
     {
@@ -86,14 +87,14 @@ namespace Loki
         { std::swap(pointee_, rhs.pointee_); }
     
         // Accessors
-        friend inline PointerType GetImpl(const HeapStorage& sp)
-        { return sp.pointee_; }
-        
-        friend inline const StoredType& GetImplRef(const HeapStorage& sp)
-        { return sp.pointee_; }
+        template <class F>
+        friend typename HeapStorage<F>::PointerType GetImpl(const HeapStorage<F>& sp);
 
-        friend inline StoredType& GetImplRef(HeapStorage& sp)
-        { return sp.pointee_; }
+        template <class F>
+        friend const typename HeapStorage<F>::StoredType& GetImplRef(const HeapStorage<F>& sp);
+
+        template <class F>
+        friend typename HeapStorage<F>::StoredType& GetImplRef(HeapStorage<F>& sp);
 
     protected:
         // Destroys the data stored
@@ -116,12 +117,26 @@ namespace Loki
         StoredType pointee_;
     };
 
+    template <class T>
+    inline typename HeapStorage<T>::PointerType GetImpl(const HeapStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline const typename HeapStorage<T>::StoredType& GetImplRef(const HeapStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline typename HeapStorage<T>::StoredType& GetImplRef(HeapStorage<T>& sp)
+    { return sp.pointee_; }
+
+
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class DefaultSPStorage
 ///
 ///  \ingroup  SmartPointerStorageGroup 
 ///  Implementation of the StoragePolicy used by SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
+
 
     template <class T>
     class DefaultSPStorage
@@ -153,14 +168,14 @@ namespace Loki
         { std::swap(pointee_, rhs.pointee_); }
     
         // Accessors
-        friend inline PointerType GetImpl(const DefaultSPStorage& sp)
-        { return sp.pointee_; }
-        
-        friend inline const StoredType& GetImplRef(const DefaultSPStorage& sp)
-        { return sp.pointee_; }
+        template <class F>
+        friend typename DefaultSPStorage<F>::PointerType GetImpl(const DefaultSPStorage<F>& sp);
 
-        friend inline StoredType& GetImplRef(DefaultSPStorage& sp)
-        { return sp.pointee_; }
+        template <class F>
+        friend const typename DefaultSPStorage<F>::StoredType& GetImplRef(const DefaultSPStorage<F>& sp);
+
+        template <class F>
+        friend typename DefaultSPStorage<F>::StoredType& GetImplRef(DefaultSPStorage<F>& sp);
 
     protected:
         // Destroys the data stored
@@ -179,6 +194,18 @@ namespace Loki
         StoredType pointee_;
     };
 
+    template <class T>
+    inline typename DefaultSPStorage<T>::PointerType GetImpl(const DefaultSPStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline const typename DefaultSPStorage<T>::StoredType& GetImplRef(const DefaultSPStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline typename DefaultSPStorage<T>::StoredType& GetImplRef(DefaultSPStorage<T>& sp)
+    { return sp.pointee_; }
+
     
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class ArrayStorage
@@ -186,6 +213,7 @@ namespace Loki
 ///  \ingroup  SmartPointerStorageGroup 
 ///  Implementation of the ArrayStorage used by SmartPtr
 ////////////////////////////////////////////////////////////////////////////////
+
 
     template <class T>
     class ArrayStorage
@@ -217,14 +245,14 @@ namespace Loki
         { std::swap(pointee_, rhs.pointee_); }
     
         // Accessors
-        friend inline PointerType GetImpl(const ArrayStorage& sp)
-        { return sp.pointee_; }
-        
-        friend inline const StoredType& GetImplRef(const ArrayStorage& sp)
-        { return sp.pointee_; }
+        template <class F>
+        friend typename ArrayStorage<F>::PointerType GetImpl(const ArrayStorage<F>& sp);
 
-        friend inline StoredType& GetImplRef(ArrayStorage& sp)
-        { return sp.pointee_; }
+        template <class F>
+        friend const typename ArrayStorage<F>::StoredType& GetImplRef(const ArrayStorage<F>& sp);
+
+        template <class F>
+        friend typename ArrayStorage<F>::StoredType& GetImplRef(ArrayStorage<F>& sp);
 
     protected:
         // Destroys the data stored
@@ -240,6 +268,18 @@ namespace Loki
         // Data
         StoredType pointee_;
     };
+
+    template <class T>
+    inline typename ArrayStorage<T>::PointerType GetImpl(const ArrayStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline const typename ArrayStorage<T>::StoredType& GetImplRef(const ArrayStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline typename ArrayStorage<T>::StoredType& GetImplRef(ArrayStorage<T>& sp)
+    { return sp.pointee_; }
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1065,15 +1105,32 @@ namespace Loki
                 SP::Destroy();
             }
         }
-        
-        friend inline void Release(SmartPtr& sp, typename SP::StoredType& p)
-        {
-            p = GetImplRef(sp);
-            GetImplRef(sp) = SP::Default();
-        }
-        
-        friend inline void Reset(SmartPtr& sp, typename SP::StoredType p)
-        { SmartPtr(p).Swap(sp); }
+
+        template
+        <
+            typename T1,
+            template <class> class OP1,
+            class CP1,
+            template <class> class KP1,
+            template <class> class SP1,
+            template <class> class CNP1
+        >
+        friend void Release(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1>& sp,
+                            typename SP1<T>::StoredType& p);
+
+        template
+        <
+            typename T1,
+            template <class> class OP1,
+            class CP1,
+            template <class> class KP1,
+            template <class> class SP1,
+            template <class> class CNP1
+        >
+        friend void Reset(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1>& sp,
+                          typename SP1<T>::StoredType p);
+
+
 
         template
         <
@@ -1090,7 +1147,7 @@ namespace Loki
             {
                 return false;
             }
-            return OP::Merge( rhs );
+            return OP::template Merge( rhs );
         }
 
         PointerType operator->()
@@ -1241,6 +1298,37 @@ namespace Loki
         operator AutomaticConversionResult() const
         { return GetImpl(*this); }
     };
+
+    template
+    <
+        typename T,
+        template <class> class OP,
+        class CP,
+        template <class> class KP,
+        template <class> class SP,
+        template <class> class CNP1,
+        typename U
+    >
+    inline void Release(SmartPtr<T, OP, CP, KP, SP, CNP1>& sp,
+                        typename SP<T>::StoredType& p)
+    {
+      p = GetImplRef(sp);
+      GetImplRef(sp) = SP<T>::Default();
+    }
+
+    template
+    <
+        typename T,
+        template <class> class OP,
+        class CP,
+        template <class> class KP,
+        template <class> class SP,
+        template <class> class CNP1,
+        typename U
+    >
+    inline void Reset(SmartPtr<T, OP, CP, KP, SP, CNP1>& sp,
+                      typename SP<T>::StoredType p)
+    { SmartPtr<T, OP, CP, KP, SP, CNP1>(p).Swap(sp); }
 
 ////////////////////////////////////////////////////////////////////////////////
 // free comparison operators for class template SmartPtr
@@ -1526,6 +1614,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.34  2006/10/11 10:44:21  syntheticpp
+// fix gcc>4.1 handling of injected friends
+//
 // Revision 1.33  2006/07/07 09:50:30  syntheticpp
 // also compile when std::string is not implicit included/typedefed by other headers; the SUN compiler needs the explicit include of <string>
 //
