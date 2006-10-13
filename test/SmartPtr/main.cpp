@@ -1007,11 +1007,20 @@ struct Foo
 };
 
 
-int main( unsigned int , const char * [] )
+
+int main( unsigned int argc, const char * argv[] )
 {
     // injected friends test
     Loki::SmartPtr<Foo, Loki::COMRefCounted> sp;
+
     Foo* p = Loki::GetImpl (sp); (void) p;
+
+    bool doThreadTest = false;
+    for ( unsigned int ii = 1; ii < argc; ++ii )
+    {
+        if ( ::strcmp( argv[ii], "-t" ) == 0 )
+            doThreadTest = true;
+    }
 
     DoRefLinkTests();
     DoStrongRefCountTests();
@@ -1034,8 +1043,11 @@ int main( unsigned int , const char * [] )
     DoConstConversionTests();
     DoOwnershipConversionTests();
     DoInheritanceConversionTests();
-    
-    DoLockedPtrTest();
+
+    if ( doThreadTest )
+    {
+        DoLockedPtrTest();
+    }
 
     // Check that nothing was leaked.
     assert( BaseClass::AllDestroyed() );
@@ -1051,6 +1063,10 @@ int main( unsigned int , const char * [] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.11  2006/10/13 23:59:42  rich_sposato
+// Added check for -t command line parameter to do lock-thread test.
+// Changed ending chars of some lines from LF to CR-LF to be consistent.
+//
 // Revision 1.10  2006/10/11 11:17:53  syntheticpp
 // test injected friends. Thanks to Sigoure Benoit
 //
