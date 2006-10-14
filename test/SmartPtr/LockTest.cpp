@@ -14,20 +14,21 @@
 
 // ----------------------------------------------------------------------------
 
-//#define LOKI_CLASS_LEVEL_THREADING
+/// @note This test uses LOKI_OBJECT_LEVEL_THREADING because StrongPtr's
+/// LockableTwoRefCounts policy can't be used with a single-threaded model.
+/// It requires either object-level-locking or class-level-locking.
 
-#ifndef LOKI_CLASS_LEVEL_THREADING
-    #define LOKI_OBJECT_LEVEL_THREADING
-#endif
 
 #if defined(_WIN32)
     #include <windows.h>
     #include <process.h>
+    #define LOKI_WINDOWS_H
 #endif
 
 #include <loki/Threads.h>
 #include <loki/StrongPtr.h>
 #include <loki/SafeFormat.h>
+#include <loki/ScopeGuard.h>
 
 #include <vector>
 #include <iostream>
@@ -112,7 +113,9 @@ public:
     {
         for( size_t ii = 0; ii < threadCount; ii++ )
         {
-            Printf( "Creating thread %d\n" )( ii );
+            string buffer;
+            SPrintf( buffer, "Creating thread %d\n" )( ii );
+            cout << buffer;
             Thread * thread = new Thread( function,
                 reinterpret_cast< void * >( ii ) );
             m_threads.push_back( thread );
@@ -122,7 +125,12 @@ public:
     void Start( void )
     {
         for ( size_t ii = 0; ii < m_threads.size(); ii++ )
+        {
+            string buffer;
+            SPrintf( buffer, "Starting thread %d\n" )( ii );
+            cout << buffer;
             m_threads.at( ii )->Start();
+        }
     }
 
     void Join( void ) const
@@ -155,7 +163,7 @@ public:
 
     A( void ) {}
 
-#define  BIG_FOR_LOOP for( unsigned int i = 0; i < 10000000; i++ ) g++;
+#define  BIG_FOR_LOOP for( unsigned int i = 0; i < 5000000; i++ ) g++;
 
     void Print( void * id ) const
     {
@@ -207,7 +215,7 @@ public:
 
     static void Destroy( void )
     {
-        if ( NULL == s_instance )
+        if ( NULL != s_instance )
         {
              delete s_instance;
              s_instance = NULL;
@@ -242,7 +250,7 @@ public:
 
     static void Destroy( void )
     {
-        if ( NULL == s_instance )
+        if ( NULL != s_instance )
         {
              delete s_instance;
              s_instance = NULL;
@@ -271,8 +279,9 @@ void * RunLocked( void * id )
     for( unsigned int i = 0; i < loop; i++ )
     {
         ap.Lock();
+        Loki::ScopeGuard unlockGuard = MakeGuard( &A_Lockable_ptr::Unlock, ap );
+        (void)unlockGuard;
         ap->Print( id );
-        ap.Unlock();
     }
     return 0;
 }
@@ -293,12 +302,6 @@ void * Run( void * id )
 
 void DoLockedPtrTest( void )
 {
-#if defined(_MSC_VER)
-     /** @note For some reason, mutexes implemented using Microsoft's
-       CriticalSection don't work properly unless this mutex is here.
-       */
-     Loki::Mutex mutex;
-
      SafeA::GetIt();
      UnsafeA::GetIt();
      ::system( "pause" );
@@ -317,12 +320,15 @@ void DoLockedPtrTest( void )
      }
      SafeA::Destroy();
      UnsafeA::Destroy();
-#endif
 }
 
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.3  2006/10/14 00:06:15  rich_sposato
+// Fixed a couple of bugs.  Added lines to send test info to output.  Added
+// use of ScopeGuard.  Removed superfluous code.
+//
 // Revision 1.2  2006/06/08 19:15:27  lfittl
 // - Simplify some threading code by not saving the return status
 //   (also fixes 2 gcc warnings)
