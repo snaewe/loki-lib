@@ -17,7 +17,9 @@
 #define LOKI_STRONG_PTR_H
 
 #include <loki/SmartPtr.h>
-//#include <loki/LockingPtr.h>
+#if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
+    #include <loki/Threads.h>
+#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -410,7 +412,14 @@ private:
 ///   directly - which is why it is in a private namespace.  Each instance is a
 ///   shared resource for all copointers, and there should be only one of these
 ///   for each set of copointers.  This class is small, trivial, and inline.
+///
+///  \note This class is not designed for use with a single-threaded model.
+///   Tests using a single-threaded model will not run properly, but tests in a
+///   multi-threaded model with either class-level-locking or object-level-locking
+///   do run properly.
 ////////////////////////////////////////////////////////////////////////////////
+
+#if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
 
 class LOKI_EXPORT LockableTwoRefCountInfo
     : private Loki::Private::TwoRefCountInfo
@@ -522,6 +531,8 @@ private:
     mutable LOKI_DEFAULT_MUTEX m_Mutex;
 };
 
+#endif // if object-level-locking or class-level-locking
+
 } // end namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -600,7 +611,14 @@ private:
 ///   shared instance of LockableTwoRefCountInfo.  It behaves very similarly to
 ///   TwoRefCounts, except that it provides thread-safety.  Some functions are
 ///   trivial enough to be inline, while others are implemented elsewhere.
+///
+///  \note This class is not designed for use with a single-threaded model.
+///   Tests using a single-threaded model will not run properly, but tests in a
+///   multi-threaded model with either class-level-locking or object-level-locking
+///   do run properly.
 ////////////////////////////////////////////////////////////////////////////////
+
+#if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
 
 class LOKI_EXPORT LockableTwoRefCounts
 {
@@ -666,6 +684,8 @@ private:
     /// Pointer to all shared data.
     Loki::Private::LockableTwoRefCountInfo * m_counts;
 };
+
+#endif // if object-level-locking or class-level-locking
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class TwoRefLinks
@@ -1481,6 +1501,10 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.8  2006/10/14 00:01:05  rich_sposato
+// Added #ifdef sections around policy and implementation classes that only
+// work properly in multi-threaded model.
+//
 // Revision 1.7  2006/05/20 10:25:08  syntheticpp
 // enable documentation by removing doxygen warning
 //
