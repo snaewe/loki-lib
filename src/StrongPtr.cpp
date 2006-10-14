@@ -17,14 +17,11 @@
 #include <loki/StrongPtr.h>
 
 #include <memory.h>
-#include <cassert>
+#ifdef DO_EXTRA_LOKI_TESTS
+    #include <cassert>
+#endif
 
 #include <loki/SmallObj.h>
-
-//#define DO_EXTRA_LOKI_TESTS
-#ifdef DO_EXTRA_LOKI_TESTS
-    #include <iostream>
-#endif
 
 
 // ----------------------------------------------------------------------------
@@ -39,7 +36,9 @@ TwoRefCounts::TwoRefCounts( bool strong )
 {
     void * temp = SmallObject<>::operator new(
         sizeof(Loki::Private::TwoRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( temp != 0 );
+#endif
     m_counts = new ( temp ) Loki::Private::TwoRefCountInfo( strong );
 }
 
@@ -50,7 +49,9 @@ TwoRefCounts::TwoRefCounts( const void * p, bool strong )
 {
     void * temp = SmallObject<>::operator new(
         sizeof(Loki::Private::TwoRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( temp != 0 );
+#endif
     void * p2 = const_cast< void * >( p );
     m_counts = new ( temp ) Loki::Private::TwoRefCountInfo( p2, strong );
 }
@@ -95,7 +96,9 @@ void TwoRefCounts::Swap( TwoRefCounts & rhs )
 
 void TwoRefCounts::ZapPointer( void )
 {
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( !m_counts->HasStrongPointer() );
+#endif
     if ( m_counts->HasWeakPointer() )
     {
         m_counts->ZapPointer();
@@ -110,12 +113,18 @@ void TwoRefCounts::ZapPointer( void )
 
 // ----------------------------------------------------------------------------
 
+#if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
+
+// ----------------------------------------------------------------------------
+
 LockableTwoRefCounts::LockableTwoRefCounts( bool strong )
     : m_counts( NULL )
 {
     void * temp = SmallObject<>::operator new(
         sizeof(Loki::Private::LockableTwoRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( temp != 0 );
+#endif
     m_counts = new ( temp ) Loki::Private::LockableTwoRefCountInfo( strong );
 }
 
@@ -126,7 +135,9 @@ LockableTwoRefCounts::LockableTwoRefCounts( const void * p, bool strong )
 {
     void * temp = SmallObject<>::operator new(
         sizeof(Loki::Private::LockableTwoRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( temp != 0 );
+#endif
     void * p2 = const_cast< void * >( p );
     m_counts = new ( temp )
         Loki::Private::LockableTwoRefCountInfo( p2, strong );
@@ -172,7 +183,9 @@ void LockableTwoRefCounts::Swap( LockableTwoRefCounts & rhs )
 
 void LockableTwoRefCounts::ZapPointer( void )
 {
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( !m_counts->HasStrongPointer() );
+#endif
     if ( m_counts->HasWeakPointer() )
     {
         m_counts->ZapPointer();
@@ -186,9 +199,8 @@ void LockableTwoRefCounts::ZapPointer( void )
 }
 
 // ----------------------------------------------------------------------------
-//
-//namespace Private
-//{
+
+#endif // if object-level-locking or class-level-locking
 
 // ----------------------------------------------------------------------------
 
@@ -259,9 +271,9 @@ void TwoRefLinks::SetPointer( void * p )
 bool TwoRefLinks::Release( bool strong )
 {
 
-    assert( strong == m_strong );
     (void)strong;
 #ifdef DO_EXTRA_LOKI_TESTS
+    assert( strong == m_strong );
     assert( m_prev->HasPrevNode( this ) );
     assert( m_next->HasNextNode( this ) );
     assert( CountPrevCycle( this ) == CountNextCycle( this ) );
@@ -270,14 +282,18 @@ bool TwoRefLinks::Release( bool strong )
 
     if ( NULL == m_next )
     {
+#ifdef DO_EXTRA_LOKI_TESTS
         assert( NULL == m_prev );
+#endif
         // Return false so it does not try to destroy shared object
         // more than once.
         return false;
     }
     else if (m_next == this)
     {   
+#ifdef DO_EXTRA_LOKI_TESTS
         assert(m_prev == this);
+#endif
         // Set these to NULL to prevent re-entrancy.
         m_prev = NULL;
         m_next = NULL;
@@ -342,11 +358,15 @@ void TwoRefLinks::Swap( TwoRefLinks & rhs )
     std::swap( rhs.m_pointer, m_pointer );
     if (m_next == this)
     {
+#ifdef DO_EXTRA_LOKI_TESTS
         // This is in a cycle by itself.
         assert(m_prev == this);
+#endif
         if (rhs.m_next == &rhs)
         {
+#ifdef DO_EXTRA_LOKI_TESTS
             assert(rhs.m_prev == &rhs);
+#endif
             // both are in 1-node cycles - thus there is nothing to do.
             return;
         }
@@ -358,9 +378,10 @@ void TwoRefLinks::Swap( TwoRefLinks & rhs )
     }
     if (rhs.m_next == &rhs)
     {
+#ifdef DO_EXTRA_LOKI_TESTS
         // rhs is in a cycle by itself.
         assert( rhs.m_prev == &rhs );
-//        rhs.Swap(*this);
+#endif
         rhs.m_prev = m_prev;
         rhs.m_next = m_next;
         m_prev->m_next = m_next->m_prev = &rhs;
@@ -524,13 +545,12 @@ bool TwoRefLinks::HasStrongPointer( void ) const
 
 bool TwoRefLinks::Merge( TwoRefLinks & rhs )
 {
-#ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << std::endl << __FUNCTION__ << "   " << __LINE__ << std::endl;
-#endif
 
     if ( NULL == m_next )
     {
+#ifdef DO_EXTRA_LOKI_TESTS
         assert( NULL == m_prev );
+#endif
         return false;
     }
     TwoRefLinks * prhs = &rhs;
@@ -538,34 +558,31 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
         return true;
     if ( NULL == prhs->m_next )
     {
+#ifdef DO_EXTRA_LOKI_TESTS
         assert( NULL == prhs->m_prev );
+#endif
         return true;
     }
 
 #ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << __FUNCTION__ << "   " << __LINE__ << std::endl;
-#endif
-
     assert( CountPrevCycle( this ) == CountNextCycle( this ) );
     assert( CountPrevCycle( prhs ) == CountNextCycle( prhs ) );
+#endif
     // If rhs node is already in this cycle, then no need to merge.
     if ( HasPrevNode( &rhs ) )
     {
+#ifdef DO_EXTRA_LOKI_TESTS
         assert( HasNextNode( &rhs ) );
+#endif
         return true;
     }
 
-#ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << __FUNCTION__ << "   " << __LINE__ << std::endl;
-#endif
-
     if ( prhs == prhs->m_next )
     {
-#ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << __FUNCTION__ << "   " << __LINE__ << std::endl;
-#endif
         /// rhs is in a cycle with 1 node.
+#ifdef DO_EXTRA_LOKI_TESTS
         assert( prhs->m_prev == prhs );
+#endif
         prhs->m_prev = m_prev;
         prhs->m_next = this;
         m_prev->m_next = prhs;
@@ -573,11 +590,10 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
     }
     else if ( this == m_next )
     {
-#ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << __FUNCTION__ << "   " << __LINE__ << std::endl;
-#endif
         /// this is in a cycle with 1 node.
+#ifdef DO_EXTRA_LOKI_TESTS
         assert( m_prev == this );
+#endif
         m_prev = prhs->m_prev;
         m_next = prhs;
         prhs->m_prev->m_next = this;
@@ -585,36 +601,34 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
     }
     else
     {
-#ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << __FUNCTION__ << "   " << __LINE__ << std::endl;
-#endif
         m_next->m_prev = prhs->m_prev;
         prhs->m_prev->m_next = m_prev;
         m_next = prhs;
         prhs->m_prev = this;
     }
 
-#ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << __FUNCTION__ << "   " << __LINE__ << std::endl;
-#endif
 
+#ifdef DO_EXTRA_LOKI_TESTS
     assert( CountPrevCycle( this ) == CountNextCycle( this ) );
-
-#ifdef DO_EXTRA_LOKI_TESTS
-    std::cout << __FUNCTION__ << "   " << __LINE__ << std::endl;
 #endif
+
     return true;
 }
 
 // ----------------------------------------------------------------------------
-//
-//} // end namespace Private
 
 } // end namespace Loki
 
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.4  2006/10/14 00:03:15  rich_sposato
+// Added #ifdef section around lockable pointer class to insure it only gets
+// built in a multi-threaded model.
+// Added #ifdef sections around asserts that are expensive to test.
+// Removed test lines that send info to output.
+// Removed commented code.
+//
 // Revision 1.3  2006/04/16 13:33:36  syntheticpp
 // change init order to declarartion order
 //
