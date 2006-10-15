@@ -20,6 +20,7 @@ Pimpl:
 
 SafeFormat:
     - add writing to ostream, by Tom Browder (pk)
+    - add unsigned long version for Windows, (Thanks to ShenLei, pk)
     
 Singleton
     - example: move instantiation to the source file 
@@ -30,7 +31,7 @@ Threads:
     - reentrance support added to the pthread mutex (Thanks to Shen Lei, pk)
       
 
-CVS commits by Lukas Fittl (lf), Peter Kümmel (pk)
+CVS commits by Lukas Fittl (lf), Peter Kümmel (pk), Rich Sposato (rs)
 
 _____________________________________
 
