@@ -239,3 +239,21 @@ int main(int argc, char** argv)
         }
     }
 }
+
+void test_dword()
+{
+    typedef signed int Int;
+    typedef unsigned int UInt;
+    typedef signed long Long;
+    typedef unsigned long ULong;
+	Int i(0);
+    UInt ui(0);
+    Long l(0);
+    ULong ul(0);
+	Printf("%d")(i);
+    Printf("%d")(ui);
+    Printf("%d")(l);
+    Printf("%d")(ul);
+}
+
+

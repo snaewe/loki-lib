@@ -33,6 +33,7 @@
 
 
 // long is 32 bit on 64-bit Windows!
+// intptr_t used to get 64 bit on Win64
 #if defined(_WIN32) || defined(_WIN64)
 
 #define LOKI_SAFEFORMAT_SIGNED_LONG intptr_t
@@ -106,10 +107,13 @@ namespace Loki
         LOKI_PRINTF_STATE_FORWARD(signed short)
         LOKI_PRINTF_STATE_FORWARD(unsigned short)
         LOKI_PRINTF_STATE_FORWARD(signed int)
-#if !(defined(_WIN32) || defined(_WIN64))
+        LOKI_PRINTF_STATE_FORWARD(signed long)
+#if (defined(_WIN32) || defined(_WIN64))
+        LOKI_PRINTF_STATE_FORWARD(unsigned long)
+#else
+        // on Windows already defined by uintptr_t
         LOKI_PRINTF_STATE_FORWARD(unsigned int)
 #endif
-        LOKI_PRINTF_STATE_FORWARD(signed long)
 
         // Print (or gobble in case of the "*" specifier) an int
         PrintfState& operator()(LOKI_SAFEFORMAT_UNSIGNED_LONG i) {
@@ -586,6 +590,9 @@ namespace Loki
 #endif //SAFEFORMAT_H_
 
 // $Log$
+// Revision 1.29  2006/10/15 09:33:54  syntheticpp
+// add missing unsigned long overload for Windows
+//
 // Revision 1.28  2006/07/06 18:25:28  syntheticpp
 // add writing to ostream, by Tom Browder
 //
