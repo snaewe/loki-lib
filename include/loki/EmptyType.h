@@ -29,6 +29,22 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     class EmptyType {};
+    
+    
+    bool operator==(const EmptyType&, const EmptyType&)
+    {
+        return true;
+    }   
+
+    bool operator<(const EmptyType&, const EmptyType&)
+    {
+        return false;
+    }
+    
+    bool operator>(const EmptyType&, const EmptyType&)
+    {
+        return false;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,6 +55,9 @@ namespace Loki
 #endif // EMPTYTYPE_INC_
 
 // $Log$
+// Revision 1.4  2006/10/16 10:38:02  syntheticpp
+// add operator > < == to EmptyType
+//
 // Revision 1.3  2006/01/16 19:05:09  rich_sposato
 // Added cvs keywords.
 //
