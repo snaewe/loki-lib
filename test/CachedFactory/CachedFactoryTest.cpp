@@ -347,7 +347,7 @@ bool testCache()
     }
 }
 
-void dispText(char* text)
+void dispText(const char* text)
 {
     cout << endl;
     cout << "##========================================"<< endl;
@@ -355,7 +355,7 @@ void dispText(char* text)
     cout << "##========================================"<< endl;
 }
 
-void dispText(char* text, char* comment)
+void dispText(const char* text, const char* comment)
 {
     cout << endl;
     cout << "##========================================"<< endl;
