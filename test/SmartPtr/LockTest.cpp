@@ -14,6 +14,9 @@
 
 // ----------------------------------------------------------------------------
 
+
+#ifdef LOKI_OBJECT_LEVEL_THREADING 
+
 /// @note This test uses LOKI_OBJECT_LEVEL_THREADING because StrongPtr's
 /// LockableTwoRefCounts policy can't be used with a single-threaded model.
 /// It requires either object-level-locking or class-level-locking.
@@ -322,9 +325,14 @@ void DoLockedPtrTest( void )
      UnsafeA::Destroy();
 }
 
+#endif //#ifdef LOKI_OBJECT_LEVEL_THREADING 
+
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.4  2006/10/16 11:48:13  syntheticpp
+// by default Loki is compiled without thread support, so we must disable the dependency on thread classes (StrongPtr) to avaoid linker errors when compiling with the default build process. Should  we change the default threading of Loki?
+//
 // Revision 1.3  2006/10/14 00:06:15  rich_sposato
 // Fixed a couple of bugs.  Added lines to send test info to output.  Added
 // use of ScopeGuard.  Removed superfluous code.

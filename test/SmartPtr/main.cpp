@@ -1044,10 +1044,12 @@ int main( unsigned int argc, const char * argv[] )
     DoOwnershipConversionTests();
     DoInheritanceConversionTests();
 
+#ifdef LOKI_OBJECT_LEVEL_THREADING 
     if ( doThreadTest )
     {
         DoLockedPtrTest();
     }
+#endif
 
     // Check that nothing was leaked.
     assert( BaseClass::AllDestroyed() );
@@ -1063,6 +1065,9 @@ int main( unsigned int argc, const char * argv[] )
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.12  2006/10/16 11:48:13  syntheticpp
+// by default Loki is compiled without thread support, so we must disable the dependency on thread classes (StrongPtr) to avaoid linker errors when compiling with the default build process. Should  we change the default threading of Loki?
+//
 // Revision 1.11  2006/10/13 23:59:42  rich_sposato
 // Added check for -t command line parameter to do lock-thread test.
 // Changed ending chars of some lines from LF to CR-LF to be consistent.
