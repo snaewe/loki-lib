@@ -214,7 +214,7 @@ namespace Loki
             {
                 assert(byTime>0);
                 this->maxCreation = maxCreation;
-                this->timeValidity = (clock_t)(byTime * CLOCKS_PER_SEC / 1000);
+                this->timeValidity = static_cast<clock_t>(byTime * CLOCKS_PER_SEC / 1000);
                 D( cout << "Setting no more than "<< maxCreation <<" creation within " << this->timeValidity <<" ms"<< endl; )
             }
      };
@@ -467,7 +467,7 @@ namespace Loki
     	{
     		if(m_vKeys.size()==0)
     		    throw EvictionException();
-    		size_type random = (size_type)((m_vKeys.size()*rand())/(int)(RAND_MAX + 1));
+    		size_type random = static_cast<size_type>((m_vKeys.size()*rand())/int(RAND_MAX + 1));
     		iterator pos = m_vKeys.begin()+random;
     		DT& evictKey = *pos;
     		remove(evictKey);

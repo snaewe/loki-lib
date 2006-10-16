@@ -1,5 +1,6 @@
 #define USE_SEQUENCE
 
+#include <cassert>
 #include <iostream>
 #include <loki/Factory.h>
 
@@ -12,7 +13,10 @@
 #endif
 
 #include <loki/CachedFactory.h>
-#include <windows.h> 
+#if defined(_WIN32) || defined(__CYGWIN__)
+       #include <windows.h> 
+#endif
+
 
 using std::cout;
 using std::cerr;
@@ -96,7 +100,7 @@ bool unitTestCacheOverhead(int loop){
     }
     elapsedCache = std::clock() - start;
     cout << " " << elapsedCache << " ms";
-    cout << " | average overhead per fetch : " <<(((double)(elapsedCache-elapsedNoCache)) / CLOCKS_PER_SEC * 1000 / loop)  << " ms" << endl;
+    cout << " | average overhead per fetch : " <<((static_cast<double>(elapsedCache-elapsedNoCache)) / CLOCKS_PER_SEC * 1000 / loop)  << " ms" << endl;
     return true;
 }
 
@@ -145,7 +149,8 @@ std::clock_t typicalUse( Cache &CC, unsigned objectKind, unsigned maxObjectCount
     vector< AbstractProduct* > fetched;
     fetched.reserve(maxObjectCount);
     srand(0); // initialise the pseudo random operator
-    std::clock_t start, end;
+    std::clock_t start(0);
+    std::clock_t end(0);
     try{
         // Registering objects
         for(size_t i=0;i<objectKind;i++)
