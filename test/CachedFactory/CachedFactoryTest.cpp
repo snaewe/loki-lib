@@ -13,8 +13,12 @@
 #endif
 
 #include <loki/CachedFactory.h>
+
 #if defined(_WIN32) || defined(__CYGWIN__)
-       #include <windows.h> 
+#include <windows.h> 
+#else
+#include <unistd.h>
+void Sleep(unsigned int t) { usleep(t);}
 #endif
 
 
