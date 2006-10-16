@@ -145,10 +145,10 @@ namespace Loki
      private:
             typedef std::vector< clock_t > Vector;
             Vector m_vTimes;
-            clock_t lastUpdate;
             unsigned maxCreation;
             clock_t timeValidity;
-            
+            clock_t lastUpdate;
+          
             void cleanVector()
             {
 				clock_t currentTime = std::clock();
@@ -326,6 +326,9 @@ namespace Loki
     private:
     	typedef EvictionHelper< ST , DT >	EH;
     protected:
+        
+        virtual ~EvictLRU(){}
+        
     	// OnStore initialize the counter for the new key
     	// If the key already exists, the counter is reseted
     	void onCreate(const DT& key)
@@ -379,6 +382,8 @@ namespace Loki
     	typedef typename EH::HitMapItr					HitMapItr;
     protected:
 
+         virtual ~EvictAging(){}
+         
     	// OnStore initialize the counter for the new key
     	// If the key already exists, the counter is reseted
     	void onCreate(const DT& key){
@@ -437,6 +442,9 @@ namespace Loki
     	typedef typename std::vector< DT >::iterator		iterator;
 
     protected:
+    
+     	virtual ~EvictRandom(){};
+     	
     	void onCreate(const DT&){
     	}
     	
