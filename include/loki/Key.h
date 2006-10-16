@@ -18,8 +18,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _KEY_H_
-#define _KEY_H_
+#ifndef LOKI_KEY_H_
+#define LOKI_KEY_H_
 
 #include <loki/Factory.h>
 

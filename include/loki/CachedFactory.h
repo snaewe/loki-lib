@@ -18,8 +18,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CACHEDFACTORY_H_
-#define _CACHEDFACTORY_H_
+#ifndef LOKI_CACHEDFACTORY_H_
+#define LOKI_CACHEDFACTORY_H_
 
 #include <vector>
 #include <iterator>
