@@ -34,6 +34,15 @@
 	#define D( x ) ;
 #endif
 
+#ifdef _MSC_VER
+#include <time.h>
+namespace std
+{
+	typedef ::clock_t clock_t;
+	int clock(){ return ::clock();}
+}
+#endif
+
 using std::clock_t;
 using std::clock;
 using std::bind2nd;
@@ -142,7 +151,7 @@ namespace Loki
             
             void cleanVector()
             {
-                clock_t currentTime = clock();
+				clock_t currentTime = std::clock();
                 D( cout << "currentTime = " << currentTime<< endl; )
                 D( cout << "currentTime - lastUpdate = " << currentTime - lastUpdate<< endl; )
                 if(currentTime - lastUpdate > timeValidity)
@@ -191,7 +200,7 @@ namespace Loki
 
             void onCreate()
             {
-                m_vTimes.push_back(clock());
+				m_vTimes.push_back(std::clock());
             }
             
             void onDestroy()
@@ -324,7 +333,7 @@ namespace Loki
     		EH::m_mHitCount[key] = 0;
     	}
     	
-    	void onFetch(const DT& key)
+    	void onFetch(const DT&)
         {
     	}
     	
@@ -376,7 +385,7 @@ namespace Loki
     		EH::m_mHitCount[key] = 0;
     	}
     	
-    	void onFetch(const DT& key){}
+    	void onFetch(const DT&){}
     	
     	// onRelease increments the hit counter associated with the object
     	// Updating every counters by iterating over the map
@@ -428,10 +437,10 @@ namespace Loki
     	typedef typename std::vector< DT >::iterator		iterator;
 
     protected:
-    	void onCreate(const DT& key){
+    	void onCreate(const DT&){
     	}
     	
-    	void onFetch(const DT& key){
+    	void onFetch(const DT& ){
     	}
 
     	void onRelease(const DT& key){
@@ -561,7 +570,7 @@ namespace Loki
         template <typename , typename> class EvictionPolicy = EvictRandom,
         class StatisticPolicy = NoStatisticPolicy,
         template<typename, class> class FactoryErrorPolicy = DefaultFactoryError,
-        template<typename _T, class = std::allocator<_T> > class Vector = std::vector
+        class ObjVector = std::vector<AbstractProduct*>
      >
 	 class CachedFactory : 
             protected EncapsulationPolicy<AbstractProduct>,
@@ -595,7 +604,7 @@ namespace Loki
         typedef typename NP::ProductReturn ProductReturn;
 
         typedef Key< Impl, IdentifierType > Key;
-        typedef Vector< AbstractProduct* >  ObjVector;
+        //typedef typename Vector ObjVector;
         typedef std::map< Key, ObjVector >  KeyToObjVectorMap;
         typedef std::map< AbstractProduct*, Key >  FetchedObjToKeyMap;
         
@@ -612,6 +621,7 @@ namespace Loki
         AbstractProduct* const getPointerToObjectInContainer(ObjVector &entry)
         {
             AbstractProduct* pObject = NULL;
+            (void) pObject;
             if(entry.empty()) // No object available
             { // the object will be created in the calling function.
               // It has to be created in the calling function because of
@@ -707,7 +717,9 @@ namespace Loki
             //assert(outObjects==0);
             // debug information
             if(!providedObjects.empty())
+            {
                 D( cout << "====>>  Cache destructor : deleting "<< providedObjects.size()<<" objects  <<====" << endl << endl; )
+            }
             // cleaning the Cache
             typename FetchedObjToKeyMap::iterator itr;
             for(itr=providedObjects.begin(); itr!=providedObjects.end();itr++)

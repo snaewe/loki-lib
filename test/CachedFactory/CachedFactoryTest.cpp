@@ -106,9 +106,9 @@ void testCacheOverhead(){
     typedef CachedFactory< AbstractProduct, int, NullType, SimplePointer, AmountLimitedCreation, EvictRandom > CRandomEvict;
     typedef CachedFactory< AbstractProduct, int, NullType, SimplePointer, AmountLimitedCreation, EvictLRU > CLRUEvict;
     typedef CachedFactory< AbstractProduct, int, NullType, SimplePointer, AmountLimitedCreation, EvictAging > CAgingEvict;
-    bool test1 = dispResult("Random policy", unitTestCacheOverhead< CRandomEvict >(loop));
-    bool test2 = dispResult("LRU policy", unitTestCacheOverhead< CLRUEvict >(loop));
-    bool test3 = dispResult("Aging policy", unitTestCacheOverhead< CAgingEvict >(loop));
+    bool test1 = dispResult("Random policy", unitTestCacheOverhead< CRandomEvict >(loop));(void)test1;
+    bool test2 = dispResult("LRU policy", unitTestCacheOverhead< CLRUEvict >(loop));(void)test2;
+    bool test3 = dispResult("Aging policy", unitTestCacheOverhead< CAgingEvict >(loop));(void)test3;
 }
 void unitTestCachePerformance(int loop){
     typedef CachedFactory< AbstractProduct, int > CCache;
@@ -148,7 +148,7 @@ std::clock_t typicalUse( Cache &CC, unsigned objectKind, unsigned maxObjectCount
     std::clock_t start, end;
     try{
         // Registering objects
-        for(int i=0;i<objectKind;i++)
+        for(size_t i=0;i<objectKind;i++)
             CC.Register(i, createProductNull);
         // Simulating real use
         start = std::clock();
@@ -312,6 +312,7 @@ bool testRelease(){
     AbstractProduct *pProduct = NULL;
     CC.ReleaseObject(pProduct);
     cout << "Caching failed" << endl;
+    return false;
 }
 
 
@@ -397,7 +398,7 @@ void reliabilityTests()
         dispText("One or more test have failed");
 }
 
-int main(int argc, char **argv)
+int main(int , char **)
 {
     try{
         performanceTests();

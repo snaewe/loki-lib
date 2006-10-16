@@ -1,4 +1,8 @@
 
+cd CachedFactory
+call make.msvc.bat
+cd ..
+
 cd DeletableSingleton
 call make.msvc.bat
 cd ..

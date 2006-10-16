@@ -1,7 +1,7 @@
 [Project]
 FileName=CachedFactory.dev
 Name=Factory
-UnitCount=2
+UnitCount=3
 Type=1
 Ver=1
 ObjFiles=
@@ -47,9 +47,6 @@ ProductName=
 ProductVersion=
 AutoIncBuildNr=0
 
-
-
-
 [Unit1]
 FileName=CachedFactoryTest.cpp
 CompileCpp=1
@@ -59,3 +56,24 @@ Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+
+[Unit2]
+FileName=..\..\src\SmallObj.cpp
+CompileCpp=1
+Folder=Factory
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit3]
+FileName=..\..\src\Singleton.cpp
+CompileCpp=1
+Folder=Factory
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+

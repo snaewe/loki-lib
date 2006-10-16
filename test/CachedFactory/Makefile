@@ -1,7 +1,7 @@
 include ../Makefile.common
 
-BIN := Factory$(BIN_SUFFIX)
-SRC := Factory.cpp
+BIN := CachedFactoryTest$(BIN_SUFFIX)
+SRC := CachedFactoryTest.cpp
 OBJ := $(SRC:.cpp=.o)
 
 .PHONY: all clean
