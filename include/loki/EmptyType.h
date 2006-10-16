@@ -31,17 +31,17 @@ namespace Loki
     class EmptyType {};
     
     
-    bool operator==(const EmptyType&, const EmptyType&)
+    inline bool operator==(const EmptyType&, const EmptyType&)
     {
         return true;
     }   
 
-    bool operator<(const EmptyType&, const EmptyType&)
+    inline bool operator<(const EmptyType&, const EmptyType&)
     {
         return false;
     }
     
-    bool operator>(const EmptyType&, const EmptyType&)
+    inline bool operator>(const EmptyType&, const EmptyType&)
     {
         return false;
     }
@@ -55,6 +55,9 @@ namespace Loki
 #endif // EMPTYTYPE_INC_
 
 // $Log$
+// Revision 1.5  2006/10/16 11:16:59  syntheticpp
+// add inline to fix linker errors
+//
 // Revision 1.4  2006/10/16 10:38:02  syntheticpp
 // add operator > < == to EmptyType
 //
