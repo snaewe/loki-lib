@@ -1299,6 +1299,11 @@ namespace Loki
         { return GetImpl(*this); }
     };
 
+
+////////////////////////////////////////////////////////////////////////////////
+// friends
+////////////////////////////////////////////////////////////////////////////////
+
     template
     <
         typename T,
@@ -1306,10 +1311,9 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
-        template <class> class CNP1,
-        typename U
+        template <class> class CNP
     >
-    inline void Release(SmartPtr<T, OP, CP, KP, SP, CNP1>& sp,
+    inline void Release(SmartPtr<T, OP, CP, KP, SP, CNP>& sp,
                         typename SP<T>::StoredType& p)
     {
       p = GetImplRef(sp);
@@ -1323,12 +1327,11 @@ namespace Loki
         class CP,
         template <class> class KP,
         template <class> class SP,
-        template <class> class CNP1,
-        typename U
+        template <class> class CNP
     >
-    inline void Reset(SmartPtr<T, OP, CP, KP, SP, CNP1>& sp,
+    inline void Reset(SmartPtr<T, OP, CP, KP, SP, CNP>& sp,
                       typename SP<T>::StoredType p)
-    { SmartPtr<T, OP, CP, KP, SP, CNP1>(p).Swap(sp); }
+    { SmartPtr<T, OP, CP, KP, SP, CNP>(p).Swap(sp); }
 
 ////////////////////////////////////////////////////////////////////////////////
 // free comparison operators for class template SmartPtr
@@ -1614,6 +1617,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.35  2006/10/16 16:34:48  syntheticpp
+// remove C&P error
+//
 // Revision 1.34  2006/10/11 10:44:21  syntheticpp
 // fix gcc>4.1 handling of injected friends
 //
