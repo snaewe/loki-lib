@@ -12,8 +12,7 @@
 #ifndef LOKI_LOKIEXPORT_INC_
 #define LOKI_LOKIEXPORT_INC_
 
-// $Header: 
-
+// $Id$
 
 
 #ifdef __GNUC__

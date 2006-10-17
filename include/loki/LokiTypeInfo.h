@@ -12,13 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// Last update: June 20, 2001
-
 #ifndef LOKI_LOKITYPEINFO_INC_
 #define LOKI_LOKITYPEINFO_INC_
 
-// $Header$
+// $Id$
+
 
 #include <typeinfo>
 #include <cassert>

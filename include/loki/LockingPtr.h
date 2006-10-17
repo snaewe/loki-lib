@@ -9,12 +9,11 @@
 //     http://www.cuj.com/documents/s=7998/cujcexp1902alexandr/
 // Prepared for Loki library by Richard Sposato
 ////////////////////////////////////////////////////////////////////////////////
-
-// $Header$
-
-
 #ifndef LOKI_LOCKING_PTR_INC_
 #define LOKI_LOCKING_PTR_INC_
+
+// $Id$
+
 
 #include <loki/ConstPolicy.h>
 
