@@ -45,6 +45,12 @@
     #include <stdint.h>
 #endif
 
+#if defined(_MSC_VER) || defined(__GNUC__)
+// GCC>=4.1 must use -ffriend-injection due to a bug in GCC
+#define LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
+#endif
+
+
 namespace Loki
 {
 
@@ -1106,6 +1112,20 @@ namespace Loki
             }
         }
 
+#ifdef LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
+
+        // old non standard in class definition of friends
+        friend inline void Release(SmartPtr& sp, typename SP::StoredType& p)
+        {
+            p = GetImplRef(sp);
+            GetImplRef(sp) = SP::Default();
+        }
+        
+        friend inline void Reset(SmartPtr& sp, typename SP::StoredType p)
+        { SmartPtr(p).Swap(sp); }
+
+#else
+
         template
         <
             typename T1,
@@ -1129,7 +1149,7 @@ namespace Loki
         >
         friend void Reset(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1>& sp,
                           typename SP1<T1>::StoredType p);
-
+#endif
 
 
         template
@@ -1304,6 +1324,8 @@ namespace Loki
 // friends
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifndef LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
+
     template
     <
         typename T,
@@ -1332,6 +1354,8 @@ namespace Loki
     inline void Reset(SmartPtr<T, OP, CP, KP, SP, CNP>& sp,
                       typename SP<T>::StoredType p)
     { SmartPtr<T, OP, CP, KP, SP, CNP>(p).Swap(sp); }
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // free comparison operators for class template SmartPtr
@@ -1617,6 +1641,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.37  2006/10/17 10:06:58  syntheticpp
+// workaround for broken msvc/gcc: template friends with template template parameters
+//
 // Revision 1.36  2006/10/17 09:14:27  syntheticpp
 // fix wrong friend declaration
 //

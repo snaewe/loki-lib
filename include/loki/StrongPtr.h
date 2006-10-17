@@ -955,6 +955,9 @@ public:
         }
     }
 
+#ifdef LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
+
+    // old non standard in class definition of friends
     friend bool ReleaseAll( StrongPtr & sp,
         typename StrongPtr::StoredType & p )
     {
@@ -982,6 +985,40 @@ public:
         sp.OP::SetPointer( p );
         return true;
     }
+
+#else
+  
+    template
+    <
+        typename T1,
+        bool S1,
+        class OP1,
+        class CP1,
+        template < class > class KP1,
+        template < class > class RP1,
+        template < class > class DP1,
+        template < class > class CNP1
+    >
+    friend bool ReleaseAll( StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & sp,
+        typename StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 >::StoredType & p );
+ 
+
+    template
+    <
+        typename T1,
+        bool S1,
+        class OP1,
+        class CP1,
+        template < class > class KP1,
+        template < class > class RP1,
+        template < class > class DP1,
+        template < class > class CNP1
+    >
+    friend bool ResetAll( StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & sp,
+        typename StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 >::StoredType p );
+
+#endif
+
 
     /** Merges ownership of two StrongPtr's that point to same shared object
       but are not copointers.  Requires Merge function in OwnershipPolicy.
@@ -1220,6 +1257,64 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+
+// friend functions
+
+#ifndef LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
+
+template
+<
+    typename U,
+    typename T,
+    bool S,
+    class OP,
+    class CP,
+    template < class > class KP,
+    template < class > class RP,
+    template < class > class DP,
+    template < class > class CNP
+>
+bool ReleaseAll( StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & sp,
+                 typename StrongPtr< T, S, OP, CP, KP, RP, DP, CNP >::StoredType & p )
+{
+  if ( !sp.RP<T>::OnReleaseAll( sp.IsStrong() || sp.OP::HasStrongPointer() ) )
+  {
+    return false;
+  }
+  p = sp.GetPointer();
+  sp.OP::SetPointer( sp.DP<T>::Default() );
+  return true;
+}
+
+template
+<
+    typename U,
+    typename T,
+    bool S,
+    class OP,
+    class CP,
+    template < class > class KP,
+    template < class > class RP,
+    template < class > class DP,
+    template < class > class CNP
+>
+bool ResetAll( StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & sp,
+               typename StrongPtr< T, S, OP, CP, KP, RP, DP, CNP >::StoredType p )
+{
+  if ( sp.OP::GetPointer() == p )
+  {
+    return true;
+  }
+  if ( !sp.RP<T>::OnResetAll( sp.IsStrong() || sp.OP::HasStrongPointer() ) )
+  {
+    return false;
+  }
+  sp.DP<T>::Delete( sp.GetPointer() );
+  sp.OP::SetPointer( p );
+  return true;
+}
+#endif
+
 
 // free comparison operators for class template StrongPtr
 
@@ -1501,6 +1596,9 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.9  2006/10/17 10:06:58  syntheticpp
+// workaround for broken msvc/gcc: template friends with template template parameters
+//
 // Revision 1.8  2006/10/14 00:01:05  rich_sposato
 // Added #ifdef sections around policy and implementation classes that only
 // work properly in multi-threaded model.
