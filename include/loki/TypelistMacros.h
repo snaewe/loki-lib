@@ -12,16 +12,13 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-//Reference
-
-// $Header$
-
 #ifndef LOKI_TYPELISTMACROS_INC_
 #define LOKI_TYPELISTMACROS_INC_
 
-//#define LOKI_DISABLE_TYPELIST_MACROS
+// $Id$
 
+
+//#define LOKI_DISABLE_TYPELIST_MACROS
 #ifndef LOKI_DISABLE_TYPELIST_MACROS
 
 ////////////////////////////////////////////////////////////////////////////////

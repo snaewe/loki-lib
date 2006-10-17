@@ -12,11 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
 #ifndef LOKI_TYPETRAITS_INC_
 #define LOKI_TYPETRAITS_INC_
 
-// $Header$
+// $Id$
+
 
 #include "Typelist.h"
 #include "Sequence.h"

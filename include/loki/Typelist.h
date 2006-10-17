@@ -12,14 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// Last update: October 10, 2002
-//Reference
-
-// $Header$
-
 #ifndef LOKI_TYPELIST_INC_
 #define LOKI_TYPELIST_INC_
+
+// $Id$
+
 
 #include "NullType.h"
 #include "TypeManip.h"
