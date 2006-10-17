@@ -13,6 +13,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Id$
+
 #ifndef LOKI_SMARTPTR_INC_
 #define LOKI_SMARTPTR_INC_
 
@@ -1637,10 +1639,7 @@ namespace std
 
 #endif // SMARTPTR_INC_
 
-// $Autor$
-// $Date$
-// $HeadURL$
-
+//
 // $Log$
 // Revision 1.39  2006/10/17 10:39:29  syntheticpp
 // change line ending
