@@ -1596,6 +1596,9 @@ namespace std
 #endif // end file guardian
 
 // $Log$
+// Revision 1.10  2006/10/17 10:36:45  syntheticpp
+// change line ending
+//
 // Revision 1.9  2006/10/17 10:06:58  syntheticpp
 // workaround for broken msvc/gcc: template friends with template template parameters
 //

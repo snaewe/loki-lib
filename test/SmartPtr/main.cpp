@@ -1091,6 +1091,9 @@ void friend_handling()
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.14  2006/10/17 10:36:08  syntheticpp
+// change line ending
+//
 // Revision 1.13  2006/10/17 10:09:37  syntheticpp
 // add test code for template friends with template template parameters
 //

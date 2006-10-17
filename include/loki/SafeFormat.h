@@ -594,6 +594,9 @@ namespace Loki
 #endif //SAFEFORMAT_H_
 
 // $Log$
+// Revision 1.31  2006/10/17 10:36:45  syntheticpp
+// change line ending
+//
 // Revision 1.30  2006/10/15 10:25:01  syntheticpp
 // remove min/max definitions
 //
