@@ -12,11 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_SMARTPTR_INC_
+#define LOKI_SMARTPTR_INC_
 
 // $Id$
 
-#ifndef LOKI_SMARTPTR_INC_
-#define LOKI_SMARTPTR_INC_
 
 ///  \defgroup  SmartPointerGroup Smart pointers
 ///  Policy based implementation of a smart pointer

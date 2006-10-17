@@ -12,10 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef LOKI_SCOPEGUARD_H_
-#define LOKI_SCOPEGUARD_H_
+#ifndef LOKI_SCOPEGUARD_INC_
+#define LOKI_SCOPEGUARD_INC_
 
-// $Header$
+// $Id$
+
 
 #include <loki/RefToValue.h>
 

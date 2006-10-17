@@ -12,12 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// $Header$
-
-
 #ifndef LOKI_SMALLOBJ_INC_
 #define LOKI_SMALLOBJ_INC_
+
+// $Id$
+
 
 #include "LokiExport.h"
 #include "Threads.h"

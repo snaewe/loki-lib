@@ -9,17 +9,17 @@
 //     for any purpose. It is provided "as is" without express or implied 
 //     warranty.
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_SAFEFORMAT_INC_
+#define LOKI_SAFEFORMAT_INC_
+
+// $Id$
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // This file contains definitions for SafePrintf. SafeScanf coming soon (the 
 //   design is similar). 
 // See Alexandrescu, Andrei: Type-safe Formatting, C/C++ Users Journal, Aug 2005
 ////////////////////////////////////////////////////////////////////////////////
-
-#ifndef LOKI_SAFEFORMAT_H_
-#define LOKI_SAFEFORMAT_H_
-
-// $Header$
 
 #include <cstdio>
 #include <string>

@@ -11,10 +11,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_STRONG_PTR_INC_
+#define LOKI_STRONG_PTR_INC_
 
+// $Id$
 
-#ifndef LOKI_STRONG_PTR_H
-#define LOKI_STRONG_PTR_H
 
 #include <loki/SmartPtr.h>
 #if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
