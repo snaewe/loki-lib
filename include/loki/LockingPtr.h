@@ -98,44 +98,5 @@ namespace Loki
 
 } // namespace Loki
 
-#endif  // end file guardian
+#endif // end file guardian
 
-
-
-// $Log$
-// Revision 1.12  2006/10/11 08:51:40  syntheticpp
-// add ctor with std::pair argument
-//
-// Revision 1.11  2006/03/08 18:22:42  syntheticpp
-// doxygen fixes
-//
-// Revision 1.10  2006/02/20 21:45:40  rich_sposato
-// Removed struct Locking - no longer needed.
-//
-// Revision 1.9  2006/02/19 22:04:28  rich_sposato
-// Moved Const-policy structs from SmartPtr.h to ConstPolicy.h.
-//
-// Revision 1.8  2006/01/30 20:33:01  syntheticpp
-// use policies from SmartPtr.h, clean up
-//
-// Revision 1.7  2006/01/22 13:37:33  syntheticpp
-// use macro LOKI_DEFAULT_MUTEX for Mutex default value, defined in Threads.h
-//
-// Revision 1.6  2006/01/21 14:09:09  syntheticpp
-// replace LockPtr/ConstLockPtr implementation with a template policy based one
-//
-// Revision 1.5  2006/01/21 01:02:12  rich_sposato
-// Added Mutex class to Loki.  Made it the default policy class for locking.
-//
-// Revision 1.4  2006/01/19 19:34:19  rich_sposato
-// Added ConstLockingPtr class.
-//
-// Revision 1.3  2006/01/16 18:34:37  rich_sposato
-// Changed return type from LockingPtr to SharedObject.
-//
-// Revision 1.2  2006/01/14 00:20:10  syntheticpp
-// remove c&p error
-//
-// Revision 1.1  2005/11/19 22:00:23  rich_sposato
-// Adding LockingPtr class to Loki project.
-//
