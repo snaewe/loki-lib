@@ -81,18 +81,5 @@ namespace Loki
     }
 
 
-}// namespace Loki
+} // end namespace Loki
 
-// $Log$
-// Revision 1.5  2006/07/07 09:30:48  syntheticpp
-// remove 64 bit warning
-//
-// Revision 1.4  2006/07/06 18:25:28  syntheticpp
-// add writing to ostream, by Tom Browder
-//
-// Revision 1.3  2006/06/28 08:04:21  syntheticpp
-// use standard conforming naming, SUN's compiler needs it
-//
-// Revision 1.2  2006/01/16 20:59:53  rich_sposato
-// Added cvs keywords.
-//

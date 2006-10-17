@@ -618,22 +618,3 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
 
 } // end namespace Loki
 
-// ----------------------------------------------------------------------------
-
-// $Log$
-// Revision 1.4  2006/10/14 00:03:15  rich_sposato
-// Added #ifdef section around lockable pointer class to insure it only gets
-// built in a multi-threaded model.
-// Added #ifdef sections around asserts that are expensive to test.
-// Removed test lines that send info to output.
-// Removed commented code.
-//
-// Revision 1.3  2006/04/16 13:33:36  syntheticpp
-// change init order to declarartion order
-//
-// Revision 1.2  2006/04/15 00:46:46  rich_sposato
-// Added line to remove compiler warning about unused parameter.
-//
-// Revision 1.1  2006/04/05 22:53:10  rich_sposato
-// Added StrongPtr class to Loki along with tests for StrongPtr.
-//

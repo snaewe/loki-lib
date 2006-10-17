@@ -77,16 +77,5 @@ namespace Loki
 
     }//namespace Private
 
-}//namespace Loki
+} // end namespace Loki
 
-// $Log$
-// Revision 1.7  2006/03/27 16:09:57  syntheticpp
-// undef all min/max macros, thx to Shen Lei
-//
-// Revision 1.6  2006/01/18 17:21:31  lfittl
-// - Compile library with -Weffc++ and -pedantic (gcc)
-// - Fix most issues raised by using -Weffc++ (initialization lists)
-//
-// Revision 1.5  2006/01/16 20:59:53  rich_sposato
-// Added cvs keywords.
-//

@@ -70,17 +70,5 @@ void LOKI_C_CALLING_CONVENTION_QUALIFIER Loki::Private::AtExitFn()
     delete pTop;
 }
 
-#endif
+#endif 
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// January 10, 2002: Fixed bug in call to realloc - credit due to Nigel Gent and
-//      Eike Petersen
-// May 08, 2002: Refixed bug in call to realloc
-////////////////////////////////////////////////////////////////////////////////
-
-// $Log$
-// Revision 1.7  2006/01/16 20:59:53  rich_sposato
-// Added cvs keywords.
-//
