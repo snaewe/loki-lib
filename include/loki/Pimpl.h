@@ -193,57 +193,5 @@ namespace Loki
   
 }
 
-#endif
+#endif // end file guardian
 
-// $Log$
-// Revision 1.22  2006/07/17 11:05:44  syntheticpp
-// ImplT/PimplT/RimplT renamed to the more readable version: T->Of
-//
-// Revision 1.21  2006/06/19 12:39:08  syntheticpp
-// replace tabs with 4 spaces
-//
-// Revision 1.20  2006/03/27 15:33:24  syntheticpp
-// fix spelling
-//
-// Revision 1.19  2006/03/08 17:07:11  syntheticpp
-// replace tabs with 4 spaces in all files
-//
-// Revision 1.18  2006/03/08 16:39:27  syntheticpp
-// add documenation
-//
-// Revision 1.17  2006/03/02 09:55:37  syntheticpp
-// don't compile with incomplete types
-//
-// Revision 1.16  2006/03/01 15:20:19  syntheticpp
-// add documenation how to avoid the -deletion of pointer to incomplete type- error
-//
-// Revision 1.15  2006/01/28 20:12:56  syntheticpp
-// replace implementation with a auto-create and propagating-const wrapper for smart pointers which auto delete the holded pointer on destruction
-//
-// Revision 1.14  2006/01/26 14:28:59  syntheticpp
-// remove wrong 'typename'
-//
-// Revision 1.13  2006/01/23 17:22:49  syntheticpp
-// add support of deep constness, only supported by (future) Loki::SmartPtr, not supported by boost::shared_ptr and plain pointer. Maybe deep constness forces a redesign of Pimpl. Is there a way to support deep constness by a rimpl?
-//
-// Revision 1.12  2006/01/19 18:16:39  syntheticpp
-// disable usage with auto_ptr: don't compile with std::auto_ptr
-//
-// Revision 1.11  2006/01/18 19:03:06  syntheticpp
-// make rimpl type really a reference
-//
-// Revision 1.10  2006/01/18 16:49:06  syntheticpp
-// move definition of the destructor to extra file, because msvc tries to use the incomplete type; not inlining does not help; maybe this is a compiler bug.
-//
-// Revision 1.9  2006/01/17 12:03:36  syntheticpp
-// add comment about auto_ptr
-//
-// Revision 1.8  2006/01/17 11:07:34  syntheticpp
-// AutoPtrHolderChecked inherits from AutoPtrHolder
-//
-// Revision 1.7  2006/01/16 19:48:23  syntheticpp
-// add error policy
-//
-// Revision 1.6  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

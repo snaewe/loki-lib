@@ -60,8 +60,3 @@ namespace Loki
 } // end namespace Loki
 
 #endif // end file guardian
-
-// $Log$
-// Revision 1.1  2006/02/19 22:04:28  rich_sposato
-// Moved Const-policy structs from SmartPtr.h to ConstPolicy.h.
-//

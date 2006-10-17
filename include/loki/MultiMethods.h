@@ -409,15 +409,7 @@ namespace Loki
     };
 } // namespace Loki
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20,    2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// February 2, 2003: fixed dependent names - credit due to Rani Sharoni
-////////////////////////////////////////////////////////////////////////////////
 
-#endif
 
-// $Log$
-// Revision 1.4  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//
+#endif // end file guardian
+

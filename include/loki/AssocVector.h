@@ -322,20 +322,5 @@ namespace Loki
     
 } // namespace Loki
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// May 20,     2001: change operator= - credit due to Cristoph Koegl
-// June 11,    2001: remove paren in equal_range - credit due to Cristoph Koegl
-// June 20,    2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// January 22, 2002: fixed operator= - credit due to Tom Hyer
-// June 25,    2002: fixed template insert() - credit due to Robert Minsk
-// June 27,    2002: fixed member swap() - credit due to David Brookman
-// February 2, 2003: fixed dependent names - credit due to Rani Sharoni
-////////////////////////////////////////////////////////////////////////////////
+#endif // end file guardian
 
-#endif // ASSOCVECTOR_INC_
-
-// $Log$
-// Revision 1.5  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

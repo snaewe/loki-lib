@@ -47,20 +47,5 @@ namespace Loki
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-////////////////////////////////////////////////////////////////////////////////
+#endif // end file guardian
 
-#endif // EMPTYTYPE_INC_
-
-// $Log$
-// Revision 1.5  2006/10/16 11:16:59  syntheticpp
-// add inline to fix linker errors
-//
-// Revision 1.4  2006/10/16 10:38:02  syntheticpp
-// add operator > < == to EmptyType
-//
-// Revision 1.3  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

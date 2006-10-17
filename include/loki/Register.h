@@ -118,5 +118,5 @@ namespace Loki
 } // namespace Loki
 
 
-#endif
+#endif // end file guardian
 

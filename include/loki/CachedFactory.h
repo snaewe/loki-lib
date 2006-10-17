@@ -1056,5 +1056,6 @@ namespace Loki
         }
      };
 } // namespace Loki
-	 
-#endif /*_CACHEDFACTORY_H_*/
+
+#endif // end file guardian
+

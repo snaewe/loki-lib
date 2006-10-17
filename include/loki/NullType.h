@@ -32,15 +32,5 @@ namespace Loki
     
 }   // namespace Loki
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// November 22, 2001: minor change to support porting to boost
-////////////////////////////////////////////////////////////////////////////////
 
-#endif // NULLTYPE_INC_
-
-// $Log$
-// Revision 1.3  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//
+#endif // end file guardian

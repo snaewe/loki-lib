@@ -111,14 +111,5 @@ namespace Loki
     }//ns TL
 }//ns Loki
 
-#endif //DATAGENERATORS_H
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// 9/20/02 Named changed from GenData to IterateTypes
-// 10/8/02 insertion iterators are passed-by-value, not by-reference (oops)
-////////////////////////////////////////////////////////////////////////////////
+#endif // end file guardian
 
-// $Log$
-// Revision 1.4  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

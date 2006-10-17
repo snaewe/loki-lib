@@ -287,17 +287,5 @@ namespace Loki
 #endif
 }   // namespace Loki
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// September 16, 2002: Fixed dependent template, using "::template" syntax. T.S.
-//
-// $Log:
-////////////////////////////////////////////////////////////////////////////////
+#endif // end file guardian
 
-#endif // HIERARCHYGENERATORS_INC_
-
-// $Log$
-// Revision 1.5  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

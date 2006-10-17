@@ -43,16 +43,5 @@ namespace Loki
     { Loki::CompileTimeError<((expr) != 0)> ERROR_##msg; (void)ERROR_##msg; } 
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// March 20, 2001: add extra parens to STATIC_CHECK - it looked like a fun 
-//     definition
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-////////////////////////////////////////////////////////////////////////////////
+#endif // end file guardian
 
-#endif // STATIC_CHECK_INC_
-
-// $Log$
-// Revision 1.3  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

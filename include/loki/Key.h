@@ -758,4 +758,5 @@ namespace Loki
 
 } // namespace Loki
 
-#endif /*_KEY_H_*/
+#endif // end file guardian
+

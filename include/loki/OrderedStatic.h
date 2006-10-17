@@ -222,12 +222,5 @@ namespace Loki
 }// namespace Loki
 
 
-#endif
+#endif // end file guardian
 
-// $Log$
-// Revision 1.10  2006/02/27 19:59:20  syntheticpp
-// add support of loki.dll
-//
-// Revision 1.9  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

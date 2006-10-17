@@ -63,6 +63,5 @@ namespace Loki
 }
 
 
-
-#endif //LOKI_REFTOVALUE_H
+#endif // end file guardian
 
