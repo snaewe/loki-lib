@@ -591,40 +591,5 @@ namespace Loki
 }// namespace Loki
 
 
-#endif //SAFEFORMAT_H_
+#endif // end file guardian
 
-// $Log$
-// Revision 1.32  2006/10/17 10:39:29  syntheticpp
-// change line ending
-//
-// Revision 1.31  2006/10/17 10:36:45  syntheticpp
-// change line ending
-//
-// Revision 1.30  2006/10/15 10:25:01  syntheticpp
-// remove min/max definitions
-//
-// Revision 1.29  2006/10/15 09:33:54  syntheticpp
-// add missing unsigned long overload for Windows
-//
-// Revision 1.28  2006/07/06 18:25:28  syntheticpp
-// add writing to ostream, by Tom Browder
-//
-// Revision 1.27  2006/07/03 09:55:19  syntheticpp
-// fix wrong buffer size check
-//
-// Revision 1.26  2006/06/28 08:04:21  syntheticpp
-// use standard conforming naming, SUN's compiler needs it
-//
-// Revision 1.25  2006/06/19 12:39:08  syntheticpp
-// replace tabs with 4 spaces
-//
-// Revision 1.24  2006/02/28 11:13:20  syntheticpp
-// add export specifier
-//
-// Revision 1.23  2006/01/18 17:21:31  lfittl
-// - Compile library with -Weffc++ and -pedantic (gcc)
-// - Fix most issues raised by using -Weffc++ (initialization lists)
-//
-// Revision 1.22  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

@@ -491,9 +491,5 @@ namespace Loki
 
 }   // namespace Loki
 
-#endif // LOKI_SEQUENCE_INC_
+#endif // end file guardian
 
-// $Log$
-// Revision 1.3  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//
