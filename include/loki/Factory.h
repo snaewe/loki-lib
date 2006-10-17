@@ -13,7 +13,8 @@
 #ifndef LOKI_FACTORYPARM_INC_
 #define LOKI_FACTORYPARM_INC_
 
-// $Header$ /cvsroot/loki-lib/loki/include/loki/Factory.h,v 1.15 2006/01/19 23:11:55 lfittl Exp $
+// $Id$
+
 
 #include "LokiTypeInfo.h"
 #include "Functor.h"

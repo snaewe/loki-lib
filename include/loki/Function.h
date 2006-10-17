@@ -12,9 +12,10 @@
 #ifndef LOKI_FUNCTION_INC_
 #define LOKI_FUNCTION_INC_
 
-#define LOKI_ENABLE_FUNCTION
+// $Id$
 
-// $Header$
+
+#define LOKI_ENABLE_FUNCTION
 
 #include <loki/Functor.h>
 #include <loki/Sequence.h>
