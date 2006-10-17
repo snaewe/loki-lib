@@ -352,29 +352,5 @@
 
 #endif //LOKI_DISABLE_TYPELIST_MACROS
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 09, 2001: Fix bug in parameter list of macros LOKI_TYPELIST_23 to LOKI_TYPELIST_27
-//      (credit due to Dave Taylor)
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// November 22, 2001: fixed bug in DerivedToFront
-//      (credit due to Gianni Luciani who noticed the bug first;
-//          Adam Wilkshire;
-//          Friedrik Hedman who fixed the bug but didn't send the fix;
-//          Kevin Cline who sent the first actual fix)
-// May 13, 2002: LOKI_TYPELIST_46 called LOKI_TYPELIST_45 with only 44 parameters.
-//      Credit due to Robert Minsk     
-// September 16, 2002: Changed MostDerived to use the new SuperSubclass template
-//     (rather than the SUPERSUBCLASS macro).
-//     Minor fix in Reverse, adding support for empty lists, like all the other
-//     algorithms.
-//     Fixed DerivedToFront, to use Replace, rather than ReplaceAll. T.S.
-// Oct  10, 2002: added MakeTypelist (SGB/MKH)
-////////////////////////////////////////////////////////////////////////////////
+#endif // end file guardian
 
-#endif // LOKI_TYPELISTMACROS_INC_
-
-// $Log$
-// Revision 1.2  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

@@ -2223,21 +2223,6 @@ namespace Loki
 #pragma warning( pop )
 #endif // _MSC_VER
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20,      2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// September 16, 2002: ParameterType fixed, as TypeTraits<void> made 
-//                     ParameterType give error about reference to void. T.S.
-// August 26,    2005: better support of types with const/volatile qualifiers,
-//                     thanks to Kalle Rutanen
-////////////////////////////////////////////////////////////////////////////////
 
-#endif // TYPETRAITS_INC_
+#endif // end file guardian
 
-// $Log$
-// Revision 1.17  2006/09/08 10:50:18  syntheticpp
-// remove msvc warning
-//
-// Revision 1.16  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//
