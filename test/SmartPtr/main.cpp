@@ -996,25 +996,9 @@ void DoForwardReferenceTest( void )
     //p6 = p5;
 }
 
-// ----------------------------------------------------------------------------
-
-struct Foo
-{
-    void AddRef ()
-    {}
-    void Release ()
-    {}
-};
-
-
 
 int main( unsigned int argc, const char * argv[] )
 {
-    // injected friends test
-    Loki::SmartPtr<Foo, Loki::COMRefCounted> sp;
-
-    Foo* p = Loki::GetImpl (sp); (void) p;
-
     bool doThreadTest = false;
     for ( unsigned int ii = 1; ii < argc; ++ii )
     {
@@ -1062,9 +1046,54 @@ int main( unsigned int argc, const char * argv[] )
     return 0;
 }
 
+
+// ----------------------------------------------------------------------------
+
+#include <algorithm>
+
+struct Foo
+{
+};
+
+typedef Loki::SmartPtr
+< 
+    BaseClass, RefCounted, DisallowConversion,
+    AssertCheck, DefaultSPStorage, DontPropagateConst 
+> 
+Ptr;
+
+bool Compare( const Ptr&, const Ptr&)
+{
+    return true; 
+}
+
+void friend_handling()
+{
+    // http://sourceforge.net/tracker/index.php?func=detail&aid=1570582&group_id=29557&atid=396644
+
+    // friend injection
+    // see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=28597
+    std::vector<Ptr> vec;
+    std::sort( vec.begin(), vec.end(), Compare );
+    std::nth_element( vec.begin(), vec.begin(), vec.end(), Compare );
+    std::search( vec.begin(), vec.end(),
+        vec.begin(), vec.end(), Compare );
+    Ptr a, b;
+    Compare( a, b );
+
+    // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29486
+    BaseClass * pNull ;
+    Ptr w1( new BaseClass );
+    Release( w1, pNull );
+
+ }
+
 // ----------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.13  2006/10/17 10:09:37  syntheticpp
+// add test code for template friends with template template parameters
+//
 // Revision 1.12  2006/10/16 11:48:13  syntheticpp
 // by default Loki is compiled without thread support, so we must disable the dependency on thread classes (StrongPtr) to avaoid linker errors when compiling with the default build process. Should  we change the default threading of Loki?
 //
