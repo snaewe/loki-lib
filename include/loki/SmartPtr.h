@@ -1641,6 +1641,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.39  2006/10/17 10:39:29  syntheticpp
+// change line ending
+//
 // Revision 1.38  2006/10/17 10:36:45  syntheticpp
 // change line ending
 //
