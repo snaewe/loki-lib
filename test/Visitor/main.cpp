@@ -10,7 +10,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header$
+// $Id$
+
 
 #include <loki/Visitor.h>
 #include <iostream>
@@ -88,3 +89,5 @@ int main()
 #endif
 
 }
+
+// $Revision$
