@@ -1116,7 +1116,7 @@ namespace Loki
             template <class> class CNP1
         >
         friend void Release(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1>& sp,
-                            typename SP1<T>::StoredType& p);
+                            typename SP1<T1>::StoredType& p);
 
         template
         <
@@ -1128,7 +1128,7 @@ namespace Loki
             template <class> class CNP1
         >
         friend void Reset(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1>& sp,
-                          typename SP1<T>::StoredType p);
+                          typename SP1<T1>::StoredType p);
 
 
 
@@ -1617,6 +1617,9 @@ namespace std
 
 
 // $Log$
+// Revision 1.36  2006/10/17 09:14:27  syntheticpp
+// fix wrong friend declaration
+//
 // Revision 1.35  2006/10/16 16:34:48  syntheticpp
 // remove C&P error
 //
