@@ -13,6 +13,8 @@
 #ifndef FLEX_STRING_INC_
 #define FLEX_STRING_INC_
 
+// $Id$
+
 
 // <THE> string
 #include "flex_string_shell.h"

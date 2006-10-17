@@ -1,6 +1,9 @@
 #ifndef YASLI_PLATFORM_H_
 #define YASLI_PLATFORM_H_
 
+// $Id$
+
+
 // Most conservative
 
 #define YASLI_HAS_EFFICIENT_MSIZE 0

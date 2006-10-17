@@ -13,6 +13,9 @@
 #ifndef SMALL_STRING_OPT_INC_
 #define SMALL_STRING_OPT_INC_
 
+// $Id$
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template SmallStringOpt
 // Builds the small string optimization over any other storage

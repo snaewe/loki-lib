@@ -13,6 +13,9 @@
 #ifndef FLEX_STRING_DETAILS_INC_
 #define FLEX_STRING_DETAILS_INC_
 
+// $Id$
+
+
 #include <memory>
 
 namespace flex_string_details

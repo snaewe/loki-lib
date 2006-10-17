@@ -13,6 +13,9 @@
 #ifndef FLEX_STRING_SHELL_INC_
 #define FLEX_STRING_SHELL_INC_
 
+// $Id$
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // class template flex_string
 // This file does not include any storage policy headers

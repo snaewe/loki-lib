@@ -1,6 +1,9 @@
 #ifndef YASLI_MEMORY_H_
 #define YASLI_MEMORY_H_
 
+// $Id$
+
+
 #include "yasli_traits.h"
 #include "yasli_protocols.h"//!
 #include <cassert>

@@ -1,6 +1,10 @@
 #ifndef YASLI_TRAITS_H_
 #define YASLI_TRAITS_H_
 
+// $Id$
+
+
+
 
 namespace yasli_nstd 
 {

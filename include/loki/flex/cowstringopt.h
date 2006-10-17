@@ -13,6 +13,9 @@
 #ifndef COW_STRING_OPT_INC_
 #define COW_STRING_OPT_INC_
 
+// $Id$
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template CowStringOpt
 // Implements Copy on Write over any storage

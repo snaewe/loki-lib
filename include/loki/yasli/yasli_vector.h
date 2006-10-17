@@ -1,3 +1,9 @@
+#ifndef YASLI_VECTOR_H_
+#define YASLI_VECTOR_H_
+
+// $Id$
+
+
 #include "platform.h"
 #include "yasli_fill_iterator.h"
 #include "yasli_memory.h"
@@ -574,3 +580,4 @@ namespace yasli_protocols
     };
 }
 
+#endif

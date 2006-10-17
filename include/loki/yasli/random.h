@@ -1,5 +1,8 @@
-#ifndef RANDOM_H_
-#define RANDOM_H_
+#ifndef YASLI_RANDOM_H_
+#define YASLI_RANDOM_H_
+
+// $Id$
+
 
 #include <ctime>
 
