@@ -416,21 +416,3 @@ public:
 
 #endif
 
-
-// $Log$
-// Revision 1.5  2005/09/26 07:33:05  syntheticpp
-// move macros into LOKI_ namespace
-//
-// Revision 1.4  2005/09/24 15:25:20  syntheticpp
-// ove RegressionTest
-//
-// Revision 1.6  2005/07/31 15:06:22  syntheticpp
-// invert new factory code macro logic to be ReferenceTest more compatible with noncc code
-//
-// Revision 1.5  2005/07/28 14:59:17  syntheticpp
-// remove unreferenced parameter warning
-//
-// Revision 1.4  2005/07/28 14:26:10  syntheticpp
-// add cvs Header/Log
-//
-

@@ -132,3 +132,4 @@ public:
 private:
     Pimpl<Impl4, std::auto_ptr<Impl4> > d;
 };
+

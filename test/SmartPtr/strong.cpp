@@ -973,28 +973,3 @@ void friend_handling2()
 
  }
 // ----------------------------------------------------------------------------
-
-// $Log$
-// Revision 1.8  2006/10/17 10:36:08  syntheticpp
-// change line ending
-//
-// Revision 1.7  2006/10/17 10:09:37  syntheticpp
-// add test code for template friends with template template parameters
-//
-// Revision 1.6  2006/05/17 16:23:39  syntheticpp
-// remove gcc warnings
-//
-// Revision 1.5  2006/04/19 01:04:25  rich_sposato
-// Changed DeleteSingle and DeleteArray policy to not allow use of incomplete
-// types.
-//
-// Revision 1.4  2006/04/18 07:29:41  lfittl
-// - Various makefile improvements (better mingw support, easier to add new sources)
-// - Include loki/StrongPtr.hpp, not Loki/StrongPtr.hpp (test/SmartPtr)
-//
-// Revision 1.3  2006/04/07 16:27:11  vizowl
-// adding an XCode build project
-//
-// Revision 1.2  2006/04/06 18:19:58  rich_sposato
-// Added CVS Log keyword.
-//

@@ -758,8 +758,3 @@ int main( unsigned int argc, const char * const argv[] )
 }
 
 // ----------------------------------------------------------------------------
-
-// $Log$
-// Revision 1.1  2005/10/13 00:40:38  rich_sposato
-// Added program to test how compiler uses default new and delete operators.
-//

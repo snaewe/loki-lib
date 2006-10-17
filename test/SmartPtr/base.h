@@ -194,13 +194,3 @@ private:
 
 // ----------------------------------------------------------------------------
 
-// $Log$
-// Revision 1.3  2006/05/18 05:05:21  rich_sposato
-// Added QueryInterface function to MimicCOM class.
-//
-// Revision 1.2  2006/04/05 22:53:12  rich_sposato
-// Added StrongPtr class to Loki along with tests for StrongPtr.
-//
-// Revision 1.1  2006/03/20 21:14:16  rich_sposato
-// Adding base.h to CVS.
-//
