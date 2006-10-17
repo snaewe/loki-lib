@@ -11,7 +11,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header$
+// $Id$
+
 
 //#define LOKI_CLASS_LEVEL_THREADING
 //#define LOKI_OBJECT_LEVEL_THREADING

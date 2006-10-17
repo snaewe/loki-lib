@@ -8,6 +8,9 @@
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Id$
+
+
 // A singleton LogClass object that resurrects itself after
 // it has been automatically destroyed during program
 // termination.  When a dead-reference to the LogClass

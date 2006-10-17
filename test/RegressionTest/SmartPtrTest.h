@@ -10,11 +10,11 @@
 // This software is provided "as is" without express or implied warranty.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-// $Header:
-
 #ifndef SMARTPTRTEST_H
 #define SMARTPTRTEST_H
+
+// $Id$
+
 
 #include "UnitTest.h"
 #include <loki/SmartPtr.h>

@@ -9,11 +9,10 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// $Header$
-
 #ifndef LOKI_THREAD_H_
 #define LOKI_THREAD_H_
+
+// $Id$
 
 #include <loki/Threads.h>
 #include <vector>

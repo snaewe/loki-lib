@@ -9,11 +9,12 @@
 //
 // This software is provided "as is" without express or implied warranty.
 //
-// Last update: September 16, 2002
 ///////////////////////////////////////////////////////////////////////////////
-
 #ifndef SMALLOBJECTTEST_H
 #define SMALLOBJECTTEST_H
+
+// $Id$
+
 
 #include <cstdlib>
 #include <loki/SmallObj.h>

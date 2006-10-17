@@ -7,6 +7,7 @@
 
 // For more information, see http://www.boost.org
 
+// $Id$
 
 
 #include <functional>

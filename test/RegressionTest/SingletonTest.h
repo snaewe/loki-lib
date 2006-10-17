@@ -9,11 +9,12 @@
 //
 // This software is provided "as is" without express or implied warranty.
 //
-// Last update: September 16, 2002
 ///////////////////////////////////////////////////////////////////////////////
-
 #ifndef SINGLETONTEST_H
 #define SINGLETONTEST_H
+
+// $Id$
+
 
 #include <cassert>
 #include <loki/Singleton.h>

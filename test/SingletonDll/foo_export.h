@@ -12,6 +12,9 @@
 #ifndef FOO_FOO_EXPORT_H
 #define FOO_FOO_EXPORT_H
 
+// $Id$
+
+
 #include <loki/LokiExport.h>
 
 #if (defined(FOO_MAKE_DLL) && defined(FOO_DLL)) || \

@@ -7,6 +7,9 @@
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Id$
+
+
 #include <iostream>
 
 #include <loki/Singleton.h>

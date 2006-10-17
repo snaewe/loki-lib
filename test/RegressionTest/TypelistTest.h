@@ -9,11 +9,12 @@
 //
 // This software is provided "as is" without express or implied warranty.
 //
-// Last update: September 16, 2002
 ///////////////////////////////////////////////////////////////////////////////
-
 #ifndef TYPELISTTEST_H
 #define TYPELISTTEST_H
+
+// $Id$
+
 
 #include <loki/Typelist.h>
 #include <loki/Sequence.h>

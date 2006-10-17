@@ -12,7 +12,8 @@
 #ifndef LOKI_FOO_H
 #define LOKI_FOO_H
 
-// $Header$
+// $Id$
+
 
 #include "classlist.h"
 

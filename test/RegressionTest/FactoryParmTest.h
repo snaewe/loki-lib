@@ -12,11 +12,10 @@
 // This software is provided "as is" without express or implied warranty.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-// $Header$
-
 #ifndef FACTORYPARMTEST_H
 #define FACTORYPARMTEST_H
+
+// $Id$
 
 
 #ifdef ENABLE_NEW_FACTORY_CODE

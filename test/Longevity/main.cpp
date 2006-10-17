@@ -8,6 +8,9 @@
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Id$
+
+
 // This is an example of using the SetLongevity function for both
 // singletons and globally and locally defined dynamically allocated
 // objects.

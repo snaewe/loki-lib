@@ -7,7 +7,8 @@
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header$
+// $Id$
+
 
 //#define CLASS_LEVEL_THERADING
 

@@ -8,6 +8,9 @@
 // for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
+// $Id$
+
+
 // Show an example of a Loki policy that uses DeletableSingleton.
 //
 // Expected output:

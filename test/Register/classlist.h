@@ -12,7 +12,8 @@
 #ifndef CLASSLIST_H
 #define CLASSLIST_H
 
-// $Header$
+// $Id$
+
 
 #include <string>
 

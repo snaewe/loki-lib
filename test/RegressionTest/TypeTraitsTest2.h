@@ -1,6 +1,8 @@
 // Loki TypeTraits test program
-// Kalle Rutanen
-// 25.9.2005
+// Kalle Rutanen 25.9.2005
+//
+// $Id$
+//
 //
 // Some type sets
 // --------------

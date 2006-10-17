@@ -9,11 +9,10 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// $Header$
-
 #ifndef LOKI_TEST_TIMER_H
 #define LOKI_TEST_TIMER_H
+
+// $Id$
 
 
 #include <ctime>

@@ -12,6 +12,9 @@
 #ifndef SINGLETONDLL_SINGLETONDLL_EXPORT_H
 #define SINGLETONDLL_SINGLETONDLL_EXPORT_H
 
+// $Id$
+
+
 #include <loki/LokiExport.h>
 
 #if (defined(SINGLETONDLL_MAKE_DLL) && defined(SINGLETONDLL_DLL)) || \

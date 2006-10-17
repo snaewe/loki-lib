@@ -12,7 +12,8 @@
 #ifndef LOKI_SINGLETONDLL_H
 #define LOKI_SINGLETONDLL_H
 
-// $Header:
+// $Id$
+
 
 #include "singletondll_export.h"
 

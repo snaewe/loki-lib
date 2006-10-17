@@ -1,3 +1,5 @@
+// $Id$
+
 #define USE_SEQUENCE
 
 #include <cassert>

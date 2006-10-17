@@ -9,11 +9,12 @@
 //
 // This software is provided "as is" without express or implied warranty.
 //
-// Last update: September 16, 2002
 ///////////////////////////////////////////////////////////////////////////////
-
 #ifndef FACTORYTEST_H
 #define FACTORYTEST_H
+
+// $Id$
+
 
 #include <loki/Factory.h>
 

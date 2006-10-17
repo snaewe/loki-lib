@@ -10,7 +10,8 @@
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Header$
+// $Id$
+
 
 // define to test the OrderedStatic template
 #define TEST_ORDERED_STATIC
