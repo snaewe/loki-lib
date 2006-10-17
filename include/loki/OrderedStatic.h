@@ -9,11 +9,10 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_ORDEREDSTATIC_INC_
+#define LOKI_ORDEREDSTATIC_INC_
 
-#ifndef LOKI_ORDEREDSTATIC_H_
-#define LOKI_ORDEREDSTATIC_H_
-
-// $Header$
+// $Id$
 
 
 #include <vector>

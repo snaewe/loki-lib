@@ -17,9 +17,11 @@
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 //
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_KEY_INC_
+#define LOKI_KEY_INC_
 
-#ifndef LOKI_KEY_H_
-#define LOKI_KEY_H_
+// $Id$
+
 
 #include <loki/Factory.h>
 

@@ -12,11 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
 #ifndef LOKI_HIERARCHYGENERATORS_INC_
 #define LOKI_HIERARCHYGENERATORS_INC_
 
-// $Header$
+// $Id$
+
 
 #include "Typelist.h"
 #include "TypeTraits.h"

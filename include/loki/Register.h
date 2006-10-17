@@ -12,7 +12,8 @@
 #ifndef LOKI_REGISTER_INC_
 #define LOKI_REGISTER_INC_
 
-// $Header$ 
+// $Id$
+
 
 #include "TypeManip.h"
 #include "HierarchyGenerators.h"

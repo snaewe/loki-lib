@@ -17,9 +17,11 @@
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 //
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_CACHEDFACTORY_INC_
+#define LOKI_CACHEDFACTORY_INC_
 
-#ifndef LOKI_CACHEDFACTORY_H_
-#define LOKI_CACHEDFACTORY_H_
+// $Id$
+
 
 #include <vector>
 #include <iterator>

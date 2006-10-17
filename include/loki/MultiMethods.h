@@ -12,11 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
 #ifndef LOKI_MULTIMETHODS_INC_
 #define LOKI_MULTIMETHODS_INC_
 
-// $Header$
+// $Id$
+
 
 #include "Typelist.h"
 #include "LokiTypeInfo.h"

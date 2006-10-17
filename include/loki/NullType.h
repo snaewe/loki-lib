@@ -12,13 +12,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// Last update: November 22, 2001
-
 #ifndef LOKI_NULLTYPE_INC_
 #define LOKI_NULLTYPE_INC_
 
-// $Header$
+// $Id$
+
 
 namespace Loki
 {

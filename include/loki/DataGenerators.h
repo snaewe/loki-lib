@@ -9,13 +9,11 @@
 // The author makes no representations about the suitability of this software
 //  for any purpose. It is provided "as is" without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef LOKI_DATAGENERATORS_INC_
+#define LOKI_DATAGENERATORS_INC_
 
-// Last update: Oct 10, 2002
+// $Id$
 
-#ifndef LOKI_DATAGENERATORS_H
-#define LOKI_DATAGENERATORS_H
-
-// $Header$
 
 #include "Typelist.h"
 

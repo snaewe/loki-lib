@@ -12,13 +12,13 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
-// $Header$
-
-///  \defgroup VisitorGroup Visitor
-
 #ifndef LOKI_VISITOR_INC_
 #define LOKI_VISITOR_INC_
+
+// $Id$
+
+
+///  \defgroup VisitorGroup Visitor
 
 #include "Typelist.h"
 #include "HierarchyGenerators.h"

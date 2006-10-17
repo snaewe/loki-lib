@@ -10,11 +10,10 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-
 #ifndef LOKI_CONST_POLICY_INC_
 #define LOKI_CONST_POLICY_INC_
 
-// $Header$
+// $Id$
 
 
 namespace Loki

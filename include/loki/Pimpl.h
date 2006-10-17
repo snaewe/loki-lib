@@ -9,10 +9,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef LOKI_PIMPL_H
-#define LOKI_PIMPL_H
+#ifndef LOKI_PIMPL_INC_
+#define LOKI_PIMPL_INC_
 
-// $Header$
+// $Id$
+
 
 ///  \defgroup PimplGroup Pimpl 
 

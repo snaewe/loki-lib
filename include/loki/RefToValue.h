@@ -10,8 +10,11 @@
 //     suitability of this software for any purpose. It is provided "as is" 
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef LOKI_REFTOVALUE_H
-#define LOKI_REFTOVALUE_H
+#ifndef LOKI_REFTOVALUE_INC_
+#define LOKI_REFTOVALUE_INC_
+
+// $Id$
+
 
 namespace Loki
 {
