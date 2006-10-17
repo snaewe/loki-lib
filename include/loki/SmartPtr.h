@@ -16,8 +16,6 @@
 #ifndef LOKI_SMARTPTR_INC_
 #define LOKI_SMARTPTR_INC_
 
-// $Header$
-
 ///  \defgroup  SmartPointerGroup Smart pointers
 ///  Policy based implementation of a smart pointer
 ///  \defgroup  SmartPointerOwnershipGroup Ownership policies
@@ -1639,6 +1637,9 @@ namespace std
 
 #endif // SMARTPTR_INC_
 
+// $Autor$
+// $Date$
+// $HeadURL$
 
 // $Log$
 // Revision 1.39  2006/10/17 10:39:29  syntheticpp
