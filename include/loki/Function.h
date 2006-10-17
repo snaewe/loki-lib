@@ -366,21 +366,5 @@ namespace Loki
 
 }// namespace Loki
 
-#endif
+#endif // end file guardian
 
-// $Log$
-// Revision 1.12  2006/06/19 12:18:44  syntheticpp
-// add hint to fix broken build
-//
-// Revision 1.11  2006/06/09 12:57:15  syntheticpp
-// fix wrong default value handling, gcc fix
-//
-// Revision 1.10  2006/06/09 12:04:40  syntheticpp
-// fix wrong default value handling
-//
-// Revision 1.9  2006/02/26 23:39:59  syntheticpp
-// guard including
-//
-// Revision 1.8  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//

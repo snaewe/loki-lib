@@ -1026,61 +1026,6 @@ template <typename AP, typename Id, typename P1 >
 #pragma warning( pop ) 
 #endif
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20,    2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// May 08,     2002: replaced const_iterator with iterator so that self-modifying
-//                   ProductCreators are supported. Also, added a throw()
-//                   spec to what(). Credit due to Jason Fischl.
-// February 2, 2003: fixed dependent names - credit due to Rani Sharoni
-// March 4,    2003: fixed dependent names - credit due to Ruslan Zasukhin and CW 8.3 
-// July 26,    2005: parameter support by Peter Kümmel 
-////////////////////////////////////////////////////////////////////////////////
 
-#endif // FACTORY_INC_
-
-// $Log$
-// Revision 1.17  2006/05/20 10:23:07  syntheticpp
-// add warnings in the documentation about the special lifetime when using SmallObjects
-//
-// Revision 1.16  2006/03/08 16:41:38  syntheticpp
-// remove second $
-//
-// Revision 1.15  2006/01/19 23:11:55  lfittl
-// - Disabled -Weffc++ flag, fixing these warnings produces too much useless code
-// - Enabled -pedantic, -Wold-style-cast and -Wundef for src/ and test/
-//
-// Revision 1.14  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//
-// Revision 1.13  2006/01/04 23:45:07  syntheticpp
-// remove gcc 4.0 warnings, Thanks to Lukas Fittl
-//
-// Revision 1.12  2005/11/12 17:11:55  syntheticpp
-// make typedefs private, replace tabs
-//
-// Revision 1.11  2005/11/12 16:52:36  syntheticpp
-// protect private data, add std::vector<IdType> RegisteredIds()
-//
-// Revision 1.10  2005/11/03 12:43:35  syntheticpp
-// more doxygen documentation, modules added
-//
-// Revision 1.9  2005/10/30 14:03:23  syntheticpp
-// replace tabs space
-//
-// Revision 1.8  2005/10/30 13:49:44  syntheticpp
-// make disabling the TYPELIST macros possible
-//
-// Revision 1.7  2005/10/05 09:57:37  syntheticpp
-// move unreachable code warnings
-//
-// Revision 1.6  2005/09/26 07:33:04  syntheticpp
-// move macros into LOKI_ namespace
-//
-// Revision 1.5  2005/07/31 14:23:24  syntheticpp
-// invert new factory code macro logic to be ReferenceTest more compatible with noncc code
-//
-// Revision 1.4  2005/07/28 14:26:09  syntheticpp
-// add cvs Header/Log
-//
+#endif // end file guardian
 

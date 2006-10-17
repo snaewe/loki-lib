@@ -1786,40 +1786,6 @@ namespace Loki
 
 } // namespace Loki
 
-////////////////////////////////////////////////////////////////////////////////
-// Change log:
-// June 20, 2001: ported by Nick Thurn to gcc 2.95.3. Kudos, Nick!!!
-// January 1, 2006: pass Functor arguments in BindFirst by value, Peter Kümmel
-////////////////////////////////////////////////////////////////////////////////
 
-#endif  // FUNCTOR_INC_
+#endif // end file guardian
 
-// $Log$
-// Revision 1.22  2006/06/09 12:58:44  syntheticpp
-// simplify Functor::operator== implementation. Thanks to Eric Beyeler
-//
-// Revision 1.21  2006/06/01 12:33:05  syntheticpp
-// add operator== to Functor, initiated by Eric Beyeler
-//
-// Revision 1.20  2006/05/20 10:23:07  syntheticpp
-// add warnings in the documentation about the special lifetime when using SmallObjects
-//
-// Revision 1.19  2006/03/08 18:22:42  syntheticpp
-// doxygen fixes
-//
-// Revision 1.18  2006/02/27 18:53:41  syntheticpp
-// make it possible for Functor not to be a small object because it introduces sometimes problems, add documentation
-//
-// Revision 1.17  2006/02/20 16:08:32  syntheticpp
-// gcc needs the template parameter, gcc warns about missing virtual destructor (because there is already a virtual function)
-//
-// Revision 1.16  2006/02/18 19:37:40  rich_sposato
-// Added explicit call to base copy-constructor.  Changed base class from
-// SmallObject to SmallValueObject.
-//
-// Revision 1.15  2006/01/22 13:31:45  syntheticpp
-// add additional template parameter for the changed threading classes
-//
-// Revision 1.14  2006/01/16 19:05:09  rich_sposato
-// Added cvs keywords.
-//
