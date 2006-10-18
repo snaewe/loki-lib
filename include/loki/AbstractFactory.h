@@ -108,15 +108,15 @@ namespace Loki
         PrototypeFactoryUnit(AbstractProduct* p = 0)
             : pPrototype_(p)
         {}
-        
-        friend void DoGetPrototype(const PrototypeFactoryUnit& me,
-            AbstractProduct*& pPrototype)
-        { pPrototype = me.pPrototype_; }
-        
-        friend void DoSetPrototype(PrototypeFactoryUnit& me, 
-            AbstractProduct* pObj)
-        { me.pPrototype_ = pObj; }
-        
+
+        template <class CP, class Base1>
+        friend void DoGetPrototype(const PrototypeFactoryUnit<CP, Base1>& me,
+                                   typename Base1::ProductList::Head*& pPrototype);
+
+        template <class CP, class Base1>
+        friend void DoSetPrototype(PrototypeFactoryUnit<CP, Base1>& me,
+                                   typename Base1::ProductList::Head* pObj);
+
         template <class U>
         void GetPrototype(U*& p)
         { return DoGetPrototype(*this, p); }
@@ -134,6 +134,16 @@ namespace Loki
     private:
         AbstractProduct* pPrototype_;
     };
+
+    template <class CP, class Base>
+    inline void DoGetPrototype(const PrototypeFactoryUnit<CP, Base>& me,
+                               typename Base::ProductList::Head*& pPrototype)
+    { pPrototype = me.pPrototype_; }
+
+    template <class CP, class Base>
+    inline void DoSetPrototype(PrototypeFactoryUnit<CP, Base>& me,
+                               typename Base::ProductList::Head* pObj)
+    { me.pPrototype_ = pObj; }
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template ConcreteFactory

@@ -74,6 +74,7 @@ namespace Loki
 // * iterators are random
 ////////////////////////////////////////////////////////////////////////////////
 
+
     template
     <
         class K,
@@ -288,32 +289,63 @@ namespace Loki
             const MyCompare& me = *this;
             return std::equal_range(begin(), end(), k, me);
         }
-        
-        friend bool operator==(const AssocVector& lhs, const AssocVector& rhs)
-        {
-            const Base& me = lhs;
-            return me == rhs;
-        } 
+
+        template <class K1, class V1, class C1, class A1>
+        friend bool operator==(const AssocVector<K1, V1, C1, A1>& lhs,
+                        const AssocVector<K1, V1, C1, A1>& rhs);
 
         bool operator<(const AssocVector& rhs) const
         {
             const Base& me = *this;
             const Base& yo = rhs;
             return me < yo;
-        } 
+        }
 
-        friend bool operator!=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(lhs == rhs); } 
+        template <class K1, class V1, class C1, class A1>
+        friend bool operator!=(const AssocVector<K1, V1, C1, A1>& lhs,
+                               const AssocVector<K1, V1, C1, A1>& rhs);
 
-        friend bool operator>(const AssocVector& lhs, const AssocVector& rhs)
-        { return rhs < lhs; }
+        template <class K1, class V1, class C1, class A1>
+        friend bool operator>(const AssocVector<K1, V1, C1, A1>& lhs,
+                              const AssocVector<K1, V1, C1, A1>& rhs);
 
-        friend bool operator>=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(lhs < rhs); } 
+        template <class K1, class V1, class C1, class A1>
+        friend bool operator>=(const AssocVector<K1, V1, C1, A1>& lhs,
+                               const AssocVector<K1, V1, C1, A1>& rhs);
 
-        friend bool operator<=(const AssocVector& lhs, const AssocVector& rhs)
-        { return !(rhs < lhs); }
+        template <class K1, class V1, class C1, class A1>
+        friend bool operator<=(const AssocVector<K1, V1, C1, A1>& lhs,
+                               const AssocVector<K1, V1, C1, A1>& rhs);
     };
+
+    template <class K, class V, class C, class A>
+    inline bool operator==(const AssocVector<K, V, C, A>& lhs,
+                           const AssocVector<K, V, C, A>& rhs)
+    {
+      const std::vector<std::pair<K, V>, A>& me = lhs;
+      return me == rhs;
+    }
+
+    template <class K, class V, class C, class A>
+    inline bool operator!=(const AssocVector<K, V, C, A>& lhs,
+                           const AssocVector<K, V, C, A>& rhs)
+    { return !(lhs == rhs); }
+
+    template <class K, class V, class C, class A>
+    inline bool operator>(const AssocVector<K, V, C, A>& lhs,
+                          const AssocVector<K, V, C, A>& rhs)
+    { return rhs < lhs; }
+
+    template <class K, class V, class C, class A>
+    inline bool operator>=(const AssocVector<K, V, C, A>& lhs,
+                           const AssocVector<K, V, C, A>& rhs)
+    { return !(lhs < rhs); }
+
+    template <class K, class V, class C, class A>
+    inline bool operator<=(const AssocVector<K, V, C, A>& lhs,
+                           const AssocVector<K, V, C, A>& rhs)
+    { return !(rhs < lhs); }
+
 
     // specialized algorithms:
     template <class K, class V, class C, class A>
