@@ -807,7 +807,7 @@ public:
     typedef typename ConstnessPolicy< T >::Type & ConstReferenceType;
 
 private:
-    struct NeverMatched;
+    struct NeverMatched {};
 
 #ifdef LOKI_SMARTPTR_CONVERSION_CONSTRUCTOR_POLICY
     typedef typename Select< CP::allow, const StoredType&, NeverMatched>::Result ImplicitArg;

@@ -998,7 +998,7 @@ namespace Loki
                 CopyArg;
     
     private:
-        struct NeverMatched;
+        struct NeverMatched {};
        
 #ifdef LOKI_SMARTPTR_CONVERSION_CONSTRUCTOR_POLICY
         typedef typename Select< CP::allow, const StoredType&, NeverMatched>::Result ImplicitArg;
