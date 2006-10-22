@@ -51,19 +51,34 @@ using std::bind2nd;
 using std::equal_to;
 using std::cout;
 using std::endl;
-        
+
+/**
+ * \defgroup	FactoryGroup Factory
+ * \defgroup	CachedFactoryGroup Cached Factory
+ * \ingroup		FactoryGroup
+ * \brief		CachedFactory provides an extension of a Factory with caching
+ * support.
+ * 
+ * Once used objects are returned to the CachedFactory that manages its
+ * destruction.
+ * If your code uses lots of "long to construct/destruct objects" using the
+ * CachedFactory will surely speedup the execution.
+ */
 namespace Loki
 {
-    ///////////////////////////////////////////////////////////////////////////
-    // Encapsulation Policy
-    // Defines how the object is returned to the client
-    ///////////////////////////////////////////////////////////////////////////
-
-     /*
-     * Encapsulation Policy : SimplePointer
-     * this implementation does not make any encapsulation
-     * It simply returns the object's pointer
-     */
+/**
+ * \defgroup	EncapsulationPolicyCachedFactoryGroup	Encapsulation policies
+ * \ingroup	CachedFactoryGroup
+ * \brief	Defines how the object is returned to the client
+ */
+	/**
+	 * \class	SimplePointer
+	 * \ingroup	EncapsulationPolicyCachedFactoryGroup
+	 * \brief	No encaspulation : returns the pointer
+	 * 
+	 * This implementation does not make any encapsulation.
+	 * It simply returns the object's pointer.
+	 */
      template<class AbstractProduct>     
      class SimplePointer
      {
@@ -82,21 +97,25 @@ namespace Loki
            }
            const char* name(){return "pointer";}
      };
-     
-    ///////////////////////////////////////////////////////////////////////////
-    // Creation Policy
-    // Defines a mean to limit the creation operation
-    // For instance one may want to be alerted (Exception) when 
-    // + Cache has created a more than X object within the last x seconds
-    // + Cache creation rate has increased dramatically
-    // which may result from bad caching strategy, or critical overload
-    ///////////////////////////////////////////////////////////////////////////
 
-     /*
-     * Creation Policy : NeverCreate
-     * this implementation never allows creation
-     * !! TESTING PURPOSE ONLY !!
-     */
+/**
+ * \defgroup	CreationPolicyCachedFactoryGroup		Creation policies
+ * \ingroup		CachedFactoryGroup
+ * \brief		Defines a way to limit the creation operation.
+ * 
+ * For instance one may want to be alerted (Exception) when
+ * - Cache has created a more than X object within the last x seconds
+ * - Cache creation rate has increased dramatically
+ * .
+ * which may result from bad caching strategy, or critical overload
+ */
+	/**
+	 * \class	NeverCreate
+	 * \ingroup	CreationPolicyCachedFactoryGroup
+	 * \brief	Never allows creation. Testing purposes only.
+	 * 
+	 * Using this policy will throw an exception.
+	 */
      class NeverCreate
      {
      protected:
@@ -115,10 +134,13 @@ namespace Loki
             const char* name(){return "never";}
      };
      
-     /*
-     * Creation Policy : AlwaysCreate
-     * this implementation always allows creation
-     */
+     /**
+      * \class		AlwaysCreate
+      * \ingroup	CreationPolicyCachedFactoryGroup
+      * \brief		Always allows creation.
+      * 
+      * Doesn't limit the creation in any way
+      */
      class AlwaysCreate
      {
      protected:
@@ -132,15 +154,17 @@ namespace Loki
             const char* name(){return "always";}
      };
 
-    /*
-     * Creation Policy : RateLimitedCreation
+
+    /**
+     * \class	RateLimitedCreation
+     * \ingroup	CreationPolicyCachedFactoryGroup
+     * \brief	Limit in rate.
+     * 
      * This implementation will prevent from Creating more than maxCreation objects
      * within byTime ms by throwing an exception.
-     *
-     * Could be usefull to detect heavy loads (http connection for instance)
-     * 
-     * Use the setRate method to set the rate parameters
-     * default is 10 objects in a second
+     * Could be usefull to detect prevent loads (http connection for instance).
+     * Use the setRate method to set the rate parameters.
+     * default is 10 objects in a second.
      */
      class RateLimitedCreation
      {
@@ -221,13 +245,15 @@ namespace Loki
             }
      };
      
-    /*
-     * Creation Policy : AmountLimitedCreation
+    /**
+     * \class	AmountLimitedCreation
+     * \ingroup	CreationPolicyCachedFactoryGroup
+     * \brief	Limit by number of objects
+     * 
      * This implementation will prevent from Creating more than maxCreation objects
      * within byTime ms by calling eviction policy.
-     *
-     * Use the setRate method to set the rate parameters
-     * default is 10 objects
+     * Use the setRate method to set the rate parameters.
+     * default is 10 objects.
      */
      class AmountLimitedCreation
      {
@@ -267,12 +293,13 @@ namespace Loki
             }
      };
      
-    ///////////////////////////////////////////////////////////////////////////
-    // Eviction Policy
-    //
-    // The eviction policy gathers information about the stored objects
-    // and choose a candidate for eviction 
-    ///////////////////////////////////////////////////////////////////////////
+/**
+ * \defgroup	EvictionPolicyCachedFactoryGroup		Eviction policies
+ * \ingroup	CachedFactoryGroup
+ * \brief	Gathers informations about the stored objects and choose a
+ * candidate for eviction.
+ */
+
     class EvictionException : public std::exception
     {
     public:
@@ -310,14 +337,18 @@ namespace Loki
     	}
     };
     
-    ///////////////////////////////////////////////////////////////////////////
-    // Least Recently Used Eviction Policy
-    ///////////////////////////////////////////////////////////////////////////
-    // --> Evicts least accessed objects first
-    // If an object is heavily fetched
-    // (more than ULONG_MAX = UINT_MAX = 4294967295U)
-    // it could unfortunately be removed from the cache
-    //
+	/**
+	 * \class	EvictLRU
+	 * \ingroup	EvictionPolicyCachedFactoryGroup
+	 * \brief	Evicts least accessed objects first.
+	 * 
+	 * Implementation of the Least recent used algorithm as
+	 * described in http://en.wikipedia.org/wiki/Page_replacement_algorithms .
+	 * 
+	 * WARNING : If an object is heavily fetched
+	 * (more than ULONG_MAX = UINT_MAX = 4294967295U)
+	 * it could unfortunately be removed from the cache.
+	 */
     template
     <
     	typename DT, // Data Type (AbstractProduct*)
@@ -366,11 +397,17 @@ namespace Loki
             const char* name(){return "LRU";}
     };
     
-    ///////////////////////////////////////////////////////////////////////////
-    // Aging Eviction Policy
-    ///////////////////////////////////////////////////////////////////////////
-    // --> LRU aware of the time span of use
-    //
+	/**
+	 * \class	EvictAging
+	 * \ingroup	EvictionPolicyCachedFactoryGroup
+	 * \brief	LRU aware of the time span of use
+	 * 
+	 * Implementation of the Aging algorithm as
+	 * described in http://en.wikipedia.org/wiki/Page_replacement_algorithms .
+	 * 
+	 * This method is much more costly than evict LRU so
+	 * if you need extreme performance consider switching to EvictLRU
+	 */
     template
     <
     	typename DT, // Data Type (AbstractProduct*)
@@ -426,11 +463,14 @@ namespace Loki
         const char* name(){return "LRU with aging";}
     };
     
-    ///////////////////////////////////////////////////////////////////////////
-    // Random Eviction Policy
-    ///////////////////////////////////////////////////////////////////////////
-    // --> Evicts a random object
-    //
+	/**
+	 * \class	EvictRandom
+	 * \ingroup	EvictionPolicyCachedFactoryGroup
+	 * \brief	Evicts a random object
+	 * 
+	 * Implementation of the Random algorithm as
+	 * described in http://en.wikipedia.org/wiki/Page_replacement_algorithms .
+	 */
     template
     <
     	typename DT, // Data Type (AbstractProduct*)
@@ -477,11 +517,22 @@ namespace Loki
             const char* name(){return "random";}
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Statistic Policy
-    // Statistic Policy is used provide informations about the Caching efficiency
-    ///////////////////////////////////////////////////////////////////////////
-    
+/**
+ * \defgroup	StatisticPolicyCachedFactoryGroup		Statistic policies
+ * \ingroup	CachedFactoryGroup
+ * \brief	Gathers information about the cache.
+ * 
+ * For debugging purpose this policy proposes to gather informations
+ * about the cache. This could be useful to determine whether the cache is
+ * mandatory or if the policies are well suited to the application.
+ */
+	/**
+	 * \class	NoStatisticPolicy
+	 * \ingroup	StatisticPolicyCachedFactoryGroup
+	 * \brief	Do nothing
+	 *
+	 * Should be used in release code for better performances  
+	 */
     class NoStatisticPolicy
     {
     protected:
@@ -493,6 +544,21 @@ namespace Loki
         const char* name(){return "no";}
     };
     
+	/**
+	 * \class	SimpleStatisticPolicy
+	 * \ingroup	StatisticPolicyCachedFactoryGroup
+	 * \brief	Simple statistics
+	 *
+	 * Provides the following informations about the cache :
+	 * 		- Created objects
+	 * 		- Fetched objects
+	 * 		- Destroyed objects
+	 * 		- Cache hit
+	 * 		- Cache miss
+	 * 		- Currently allocated
+	 * 		- Currently out
+	 * 		- Cache overall efficiency
+	 */
     class SimpleStatisticPolicy
     {
     private:
@@ -561,14 +627,17 @@ namespace Loki
     public:
         const char* what() const throw() { return "Internal Cache Error"; }
     };
-    
+	
 	/**
-	 * CachedFactory implementation
-	 * This class acts as a Factory (it creates objects)
-	 * but also keeps the already created objects to prevent
-     * long constructions time
-     *
-     * This implementation do not retain ownership
+	 * \class		CachedFactory
+	 * \ingroup	FactoryGroup
+	 * \brief		Factory with caching support
+	 * 
+     * This class acts as a Factory (it creates objects)
+     * but also keeps the already created objects to prevent
+     * long constructions time.
+	 * 
+	 * Note this implementation do not retain ownership.
 	 */
 	 template
      <
@@ -614,7 +683,6 @@ namespace Loki
         typedef typename NP::ProductReturn ProductReturn;
 
         typedef Key< Impl, IdentifierType > Key;
-        //typedef typename Vector ObjVector;
         typedef std::map< Key, ObjVector >  KeyToObjVectorMap;
         typedef std::map< AbstractProduct*, Key >  FetchedObjToKeyMap;
         
@@ -718,7 +786,7 @@ namespace Loki
         CachedFactory() : factory(), fromKeyToObjVector(), providedObjects(), outObjects(0)
         {
         }
-        
+
         ~CachedFactory()
         {
             SP::onDebug();
@@ -758,6 +826,7 @@ namespace Loki
         }
 
         // TODO : prevent the Vector to be returned by copy.
+        /// Return the registered ID in this Factory
         std::vector<IdentifierType> RegisteredIds()
         {
             return factory.RegisteredIds();
@@ -1032,13 +1101,16 @@ namespace Loki
             return NP::encapsulate(pProduct);
         }
 
+		/// Use this function to release the object
+		/**
+		 * if execution brakes ni this function then you tried
+		 * to release an object that wasn't provided by this Cache
+		 * ... which is bad :-)
+		 */
         void ReleaseObject(ProductReturn &object)
         {
             AbstractProduct* pProduct(NP::release(object));
             typename FetchedObjToKeyMap::iterator itr = providedObjects.find(pProduct);
-            // if execution brakes on the following lines then you tried 
-            // to release an object that wasn't provided by this Cache
-            // ... which is bad :-)
             if(itr == providedObjects.end())
                 throw CacheException();
             onRelease(pProduct);
@@ -1046,6 +1118,7 @@ namespace Loki
             providedObjects.erase(itr);
         }
         
+        /// display the cache configuration
         void displayCacheType()
         {
             cout << "############################" << endl;
