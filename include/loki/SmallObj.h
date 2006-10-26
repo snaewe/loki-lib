@@ -37,7 +37,7 @@
 #endif
 
 #ifndef LOKI_DEFAULT_SMALLOBJ_LIFETIME
-#define LOKI_DEFAULT_SMALLOBJ_LIFETIME LongevityLifetime::DieAsSmallObjectParent
+#define LOKI_DEFAULT_SMALLOBJ_LIFETIME ::Loki::LongevityLifetime::DieAsSmallObjectParent
 #endif
 
 #if defined(LOKI_SMALL_OBJECT_USE_NEW_ARRAY) && defined(_MSC_VER)

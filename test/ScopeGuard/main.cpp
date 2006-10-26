@@ -43,6 +43,7 @@ public:
 
     void AddFriend(User& newFriend);
     void AddFriendGuarded(User& newFriend);
+    void AddFriendGuardedMacros(User& newFriend);
 
     size_t countFriends();
    
@@ -82,6 +83,12 @@ void User::AddFriendGuarded(User& newFriend)
     pDB_->AddFriend(GetName(), newFriend.GetName());
     guard.Dismiss();
     guardRef.Dismiss();
+}
+
+void User::AddFriendGuardedMacros(User&)
+{
+    LOKI_ON_BLOCK_EXIT_OBJ(friends_, &UserCont::pop_back); (void) LOKI_ANONYMOUS_VARIABLE(scopeGuard);
+    LOKI_ON_BLOCK_EXIT(Decrement, Loki::ByRef(fCount)); (void) LOKI_ANONYMOUS_VARIABLE(scopeGuard);
 }
 
 
