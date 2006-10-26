@@ -781,7 +781,7 @@ template
     template < class > class CheckingPolicy = Loki::AssertCheck,
     template < class > class ResetPolicy = Loki::CantResetWithStrong,
     template < class > class DeletePolicy = Loki::DeleteSingle,
-    template < class > class ConstnessPolicy = Loki::LOKI_DEFAULT_CONSTNESS
+    template < class > class ConstnessPolicy = LOKI_DEFAULT_CONSTNESS
 >
 class StrongPtr
     : public OwnershipPolicy
