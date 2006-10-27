@@ -41,7 +41,7 @@ namespace Loki
     bool operator<(const Key<F, I> &k1, const Key<F, I> &k2);
         
 
-    /*
+    /**
      * A Key class
      */
      template<

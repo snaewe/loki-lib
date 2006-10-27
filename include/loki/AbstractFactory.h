@@ -25,6 +25,19 @@
 
 #include <cassert>
 
+/**
+ * \defgroup	FactoriesGroup Factories
+ * \defgroup	AbstractFactoryGroup Abstract Factory
+ * \ingroup		FactoriesGroup
+ * \brief		Implements an abstract object factory.
+ */
+ 
+/**
+ * \class		AbstractFactory
+ * \ingroup		AbstractFactoryGroup
+ * \brief		Implements an abstract object factory.
+ */
+
 namespace Loki
 {
 

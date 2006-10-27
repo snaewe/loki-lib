@@ -53,9 +53,9 @@ using std::cout;
 using std::endl;
 
 /**
- * \defgroup	FactoryGroup Factory
+ * \defgroup	FactoriesGroup Factories
  * \defgroup	CachedFactoryGroup Cached Factory
- * \ingroup		FactoryGroup
+ * \ingroup		FactoriesGroup
  * \brief		CachedFactory provides an extension of a Factory with caching
  * support.
  * 
@@ -630,7 +630,7 @@ namespace Loki
 	
 	/**
 	 * \class		CachedFactory
-	 * \ingroup	FactoryGroup
+	 * \ingroup		CachedFactoryGroup
 	 * \brief		Factory with caching support
 	 * 
      * This class acts as a Factory (it creates objects)
