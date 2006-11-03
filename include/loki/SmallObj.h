@@ -345,6 +345,17 @@ namespace Loki
      or derived from by clients. Class has no data members so compilers can 
      use Empty-Base-Optimization.
 
+     @par ThreadingModel
+     This class doesn't support ObjectLevelLockable policy for ThreadingModel.
+     The allocator is a singleton, so a per-instance mutex is not necessary.
+     Nor is using ObjectLevelLockable recommended with SingletonHolder since
+     the SingletonHolder::MakeInstance function requires a mutex that exists
+     prior to when the object is created - which is not possible if the mutex
+     is inside the object, such as required for ObjectLevelLockable.  If you
+     attempt to use ObjectLevelLockable, the compiler will emit errors because
+     it can't use the default constructor in ObjectLevelLockable.  If you need
+     a thread-safe allocator, use the ClassLevelLockable policy.
+
      @par Lifetime Policy
      
      The SmallObjectBase template needs a lifetime policy because it owns
@@ -399,10 +410,10 @@ namespace Loki
         
         - Both Small-Object and Singleton use NoDestroy policy. 
           Since neither is ever destroyed, the destruction order does not matter.
-          Note: yow will get memory leaks!
+          Note: you will get memory leaks!
          
         - The Small-Object has NoDestroy policy but the Singleton has
-          SingletonWithLongevity policy. Note: yow will get memory leaks!
+          SingletonWithLongevity policy. Note: you will get memory leaks!
          
      
      You should *not* use NoDestroy for the singleton, and then use
