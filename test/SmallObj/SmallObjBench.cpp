@@ -14,10 +14,11 @@
 // $Id$
 
 
-//#define LOKI_CLASS_LEVEL_THREADING
-//#define LOKI_OBJECT_LEVEL_THREADING
+// ----------------------------------------------------------------------------
 
 #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
+
+#define LOKI_CLASS_LEVEL_THREADING
 
 #include <loki/SmallObj.h>
 #include "timer.h"
@@ -33,6 +34,8 @@
 using namespace std;
 
 
+// ----------------------------------------------------------------------------
+
 template<unsigned int N>
 class ThisIsASmallObject
 {
@@ -47,6 +50,8 @@ template<unsigned int N>
 struct Base<N, void> : public ThisIsASmallObject<N> 
 {};
 
+
+// ----------------------------------------------------------------------------
 
 #ifdef COMPARE_BOOST_POOL
 
@@ -110,6 +115,8 @@ boost::object_pool< BoostPoolNew<N> > BoostPoolNew<N>::BoostPool;
 
 #endif
 
+// ----------------------------------------------------------------------------
+
 
 int array_test_nr = 0;
 double t100_new = 0;
@@ -138,6 +145,8 @@ int FUNC(void**, const int N, int loop, Timer& t, const char* s)             \
 #else
     #define LOKI_BOOST_TEST_NR -1
 #endif
+
+// ----------------------------------------------------------------------------
 
 #define LOKI_SMALLOBJ_BENCH_ARRAY(FUNC, CODE_DECL, CODE_NEW, CODE_DELETE)    \
 template<class T, int TN>                                                    \
@@ -194,6 +203,8 @@ int FUNC(void** arrv, const int N, int loop, Timer& t, const char* s)        \
     return t.t();                                                            \
 }
 
+// ----------------------------------------------------------------------------
+
 
 LOKI_SMALLOBJ_BENCH(delete_new        ,delete new T;)
 LOKI_SMALLOBJ_BENCH(delete_new_mal    ,std::free(std::malloc(sizeof(T)));)
@@ -220,9 +231,11 @@ LOKI_SMALLOBJ_BENCH_ARRAY(new_del_a_on_a_all,std::allocator<T[TN]> st ,
                                                 st.deallocate(reinterpret_cast<T(*)[TN]>(arr[i]), 1);)
 
 
+// ----------------------------------------------------------------------------
+
 
 #ifndef COMPARE_BOOST_POOL
-#define LOKI_SMALLOBJBECH_ABCD(FUNC,N,LOOP,TIMER,MESSAGE)              \
+#define LOKI_SMALL_OBJECT_BENCH_ABCD(FUNC,N,LOOP,TIMER,MESSAGE)              \
     array_test_nr = 0;                                                 \
     cout << MESSAGE << endl;                                           \
     FUNC<A,N>(a,N,LOOP,TIMER,"new      :");                            \
@@ -232,7 +245,7 @@ LOKI_SMALLOBJ_BENCH_ARRAY(new_del_a_on_a_all,std::allocator<T[TN]> st ,
     FUNC##_mal<A,N>(a,N,LOOP,TIMER,"malloc   :");                      \
     cout << endl << endl;    
 #else
-#define LOKI_SMALLOBJBECH_ABCD(FUNC,N,LOOP,TIMER,MESSAGE)              \
+#define LOKI_SMALL_OBJECT_BENCH_ABCD(FUNC,N,LOOP,TIMER,MESSAGE)              \
     array_test_nr = 0;                                                 \
     cout << MESSAGE << endl;                                           \
     FUNC<A,N>(a,N,LOOP,TIMER,"new      :");                            \
@@ -244,19 +257,36 @@ LOKI_SMALLOBJ_BENCH_ARRAY(new_del_a_on_a_all,std::allocator<T[TN]> st ,
     cout << endl << endl;
 #endif
 
-#define LOKI_ALLOCATOR_PARAMETERS Loki::SingleThreaded, 4096, 128, 4, Loki::NoDestroy
+// ----------------------------------------------------------------------------
 
-template<unsigned int Size, int loop>
+template<
+    unsigned int Size,
+    int loop,
+    template <class, class> class ThreadingModel,
+    std::size_t chunkSize,
+    std::size_t maxSmallObjectSize,
+    std::size_t objectAlignSize,
+    template <class> class LifetimePolicy,
+    class MutexPolicy
+>
 void testSize()
 {
+
+//#define LOKI_ALLOCATOR_PARAMETERS ::Loki::SingleThreaded, 4096, 128, 4, Loki::NoDestroy
+
     typedef Base<Size, void> A;
-    typedef Base<Size, Loki::SmallObject< LOKI_ALLOCATOR_PARAMETERS > > B;
-    typedef Base<Size, Loki::SmallValueObject< LOKI_ALLOCATOR_PARAMETERS > > C;
+    typedef Base<Size, Loki::SmallObject< ThreadingModel, chunkSize,
+        maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy > > B;
+    typedef Base<Size, Loki::SmallValueObject< ThreadingModel, chunkSize,
+        maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy > > C;
+    typedef Loki::AllocatorSingleton< ThreadingModel, chunkSize,
+        maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy > AllocatorSingleton;
+
 #ifdef COMPARE_BOOST_POOL
     typedef BoostPoolNew<Size> D;
 #endif
 
-    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
+    assert( (!AllocatorSingleton::IsCorrupted()) );
     cout << endl << endl;
     cout << "Allocator Benchmark Tests with " << Size << " bytes big objects " << endl;
     cout << endl;
@@ -278,49 +308,80 @@ void testSize()
     void** a= new void*[Narr];
 
     cout << loop  << " times ";
-    LOKI_SMALLOBJBECH_ABCD(delete_new        ,0,loop,t,"'delete new T'");
-    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
+    LOKI_SMALL_OBJECT_BENCH_ABCD(delete_new        ,0,loop,t,"'delete new T'");
+    assert( (!AllocatorSingleton::IsCorrupted()) );
     
     cout << "N=" << N <<" :  " << loop  << " times ";
-    LOKI_SMALLOBJBECH_ABCD(delete_new_array    ,N,loop,t,"'delete[] new T[N]'");
-    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
+    LOKI_SMALL_OBJECT_BENCH_ABCD(delete_new_array    ,N,loop,t,"'delete[] new T[N]'");
+    assert( (!AllocatorSingleton::IsCorrupted()) );
 
     cout << "i=0..." << Narr << " :  ";
-    LOKI_SMALLOBJBECH_ABCD(new_del_on_arr    ,0,Narr,t,"1. 'arr[i] = new T'   2. 'delete arr[i]'");
-    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
+    LOKI_SMALL_OBJECT_BENCH_ABCD(new_del_on_arr    ,0,Narr,t,"1. 'arr[i] = new T'   2. 'delete arr[i]'");
+    assert( (!AllocatorSingleton::IsCorrupted()) );
     
     cout << "i=0..." << Narr << ",  N=" << N <<" :  ";
-    LOKI_SMALLOBJBECH_ABCD(new_del_a_on_a    ,N,Narr,t,"1. 'arr[i] = new T[N]'   2. 'delete[] arr[i]'");
-    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
+    LOKI_SMALL_OBJECT_BENCH_ABCD(new_del_a_on_a    ,N,Narr,t,"1. 'arr[i] = new T[N]'   2. 'delete[] arr[i]'");
+    assert( (!AllocatorSingleton::IsCorrupted()) );
 
 
     delete [] a;
     
     cout << "_________________________________________________________________" << endl;
-    assert( (!Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::IsCorrupted()) );
-    Loki::AllocatorSingleton< LOKI_ALLOCATOR_PARAMETERS >::ClearExtraMemory();
+    assert( (!AllocatorSingleton::IsCorrupted()) );
+    AllocatorSingleton::ClearExtraMemory();
 }
 
+// ----------------------------------------------------------------------------
 
-int main()
+void DoSingleThreadTest (void)
 {
     const int loop = 1000*1000;
-
     cout << endl;
-
-    testSize< 2,loop>();
-    testSize< 3,loop>();
-    testSize< 8,loop>();
-    testSize< 9,loop>();
-    testSize<16,loop>();
-    testSize<17,loop>();
+    testSize<  2, loop, ::Loki::SingleThreaded, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize<  3, loop, ::Loki::SingleThreaded, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize<  8, loop, ::Loki::SingleThreaded, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize<  9, loop, ::Loki::SingleThreaded, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize< 16, loop, ::Loki::SingleThreaded, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize< 17, loop, ::Loki::SingleThreaded, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");
+#endif
+}
+
+// ----------------------------------------------------------------------------
+
+#if defined(LOKI_CLASS_LEVEL_THREADING)
+
+void DoClassLockTest (void)
+{
+    const int loop = 1000*1000;
+    cout << endl;
+    testSize<  2, loop, ::Loki::ClassLevelLockable, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize<  3, loop, ::Loki::ClassLevelLockable, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize<  8, loop, ::Loki::ClassLevelLockable, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize<  9, loop, ::Loki::ClassLevelLockable, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize< 16, loop, ::Loki::ClassLevelLockable, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+    testSize< 17, loop, ::Loki::ClassLevelLockable, 4096, 128, 4, ::Loki::NoDestroy, ::Loki::Mutex >();
+
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+    system("PAUSE");
+#endif
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
+
+int main()
+{
+    DoSingleThreadTest();
+
+#if defined(LOKI_CLASS_LEVEL_THREADING)
+    DoClassLockTest();
 #endif
 
     return 0;
 }
 
 // ----------------------------------------------------------------------------
-
