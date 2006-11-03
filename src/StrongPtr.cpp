@@ -114,12 +114,14 @@ void TwoRefCounts::ZapPointer( void )
 
 #if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
 
+typedef SmallValueObject< ::Loki::ClassLevelLockable > ThreadSafePointerAllocator;
+
 // ----------------------------------------------------------------------------
 
 LockableTwoRefCounts::LockableTwoRefCounts( bool strong )
     : m_counts( NULL )
 {
-    void * temp = SmallObject<>::operator new(
+    void * temp = ThreadSafePointerAllocator::operator new(
         sizeof(Loki::Private::LockableTwoRefCountInfo) );
 #ifdef DO_EXTRA_LOKI_TESTS
     assert( temp != 0 );
@@ -132,7 +134,7 @@ LockableTwoRefCounts::LockableTwoRefCounts( bool strong )
 LockableTwoRefCounts::LockableTwoRefCounts( const void * p, bool strong )
     : m_counts( NULL )
 {
-    void * temp = SmallObject<>::operator new(
+    void * temp = ThreadSafePointerAllocator::operator new(
         sizeof(Loki::Private::LockableTwoRefCountInfo) );
 #ifdef DO_EXTRA_LOKI_TESTS
     assert( temp != 0 );
@@ -191,7 +193,7 @@ void LockableTwoRefCounts::ZapPointer( void )
     }
     else
     {
-        SmallObject<>::operator delete ( m_counts,
+        ThreadSafePointerAllocator::operator delete ( m_counts,
             sizeof(Loki::Private::LockableTwoRefCountInfo) );
         m_counts = NULL;
     }
