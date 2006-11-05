@@ -3,12 +3,12 @@ include ../Makefile.common
 ifeq ($(OS),Darwin)
   LIB1 := libfoo.dylib
   LIB2 := libsingletondll.dylib
-  SHARED_LIB_FLAG := -dynamiclib
+  SHARED_LIB_FLAG := -dynamiclib -fPIC
 else
 ifeq ($(OS),Linux)
   LIB1 := libfoo.so
   LIB2 := libsingletondll.so
-  SHARED_LIB_FLAG := --shared
+  SHARED_LIB_FLAG := --shared -fPIC
 else
   LIB1 := foo.dll
   LIB2 := singletondll.dll
@@ -20,13 +20,16 @@ BIN1 := client$(BIN_SUFFIX)
 SRC1 := client.cpp
 OBJ1 := $(SRC1:.cpp=.o)
 SRC2 := foo.cpp
-OBJ2 := $(SRC2:.cpp=.o)
+OBJ2 := $(SRC2:.cpp=.lo)
 SRC3 := singletondll.cpp
-OBJ3 := $(SRC3:.cpp=.o)
+OBJ3 := $(SRC3:.cpp=.lo)
 override LDFLAGS := -L../../lib
 
 .PHONY: all clean
 all: $(BIN1)
+
+%.lo : %.cpp
+	$(CXX) -c $(CXXFLAGS) -fPIC $(CPPFLAGS) -o $@ $<
 
 $(BIN1): $(OBJ1) $(LIB1) $(LIB2)
 	$(CXX) -L. $(LDFLAGS) -o $@ $(OBJ1) $(LDLIBS) -lfoo -lsingletondll
