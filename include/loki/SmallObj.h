@@ -277,14 +277,14 @@ namespace Loki
 
     template
     <
-        template <class, class> class TM,
-        std::size_t CS,
-        std::size_t MSOS,
-        std::size_t OAS,
-        template <class> class LP,
-        class MX
+        template <class, class> class T,
+        std::size_t C,
+        std::size_t M,
+        std::size_t O,
+        template <class> class L,
+        class X
     >
-    void AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX >::ClearExtraMemory( void )
+    void AllocatorSingleton< T, C, M, O, L, X >::ClearExtraMemory( void )
     {
         typename MyThreadingModel::Lock lock;
         (void)lock; // get rid of warning
@@ -293,14 +293,14 @@ namespace Loki
 
     template
     <
-        template <class, class> class TM,
-        std::size_t CS,
-        std::size_t MSOS,
-        std::size_t OAS,
-        template <class> class LP,
-        class MX
+        template <class, class> class T,
+        std::size_t C,
+        std::size_t M,
+        std::size_t O,
+        template <class> class L,
+        class X
     >
-    bool AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX >::IsCorrupted( void )
+    bool AllocatorSingleton< T, C, M, O, L, X >::IsCorrupted( void )
     {
         typename MyThreadingModel::Lock lock;
         (void)lock; // get rid of warning
@@ -321,15 +321,15 @@ namespace Loki
      */
     template
     <
-        template <class, class> class TM,
-        std::size_t CS,
-        std::size_t MSOS,
-        std::size_t OAS,
-        template <class> class LP,
-        class MX
+        template <class, class> class T,
+        std::size_t C,
+        std::size_t M,
+        std::size_t O,
+        template <class> class L,
+        class X
     >
     inline unsigned int GetLongevity(
-        AllocatorSingleton< TM, CS, MSOS, OAS, LP, MX > * )
+        AllocatorSingleton< T, C, M, O, L, X > * )
     {
         // Returns highest possible value.
         return 0xFFFFFFFF;
