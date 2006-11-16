@@ -1,16 +1,26 @@
 _____________________________________
 
 Version 0.1.6
-???, 2006
+November 16, 2006
 _____________________________________
 
 General:
-    - Mac linker errrors fixed (lf)
+	- CacheFactory added by Guillaume Chatelet
+	- Factory documentation improved by Guillaume Chatelet
+    - migrated to subversion (pk)
+    - Mac linker errors fixed (lf)
     - Makefiles can now be called from sub directories (lf)
     - Makefiles know includes and recompile if they are changed (linux, macosx) (lf)
     - Build all tests except SingletonDll with the static library (linux, macosx) (lf)
     - use standard conforming naming, SUN's compiler needs it (pk)
+    - all LOKI_ macros uses Loki:: 
 
+AbstractFactory:
+    - remove injected friends. (thanks to Sigoure Benoit, pk)
+   
+AssocVector:
+    - remove injected friends. (thanks to Sigoure Benoit, pk)
+    
 LockingPtr:
     - constructor added which gets a std::pair of pointers 
       to the object and the mutex (pk)
@@ -18,20 +28,40 @@ LockingPtr:
 Pimpl:
     - ImplT/PimplT/RimplT renamed to a more readable version: ImplOf (pk)
 
+Register:
+    - also produce a informative LOKI_CHECK_CLASS_IN_LIST error message with GCC
+
 SafeFormat:
     - add writing to ostream, by Tom Browder (pk)
     - add unsigned long version for Windows, (Thanks to ShenLei, pk)
+    
+Sequence:
+    - Also compiles with Aix
+    - switched to recursive implementation
     
 Singleton
     - example: move instantiation to the source file 
       fixes linker error with gcc 4.0.1 on the mac, 
       (Thanks to Idar Tollefsen and Sam Miller, pk)
+    - 64 bit linker error fixed (lf)
+
+SmallObj:
+    - compiler errors on SUN fixed (pk)    
+    - more documentation (rs)
+    - more tests (rs)
+    - AIX fixed, (thanks to Dieter Rosch, pk)
+  
+StrongPtr:
+    - Added typedef so LockableTwoRefCounts uses thread-safe allocator. (rs)
+    - AIX fixed, (thanks to Dieter Rosch, pk)
+  
       
 Threads:
     - reentrance support added to the pthread mutex (Thanks to Shen Lei, pk)
       
 
-CVS commits by Lukas Fittl (lf), Peter Kümmel (pk), Rich Sposato (rs)
+CVS commits by Guillaume Chatelet (gc), Lukas Fittl (lf), Peter Kümmel (pk), Rich Sposato (rs)
+      
 
 _____________________________________
 
@@ -349,3 +379,4 @@ Threading:
 
 
 CVS commits by Rich Sposato (rs) and Peter Kümmel (pk)
+
