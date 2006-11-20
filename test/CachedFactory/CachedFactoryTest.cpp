@@ -38,10 +38,20 @@
 #include <loki/CachedFactory.h>
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#include <windows.h> 
+	#include <windows.h>
 #else
-#include <unistd.h>
-void Sleep(unsigned int t) { usleep(t);}
+	#include <unistd.h>
+	void Sleep(unsigned int t) { usleep( 1000 * static_cast<unsigned long>(t));}
+	#include <sys/time.h>
+	typedef long milliSec;
+	milliSec getmilliSeconds()
+	{
+		struct timeval time;
+		time.tv_usec = 0;
+		time.tv_sec = 0;
+		gettimeofday(&time, NULL);
+		return milliSec(time.tv_usec/1000+time.tv_sec*1000);
+	}
 #endif
 
 
@@ -112,20 +122,20 @@ bool dispResult(const char* message, bool result)
 
 template<class CCache>
 bool unitTestCacheOverhead(int loop){
-	std::clock_t start, elapsedNoCache, elapsedCache;
-    start = std::clock();
+	milliSec start(0), elapsedNoCache(0), elapsedCache(0);
+    start = getmilliSeconds();
     for(int i=0;i<loop;i++)
         delete createProductNull();
-    elapsedNoCache = std::clock() - start;
+    elapsedNoCache = getmilliSeconds() - start;
     cout << " " << elapsedNoCache << " ms" ;
     CCache CC;
     CC.Register(nullID, createProductNull);
-    start = std::clock();
+    start = getmilliSeconds();
     for(int i=0;i<loop;i++){
         AbstractProduct *pProduct(CC.CreateObject(nullID));
         CC.ReleaseObject(pProduct);
     }
-    elapsedCache = std::clock() - start;
+    elapsedCache = getmilliSeconds() - start;
     cout << " " << elapsedCache << " ms";
     cout << " | average overhead per fetch : " <<((static_cast<double>(elapsedCache-elapsedNoCache)) / CLOCKS_PER_SEC * 1000 / loop)  << " ms" << endl;
     return true;
@@ -143,19 +153,19 @@ void testCacheOverhead(){
 }
 void unitTestCachePerformance(int loop){
     typedef CachedFactory< AbstractProduct, int > CCache;
-	std::clock_t start, elapsedNoCache, elapsedCache;
-    start = std::clock();
+	milliSec start(0), elapsedNoCache(0), elapsedCache(0);
+    start = getmilliSeconds();
     for(int i=0;i<loop;i++)
         delete createCostlyProductNull();
-    elapsedNoCache = std::clock() - start;
+    elapsedNoCache = getmilliSeconds() - start;
     CCache CC;
     CC.Register(nullID, createCostlyProductNull);
-    start = std::clock();
+    start = getmilliSeconds();
     for(int i=0;i<loop;i++){
         AbstractProduct *pProduct(CC.CreateObject(nullID));
         CC.ReleaseObject(pProduct);
     }
-    elapsedCache = std::clock() - start;
+    elapsedCache = getmilliSeconds() - start;
     cout << "No cache "<<elapsedNoCache<<" ms | Cache "<<elapsedCache<<" ms | Efficiency " << (double(elapsedNoCache)/elapsedCache)-1 << endl;
 }
 
@@ -168,7 +178,7 @@ void testCachePerformance()
 }
 
 template< class Cache >
-std::clock_t typicalUse( Cache &CC, unsigned objectKind, unsigned maxObjectCount, unsigned maxIteration)
+milliSec typicalUse( Cache &CC, unsigned objectKind, unsigned maxObjectCount, unsigned maxIteration)
 {
     assert(objectKind>0);
     assert(maxIteration>0);
@@ -176,14 +186,14 @@ std::clock_t typicalUse( Cache &CC, unsigned objectKind, unsigned maxObjectCount
     vector< AbstractProduct* > fetched;
     fetched.reserve(maxObjectCount);
     srand(0); // initialise the pseudo random operator
-    std::clock_t start(0);
-    std::clock_t end(0);
+    milliSec start(0);
+    milliSec end(0);
     try{
         // Registering objects
         for(size_t i=0;i<objectKind;i++)
             CC.Register(i, createProductNull);
         // Simulating real use
-        start = std::clock();
+        start = getmilliSeconds();
         for(unsigned i=0;i<maxIteration;i++)
         {
             const size_t size(fetched.size());
@@ -199,7 +209,7 @@ std::clock_t typicalUse( Cache &CC, unsigned objectKind, unsigned maxObjectCount
                 fetched.push_back(CC.CreateObject(int(objectKind*rand()/(RAND_MAX + 1.0))));
             }
         }
-        end = std::clock();
+        end = getmilliSeconds();
     }catch(std::exception &e)
     {
         cout << "Error in executing typicalUse " << endl << e.what() << endl;
