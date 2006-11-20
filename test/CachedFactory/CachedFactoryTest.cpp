@@ -37,23 +37,32 @@
 
 #include <loki/CachedFactory.h>
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+typedef long milliSec;
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
 	#include <windows.h>
+    milliSec getmilliSeconds()
+    {
+    	return std::clock()*1000/CLOCKS_PER_SEC;
+    }
 #else
 	#include <unistd.h>
 	void Sleep(unsigned int t) { usleep( 1000 * static_cast<unsigned long>(t));}
-	#include <sys/time.h>
-	typedef long milliSec;
-	milliSec getmilliSeconds()
-	{
-		struct timeval time;
-		time.tv_usec = 0;
-		time.tv_sec = 0;
-		gettimeofday(&time, NULL);
-		return milliSec(time.tv_usec/1000+time.tv_sec*1000);
-	}
+    /**
+     * Returns the number of milliseconds elapsed from the epoch.
+     * This counter might overrun and come back to 0.
+     * This might give a false result in the following tests.  
+     */
+    #include <sys/time.h>
+    milliSec getmilliSeconds()
+    {
+    	struct timeval time;
+    	time.tv_usec = 0;
+    	time.tv_sec = 0;
+    	gettimeofday(&time, NULL);
+    	return milliSec(time.tv_usec/1000+time.tv_sec*1000);
+    }
 #endif
-
 
 using std::cout;
 using std::cerr;
@@ -314,7 +323,7 @@ bool testRateLimitedFetchPolicy(bool waitBetweenFetch)
  
     bool exceptionOccured = false;
     const int number(5);
-    const int sleepTime(60);
+    const int sleepTime(70);
     AbstractProduct *products[number];
     for(int i=0;i<number;i++) products[i]=NULL; // initializing
     try{
@@ -342,7 +351,7 @@ bool fullTestRateLimitedFetchPolicy()
     cout << " || => Setting rate limit to 2 fetch within 100 ms." << endl;
     cout << " || => generating 5 objects " << endl;
     bool test1 = dispResult("Fast creation", testRateLimitedFetchPolicy(false)==true);
-    cout << " || => generating 5 objects with 60ms between each Fetch" << endl;
+    cout << " || => generating 5 objects with 70ms between each Fetch" << endl;
     bool test2 = dispResult("Slow creation", testRateLimitedFetchPolicy(true)==false);
     return test1 && test2;
 }
