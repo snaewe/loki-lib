@@ -166,6 +166,10 @@ namespace Loki
      * Use the setRate method to set the rate parameters.
      * default is 10 objects in a second.
      */
+     // !! CAUTION !!
+     // The std::clock() function is not quite precise
+     // under linux this policy might not work.
+     // TODO : get a better implementation (platform dependant)
      class RateLimitedCreation
      {
      private:
@@ -177,7 +181,7 @@ namespace Loki
           
             void cleanVector()
             {
-				clock_t currentTime = std::clock();
+				clock_t currentTime = clock();
                 D( cout << "currentTime = " << currentTime<< endl; )
                 D( cout << "currentTime - lastUpdate = " << currentTime - lastUpdate<< endl; )
                 if(currentTime - lastUpdate > timeValidity)
@@ -207,7 +211,7 @@ namespace Loki
                 cout << endl;
             }
      protected:
-            RateLimitedCreation() : maxCreation(10), timeValidity(CLOCKS_PER_SEC), lastUpdate(std::clock())
+            RateLimitedCreation() : maxCreation(10), timeValidity(CLOCKS_PER_SEC), lastUpdate(clock())
             {}
             
             struct Exception : public std::exception
@@ -226,7 +230,7 @@ namespace Loki
 
             void onCreate()
             {
-				m_vTimes.push_back(std::clock());
+				m_vTimes.push_back(clock());
             }
             
             void onDestroy()
