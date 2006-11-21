@@ -332,8 +332,9 @@ namespace Loki
     	// This function sorts the map according to the score
     	// and returns the lower bound of the sorted container
     	DT&	getLowerBound(){
+    		assert(!m_mHitCount.empty());
     		SwappedHitMap copyMap;
-    		for(HitMapItr itr = m_mHitCount.begin(); itr != m_mHitCount.end(); itr++)
+    		for(HitMapItr itr = m_mHitCount.begin(); itr != m_mHitCount.end(); ++itr)
     			copyMap.insert(SwappedPair(itr->second, itr->first));
     		if(copyMap.rbegin()->first == 0) // the higher score is 0 ...
     		  throw EvictionException(); // there is no key evict
@@ -395,8 +396,7 @@ namespace Loki
     	// LRU Eviction policy
     	void evict()
     	{
-    		DT& evictKey = EH::getLowerBound();
-    		remove(evictKey);
+    		remove(EH::getLowerBound());
     	}
             const char* name(){return "LRU";}
     };
@@ -440,10 +440,10 @@ namespace Loki
     	// If the key is the key of the fetched object :
     	//  the counter is shifted to the right and it's MSB is set to 1
     	// else
-    	//  the counter is shifted to the right
+    	//  the counter is shifted to the left
         void onRelease(const DT& key)
         {
-    		for( HitMapItr itr = EH::m_mHitCount.begin(); itr != EH::m_mHitCount.end(); itr++){
+    		for( HitMapItr itr = EH::m_mHitCount.begin(); itr != EH::m_mHitCount.end(); ++itr){
     			itr->second = (itr->first == key ? (itr->second >> 1) | ( 1 << ((sizeof(ST)-1)*8) ) : itr->second >> 1);
     			D( cout <<  itr->second << endl; )
     		}
@@ -461,8 +461,7 @@ namespace Loki
     	// LRU with Aging Eviction policy
     	void evict()
     	{
-    		DT& evictKey = EH::getLowerBound();
-    		remove(evictKey);
+    		remove(EH::getLowerBound());
     	}
         const char* name(){return "LRU with aging";}
     };
@@ -511,12 +510,10 @@ namespace Loki
     	// Random Eviction policy
     	void evict()
     	{
-    		if(m_vKeys.size()==0)
+    		if(m_vKeys.empty())
     		    throw EvictionException();
     		size_type random = static_cast<size_type>((m_vKeys.size()*rand())/int(RAND_MAX + 1));
-    		iterator pos = m_vKeys.begin()+random;
-    		DT& evictKey = *pos;
-    		remove(evictKey);
+    		remove(*(m_vKeys.begin()+random));
     	}
             const char* name(){return "random";}
     };
@@ -702,8 +699,6 @@ namespace Loki
 
         AbstractProduct* const getPointerToObjectInContainer(ObjVector &entry)
         {
-            AbstractProduct* pObject = NULL;
-            (void) pObject;
             if(entry.empty()) // No object available
             { // the object will be created in the calling function.
               // It has to be created in the calling function because of
@@ -719,7 +714,7 @@ namespace Loki
             }
         }
         
-        bool shouldCreateObject(AbstractProduct* pProduct){
+        bool shouldCreateObject(AbstractProduct * const pProduct){
             if(pProduct!=NULL) // object already exists
                 return false;
             if(CP::canCreate()==false) // Are we allowed to Create ?
@@ -727,33 +722,33 @@ namespace Loki
             return true;
         }
         
-        void ReleaseObjectFromContainer(ObjVector &entry, AbstractProduct* const object)
+        void ReleaseObjectFromContainer(ObjVector &entry, AbstractProduct * const object)
         {
             entry.push_back(object);
         }
         
-        void onFetch(AbstractProduct* pProduct)
+        void onFetch(AbstractProduct * const pProduct)
         {
             SP::onFetch();
             EP::onFetch(pProduct);
             ++outObjects;
         }
         
-        void onRelease(AbstractProduct* pProduct)
+        void onRelease(AbstractProduct * const pProduct)
         {
             SP::onRelease();
             EP::onRelease(pProduct);
             --outObjects;
         }
         
-        void onCreate(AbstractProduct* pProduct)
+        void onCreate(AbstractProduct * const pProduct)
         {
             CP::onCreate();
             SP::onCreate();
             EP::onCreate(pProduct);
         }
         
-        void onDestroy(AbstractProduct* pProduct)
+        void onDestroy(AbstractProduct * const pProduct)
         {
             CP::onDestroy();
             SP::onDestroy();
@@ -761,7 +756,7 @@ namespace Loki
         }
         
      protected:
-        virtual void remove(AbstractProduct* pProduct)
+        virtual void remove(AbstractProduct * const pProduct)
         {
             typename FetchedObjToKeyMap::iterator fetchedItr = providedObjects.find(pProduct);
             if(fetchedItr!=providedObjects.end()) // object is unreleased.
@@ -769,7 +764,7 @@ namespace Loki
             bool productRemoved = false;
             typename KeyToObjVectorMap::iterator objVectorItr;
             typename ObjVector::iterator objItr;
-            for(objVectorItr=fromKeyToObjVector.begin();objVectorItr!=fromKeyToObjVector.end();objVectorItr++)
+            for(objVectorItr=fromKeyToObjVector.begin();objVectorItr!=fromKeyToObjVector.end();++objVectorItr)
             {
                 ObjVector &v(objVectorItr->second);
                 objItr = remove_if(v.begin(), v.end(), bind2nd(equal_to<AbstractProduct*>(), pProduct));
@@ -803,8 +798,9 @@ namespace Loki
                 D( cout << "====>>  Cache destructor : deleting "<< providedObjects.size()<<" objects  <<====" << endl << endl; )
             }
             // cleaning the Cache
+            
             typename FetchedObjToKeyMap::iterator itr;
-            for(itr=providedObjects.begin(); itr!=providedObjects.end();itr++)
+            for(itr=providedObjects.begin(); itr!=providedObjects.end();++itr)
                 delete itr->first;
         }
         
@@ -829,9 +825,8 @@ namespace Loki
             return factory.Unregister(id);
         }
 
-        // TODO : prevent the Vector to be returned by copy.
         /// Return the registered ID in this Factory
-        std::vector<IdentifierType> RegisteredIds()
+        std::vector<IdentifierType>& RegisteredIds()
         {
             return factory.RegisteredIds();
         }
