@@ -67,9 +67,10 @@ namespace Loki
     class HeapStorage
     {
     public:
-        typedef T* StoredType;    // the type of the pointee_ object
-        typedef T* PointerType;   // type returned by operator->
-        typedef T& ReferenceType; // type returned by operator*
+        typedef T* StoredType;      /// the type of the pointee_ object
+        typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
+        typedef T* PointerType;     /// type returned by operator->
+        typedef T& ReferenceType;   /// type returned by operator*
 
         HeapStorage() : pointee_(Default()) 
         {}
@@ -149,6 +150,7 @@ namespace Loki
     {
     public:
         typedef T* StoredType;    // the type of the pointee_ object
+        typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;   // type returned by operator->
         typedef T& ReferenceType; // type returned by operator*
 
@@ -212,7 +214,118 @@ namespace Loki
     inline typename DefaultSPStorage<T>::StoredType& GetImplRef(DefaultSPStorage<T>& sp)
     { return sp.pointee_; }
 
-    
+
+////////////////////////////////////////////////////////////////////////////////
+///  \class LockedStorage
+///
+///  \ingroup  SmartPointerStorageGroup 
+///  Implementation of the StoragePolicy used by SmartPtr.
+///  Requires class T to have member functions Lock and Unlock.
+////////////////////////////////////////////////////////////////////////////////
+
+        template <class T>
+        class Locker
+        {
+        public:
+            Locker( const T * p ) : pointee_( const_cast< T * >( p ) )
+            {
+                if ( pointee_ != 0 )
+                    pointee_->Lock();
+            }
+
+            ~Locker( void )
+            {
+                if ( pointee_ != 0 )
+                    pointee_->Unlock();
+            }
+
+            operator T * ()
+            {
+                return pointee_;
+            }
+
+            T * operator->()
+            {
+                return pointee_;
+            }
+
+        private:
+            Locker( void );
+            Locker & operator = ( const Locker & );
+            T * pointee_;
+        };
+
+    template <class T>
+    class LockedStorage
+    {
+    public:
+
+        typedef T* StoredType;           /// the type of the pointee_ object
+        typedef T* InitPointerType;      /// type used to declare OwnershipPolicy type.
+        typedef Locker< T > PointerType; /// type returned by operator->
+        typedef T& ReferenceType;        /// type returned by operator*
+
+        LockedStorage() : pointee_( Default() ) {}
+
+        ~LockedStorage( void ) {}
+
+        LockedStorage( const LockedStorage&) : pointee_( 0 ) {}
+
+        LockedStorage( const StoredType & p ) : pointee_( p ) {}
+
+        PointerType operator->()
+        {
+            return Locker< T >( pointee_ );
+        }
+
+        void Swap(LockedStorage& rhs)
+        {
+            std::swap( pointee_, rhs.pointee_ );
+        }
+
+        // Accessors
+        template <class F>
+        friend typename LockedStorage<F>::InitPointerType GetImpl(const LockedStorage<F>& sp);
+
+        template <class F>
+        friend const typename LockedStorage<F>::StoredType& GetImplRef(const LockedStorage<F>& sp);
+
+        template <class F>
+        friend typename LockedStorage<F>::StoredType& GetImplRef(LockedStorage<F>& sp);
+
+    protected:
+        // Destroys the data stored
+        // (Destruction might be taken over by the OwnershipPolicy)
+        void Destroy()
+        {
+            delete pointee_;
+        }
+
+        // Default value to initialize the pointer
+        static StoredType Default()
+        { return 0; }
+
+    private:
+        /// Dereference operator is not implemented.
+        ReferenceType operator*();
+
+        // Data
+        StoredType pointee_;
+    };
+
+    template <class T>
+    inline typename LockedStorage<T>::InitPointerType GetImpl(const LockedStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline const typename LockedStorage<T>::StoredType& GetImplRef(const LockedStorage<T>& sp)
+    { return sp.pointee_; }
+
+    template <class T>
+    inline typename LockedStorage<T>::StoredType& GetImplRef(LockedStorage<T>& sp)
+    { return sp.pointee_; }
+
+
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class ArrayStorage
 ///
@@ -226,6 +339,7 @@ namespace Loki
     {
     public:
         typedef T* StoredType;    // the type of the pointee_ object
+        typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;   // type returned by operator->
         typedef T& ReferenceType; // type returned by operator*
 
@@ -977,12 +1091,12 @@ namespace Loki
     >
     class SmartPtr
         : public StoragePolicy<T>
-        , public OwnershipPolicy<typename StoragePolicy<T>::PointerType>
+        , public OwnershipPolicy<typename StoragePolicy<T>::InitPointerType>
         , public CheckingPolicy<typename StoragePolicy<T>::StoredType>
         , public ConversionPolicy
     {
         typedef StoragePolicy<T> SP;
-        typedef OwnershipPolicy<typename StoragePolicy<T>::PointerType> OP;
+        typedef OwnershipPolicy<typename StoragePolicy<T>::InitPointerType> OP;
         typedef CheckingPolicy<typename StoragePolicy<T>::StoredType> KP;
         typedef ConversionPolicy CP;
         
@@ -1011,18 +1125,25 @@ namespace Loki
     public:
 
         SmartPtr()
-        { KP::OnDefault(GetImpl(*this)); }
+        {
+            KP::OnDefault(GetImpl(*this));
+        }
         
         explicit
         SmartPtr(ExplicitArg p) : SP(p)
-        { KP::OnInit(GetImpl(*this)); }
+        {
+            KP::OnInit(GetImpl(*this));
+        }
 
         SmartPtr(ImplicitArg p) : SP(p)
-        { KP::OnInit(GetImpl(*this)); }
+        {
+            KP::OnInit(GetImpl(*this));
+        }
 
-        SmartPtr(CopyArg& rhs)
-        : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-        { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
+        SmartPtr(CopyArg& rhs) : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
+        {
+            GetImplRef(*this) = OP::Clone(GetImplRef(rhs));
+        }
 
         template
         <
@@ -1048,7 +1169,9 @@ namespace Loki
         >
         SmartPtr(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-        { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
+        {
+            GetImplRef(*this) = OP::Clone(GetImplRef(rhs));
+        }
 
         SmartPtr(RefToValue<SmartPtr> rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
