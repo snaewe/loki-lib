@@ -623,6 +623,18 @@ private:
 
 class LOKI_EXPORT LockableTwoRefCounts
 {
+public:
+
+    inline void Lock( void ) const
+    {
+        m_counts->Lock();
+    }
+
+    inline void Unlock( void ) const
+    {
+        m_counts->Unlock();
+    }
+
 protected:
 
     explicit LockableTwoRefCounts( bool strong );
@@ -633,16 +645,6 @@ protected:
         m_counts( rhs.m_counts )
     {
         Increment( strong );
-    }
-
-    inline void Lock( void ) const
-    {
-        m_counts->Lock();
-    }
-
-    inline void Unlock( void ) const
-    {
-        m_counts->Unlock();
     }
 
     inline bool Release( bool strong )
