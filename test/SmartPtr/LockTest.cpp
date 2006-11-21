@@ -16,7 +16,10 @@
 // ----------------------------------------------------------------------------
 
 
-#ifdef LOKI_OBJECT_LEVEL_THREADING 
+#define LOKI_CLASS_LEVEL_THREADING
+//#define DO_EXTRA_LOKI_TESTS
+
+#if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
 
 /// @note This test uses LOKI_OBJECT_LEVEL_THREADING because StrongPtr's
 /// LockableTwoRefCounts policy can't be used with a single-threaded model.
@@ -31,6 +34,7 @@
 
 #include <loki/Threads.h>
 #include <loki/StrongPtr.h>
+#include <loki/SmartPtr.h>
 #include <loki/SafeFormat.h>
 #include <loki/ScopeGuard.h>
 
@@ -169,25 +173,46 @@ public:
 
 #define  BIG_FOR_LOOP for( unsigned int i = 0; i < 5000000; i++ ) g++;
 
-    void Print( void * id ) const
+    void Print( int id ) const
     {
-        BIG_FOR_LOOP;Printf("%p: ----------------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: ---------------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: --------------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: -------------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: ------------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: -----------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: ----------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: ---------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: --------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: -------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: ------\n")(id);
-        BIG_FOR_LOOP;Printf("%p: -----\n")(id);
-        BIG_FOR_LOOP;Printf("%p: ----\n")(id);
-        BIG_FOR_LOOP;Printf("%p: ---\n")(id);
-        BIG_FOR_LOOP;Printf("%p: --\n")(id);
-        BIG_FOR_LOOP;Printf("%p: -\n")(id);
-        BIG_FOR_LOOP;Printf("%p: \n")(id);
+        BIG_FOR_LOOP;Printf("%d: ----------------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: ---------------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: --------------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: -------------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: ------------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: -----------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: ----------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: ---------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: --------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: -------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: ------\n")(id);
+        BIG_FOR_LOOP;Printf("%d: -----\n")(id);
+        BIG_FOR_LOOP;Printf("%d: ----\n")(id);
+        BIG_FOR_LOOP;Printf("%d: ---\n")(id);
+        BIG_FOR_LOOP;Printf("%d: --\n")(id);
+        BIG_FOR_LOOP;Printf("%d: -\n")(id);
+        BIG_FOR_LOOP;Printf("%d: \n")(id);
+    }
+
+    void Print( int id, int j ) const
+    {
+        BIG_FOR_LOOP;Printf("%d: %d: ----------------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: ---------------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: --------------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: -------------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: ------------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: -----------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: ----------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: ---------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: --------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: -------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: ------\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: -----\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: ----\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: ---\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: --\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: -\n")(id)(j);
+        BIG_FOR_LOOP;Printf("%d: %d: \n")(id)(j);
     }
 
 private:
@@ -197,13 +222,44 @@ private:
 
 unsigned int A::g = 0;
 
-typedef Loki::StrongPtr< A, true, TwoRefCounts, DisallowConversion,
+// ----------------------------------------------------------------------------
+
+class LockedA : public A
+{
+public:
+
+    LockedA( void ) : A(), m_mutex() {}
+
+    ~LockedA( void ) {}
+
+    void Lock( void ) const
+    {
+        m_mutex.Lock();
+    }
+
+    void Unlock( void ) const
+    {
+        m_mutex.Unlock();
+    }
+
+private:
+    mutable ::Loki::Mutex m_mutex;
+};
+
+// ----------------------------------------------------------------------------
+
+typedef ::Loki::StrongPtr< A, true, TwoRefCounts, DisallowConversion,
     NoCheck, NeverReset, DeleteSingle, DontPropagateConst >
     A_ptr;
 
-typedef Loki::StrongPtr< A, true, LockableTwoRefCounts, DisallowConversion,
+typedef ::Loki::StrongPtr< A, true, LockableTwoRefCounts, DisallowConversion,
     NoCheck, NeverReset, DeleteSingle, DontPropagateConst >
     A_Lockable_ptr;
+
+typedef ::Loki::SmartPtr< LockedA, RefCounted, DisallowConversion,
+    ::Loki::AssertCheck, ::Loki::LockedStorage, DontPropagateConst >
+    A_Locked_ptr;
+
 
 // ----------------------------------------------------------------------------
 
@@ -277,27 +333,85 @@ UnsafeA * UnsafeA::s_instance = NULL;
 
 // ----------------------------------------------------------------------------
 
+class SelfLockedA
+{
+public:
+    static SelfLockedA & GetIt( void )
+    {
+        if ( NULL == s_instance )
+            s_instance = new SelfLockedA;
+        return *s_instance;
+    }
+
+    static void Destroy( void )
+    {
+        if ( NULL != s_instance )
+        {
+             delete s_instance;
+             s_instance = NULL;
+        }
+    }
+
+    A_Locked_ptr GetA (void) { return m_ptr; }
+
+private:
+    static SelfLockedA * s_instance;
+
+    SelfLockedA( void ) : m_ptr( new LockedA ) {}
+
+    ~SelfLockedA( void ) {}
+
+    A_Locked_ptr m_ptr;
+};
+
+SelfLockedA * SelfLockedA::s_instance = NULL;
+
+// ----------------------------------------------------------------------------
+
 void * RunLocked( void * id )
 {
     A_Lockable_ptr ap( SafeA::GetIt().GetA() );
+    const int threadIndex = reinterpret_cast< int >( id );
     for( unsigned int i = 0; i < loop; i++ )
     {
         ap.Lock();
         Loki::ScopeGuard unlockGuard = MakeGuard( &A_Lockable_ptr::Unlock, ap );
         (void)unlockGuard;
-        ap->Print( id );
+        ap->Print( threadIndex );
     }
     return 0;
 }
 
 // ----------------------------------------------------------------------------
 
+void * RunLockedStorage( void * id )
+{
+    A_Locked_ptr ap( SelfLockedA::GetIt().GetA() );
+    const int threadIndex = reinterpret_cast< int >( id );
+    int j = 0;
+    for( unsigned int i = 0; i < loop; i++ )
+    {
+        ap->Print( threadIndex, j );
+        j++;
+#ifdef DO_EXTRA_LOKI_TESTS
+        ap->Print( threadIndex, j );
+        j++;
+        A_Locked_ptr ap1( ap );
+        ap1->Print( threadIndex, j );
+        j++;
+#endif
+    }
+    return 0;
+}
+// ----------------------------------------------------------------------------
+
 void * Run( void * id )
 {
     A_ptr ap( UnsafeA::GetIt().GetA() );
+    const int threadIndex = reinterpret_cast< int >( id );
     for( unsigned int i = 0; i < loop; i++ )
     {
-        ap->Print( id );
+        ap->Print( threadIndex );
     }
     return 0;
 }
@@ -306,27 +420,48 @@ void * Run( void * id )
 
 void DoLockedPtrTest( void )
 {
-     SafeA::GetIt();
-     UnsafeA::GetIt();
-     ::system( "pause" );
-     {
-         ThreadPool pool;
-         pool.Create( 5, RunLocked );
-         pool.Start();
-         pool.Join();
-     }
-     ::system( "pause" );
-     {
-         ThreadPool pool;
-         pool.Create( 5, Run );
-         pool.Start();
-         pool.Join();
-     }
-     SafeA::Destroy();
-     UnsafeA::Destroy();
+    cout << "Doing thread-locked pointer tests." << endl;
+    SafeA::GetIt();
+    UnsafeA::GetIt();
+    ::system( "pause" );
+    {
+        ThreadPool pool;
+        pool.Create( 5, RunLocked );
+        pool.Start();
+        pool.Join();
+    }
+    cout << "Doing thread-unsafe pointer tests." << endl;
+    ::system( "pause" );
+    {
+        ThreadPool pool;
+        pool.Create( 5, Run );
+        pool.Start();
+        pool.Join();
+    }
+    SafeA::Destroy();
+    UnsafeA::Destroy();
 }
 
-#endif //#ifdef LOKI_OBJECT_LEVEL_THREADING 
+// ----------------------------------------------------------------------------
+
+void DoLockedStorageTest( void )
+{
+    cout << "Doing LockedStorage tests." << endl;
+    SelfLockedA::GetIt();
+    ::system( "pause" );
+    {
+        ThreadPool pool;
+        pool.Create( 5, RunLockedStorage );
+        pool.Start();
+        pool.Join();
+    }
+    ::system( "pause" );
+    SelfLockedA::Destroy();
+}
+
+// ----------------------------------------------------------------------------
+
+#endif //#ifdef using multi-threaded model 
 
 // ----------------------------------------------------------------------------
 

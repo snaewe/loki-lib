@@ -34,6 +34,7 @@ extern void DoStrongConstTests( void );
 extern void DoStrongForwardReferenceTest( void );
 
 extern void DoLockedPtrTest( void );
+extern void DoLockedStorageTest( void );
 
 unsigned int BaseClass::s_constructions = 0;
 unsigned int BaseClass::s_destructions = 0;
@@ -1029,9 +1030,10 @@ int main( unsigned int argc, const char * argv[] )
     DoOwnershipConversionTests();
     DoInheritanceConversionTests();
 
-#ifdef LOKI_OBJECT_LEVEL_THREADING 
+#if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
     if ( doThreadTest )
     {
+        DoLockedStorageTest();
         DoLockedPtrTest();
     }
 #endif
