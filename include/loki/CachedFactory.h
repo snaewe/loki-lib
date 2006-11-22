@@ -38,15 +38,11 @@
 
 #ifdef _MSC_VER
 #include <time.h>
-namespace std
-{
-	typedef ::clock_t clock_t;
-	int clock(){ return ::clock();}
-}
-#endif
-
+#else
 using std::clock_t;
 using std::clock;
+#endif
+
 using std::bind2nd;
 using std::equal_to;
 using std::cout;
@@ -391,7 +387,7 @@ namespace Loki
     	
     	// this function is implemented in Cache and redirected
     	// to the Storage Policy
-    	virtual void remove(DT key)=0;
+    	virtual void remove(DT const key)=0;
 
     	// LRU Eviction policy
     	void evict()
@@ -456,7 +452,7 @@ namespace Loki
 
     	// this function is implemented in Cache and redirected
     	// to the Storage Policy
-    	virtual void remove(DT key)=0;
+    	virtual void remove(DT const key)=0;
 
     	// LRU with Aging Eviction policy
     	void evict()
@@ -505,7 +501,7 @@ namespace Loki
     	}
     	
     	// Implemented in Cache and redirected to the Storage Policy
-    	virtual void remove(DT key)=0;
+    	virtual void remove(DT const key)=0;
 
     	// Random Eviction policy
     	void evict()
