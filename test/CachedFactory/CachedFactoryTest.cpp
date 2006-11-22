@@ -43,7 +43,7 @@ typedef long milliSec;
 	#include <windows.h>
     milliSec getmilliSeconds()
     {
-    	return std::clock()*1000/CLOCKS_PER_SEC;
+    	return clock()*1000/CLOCKS_PER_SEC;
     }
 #else
 	#include <unistd.h>
