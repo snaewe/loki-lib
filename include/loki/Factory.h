@@ -799,7 +799,6 @@ template <typename AP, typename Id, typename P1 >
             ProductCreator creator( p, fn );
             return associations_.insert(
                 typename IdToProductMap::value_type(id, creator)).second != 0;
-
         }
 
         bool Unregister(const IdentifierType& id)
@@ -977,7 +976,6 @@ template <typename AP, typename Id, typename P1 >
 
     };
 
-
 #else
 
     template
@@ -995,12 +993,12 @@ template <typename AP, typename Id, typename P1 >
         bool Register(const IdentifierType& id, ProductCreator creator)
         {
             return associations_.insert(
-                typename IdToProductMap::value_type(id, creator)).second;
+                typename IdToProductMap::value_type(id, creator)).second != 0;
         }
 
         bool Unregister(const IdentifierType& id)
         {
-            return associations_.erase(id) == 1;
+            return associations_.erase(id) != 0;
         }
 
         AbstractProduct* CreateObject(const IdentifierType& id)
@@ -1017,7 +1015,6 @@ template <typename AP, typename Id, typename P1 >
         typedef AssocVector<IdentifierType, ProductCreator> IdToProductMap;
         IdToProductMap associations_;
     };
-
 
 #endif //#define ENABLE_NEW_FACTORY_CODE
 
@@ -1046,20 +1043,24 @@ template <typename AP, typename Id, typename P1 >
         bool Register(const TypeInfo& ti, ProductCreator creator)
         {
             return associations_.insert(
-                typename IdToProductMap::value_type(ti, creator)).second;
+                typename IdToProductMap::value_type(ti, creator)).second != 0;
         }
 
         bool Unregister(const TypeInfo& id)
         {
-            return associations_.erase(id) == 1;
+            return associations_.erase(id) != 0;
         }
 
         AbstractProduct* CreateObject(const AbstractProduct* model)
         {
-            if (model == 0) return 0;
+            if (model == NULL)
+            {
+            	return NULL;
+            }
 
-            typename IdToProductMap::iterator i =
-                associations_.find(typeid(*model));
+            typename IdToProductMap::iterator i = 
+            	associations_.find(typeid(*model));
+            	
             if (i != associations_.end())
             {
                 return (i->second)(model);
@@ -1071,12 +1072,13 @@ template <typename AP, typename Id, typename P1 >
         typedef AssocVector<TypeInfo, ProductCreator> IdToProductMap;
         IdToProductMap associations_;
     };
+        
 } // namespace Loki
+
 
 #ifdef _MSC_VER
 #pragma warning( pop )
 #endif
-
 
 #endif // end file guardian
 
