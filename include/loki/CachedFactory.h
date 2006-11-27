@@ -38,15 +38,7 @@
 
 #ifdef _MSC_VER
 #include <time.h>
-#else
-using std::clock_t;
-using std::clock;
 #endif
-
-using std::bind2nd;
-using std::equal_to;
-using std::cout;
-using std::endl;
 
 /**
  * \defgroup	FactoriesGroup Factories
@@ -178,19 +170,19 @@ namespace Loki
             void cleanVector()
             {
 				clock_t currentTime = clock();
-                D( cout << "currentTime = " << currentTime<< endl; )
-                D( cout << "currentTime - lastUpdate = " << currentTime - lastUpdate<< endl; )
+                D( std::cout << "currentTime = " << currentTime<< std::endl; )
+                D( std::cout << "currentTime - lastUpdate = " << currentTime - lastUpdate<< std::endl; )
                 if(currentTime - lastUpdate > timeValidity)
                 {
                     m_vTimes.clear();
-                    D( cout << " is less than time validity " << timeValidity; )
-                    D( cout << " so clearing vector" << endl; )
+                    D( std::cout << " is less than time validity " << timeValidity; )
+                    D( std::cout << " so clearing vector" << std::endl; )
                 }
                 else
                 {
-                    D( cout << "Cleaning time less than " << currentTime - timeValidity << endl; )
+                    D( std::cout << "Cleaning time less than " << currentTime - timeValidity << std::endl; )
                     D( displayVector(); )
-                    Vector::iterator newEnd = remove_if(m_vTimes.begin(), m_vTimes.end(), bind2nd(std::less<clock_t>(), currentTime - timeValidity));
+                    Vector::iterator newEnd = remove_if(m_vTimes.begin(), m_vTimes.end(), std::bind2nd(std::less<clock_t>(), currentTime - timeValidity));
                     // this rearrangement might be costly, consider optimization
                     // by calling cleanVector in less used onCreate function
                     // ... although it may not be correct
@@ -202,9 +194,9 @@ namespace Loki
             
             void displayVector()
             {
-                cout << "Vector : ";
-                copy(m_vTimes.begin(), m_vTimes.end(), std::ostream_iterator<clock_t>(cout, " "));
-                cout << endl;
+                std::cout << "Vector : ";
+                copy(m_vTimes.begin(), m_vTimes.end(), std::ostream_iterator<clock_t>(std::cout, " "));
+                std::cout << std::endl;
             }
      protected:
             RateLimitedCreation() : maxCreation(10), timeValidity(CLOCKS_PER_SEC), lastUpdate(clock())
@@ -241,7 +233,7 @@ namespace Loki
                 assert(byTime>0);
                 this->maxCreation = maxCreation;
                 this->timeValidity = static_cast<clock_t>(byTime * CLOCKS_PER_SEC / 1000);
-                D( cout << "Setting no more than "<< maxCreation <<" creation within " << this->timeValidity <<" ms"<< endl; )
+                D( std::cout << "Setting no more than "<< maxCreation <<" creation within " << this->timeValidity <<" ms"<< std::endl; )
             }
      };
      
@@ -289,7 +281,7 @@ namespace Loki
             {
                 assert(maxCreation>0);
                 this->maxCreation = maxCreation;
-                D( cout << "Setting no more than " << maxCreation <<" creation" << endl; )
+                D( std::cout << "Setting no more than " << maxCreation <<" creation" << std::endl; )
             }
      };
      
@@ -441,7 +433,7 @@ namespace Loki
         {
     		for( HitMapItr itr = EH::m_mHitCount.begin(); itr != EH::m_mHitCount.end(); ++itr){
     			itr->second = (itr->first == key ? (itr->second >> 1) | ( 1 << ((sizeof(ST)-1)*8) ) : itr->second >> 1);
-    			D( cout <<  itr->second << endl; )
+    			D( std::cout <<  itr->second << std::endl; )
     		}
         }
         
@@ -497,7 +489,7 @@ namespace Loki
     	}
     	
     	void onDestroy(const DT& key){
-            m_vKeys.erase(remove_if(m_vKeys.begin(), m_vKeys.end(), bind2nd(equal_to< DT >(), key)), m_vKeys.end());
+            m_vKeys.erase(remove_if(m_vKeys.begin(), m_vKeys.end(), std::bind2nd(std::equal_to< DT >(), key)), m_vKeys.end());
     	}
     	
     	// Implemented in Cache and redirected to the Storage Policy
@@ -567,21 +559,21 @@ namespace Loki
         
         void onDebug()
         {
-            cout << "############################" << endl;
-            cout << "## About this cache " << this << endl;
-            cout << "## + Created objects     : " << created << endl;
-            cout << "## + Fetched objects     : " << fetched << endl;
-            cout << "## + Destroyed objects   : " << created - allocated << endl;
-            cout << "## + Cache hit           : " << hit << endl;
-            cout << "## + Cache miss          : " << fetched - hit << endl;
-            cout << "## + Currently allocated : " << allocated << endl;
-            cout << "## + Currently out       : " << out << endl;
-            cout << "############################" << endl;
+            std::cout << "############################" << std::endl;
+            std::cout << "## About this cache " << this << std::endl;
+            std::cout << "## + Created objects     : " << created << std::endl;
+            std::cout << "## + Fetched objects     : " << fetched << std::endl;
+            std::cout << "## + Destroyed objects   : " << created - allocated << std::endl;
+            std::cout << "## + Cache hit           : " << hit << std::endl;
+            std::cout << "## + Cache miss          : " << fetched - hit << std::endl;
+            std::cout << "## + Currently allocated : " << allocated << std::endl;
+            std::cout << "## + Currently out       : " << out << std::endl;
+            std::cout << "############################" << std::endl;
             if(fetched!=0){
-                cout << "## Overall efficiency " << 100*double(hit)/fetched <<"%"<< endl;
-                cout << "############################" << endl;
+                std::cout << "## Overall efficiency " << 100*double(hit)/fetched <<"%"<< std::endl;
+                std::cout << "############################" << std::endl;
             }
-            cout << endl;
+            std::cout << std::endl;
         }
         
         void onFetch()
@@ -763,7 +755,7 @@ namespace Loki
             for(objVectorItr=fromKeyToObjVector.begin();objVectorItr!=fromKeyToObjVector.end();++objVectorItr)
             {
                 ObjVector &v(objVectorItr->second);
-                objItr = remove_if(v.begin(), v.end(), bind2nd(equal_to<AbstractProduct*>(), pProduct));
+                objItr = remove_if(v.begin(), v.end(), std::bind2nd(std::equal_to<AbstractProduct*>(), pProduct));
                 if(objItr != v.end()) // we found the vector containing pProduct and removed it
                 {
                     onDestroy(pProduct); // warning policies we are about to destroy an object
@@ -791,7 +783,7 @@ namespace Loki
             // debug information
             if(!providedObjects.empty())
             {
-                D( cout << "====>>  Cache destructor : deleting "<< providedObjects.size()<<" objects  <<====" << endl << endl; )
+                D( std::cout << "====>>  Cache destructor : deleting "<< providedObjects.size()<<" objects  <<====" << std::endl << std::endl; )
             }
             // cleaning the Cache
             
@@ -1098,7 +1090,7 @@ namespace Loki
 
 		/// Use this function to release the object
 		/**
-		 * if execution brakes ni this function then you tried
+		 * if execution brakes in this function then you tried
 		 * to release an object that wasn't provided by this Cache
 		 * ... which is bad :-)
 		 */
@@ -1116,13 +1108,13 @@ namespace Loki
         /// display the cache configuration
         void displayCacheType()
         {
-            cout << "############################" << endl;
-            cout << "## Cache configuration" << endl;
-            cout << "## + Encapsulation " << NP::name() << endl;
-            cout << "## + Creating      " << CP::name() << endl;
-            cout << "## + Eviction      " << EP::name() << endl;
-            cout << "## + Statistics    " << SP::name() << endl;
-            cout << "############################" << endl;
+            std::cout << "############################" << std::endl;
+            std::cout << "## Cache configuration" << std::endl;
+            std::cout << "## + Encapsulation " << NP::name() << std::endl;
+            std::cout << "## + Creating      " << CP::name() << std::endl;
+            std::cout << "## + Eviction      " << EP::name() << std::endl;
+            std::cout << "## + Statistics    " << SP::name() << std::endl;
+            std::cout << "############################" << std::endl;
         }
      };
 } // namespace Loki
