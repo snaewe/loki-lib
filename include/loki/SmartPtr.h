@@ -220,8 +220,28 @@ namespace Loki
 ///
 ///  \ingroup  SmartPointerStorageGroup 
 ///  Implementation of the StoragePolicy used by SmartPtr.
-///  Requires class T to have member functions Lock and Unlock.
+///
+///  Each call to operator-> locks the object for the duration of a call to a
+///  member function of T.
+///
+///  \par How It Works
+///  LockedStorage has a helper class called Locker, which acts as a smart
+///  pointer with limited abilities.  LockedStorage::operator-> returns an
+///  unnamed temporary of type Locker<T> that exists for the duration of the
+///  call to a member function of T.  The unnamed temporary locks the object
+///  when it is constructed by operator-> and unlocks the object when it is
+///  destructed.
+///
+///  \note This storage policy requires class T to have member functions Lock
+///  and Unlock.  If your class does not have Lock or Unlock functions, you may
+///  either make a child class which does, or make a policy class similar to
+///  LockedStorage which calls other functions to lock the object.
 ////////////////////////////////////////////////////////////////////////////////
+
+    template <class T>
+    class LockedStorage
+    {
+    public:
 
         template <class T>
         class Locker
@@ -254,11 +274,6 @@ namespace Loki
             Locker & operator = ( const Locker & );
             T * pointee_;
         };
-
-    template <class T>
-    class LockedStorage
-    {
-    public:
 
         typedef T* StoredType;           /// the type of the pointee_ object
         typedef T* InitPointerType;      /// type used to declare OwnershipPolicy type.
