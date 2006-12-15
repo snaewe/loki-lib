@@ -239,41 +239,41 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class T>
+    class Locker
+    {
+    public:
+        Locker( const T * p ) : pointee_( const_cast< T * >( p ) )
+        {
+            if ( pointee_ != 0 )
+                pointee_->Lock();
+        }
+
+        ~Locker( void )
+        {
+            if ( pointee_ != 0 )
+                pointee_->Unlock();
+        }
+
+        operator T * ()
+        {
+            return pointee_;
+        }
+
+        T * operator->()
+        {
+            return pointee_;
+        }
+
+    private:
+        Locker( void );
+        Locker & operator = ( const Locker & );
+        T * pointee_;
+    };
+
+    template <class T>
     class LockedStorage
     {
     public:
-
-        template <class T>
-        class Locker
-        {
-        public:
-            Locker( const T * p ) : pointee_( const_cast< T * >( p ) )
-            {
-                if ( pointee_ != 0 )
-                    pointee_->Lock();
-            }
-
-            ~Locker( void )
-            {
-                if ( pointee_ != 0 )
-                    pointee_->Unlock();
-            }
-
-            operator T * ()
-            {
-                return pointee_;
-            }
-
-            T * operator->()
-            {
-                return pointee_;
-            }
-
-        private:
-            Locker( void );
-            Locker & operator = ( const Locker & );
-            T * pointee_;
-        };
 
         typedef T* StoredType;           /// the type of the pointee_ object
         typedef T* InitPointerType;      /// type used to declare OwnershipPolicy type.
