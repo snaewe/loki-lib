@@ -17,8 +17,23 @@
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 //
 ////////////////////////////////////////////////////////////////////////////////
+
+// $Id$
+
 #ifndef SPCACHEDFACTORY_H_
 #define SPCACHEDFACTORY_H_
+
+/**
+ * This file is intented to be used if you want a CachedFactory with
+ * a SmartPointer encapsulation policy.
+ * It as been defined in a separate file because of the many introduced
+ * dependencies (SmartPtr.h would depend on Functor.h and CachedFactory.h
+ * would depend on SmartPtr.h). By defining another header you pay for those
+ * extra dependencies only if you need it. 
+ * 
+ * This file defines FunctionStorage a new SmartPointer storage policy and
+ * SmartPointer a new CachedFactory encapsulation policy.
+ */
 
 #include <loki/Functor.h>
 #include <loki/SmartPtr.h>
@@ -31,18 +46,32 @@ namespace Loki
 ///  \class FunctionStorage
 ///
 ///  \ingroup  SmartPointerStorageGroup 
-///  Implementation of the StoragePolicy used by SmartPtr
+///  \brief Implementation of the StoragePolicy used by SmartPtr.
+///
+///  This storage policy is used by SmartPointer CachedFactory's encapsulation
+///  policy. It's purpose is to call a Functor instead of deleting the
+///  underlying pointee object. You have to set the callback functor by calling
+///  SetCallBackFunction(const FunctorType &functor).
+///
+///  Unfortunately, the functor argument is not a reference to the SmartPtr but
+///  a void *. Making functor argument a reference to the pointer would require
+///  the FunctionStorage template to know the full definition of the SmartPtr.
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class T>
     class FunctionStorage
     {
     public:
-        typedef T* StoredType;    // the type of the pointee_ object
-        typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
-        typedef T* PointerType;   // type returned by operator->
-        typedef T& ReferenceType; // type returned by operator*
-        typedef Functor< void , Seq< void* > > FunctorType; // type of the Functor to set
+    	/// the type of the pointee_ object
+        typedef T* StoredType;
+        /// type used to declare OwnershipPolicy type.
+        typedef T* InitPointerType;
+        /// type returned by operator->
+        typedef T* PointerType;
+        /// type returned by operator*
+        typedef T& ReferenceType;
+        /// type of the Functor to set
+        typedef Functor< void , Seq< void* > > FunctorType;
 
         FunctionStorage() : pointee_(Default()), functor_()
         {}
@@ -68,6 +97,8 @@ namespace Loki
         	std::swap(functor_, rhs.functor_);
         }
         
+        /// Sets the callback function to call. You have to specify it or
+        /// the smartPtr will throw a bad_function_call exception.
         void SetCallBackFunction(const FunctorType &functor)
         {
         	functor_ = functor;
@@ -116,10 +147,12 @@ namespace Loki
     /**
 	 * \class	SmartPointer
 	 * \ingroup	EncapsulationPolicyCachedFactoryGroup
-	 * \brief	Encapsulate the object in a SmartPtr with FunctionStorage policy
+	 * \brief	Encapsulate the object in a SmartPtr with FunctionStorage policy.
 	 * 
-	 * Encapsulate the object in a SmartPtr with FunctionStorage policy.
-	 * The object will come back to the Cache as soon as the smartPtr leaves the scope.
+	 * The object will come back to the Cache as soon as no more SmartPtr are
+	 * referencing this object. You can customize the SmartPointer with the standard
+	 * SmartPtr policies (OwnershipPolicy, ConversionPolicy, CheckingPolicy,
+	 * ConstnessPolicy) but StoragePolicy is forced to FunctionStorage.
 	 */
      template
      <
