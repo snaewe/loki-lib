@@ -22,7 +22,9 @@
 
 // $Id$
 
-
+#include <functional>
+#include <algorithm>
+#include <iostream>
 #include <vector>
 #include <iterator>
 #include <map>
@@ -30,7 +32,6 @@
 #include <loki/Key.h>
 
 #ifdef DO_EXTRA_LOKI_TESTS
-	#include <iostream>
 	#define D( x ) x
 #else
 	#define D( x ) ;
@@ -680,7 +681,6 @@ namespace Loki
         KeyToObjVectorMap   fromKeyToObjVector;
         FetchedObjToKeyMap  providedObjects;
         unsigned            outObjects;
-        unsigned            maxCreation;
 
         ObjVector& getContainerFromKey(Key key){
             return fromKeyToObjVector[key];
@@ -743,7 +743,28 @@ namespace Loki
             SP::onDestroy();
             EP::onDestroy(pProduct);
         }
-        
+		
+		// delete the object
+		template<class T> struct deleteObject : public std::unary_function<T, void>
+		{
+			void operator()(T x){ delete x; }
+		};
+
+		// delete the objects in the vector
+		template<class T> struct deleteVectorObjects : public std::unary_function<T, void>
+		{
+			void operator()(T x){
+				ObjVector &vec(x.second);
+				std::for_each(vec.begin(), vec.end(), deleteObject< typename ObjVector::value_type>());
+			}
+		};
+
+		// delete the keys of the map
+		template<class T> struct deleteMapKeys : public std::unary_function<T, void>
+		{
+			void operator()(T x){ delete x.first; }
+		};            
+
      protected:
         virtual void remove(AbstractProduct * const pProduct)
         {
@@ -777,20 +798,23 @@ namespace Loki
 
         ~CachedFactory()
         {
-            SP::onDebug();
-            // If execution breaks here
-            // Then you tried to destroy this Cache without releasing all the objects
-            //assert(outObjects==0);
+        	using namespace std;
             // debug information
+            SP::onDebug();
+            // cleaning the Cache
+            for_each(fromKeyToObjVector.begin(), fromKeyToObjVector.end(), deleteVectorObjects< typename KeyToObjVectorMap::value_type >() );
             if(!providedObjects.empty())
             {
-                D( std::cout << "====>>  Cache destructor : deleting "<< providedObjects.size()<<" objects  <<====" << std::endl << std::endl; )
+				// The factory is responsible for the creation and destruction of objects.
+				// If objects are out during the destruction of the Factory : deleting anyway.
+				// This might not be a good idea. But throwing an exception in a destructor is
+				// considered as a bad pratice and asserting might be too much.
+				// What to do ? Leaking memory or corrupting in use pointers ? hmm...
+                D( cout << "====>>  Cache destructor : deleting "<< providedObjects.size()<<" in use objects  <<====" << endl << endl; )
+                for_each(providedObjects.begin(), providedObjects.end(),
+	                deleteMapKeys< typename FetchedObjToKeyMap::value_type >()
+                );
             }
-            // cleaning the Cache
-            
-            typename FetchedObjToKeyMap::iterator itr;
-            for(itr=providedObjects.begin(); itr!=providedObjects.end();++itr)
-                delete itr->first;
         }
         
         ///////////////////////////////////
