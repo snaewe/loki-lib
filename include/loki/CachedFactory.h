@@ -669,8 +669,9 @@ namespace Loki
         typedef typename Impl::Parm14 Parm14;
         typedef typename Impl::Parm15 Parm15;
         
+     public:
         typedef typename NP::ProductReturn ProductReturn;
-
+     private:
         typedef Key< Impl, IdentifierType > Key;
         typedef std::map< Key, ObjVector >  KeyToObjVectorMap;
         typedef std::map< AbstractProduct*, Key >  FetchedObjToKeyMap;
