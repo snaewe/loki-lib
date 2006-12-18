@@ -80,7 +80,7 @@ namespace Loki
            
            AbstractProduct* release(ProductReturn &pProduct)
            {
-                AbstractProduct* pPointer = pProduct;
+                AbstractProduct* pPointer(pProduct);
                 pProduct=NULL;
                 return pPointer;
            }
@@ -170,20 +170,21 @@ namespace Loki
           
             void cleanVector()
             {
+            	using namespace std;
 				clock_t currentTime = clock();
-                D( std::cout << "currentTime = " << currentTime<< std::endl; )
-                D( std::cout << "currentTime - lastUpdate = " << currentTime - lastUpdate<< std::endl; )
+                D( cout << "currentTime = " << currentTime<< endl; )
+                D( cout << "currentTime - lastUpdate = " << currentTime - lastUpdate<< endl; )
                 if(currentTime - lastUpdate > timeValidity)
                 {
                     m_vTimes.clear();
-                    D( std::cout << " is less than time validity " << timeValidity; )
-                    D( std::cout << " so clearing vector" << std::endl; )
+                    D( cout << " is less than time validity " << timeValidity; )
+                    D( cout << " so clearing vector" << endl; )
                 }
                 else
                 {
-                    D( std::cout << "Cleaning time less than " << currentTime - timeValidity << std::endl; )
+                    D( cout << "Cleaning time less than " << currentTime - timeValidity << endl; )
                     D( displayVector(); )
-                    Vector::iterator newEnd = remove_if(m_vTimes.begin(), m_vTimes.end(), std::bind2nd(std::less<clock_t>(), currentTime - timeValidity));
+                    Vector::iterator newEnd = remove_if(m_vTimes.begin(), m_vTimes.end(), bind2nd(less<clock_t>(), currentTime - timeValidity));
                     // this rearrangement might be costly, consider optimization
                     // by calling cleanVector in less used onCreate function
                     // ... although it may not be correct
@@ -192,13 +193,14 @@ namespace Loki
                 }
                 lastUpdate = currentTime;
             }
-            
+#ifdef DO_EXTRA_LOKI_TESTS        
             void displayVector()
             {
                 std::cout << "Vector : ";
                 copy(m_vTimes.begin(), m_vTimes.end(), std::ostream_iterator<clock_t>(std::cout, " "));
                 std::cout << std::endl;
             }
+#endif
      protected:
             RateLimitedCreation() : maxCreation(10), timeValidity(CLOCKS_PER_SEC), lastUpdate(clock())
             {}
@@ -260,10 +262,7 @@ namespace Loki
             
             bool canCreate()
             {
-                if(created>=maxCreation)
-                    return false; // this will call EvictionPolicy::evict()
-                else
-                    return true;
+            	return !(created>=maxCreation);
             }
 
             void onCreate()
@@ -388,7 +387,7 @@ namespace Loki
     	{
     		remove(EH::getLowerBound());
     	}
-            const char* name(){return "LRU";}
+        const char* name(){return "LRU";}
     };
     
 	/**
@@ -515,7 +514,7 @@ namespace Loki
     		size_type random = static_cast<size_type>((m_vKeys.size()*rand())/int(RAND_MAX + 1));
     		remove(*(m_vKeys.begin()+random));
     	}
-            const char* name(){return "random";}
+        const char* name(){return "random";}
     };
 
 /**
@@ -571,21 +570,22 @@ namespace Loki
         
         void onDebug()
         {
-            std::cout << "############################" << std::endl;
-            std::cout << "## About this cache " << this << std::endl;
-            std::cout << "## + Created objects     : " << created << std::endl;
-            std::cout << "## + Fetched objects     : " << fetched << std::endl;
-            std::cout << "## + Destroyed objects   : " << created - allocated << std::endl;
-            std::cout << "## + Cache hit           : " << hit << std::endl;
-            std::cout << "## + Cache miss          : " << fetched - hit << std::endl;
-            std::cout << "## + Currently allocated : " << allocated << std::endl;
-            std::cout << "## + Currently out       : " << out << std::endl;
-            std::cout << "############################" << std::endl;
+        	using namespace std;
+            cout << "############################" << endl;
+            cout << "## About this cache " << this << endl;
+            cout << "## + Created objects     : " << created << endl;
+            cout << "## + Fetched objects     : " << fetched << endl;
+            cout << "## + Destroyed objects   : " << created - allocated << endl;
+            cout << "## + Cache hit           : " << hit << endl;
+            cout << "## + Cache miss          : " << fetched - hit << endl;
+            cout << "## + Currently allocated : " << allocated << endl;
+            cout << "## + Currently out       : " << out << endl;
+            cout << "############################" << endl;
             if(fetched!=0){
-                std::cout << "## Overall efficiency " << 100*double(hit)/fetched <<"%"<< std::endl;
-                std::cout << "############################" << std::endl;
+                cout << "## Overall efficiency " << 100*double(hit)/fetched <<"%"<< endl;
+                cout << "############################" << endl;
             }
-            std::cout << std::endl;
+            cout << endl;
         }
         
         void onFetch()
@@ -700,16 +700,16 @@ namespace Loki
         AbstractProduct* const getPointerToObjectInContainer(ObjVector &entry)
         {
             if(entry.empty()) // No object available
-            { // the object will be created in the calling function.
-              // It has to be created in the calling function because of
-              // the variable number of parameters for CreateObject(...) method
+            {   // the object will be created in the calling function.
+                // It has to be created in the calling function because of
+                // the variable number of parameters for CreateObject(...) method
                 return NULL;
             }
             else
-            { // returning the found object
-                 AbstractProduct* pObject = entry.back();
-                 assert(pObject!=NULL);
-                 entry.pop_back();
+            {   // returning the found object
+				AbstractProduct* pObject(entry.back());
+				assert(pObject!=NULL);
+				entry.pop_back();
                 return pObject;
             }
         }
@@ -1146,13 +1146,14 @@ namespace Loki
         /// display the cache configuration
         void displayCacheType()
         {
-            std::cout << "############################" << std::endl;
-            std::cout << "## Cache configuration" << std::endl;
-            std::cout << "## + Encapsulation " << NP::name() << std::endl;
-            std::cout << "## + Creating      " << CP::name() << std::endl;
-            std::cout << "## + Eviction      " << EP::name() << std::endl;
-            std::cout << "## + Statistics    " << SP::name() << std::endl;
-            std::cout << "############################" << std::endl;
+        	using namespace std;
+            cout << "############################" << endl;
+            cout << "## Cache configuration" << endl;
+            cout << "## + Encapsulation " << NP::name() << endl;
+            cout << "## + Creating      " << CP::name() << endl;
+            cout << "## + Eviction      " << EP::name() << endl;
+            cout << "## + Statistics    " << SP::name() << endl;
+            cout << "############################" << endl;
         }
      };
 } // namespace Loki
