@@ -322,6 +322,7 @@ namespace Loki
     	// and returns the lower bound of the sorted container
     	DT&	getLowerBound(){
     		assert(!m_mHitCount.empty());
+    		// inserting the swapped pair into a multimap
     		SwappedHitMap copyMap;
     		for(HitMapItr itr = m_mHitCount.begin(); itr != m_mHitCount.end(); ++itr)
     			copyMap.insert(SwappedPair(itr->second, itr->first));
@@ -412,6 +413,18 @@ namespace Loki
     	typedef EvictionHelper< ST, DT >		       		EH;
     	typedef typename EH::HitMap						HitMap;
     	typedef typename EH::HitMapItr					HitMapItr;
+    	
+    	// update the counter
+		template<class T> struct updateCounter : public std::unary_function<T, void>
+		{
+			updateCounter(const DT& key): key_(key){}
+			void operator()(T x)
+			{
+				x.second = (x.first == key_ ? (x.second >> 1) | ( 1 << ((sizeof(ST)-1)*8) ) : x.second >> 1);
+    			D( std::cout <<  x.second << std::endl; )
+			}
+			const DT &key_;
+		};
     protected:
 
          virtual ~EvictAging(){}
@@ -432,10 +445,7 @@ namespace Loki
     	//  the counter is shifted to the left
         void onRelease(const DT& key)
         {
-    		for( HitMapItr itr = EH::m_mHitCount.begin(); itr != EH::m_mHitCount.end(); ++itr){
-    			itr->second = (itr->first == key ? (itr->second >> 1) | ( 1 << ((sizeof(ST)-1)*8) ) : itr->second >> 1);
-    			D( std::cout <<  itr->second << std::endl; )
-    		}
+        	std::for_each(EH::m_mHitCount.begin(), EH::m_mHitCount.end(), updateCounter< typename HitMap::value_type >(key));
         }
         
         void onDestroy(const DT& key)
@@ -490,7 +500,8 @@ namespace Loki
     	}
     	
     	void onDestroy(const DT& key){
-            m_vKeys.erase(remove_if(m_vKeys.begin(), m_vKeys.end(), std::bind2nd(std::equal_to< DT >(), key)), m_vKeys.end());
+    		using namespace std;
+            m_vKeys.erase(remove_if(m_vKeys.begin(), m_vKeys.end(), bind2nd(equal_to< DT >(), key)), m_vKeys.end());
     	}
     	
     	// Implemented in Cache and redirected to the Storage Policy
@@ -802,7 +813,9 @@ namespace Loki
             // debug information
             SP::onDebug();
             // cleaning the Cache
-            for_each(fromKeyToObjVector.begin(), fromKeyToObjVector.end(), deleteVectorObjects< typename KeyToObjVectorMap::value_type >() );
+            for_each(fromKeyToObjVector.begin(), fromKeyToObjVector.end(),
+            	deleteVectorObjects< typename KeyToObjVectorMap::value_type >()
+            );
             if(!providedObjects.empty())
             {
 				// The factory is responsible for the creation and destruction of objects.
