@@ -18,9 +18,10 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <assert.h>
 
 
-void Decrement(int& x) 
+void Decrement( unsigned int & x ) 
 { 
     --x; 
 }
@@ -39,34 +40,45 @@ public:
     User(UserDatabase* db) : fCount(0), pDB_(db)
     {}
 
-    std::string GetName();
+    std::string GetName() const;
 
     void AddFriend(User& newFriend);
     void AddFriendGuarded(User& newFriend);
     void AddFriendGuardedMacros(User& newFriend);
 
-    size_t countFriends();
+    size_t countFriends() const;
    
-    int fCount;
+    unsigned int fCount;
 
 private:
+	void CheckIfValid( const char * function, unsigned int line ) const;
+
     typedef std::vector<User*> UserCont;
     UserCont friends_;
     UserDatabase* pDB_;
 };
 
-std::string User::GetName()
+void User::CheckIfValid( const char * function, unsigned int line ) const
+{
+	assert( friends_.size() == fCount );
+	(void)function;
+	(void)line;
+}
+
+std::string User::GetName() const
 {
     return "A name";
 }
 
-size_t User::countFriends()
+size_t User::countFriends() const
 {
     return friends_.size();
 }
 
 void User::AddFriend(User& newFriend)
 {
+	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this, &User::CheckIfValid, __FUNCTION__, __LINE__);
+	(void)invariantGuard;
     friends_.push_back(&newFriend);
     fCount++;
     pDB_->AddFriend(GetName(), newFriend.GetName());
@@ -74,6 +86,9 @@ void User::AddFriend(User& newFriend)
 
 void User::AddFriendGuarded(User& newFriend)
 {
+	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this, &User::CheckIfValid, __FUNCTION__, __LINE__);
+	(void)invariantGuard;
+
     friends_.push_back(&newFriend);
     Loki::ScopeGuard guard = Loki::MakeObjGuard(friends_, &UserCont::pop_back);
     
@@ -87,6 +102,8 @@ void User::AddFriendGuarded(User& newFriend)
 
 void User::AddFriendGuardedMacros(User&)
 {
+	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this, &User::CheckIfValid, __FUNCTION__, __LINE__);
+	(void)invariantGuard;
     LOKI_ON_BLOCK_EXIT_OBJ(friends_, &UserCont::pop_back); (void) LOKI_ANONYMOUS_VARIABLE(scopeGuard);
     LOKI_ON_BLOCK_EXIT(Decrement, Loki::ByRef(fCount)); (void) LOKI_ANONYMOUS_VARIABLE(scopeGuard);
 }
