@@ -25,8 +25,24 @@
 namespace Loki
 {
 
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ScopeGuardImplBase
+    /// \ingroup ExceptionGroup
+    ///
+    /// Base class used by all ScopeGuard implementations.  All commonly used
+    /// functions are in this class (e.g. - Dismiss and SafeExecute).
+    ///
+    /// See Andrei's and Petru Marginean's CUJ article
+    /// http://www.cuj.com/documents/s=8000/cujcexp1812alexandr/alexandr.htm
+    ///
+    /// Changes to the original code by Joshua Lehrer:
+    /// http://www.lehrerfamily.com/scopeguard.html
+    ////////////////////////////////////////////////////////////////
+
     class ScopeGuardImplBase
     {
+        /// Copy-assignment operator is not implemented and private.
         ScopeGuardImplBase& operator =(const ScopeGuardImplBase&);
 
     protected:
@@ -34,6 +50,7 @@ namespace Loki
         ~ScopeGuardImplBase()
         {}
 
+        /// Copy-constructor takes over responsibility from other ScopeGuard.
         ScopeGuardImplBase(const ScopeGuardImplBase& other) throw() 
             : dismissed_(other.dismissed_)
         {
@@ -63,20 +80,26 @@ namespace Loki
             dismissed_ = true;
         }
     };
-    
+
     ////////////////////////////////////////////////////////////////
     ///
     /// \typedef typedef const ScopeGuardImplBase& ScopeGuard
     /// \ingroup ExceptionGroup
     ///
-    /// See Andrei's and Petru Marginean's CUJ article
-    /// http://www.cuj.com/documents/s=8000/cujcexp1812alexandr/alexandr.htm
-    ///
-    /// Changes to the original code by Joshua Lehrer:
-    /// http://www.lehrerfamily.com/scopeguard.html
     ////////////////////////////////////////////////////////////////
-    
+
     typedef const ScopeGuardImplBase& ScopeGuard;
+
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ScopeGuardImpl0
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a standalone function or class static function
+    /// with no parameters.  ScopeGuard ignores any value returned from the
+    /// call within the Execute function.
+    ///
+    ////////////////////////////////////////////////////////////////
 
     template <typename F>
     class ScopeGuardImpl0 : public ScopeGuardImplBase
@@ -109,6 +132,18 @@ namespace Loki
     {
         return ScopeGuardImpl0<F>::MakeGuard(fun);
     }
+
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ScopeGuardImpl1
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a standalone function or class static function
+    /// with one parameter.  Each parameter is copied by value - use
+    /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
+    /// any value returned from the call within the Execute function.
+    ///
+    ////////////////////////////////////////////////////////////////
 
     template <typename F, typename P1>
     class ScopeGuardImpl1 : public ScopeGuardImplBase
@@ -143,6 +178,18 @@ namespace Loki
         return ScopeGuardImpl1<F, P1>::MakeGuard(fun, p1);
     }
 
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ScopeGuardImpl2
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a standalone function or class static function
+    /// with two parameters.  Each parameter is copied by value - use
+    /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
+    /// any value returned from the call within the Execute function.
+    ///
+    ////////////////////////////////////////////////////////////////
+
     template <typename F, typename P1, typename P2>
     class ScopeGuardImpl2: public ScopeGuardImplBase
     {
@@ -176,6 +223,18 @@ namespace Loki
     {
         return ScopeGuardImpl2<F, P1, P2>::MakeGuard(fun, p1, p2);
     }
+
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ScopeGuardImpl3
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a standalone function or class static function
+    /// with three parameters.  Each parameter is copied by value - use
+    /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
+    /// any value returned from the call within the Execute function.
+    ///
+    ////////////////////////////////////////////////////////////////
 
     template <typename F, typename P1, typename P2, typename P3>
     class ScopeGuardImpl3 : public ScopeGuardImplBase
@@ -212,7 +271,21 @@ namespace Loki
         return ScopeGuardImpl3<F, P1, P2, P3>::MakeGuard(fun, p1, p2, p3);
     }
 
-    //************************************************************
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ObjScopeGuardImpl0
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a class per-instance member function with no
+    /// parameters.  ScopeGuard ignores any value returned from the call within
+    /// the Execute function.
+    ///
+    /// This class has 3 standalone helper functions which create a ScopeGuard.
+    /// One is MakeObjGuard, which is deprecated but provided for older code.
+    /// The other two are MakeGuard overloads, one which takes a pointer to an
+    /// object, and the other which takes a reference.
+    ///
+    ////////////////////////////////////////////////////////////////
 
     template <class Obj, typename MemFun>
     class ObjScopeGuardImpl0 : public ScopeGuardImplBase
@@ -259,6 +332,23 @@ namespace Loki
       return ObjScopeGuardImpl0<Obj1,Ret(Obj2::*)()>::MakeObjGuard(*obj,memFun);
     }
 
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ObjScopeGuardImpl1
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a class per-instance member function with one
+    /// parameter.  The parameter is copied by value - use ::Loki::ByRef if you
+    /// must use a reference instead.  ScopeGuard ignores any value returned
+    /// from the call within the Execute function.
+    ///
+    /// This class has 3 standalone helper functions which create a ScopeGuard.
+    /// One is MakeObjGuard, which is deprecated but provided for older code.
+    /// The other two are MakeGuard overloads, one which takes a pointer to an
+    /// object, and the other which takes a reference.
+    ///
+    ////////////////////////////////////////////////////////////////
+
     template <class Obj, typename MemFun, typename P1>
     class ObjScopeGuardImpl1 : public ScopeGuardImplBase
     {
@@ -304,6 +394,23 @@ namespace Loki
     {
       return ObjScopeGuardImpl1<Obj1,Ret(Obj2::*)(P1a),P1b>::MakeObjGuard(*obj,memFun,p1);
     }
+
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ObjScopeGuardImpl1
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a class per-instance member function with two
+    /// parameters.  Each parameter is copied by value - use ::Loki::ByRef if you
+    /// must use a reference instead.  ScopeGuard ignores any value returned
+    /// from the call within the Execute function.
+    ///
+    /// This class has 3 standalone helper functions which create a ScopeGuard.
+    /// One is MakeObjGuard, which is deprecated but provided for older code.
+    /// The other two are MakeGuard overloads, one which takes a pointer to an
+    /// object, and the other which takes a reference.
+    ///
+    ////////////////////////////////////////////////////////////////
 
     template <class Obj, typename MemFun, typename P1, typename P2>
     class ObjScopeGuardImpl2 : public ScopeGuardImplBase
