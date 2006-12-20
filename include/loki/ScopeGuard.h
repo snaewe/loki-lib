@@ -99,6 +99,9 @@ namespace Loki
     /// with no parameters.  ScopeGuard ignores any value returned from the
     /// call within the Execute function.
     ///
+    /// This class has a single standalone helper function, MakeGuard which
+    /// creates and returns a ScopeGuard.
+    ///
     ////////////////////////////////////////////////////////////////
 
     template <typename F>
@@ -142,6 +145,9 @@ namespace Loki
     /// with one parameter.  Each parameter is copied by value - use
     /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
     /// any value returned from the call within the Execute function.
+    ///
+    /// This class has a single standalone helper function, MakeGuard which
+    /// creates and returns a ScopeGuard.
     ///
     ////////////////////////////////////////////////////////////////
 
@@ -187,6 +193,9 @@ namespace Loki
     /// with two parameters.  Each parameter is copied by value - use
     /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
     /// any value returned from the call within the Execute function.
+    ///
+    /// This class has a single standalone helper function, MakeGuard which
+    /// creates and returns a ScopeGuard.
     ///
     ////////////////////////////////////////////////////////////////
 
@@ -234,6 +243,9 @@ namespace Loki
     /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
     /// any value returned from the call within the Execute function.
     ///
+    /// This class has a single standalone helper function, MakeGuard which
+    /// creates and returns a ScopeGuard.
+    ///
     ////////////////////////////////////////////////////////////////
 
     template <typename F, typename P1, typename P2, typename P3>
@@ -269,6 +281,113 @@ namespace Loki
     inline ScopeGuardImpl3<F, P1, P2, P3> MakeGuard(F fun, P1 p1, P2 p2, P3 p3)
     {
         return ScopeGuardImpl3<F, P1, P2, P3>::MakeGuard(fun, p1, p2, p3);
+    }
+
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ScopeGuardImpl4
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a standalone function or class static function
+    /// with four parameters.  Each parameter is copied by value - use
+    /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
+    /// any value returned from the call within the Execute function.
+    ///
+    /// This class has a single standalone helper function, MakeGuard which
+    /// creates and returns a ScopeGuard.
+    ///
+    ////////////////////////////////////////////////////////////////
+
+    template < typename F, typename P1, typename P2, typename P3, typename P4 >
+    class ScopeGuardImpl4 : public ScopeGuardImplBase
+    {
+    public:
+        static ScopeGuardImpl4< F, P1, P2, P3, P4 > MakeGuard(
+            F fun, P1 p1, P2 p2, P3 p3, P4 p4 )
+        {
+            return ScopeGuardImpl4< F, P1, P2, P3, P4 >( fun, p1, p2, p3, p4 );
+        }
+
+        ~ScopeGuardImpl4() throw() 
+        {
+            SafeExecute( *this );
+        }
+
+        void Execute()
+        {
+            fun_( p1_, p2_, p3_, p4_ );
+        }
+
+    protected:
+        ScopeGuardImpl4( F fun, P1 p1, P2 p2, P3 p3, P4 p4 ) :
+             fun_( fun ), p1_( p1 ), p2_( p2 ), p3_( p3 ), p4_( p4 )
+        {}
+
+        F fun_;
+        const P1 p1_;
+        const P2 p2_;
+        const P3 p3_;
+        const P4 p4_;
+    };
+
+    template < typename F, typename P1, typename P2, typename P3, typename P4 >
+    inline ScopeGuardImpl4< F, P1, P2, P3, P4 > MakeGuard( F fun, P1 p1, P2 p2, P3 p3, P4 p4 )
+    {
+        return ScopeGuardImpl4< F, P1, P2, P3, P4 >::MakeGuard( fun, p1, p2, p3, p4 );
+    }
+
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ScopeGuardImpl5
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a standalone function or class static function
+    /// with five parameters.  Each parameter is copied by value - use
+    /// ::Loki::ByRef if you must use a reference instead.  ScopeGuard ignores
+    /// any value returned from the call within the Execute function.
+    ///
+    /// This class has a single standalone helper function, MakeGuard which
+    /// creates and returns a ScopeGuard.
+    ///
+    ////////////////////////////////////////////////////////////////
+
+    template < typename F, typename P1, typename P2, typename P3, typename P4, typename P5 >
+    class ScopeGuardImpl5 : public ScopeGuardImplBase
+    {
+    public:
+        static ScopeGuardImpl5< F, P1, P2, P3, P4, P5 > MakeGuard(
+            F fun, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5 )
+        {
+            return ScopeGuardImpl5< F, P1, P2, P3, P4, P5 >( fun, p1, p2, p3, p4, p5 );
+        }
+
+        ~ScopeGuardImpl5() throw() 
+        {
+            SafeExecute( *this );
+        }
+
+        void Execute()
+        {
+            fun_( p1_, p2_, p3_, p4_, p5_ );
+        }
+
+    protected:
+        ScopeGuardImpl5( F fun, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5 ) :
+             fun_( fun ), p1_( p1 ), p2_( p2 ), p3_( p3 ), p4_( p4 ), p5_( p5 )
+        {}
+
+        F fun_;
+        const P1 p1_;
+        const P2 p2_;
+        const P3 p3_;
+        const P4 p4_;
+        const P5 p5_;
+    };
+
+    template < typename F, typename P1, typename P2, typename P3, typename P4, typename P5 >
+    inline ScopeGuardImpl5< F, P1, P2, P3, P4, P5 > MakeGuard( F fun, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5 )
+    {
+        return ScopeGuardImpl5< F, P1, P2, P3, P4, P5 >::MakeGuard( fun, p1, p2, p3, p4, p5 );
     }
 
     ////////////////////////////////////////////////////////////////
@@ -397,7 +516,7 @@ namespace Loki
 
     ////////////////////////////////////////////////////////////////
     ///
-    /// \class ObjScopeGuardImpl1
+    /// \class ObjScopeGuardImpl2
     /// \ingroup ExceptionGroup
     ///
     /// Implementation class for a class per-instance member function with two
@@ -457,6 +576,81 @@ namespace Loki
     inline ObjScopeGuardImpl2<Obj1,Ret(Obj2::*)(P1a,P2a),P1b,P2b> MakeGuard(Ret(Obj2::*memFun)(P1a,P2a), Obj1 *obj, P1b p1, P2b p2) 
     {
       return ObjScopeGuardImpl2<Obj1,Ret(Obj2::*)(P1a,P2a),P1b,P2b>::MakeObjGuard(*obj,memFun,p1,p2);
+    }
+
+    ////////////////////////////////////////////////////////////////
+    ///
+    /// \class ObjScopeGuardImpl3
+    /// \ingroup ExceptionGroup
+    ///
+    /// Implementation class for a class per-instance member function with three
+    /// parameters.  Each parameter is copied by value - use ::Loki::ByRef if you
+    /// must use a reference instead.  ScopeGuard ignores any value returned
+    /// from the call within the Execute function.
+    ///
+    /// This class has 3 standalone helper functions which create a ScopeGuard.
+    /// One is MakeObjGuard, which is deprecated but provided for older code.
+    /// The other two are MakeGuard overloads, one which takes a pointer to an
+    /// object, and the other which takes a reference.
+    ///
+    ////////////////////////////////////////////////////////////////
+
+    template < class Obj, typename MemFun, typename P1, typename P2, typename P3 >
+    class ObjScopeGuardImpl3 : public ScopeGuardImplBase
+    {
+    public:
+        static ObjScopeGuardImpl3< Obj, MemFun, P1, P2, P3 > MakeObjGuard(
+            Obj & obj, MemFun memFun, P1 p1, P2 p2, P3 p3 )
+        {
+            return ObjScopeGuardImpl3< Obj, MemFun, P1, P2, P3 >( obj, memFun, p1, p2, p3 );
+        }
+
+        ~ObjScopeGuardImpl3() throw() 
+        {
+            SafeExecute( *this );
+        }
+
+        void Execute() 
+        {
+            ( obj_.*memFun_ )( p1_, p2_, p3_ );
+        }
+
+    protected:
+        ObjScopeGuardImpl3( Obj & obj, MemFun memFun, P1 p1, P2 p2, P3 p3 ) :
+             obj_( obj ), memFun_( memFun ), p1_( p1 ), p2_( p2 ), p3_( p3 )
+        {}
+
+        Obj& obj_;
+        MemFun memFun_;
+        const P1 p1_;
+        const P2 p2_;
+        const P3 p3_;
+    };
+
+    template < class Obj, typename MemFun, typename P1, typename P2, typename P3 >
+    inline ObjScopeGuardImpl3< Obj, MemFun, P1, P2, P3 > MakeObjGuard(
+        Obj & obj, MemFun memFun, P1 p1, P2 p2, P3 p3 )
+    {
+        return ObjScopeGuardImpl3< Obj, MemFun, P1, P2, P3 >::MakeObjGuard(
+            obj, memFun, p1, p2, p3 );
+    }
+
+    template < typename Ret, class Obj1, class Obj2, typename P1a, typename P1b,
+        typename P2a, typename P2b, typename P3a, typename P3b >
+    inline ObjScopeGuardImpl3< Obj1, Ret( Obj2::* )( P1a, P2a, P3a ), P1b, P2b, P3b >
+        MakeGuard( Ret( Obj2::*memFun )( P1a, P2a, P3a ), Obj1 & obj, P1b p1, P2b p2, P3b p3 )
+    {
+      return ObjScopeGuardImpl3< Obj1, Ret( Obj2::* )( P1a, P2a, P3a ), P1b, P2b, P3b >
+          ::MakeObjGuard( obj, memFun, p1, p2, p3 );
+    }
+
+    template < typename Ret, class Obj1, class Obj2, typename P1a, typename P1b,
+        typename P2a, typename P2b, typename P3a, typename P3b >
+    inline ObjScopeGuardImpl3< Obj1, Ret( Obj2::* )( P1a, P2a, P3a ), P1b, P2b, P3b >
+        MakeGuard( Ret( Obj2::*memFun )( P1a, P2a, P3a ), Obj1 * obj, P1b p1, P2b p2, P3b p3 )
+    {
+      return ObjScopeGuardImpl3< Obj1, Ret( Obj2::* )( P1a, P2a, P3a ), P1b, P2b, P3b >
+          ::MakeObjGuard( *obj, memFun, p1, p2, p3 );
     }
 
 } // namespace Loki
