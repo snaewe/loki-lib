@@ -20,6 +20,44 @@
 #include <iostream>
 #include <assert.h>
 
+void HasNone( void )
+{
+}
+
+void HasOne( int p1 )
+{
+    (void)p1;
+}
+
+void HasTwo( int p1, int p2 )
+{
+    (void)p1;
+    (void)p2;
+}
+
+void HasThree( int p1, int p2, int p3 )
+{
+    (void)p1;
+    (void)p2;
+    (void)p3;
+}
+
+void HasFour( int p1, int p2, int p3, int p4 )
+{
+    (void)p1;
+    (void)p2;
+    (void)p3;
+    (void)p4;
+}
+
+void HasFive( int p1, int p2, int p3, int p4, int p5 )
+{
+    (void)p1;
+    (void)p2;
+    (void)p3;
+    (void)p4;
+    (void)p5;
+}
 
 void Decrement( unsigned int & x ) 
 { 
@@ -47,8 +85,17 @@ public:
     void AddFriendGuardedMacros(User& newFriend);
 
     size_t countFriends() const;
+
+	void DoSomething() const;
    
     unsigned int fCount;
+
+    void HasNone( void ) const;
+    void HasOne( int p1 ) const;
+    void HasTwo( int p1, int p2 ) const;
+    void HasThree( int p1, int p2, int p3 ) const;
+    void HasFour( int p1, int p2, int p3, int p4 ) const;
+    void HasFive( int p1, int p2, int p3, int p4, int p5 ) const;
 
 private:
 	void CheckIfValid( const char * function, unsigned int line ) const;
@@ -57,6 +104,49 @@ private:
     UserCont friends_;
     UserDatabase* pDB_;
 };
+
+void User::HasNone( void ) const
+{
+}
+
+void User::HasOne( int p1 ) const
+{
+    (void)p1;
+}
+
+void User::HasTwo( int p1, int p2 ) const
+{
+    (void)p1;
+    (void)p2;
+}
+
+void User::HasThree( int p1, int p2, int p3 ) const
+{
+    (void)p1;
+    (void)p2;
+    (void)p3;
+}
+
+void User::HasFour( int p1, int p2, int p3, int p4 ) const
+{
+    (void)p1;
+    (void)p2;
+    (void)p3;
+    (void)p4;
+}
+
+void User::HasFive( int p1, int p2, int p3, int p4, int p5 ) const
+{
+    (void)p1;
+    (void)p2;
+    (void)p3;
+    (void)p4;
+    (void)p5;
+}
+
+void User::DoSomething() const
+{
+}
 
 void User::CheckIfValid( const char * function, unsigned int line ) const
 {
@@ -77,7 +167,8 @@ size_t User::countFriends() const
 
 void User::AddFriend(User& newFriend)
 {
-	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this, &User::CheckIfValid, __FUNCTION__, __LINE__);
+	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this,
+		&User::CheckIfValid, __FUNCTION__, __LINE__ );
 	(void)invariantGuard;
     friends_.push_back(&newFriend);
     fCount++;
@@ -86,8 +177,11 @@ void User::AddFriend(User& newFriend)
 
 void User::AddFriendGuarded(User& newFriend)
 {
-	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this, &User::CheckIfValid, __FUNCTION__, __LINE__);
+	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this,
+		&User::CheckIfValid, __FUNCTION__, __LINE__ );
 	(void)invariantGuard;
+	::Loki::ScopeGuard guard1 = ::Loki::MakeObjGuard( *this, &User::DoSomething );
+    (void)guard1;
 
     friends_.push_back(&newFriend);
     Loki::ScopeGuard guard = Loki::MakeObjGuard(friends_, &UserCont::pop_back);
@@ -102,12 +196,40 @@ void User::AddFriendGuarded(User& newFriend)
 
 void User::AddFriendGuardedMacros(User&)
 {
-	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this, &User::CheckIfValid, __FUNCTION__, __LINE__);
+	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this,
+		&User::CheckIfValid, __FUNCTION__, __LINE__ );
 	(void)invariantGuard;
     LOKI_ON_BLOCK_EXIT_OBJ(friends_, &UserCont::pop_back); (void) LOKI_ANONYMOUS_VARIABLE(scopeGuard);
     LOKI_ON_BLOCK_EXIT(Decrement, Loki::ByRef(fCount)); (void) LOKI_ANONYMOUS_VARIABLE(scopeGuard);
 }
 
+void DoStandaloneFunctionTests()
+{
+    ::Loki::ScopeGuard guard0 = ::Loki::MakeGuard( &HasNone );
+    ::Loki::ScopeGuard guard1 = ::Loki::MakeGuard( &HasOne, 1 );
+    ::Loki::ScopeGuard guard2 = ::Loki::MakeGuard( &HasTwo, 1, 2 );
+    ::Loki::ScopeGuard guard3 = ::Loki::MakeGuard( &HasThree, 1, 2, 3 );
+    ::Loki::ScopeGuard guard4 = ::Loki::MakeGuard( &HasFour, 1, 2, 3, 4 );
+    ::Loki::ScopeGuard guard5 = ::Loki::MakeGuard( &HasFive, 1, 2, 3, 4, 5 );
+    (void)guard0;
+    (void)guard1;
+    (void)guard2;
+    (void)guard3;
+    (void)guard4;
+    (void)guard5;
+}
+
+void DoMemberFunctionTests( User & user )
+{
+    ::Loki::ScopeGuard guard0 = ::Loki::MakeObjGuard( user, &User::HasNone );
+    ::Loki::ScopeGuard guard1 = ::Loki::MakeObjGuard( user, &User::HasOne,   1 );
+    ::Loki::ScopeGuard guard2 = ::Loki::MakeObjGuard( user, &User::HasTwo,   1, 2 );
+    ::Loki::ScopeGuard guard3 = ::Loki::MakeObjGuard( user, &User::HasThree, 1, 2, 3 );
+    (void)guard0;
+    (void)guard1;
+    (void)guard2;
+    (void)guard3;
+}
 
 int main()
 {
@@ -125,6 +247,9 @@ int main()
     catch (...){}
     std::cout << "u2 countFriends: " << u2.countFriends() << "\n";
     std::cout << "u2 fCount      : " << u2.fCount << "\n";
+
+    DoStandaloneFunctionTests();
+    DoMemberFunctionTests( u1 );
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");
