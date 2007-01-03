@@ -324,10 +324,10 @@ namespace Loki
     		// inserting the swapped pair into a multimap
     		SwappedHitMap copyMap;
     		for(HitMapItr itr = m_mHitCount.begin(); itr != m_mHitCount.end(); ++itr)
-    			copyMap.insert(SwappedPair(itr->second, itr->first));
-    		if(copyMap.rbegin()->first == 0) // the higher score is 0 ...
+    			copyMap.insert(SwappedPair((*itr).second, (*itr).first));
+    		if((*copyMap.rbegin()).first == 0) // the higher score is 0 ...
     		  throw EvictionException(); // there is no key evict
-    		return copyMap.begin()->second;
+    		return (*copyMap.begin()).second;
     	}
     };
     
@@ -787,7 +787,7 @@ namespace Loki
             typename ObjVector::iterator objItr;
             for(objVectorItr=fromKeyToObjVector.begin();objVectorItr!=fromKeyToObjVector.end();++objVectorItr)
             {
-                ObjVector &v(objVectorItr->second);
+                ObjVector &v((*objVectorItr).second);
                 objItr = remove_if(v.begin(), v.end(), std::bind2nd(std::equal_to<AbstractProduct*>(), pProduct));
                 if(objItr != v.end()) // we found the vector containing pProduct and removed it
                 {
@@ -1139,7 +1139,7 @@ namespace Loki
             if(itr == providedObjects.end())
                 throw CacheException();
             onRelease(pProduct);
-            ReleaseObjectFromContainer(getContainerFromKey(itr->second), pProduct);
+            ReleaseObjectFromContainer(getContainerFromKey((*itr).second), pProduct);
             providedObjects.erase(itr);
         }
         
