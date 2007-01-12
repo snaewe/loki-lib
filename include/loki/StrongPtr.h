@@ -915,7 +915,7 @@ public:
     StrongPtr & operator = (
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
     {
-        if ( GetPointer() != rhs.GetPointer() )
+        if ( !rhs.Equals( GetPointer() ) )
         {
             StrongPtr temp( rhs );
             temp.Swap( *this );
@@ -1083,6 +1083,27 @@ public:
         return * GetPointer();
     }
 
+    /// Helper function which can be called to avoid exposing GetPointer function.
+    template < class T1 >
+    bool Equals( const T1 * p ) const
+    {
+        return ( GetPointer() == p );
+    }
+
+    /// Helper function which can be called to avoid exposing GetPointer function.
+    template < class T1 >
+    bool LessThan( const T1 * p ) const
+    {
+        return ( GetPointer() < p );
+    }
+
+    /// Helper function which can be called to avoid exposing GetPointer function.
+    template < class T1 >
+    bool GreaterThan( const T1 * p ) const
+    {
+        return ( GetPointer() > p );
+    }
+
     /// Equality comparison operator is templated to handle ambiguity.
     template
     <
@@ -1098,7 +1119,7 @@ public:
     bool operator == (
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs ) const
     {
-        return ( GetPointer() == rhs.GetPointer() );
+        return ( rhs.Equals( GetPointer() ) );
     }
 
     /// Inequality comparison operator is templated to handle ambiguity.
@@ -1116,7 +1137,7 @@ public:
     bool operator != (
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs ) const
     {
-        return ( GetPointer() != rhs.GetPointer() );
+        return !( rhs.Equals( GetPointer() ) );
     }
 
     /// Less-than comparison operator is templated to handle ambiguity.
@@ -1134,7 +1155,7 @@ public:
     bool operator < (
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs ) const
     {
-        return ( GetPointer() < rhs.GetPointer() );
+        return ( rhs.GreaterThan( GetPointer() ) );
     }
 
     /// Greater-than comparison operator is templated to handle ambiguity.
@@ -1152,7 +1173,7 @@ public:
     inline bool operator > (
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs ) const
     {
-        return ( rhs.GetPointer() < GetPointer() );
+        return ( rhs.LessThan( GetPointer() ) );
     }
 
     /// Less-than-or-equal-to operator is templated to handle ambiguity.
@@ -1170,7 +1191,7 @@ public:
     inline bool operator <= (
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs ) const
     {
-        return !( rhs.GetPointer() < GetPointer() );
+        return !( rhs.LessThan( GetPointer() ) );
     }
 
     /// Greater-than-or-equal-to operator is templated to handle ambiguity.
@@ -1188,13 +1209,15 @@ public:
     inline bool operator >= (
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs ) const
     {
-        return !( GetPointer() < rhs.GetPointer() );
+        return !( rhs.GreaterThan( GetPointer() ) );
     }
 
     inline bool operator ! () const // Enables "if ( !sp ) ..."
     {
         return ( 0 == OP::GetPointer() );
     }
+
+protected:
 
     inline PointerType GetPointer( void )
     {
@@ -1334,7 +1357,7 @@ template
 inline bool operator == (
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs, U * rhs )
 {
-    return ( lhs.GetPointer() == rhs );
+    return ( lhs.Equals( rhs ) );
 }
 
 ///  operator== for lhs = raw pointer, rhs = StrongPtr
@@ -1354,7 +1377,7 @@ template
 inline bool operator == ( U * lhs,
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs )
 {
-    return ( rhs.GetPointer() == lhs );
+    return ( rhs.Equals( lhs ) );
 }
 
 ///  operator!= for lhs = StrongPtr, rhs = raw pointer
@@ -1374,7 +1397,7 @@ template
 inline bool operator != (
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs, U * rhs )
 {
-    return !( lhs.GetPointer() == rhs );
+    return !( lhs.Equals( rhs ) );
 }
 
 ///  operator!= for lhs = raw pointer, rhs = StrongPtr
@@ -1394,7 +1417,7 @@ template
 inline bool operator != ( U * lhs,
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs )
 {
-    return ( rhs.GetPointer() != lhs );
+    return !( rhs.Equals( lhs ) );
 }
 
 ///  operator< for lhs = StrongPtr, rhs = raw pointer
@@ -1414,7 +1437,7 @@ template
 inline bool operator < (
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs, U * rhs )
 {
-    return ( lhs.GetPointer() < rhs );
+    return ( lhs.LessThan( rhs ) );
 }
 
 ///  operator< for lhs = raw pointer, rhs = StrongPtr
@@ -1434,7 +1457,7 @@ template
 inline bool operator < ( U * lhs,
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs )
 {
-    return ( lhs < rhs.GetPointer() );
+    return ( rhs.GreaterThan( lhs ) );
 }
 
 //  operator> for lhs = StrongPtr, rhs = raw pointer
@@ -1454,7 +1477,7 @@ template
 inline bool operator > (
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs, U * rhs )
 {
-    return ( rhs < lhs.GetPointer() );
+    return ( lhs.GreaterThan( rhs ) );
 }
 
 ///  operator> for lhs = raw pointer, rhs = StrongPtr
@@ -1474,7 +1497,7 @@ template
 inline bool operator > ( U * lhs,
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs )
 {
-    return ( rhs.GetPointer() < lhs );
+    return ( rhs.LessThan( lhs ) );
 }
 
 ///  operator<= for lhs = StrongPtr, rhs = raw pointer
@@ -1494,7 +1517,7 @@ template
 inline bool operator <= (
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs, U * rhs )
 {
-    return !( rhs < lhs.GetPointer() );
+    return !( lhs.GreaterThan( rhs ) );
 }
 
 ///  operator<= for lhs = raw pointer, rhs = StrongPtr
@@ -1514,7 +1537,7 @@ template
 inline bool operator <= ( U * lhs,
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs )
 {
-    return !( rhs.GetPointer() < lhs );
+    return !( rhs.LessThan( lhs ) );
 }
 
 ///  operator>= for lhs = StrongPtr, rhs = raw pointer
@@ -1534,7 +1557,7 @@ template
 inline bool operator >= (
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs, U * rhs )
 {
-    return !( lhs.GetPointer() < rhs );
+    return !( lhs.LessThan( rhs ) );
 }
 
 ///  operator>= for lhs = raw pointer, rhs = StrongPtr
@@ -1554,7 +1577,7 @@ template
 inline bool operator >= ( U * lhs,
     const StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs )
 {
-    return !( lhs < rhs.GetPointer() );
+    return !( rhs.GreaterThan( lhs ) );
 }
 
 } // namespace Loki
@@ -1585,7 +1608,7 @@ namespace std
             const Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs,
             const Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs ) const
         {
-            return less< T * >()( lhs.GetPointer(), rhs.GetPointer() );
+            return ( lhs < rhs );
         }
     };
 }
