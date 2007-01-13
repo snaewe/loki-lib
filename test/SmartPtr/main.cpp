@@ -32,6 +32,7 @@ extern void DoStrongReleaseTests( void );
 extern void DoWeakCycleTests( void );
 extern void DoStrongConstTests( void );
 extern void DoStrongForwardReferenceTest( void );
+extern void DoStrongCompareTests( void );
 
 extern void DoLockedPtrTest( void );
 extern void DoLockedStorageTest( void );
@@ -1013,6 +1014,7 @@ int main( unsigned int argc, const char * argv[] )
     DoStrongReleaseTests();
     DoStrongReleaseTests();
     DoWeakCycleTests();
+    DoStrongCompareTests();
 
     DoForwardReferenceTest();
     DoStrongForwardReferenceTest();

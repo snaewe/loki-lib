@@ -970,6 +970,95 @@ void friend_handling2()
     BaseClass * pNull ;
     Ptr w1( new BaseClass );
     ReleaseAll( w1, pNull );
+}
 
- }
+// ----------------------------------------------------------------------------
+
+void DoStrongCompareTests( void )
+{
+    Earth * p1 = new Earth;
+    Earth * p2 = new Earth;
+    Earth_StrongPtr sp1( p1 );
+    Earth_StrongPtr sp2( p2 );
+    const bool isOneLess = ( p1 < p2 );
+    if ( isOneLess )
+    {
+        assert( sp1 <   p2 );
+        assert( sp1 <  sp2 );
+        assert( sp1 <=  p2 );
+        assert( sp1 <= sp2 );
+        assert( sp1 <=  p1 );
+        assert( sp1 ==  p1 );
+        assert( sp1 == sp1 );
+        assert( sp1 !=  p2 );
+        assert( sp1 != sp2 );
+        assert( sp2 >   p1 );
+        assert( sp2 >  sp1 );
+        assert( sp2 >=  p1 );
+        assert( sp2 >= sp1 );
+        assert( sp2 >=  p2 );
+        assert( sp2 ==  p2 );
+        assert( sp2 == sp2 );
+        assert( sp2 !=  p1 );
+        assert( sp2 != sp1 );
+        assert(  p1 <   p2 );
+        assert(  p1 <  sp2 );
+        assert(  p1 <=  p2 );
+        assert(  p1 <= sp2 );
+        assert(  p1 <= sp1 );
+        assert(  p1 ==  p1 );
+        assert(  p1 == sp1 );
+        assert(  p1 !=  p2 );
+        assert(  p1 != sp2 );
+        assert(  p2 >   p1 );
+        assert(  p2 >  sp1 );
+        assert(  p2 >=  p1 );
+        assert(  p2 >= sp1 );
+        assert(  p2 >= sp2 );
+        assert(  p2 ==  p2 );
+        assert(  p2 == sp2 );
+        assert(  p2 !=  p1 );
+        assert(  p2 != sp1 );
+    }
+    else
+    {
+        assert( sp2 <   p1 );
+        assert( sp2 <  sp1 );
+        assert( sp2 <=  p1 );
+        assert( sp2 <=  p2 );
+        assert( sp2 <= sp1 );
+        assert( sp2 ==  p2 );
+        assert( sp2 == sp2 );
+        assert( sp2 !=  p1 );
+        assert( sp2 != sp1 );
+        assert( sp1 >   p2 );
+        assert( sp1 >  sp2 );
+        assert( sp1 >=  p2 );
+        assert( sp1 >=  p1 );
+        assert( sp1 >= sp2 );
+        assert( sp1 ==  p1 );
+        assert( sp1 == sp1 );
+        assert( sp1 !=  p2 );
+        assert( sp1 != sp2 );
+        assert(  p2 <   p1 );
+        assert(  p2 <  sp1 );
+        assert(  p2 <=  p1 );
+        assert(  p2 <= sp1 );
+        assert(  p2 <= sp2 );
+        assert(  p2 ==  p2 );
+        assert(  p2 == sp2 );
+        assert(  p2 !=  p1 );
+        assert(  p2 != sp1 );
+        assert(  p1 >   p2 );
+        assert(  p1 >  sp2 );
+        assert(  p1 >=  p2 );
+        assert(  p1 >= sp2 );
+        assert(  p1 >= sp1 );
+        assert(  p1 ==  p1 );
+        assert(  p1 == sp1 );
+        assert(  p1 !=  p2 );
+        assert(  p1 != sp2 );
+    }
+}
+
 // ----------------------------------------------------------------------------
