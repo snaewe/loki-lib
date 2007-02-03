@@ -567,7 +567,8 @@ namespace Loki
     protected:
         inline SmallObjectBase( void ) {}
         inline SmallObjectBase( const SmallObjectBase & ) {}
-        inline SmallObjectBase & operator = ( const SmallObjectBase & ) {}
+        inline SmallObjectBase & operator = ( const SmallObjectBase & )
+        { return *this; }
         inline ~SmallObjectBase() {}
     }; // end class SmallObjectBase
 
@@ -632,7 +633,8 @@ namespace Loki
     protected:
         inline SmallValueObject( void ) {}
         inline SmallValueObject( const SmallValueObject & ) {}
-        inline SmallValueObject & operator = ( const SmallValueObject & ) {}
+        inline SmallValueObject & operator = ( const SmallValueObject & )
+        { return *this; }
         inline ~SmallValueObject() {}
     }; // end class SmallValueObject
 
