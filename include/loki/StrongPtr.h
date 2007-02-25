@@ -621,11 +621,33 @@ private:
 
 class LOKI_EXPORT LockableTwoRefCounts
 {
+    typedef SmallValueObject< ::Loki::ClassLevelLockable > ThreadSafePointerAllocator;
+
 protected:
 
-    explicit LockableTwoRefCounts( bool strong );
+    explicit LockableTwoRefCounts( bool strong )
+        : m_counts( NULL )
+    {
+        void * temp = ThreadSafePointerAllocator::operator new(
+            sizeof(Loki::Private::LockableTwoRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
+        assert( temp != 0 );
+#endif
+        m_counts = new ( temp ) Loki::Private::LockableTwoRefCountInfo( strong );
+    }
 
-    LockableTwoRefCounts( const void * p, bool strong );
+    LockableTwoRefCounts( const void * p, bool strong )
+        : m_counts( NULL )
+    {
+        void * temp = ThreadSafePointerAllocator::operator new(
+            sizeof(Loki::Private::LockableTwoRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
+        assert( temp != 0 );
+#endif
+        void * p2 = const_cast< void * >( p );
+        m_counts = new ( temp )
+            Loki::Private::LockableTwoRefCountInfo( p2, strong );
+    }
 
     LockableTwoRefCounts( const LockableTwoRefCounts & rhs, bool strong ) :
         m_counts( rhs.m_counts )
@@ -648,23 +670,62 @@ protected:
         return Decrement( strong );
     }
 
-    void Increment( bool strong );
+    void Increment( bool strong )
+    {
+        if ( strong )
+        {
+            m_counts->IncStrongCount();
+        }
+        else
+        {
+            m_counts->IncWeakCount();
+        }
+    }
 
-    bool Decrement( bool strong );
+    bool Decrement( bool strong )
+    {
+        if ( strong )
+        {
+            m_counts->DecStrongCount();
+        }
+        else
+        {
+            m_counts->DecWeakCount();
+        }
+        return !m_counts->HasStrongPointer();
+    }
 
     bool HasStrongPointer( void ) const
     {
         return m_counts->HasStrongPointer();
     }
 
-    void Swap( LockableTwoRefCounts & rhs );
+    void Swap( LockableTwoRefCounts & rhs )
+    {
+        std::swap( m_counts, rhs.m_counts );
+    }
 
     void SetPointer( void * p )
     {
         m_counts->SetPointer( p );
     }
 
-    void ZapPointer( void );
+    void ZapPointer( void )
+    {
+#ifdef DO_EXTRA_LOKI_TESTS
+        assert( !m_counts->HasStrongPointer() );
+#endif
+        if ( m_counts->HasWeakPointer() )
+        {
+            m_counts->ZapPointer();
+        }
+        else
+        {
+            ThreadSafePointerAllocator::operator delete ( m_counts,
+                sizeof(Loki::Private::LockableTwoRefCountInfo) );
+            m_counts = NULL;
+        }
+    }
 
     inline void * GetPointer( void ) const
     {
