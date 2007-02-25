@@ -18,7 +18,9 @@
 
 #define LOKI_SMALL_OBJECT_USE_NEW_ARRAY
 
+#ifndef LOKI_CLASS_LEVEL_THREADING
 #define LOKI_CLASS_LEVEL_THREADING
+#endif
 
 #include <loki/SmallObj.h>
 #include "timer.h"
