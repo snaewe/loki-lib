@@ -391,9 +391,14 @@ bool testCache()
 
 #include <loki/SPCachedFactory.h>
 
+template<class T>
+class SmartPointer_OneTArg : public SmartPointer<T>
+{
+};
+
 bool testSmartPointer()
 {
-	typedef CachedFactory< AbstractProduct, int, NullType, SmartPointer, AlwaysCreate, EvictRandom, SimpleStatisticPolicy > CFactory;
+	typedef CachedFactory< AbstractProduct, int, NullType, SmartPointer_OneTArg, AlwaysCreate, EvictRandom, SimpleStatisticPolicy > CFactory;
 	CFactory factory;
 	factory.Register(0, createProductNull);
 	for(int i=0;i<500;++i)
