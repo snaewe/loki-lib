@@ -1,7 +1,7 @@
 _____________________________________
 
 Version 0.1.6
-November 16, 2006
+February 25, 2007
 _____________________________________
 
 General:
@@ -13,7 +13,8 @@ General:
     - Makefiles know includes and recompile if they are changed (linux, macosx) (lf)
     - Build all tests except SingletonDll with the static library (linux, macosx) (lf)
     - use standard conforming naming, SUN's compiler needs it (pk)
-    - all LOKI_ macros uses Loki:: 
+    - add Loki:: to LOKI_ macros
+    - several bug fixes.
 
 AbstractFactory:
     - remove injected friends. (thanks to Sigoure Benoit, pk)
@@ -29,7 +30,7 @@ Pimpl:
     - ImplT/PimplT/RimplT renamed to a more readable version: ImplOf (pk)
 
 Register:
-    - also produce a informative LOKI_CHECK_CLASS_IN_LIST error message with GCC
+    - also produce a informative LOKI_CHECK_CLASS_IN_LIST error message with GCC (pk)
 
 SafeFormat:
     - add writing to ostream, by Tom Browder (pk)
@@ -54,8 +55,8 @@ SmallObj:
 StrongPtr:
     - Added typedef so LockableTwoRefCounts uses thread-safe allocator. (rs)
     - AIX fixed, (thanks to Dieter Rosch, pk)
+    - linker error when using threads fixed (pk)
   
-      
 Threads:
     - reentrance support added to the pthread mutex (Thanks to Shen Lei, pk)
       
