@@ -188,6 +188,8 @@ namespace Loki
            const char* name(){return "smart pointer";}
 
      private:
+           SmartPointer& operator=(const SmartPointer&);
+           SmartPointer(const SmartPointer&);
      	   void smartPointerCallbackFunction(void* pSP)
      	   {
      	   		CallBackSP &SP(*reinterpret_cast<CallBackSP*>(pSP));

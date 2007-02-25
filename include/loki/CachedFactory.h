@@ -409,6 +409,8 @@ namespace Loki
     class EvictAging : public EvictionHelper< ST, DT >
     {
     private:
+        EvictAging(const EvictAging&);
+        EvictAging& operator=(const EvictAging&);
     	typedef EvictionHelper< ST, DT >		       		EH;
     	typedef typename EH::HitMap						HitMap;
     	typedef typename EH::HitMapItr					HitMapItr;
@@ -423,9 +425,12 @@ namespace Loki
     			D( std::cout <<  x.second << std::endl; )
 			}
 			const DT &key_;
+            updateCounter(const updateCounter& rhs) : key_(rhs.key_){}
+        private:
+            updateCounter& operator=(const updateCounter& rhs);
 		};
     protected:
-
+         EvictAging(){}
          virtual ~EvictAging(){}
          
     	// OnStore initialize the counter for the new key
