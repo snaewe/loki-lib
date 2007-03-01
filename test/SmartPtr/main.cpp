@@ -26,6 +26,7 @@
 using namespace std;
 using namespace Loki;
 
+extern void DoWeakLeakTest( void );
 extern void DoStrongRefCountTests( void );
 extern void DoStrongRefLinkTests( void );
 extern void DoStrongReleaseTests( void );
@@ -1010,6 +1011,7 @@ int main( unsigned int argc, const char * argv[] )
     }
 
     DoRefLinkTests();
+    DoWeakLeakTest();
     DoStrongRefCountTests();
     DoStrongReleaseTests();
     DoStrongReleaseTests();

@@ -49,6 +49,65 @@ typedef Loki::StrongPtr< Thingy, true, TwoRefCounts, DisallowConversion,
 
 // ----------------------------------------------------------------------------
 
+class Counted
+{
+public:
+
+    Counted( void ) : m_size( 0 )
+    {
+        s_constructions++;
+    }
+
+    ~Counted( void )
+    {
+        s_destructions++;
+    }
+
+    static inline bool AllDestroyed( void )
+    {
+        return ( s_constructions == s_destructions );
+    }
+
+    static inline bool ExtraConstructions( void )
+    {
+        return ( s_constructions > s_destructions );
+    }
+
+    static inline bool ExtraDestructions( void )
+    {
+        return ( s_constructions < s_destructions );
+    }
+
+    static inline unsigned int GetCtorCount( void )
+    {
+        return s_constructions;
+    }
+
+    static inline unsigned int GetDtorCount( void )
+    {
+        return s_destructions;
+    }
+
+private:
+    /// Not implemented.
+    Counted( const Counted & );
+    /// Not implemented.
+    Counted & operator = ( const Counted & );
+
+    static unsigned int s_constructions;
+    static unsigned int s_destructions;
+
+    int m_size;
+};
+
+unsigned int Counted::s_constructions = 0;
+unsigned int Counted::s_destructions = 0;
+
+typedef Loki::StrongPtr< Counted, false > Counted_WeakPtr;
+typedef Loki::StrongPtr< Counted, true > Counted_StrongPtr;
+
+// ----------------------------------------------------------------------------
+
 class Earth;
 class Moon;
 
@@ -249,6 +308,26 @@ typedef Loki::StrongPtr< const BaseClass, true, TwoRefCounts, DisallowConversion
 typedef Loki::StrongPtr< const BaseClass, false, TwoRefCounts, DisallowConversion,
     AssertCheck, CantResetWithStrong, DeleteSingle, PropagateConst >
     ConstBase_WeakCount_NoConvert_Assert_Propagate_ptr;
+
+// ----------------------------------------------------------------------------
+
+void DoWeakLeakTest( void )
+{
+    assert( Counted::AllDestroyed() );
+    assert( Counted::GetCtorCount() == 0 );
+    assert( Counted::GetDtorCount() == 0 );
+    Counted_WeakPtr pWeakInt;
+    {
+        Counted_StrongPtr pStrongInt( new Counted );
+        pWeakInt = pStrongInt;
+        assert( Counted::ExtraConstructions() );
+        assert( Counted::GetCtorCount() == 1 );
+        assert( Counted::GetDtorCount() == 0 );
+    }
+    assert( Counted::AllDestroyed() );
+    assert( Counted::GetCtorCount() == 1 );
+    assert( Counted::GetDtorCount() == 1 );
+}
 
 // ----------------------------------------------------------------------------
 
