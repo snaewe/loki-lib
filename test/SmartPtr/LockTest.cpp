@@ -32,6 +32,8 @@
     #define LOKI_WINDOWS_H
 #endif
 
+#include <stddef.h>
+
 #include <loki/Threads.h>
 #include <loki/StrongPtr.h>
 #include <loki/SmartPtr.h>
@@ -371,13 +373,14 @@ SelfLockedA * SelfLockedA::s_instance = NULL;
 void * RunLocked( void * id )
 {
     A_Lockable_ptr ap( SafeA::GetIt().GetA() );
-    const int threadIndex = reinterpret_cast< int >( id );
+    const ptrdiff_t threadIndex = reinterpret_cast< ptrdiff_t >( id );
+    const int index = static_cast< int >( threadIndex );
     for( unsigned int i = 0; i < loop; i++ )
     {
         ap.Lock();
         Loki::ScopeGuard unlockGuard = MakeGuard( &A_Lockable_ptr::Unlock, ap );
         (void)unlockGuard;
-        ap->Print( threadIndex );
+        ap->Print( index );
     }
     return 0;
 }
@@ -387,17 +390,18 @@ void * RunLocked( void * id )
 void * RunLockedStorage( void * id )
 {
     A_Locked_ptr ap( SelfLockedA::GetIt().GetA() );
-    const int threadIndex = reinterpret_cast< int >( id );
+    const ptrdiff_t threadIndex = reinterpret_cast< ptrdiff_t >( id );
+    const int index = static_cast< int >( threadIndex );
     int j = 0;
     for( unsigned int i = 0; i < loop; i++ )
     {
-        ap->Print( threadIndex, j );
+        ap->Print( index, j );
         j++;
 #ifdef DO_EXTRA_LOKI_TESTS
-        ap->Print( threadIndex, j );
+        ap->Print( index, j );
         j++;
         A_Locked_ptr ap1( ap );
-        ap1->Print( threadIndex, j );
+        ap1->Print( index, j );
         j++;
 #endif
     }
@@ -408,10 +412,11 @@ void * RunLockedStorage( void * id )
 void * Run( void * id )
 {
     A_ptr ap( UnsafeA::GetIt().GetA() );
-    const int threadIndex = reinterpret_cast< int >( id );
+    const ptrdiff_t threadIndex = reinterpret_cast< ptrdiff_t >( id );
+    const int index = static_cast< int >( threadIndex );
     for( unsigned int i = 0; i < loop; i++ )
     {
-        ap->Print( threadIndex );
+        ap->Print( index );
     }
     return 0;
 }
