@@ -561,6 +561,8 @@ protected:
         Increment( strong );
     }
 
+    ~TwoRefCounts( void );
+
     inline bool Release( bool strong )
     {
         return Decrement( strong );
