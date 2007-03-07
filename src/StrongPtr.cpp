@@ -57,21 +57,6 @@ TwoRefCounts::TwoRefCounts( const void * p, bool strong )
 
 // ----------------------------------------------------------------------------
 
-TwoRefCounts::~TwoRefCounts( void )
-{
-    if ( m_counts == NULL )
-    {
-        return;
-    }
-    if ( !m_counts->HasStrongPointer() && !m_counts->HasWeakPointer() )
-    {
-        SmallObject<>::operator delete ( m_counts,
-            sizeof(Loki::Private::TwoRefCountInfo) );
-    }
-}
-
-// ----------------------------------------------------------------------------
-
 void TwoRefCounts::Increment( bool strong )
 {
     if ( strong )

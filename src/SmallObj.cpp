@@ -24,6 +24,7 @@
 
 //#define DO_EXTRA_LOKI_TESTS
 //#define USE_NEW_TO_ALLOCATE
+//#define LOKI_CHECK_FOR_CORRUPTION
 
 #ifdef DO_EXTRA_LOKI_TESTS
     #include <iostream>
@@ -870,6 +871,13 @@ void * FixedAllocator::Allocate( void )
     // prove either emptyChunk_ points nowhere, or points to a truly empty Chunk.
     assert( ( NULL == emptyChunk_ ) || ( emptyChunk_->HasAvailable( numBlocks_ ) ) );
     assert( CountEmptyChunks() < 2 );
+#ifdef LOKI_CHECK_FOR_CORRUPTION
+    if ( allocChunk_->IsCorrupt( numBlocks_, blockSize_, true ) )
+    {
+        assert( false );
+        return NULL;
+    }
+#endif
 
     return place;
 }
