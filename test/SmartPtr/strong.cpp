@@ -101,10 +101,19 @@ private:
 };
 
 unsigned int Counted::s_constructions = 0;
-unsigned int Counted::s_destructions = 0;
+unsigned int Counted::s_destructions  = 0;
 
-typedef Loki::StrongPtr< Counted, false > Counted_WeakPtr;
-typedef Loki::StrongPtr< Counted, true > Counted_StrongPtr;
+typedef ::Loki::StrongPtr< Counted, false > Counted_WeakPtr;
+typedef ::Loki::StrongPtr< Counted, true  > Counted_StrongPtr;
+
+typedef ::Loki::StrongPtr< Counted, false, ::Loki::TwoRefLinks > Linked_WeakPtr;
+typedef ::Loki::StrongPtr< Counted, true,  ::Loki::TwoRefLinks > Linked_StrongPtr;
+
+typedef ::Loki::StrongPtr< Counted, false, ::Loki::LockableTwoRefCounts >
+    Lockable_WeakPtr;
+typedef ::Loki::StrongPtr< Counted, true,  ::Loki::LockableTwoRefCounts >
+    Lockable_StrongPtr;
+
 
 // ----------------------------------------------------------------------------
 
@@ -313,20 +322,51 @@ typedef Loki::StrongPtr< const BaseClass, false, TwoRefCounts, DisallowConversio
 
 void DoWeakLeakTest( void )
 {
+    const unsigned int ctorCount = Counted::GetCtorCount();
+    const unsigned int dtorCount = Counted::GetDtorCount();
     assert( Counted::AllDestroyed() );
-    assert( Counted::GetCtorCount() == 0 );
-    assert( Counted::GetDtorCount() == 0 );
-    Counted_WeakPtr pWeakInt;
+
     {
-        Counted_StrongPtr pStrongInt( new Counted );
-        pWeakInt = pStrongInt;
-        assert( Counted::ExtraConstructions() );
-        assert( Counted::GetCtorCount() == 1 );
-        assert( Counted::GetDtorCount() == 0 );
+        Counted_WeakPtr pWeakInt;
+        {
+            Counted_StrongPtr pStrongInt( new Counted );
+            pWeakInt = pStrongInt;
+            assert( Counted::ExtraConstructions() );
+            assert( Counted::GetCtorCount() == ctorCount + 1 );
+            assert( Counted::GetDtorCount() == dtorCount );
+        }
+        assert( Counted::AllDestroyed() );
+        assert( Counted::GetCtorCount() == ctorCount + 1 );
+        assert( Counted::GetDtorCount() == dtorCount + 1 );
     }
-    assert( Counted::AllDestroyed() );
-    assert( Counted::GetCtorCount() == 1 );
-    assert( Counted::GetDtorCount() == 1 );
+
+    {
+        Lockable_WeakPtr pWeakInt;
+        {
+            Lockable_StrongPtr pStrongInt( new Counted );
+            pWeakInt = pStrongInt;
+            assert( Counted::ExtraConstructions() );
+            assert( Counted::GetCtorCount() == ctorCount + 2 );
+            assert( Counted::GetDtorCount() == dtorCount + 1 );
+        }
+        assert( Counted::AllDestroyed() );
+        assert( Counted::GetCtorCount() == ctorCount + 2 );
+        assert( Counted::GetDtorCount() == dtorCount + 2 );
+    }
+
+    {
+        Linked_WeakPtr pWeakInt;
+        {
+            Linked_StrongPtr pStrongInt( new Counted );
+            pWeakInt = pStrongInt;
+            assert( Counted::ExtraConstructions() );
+            assert( Counted::GetCtorCount() == ctorCount + 3 );
+            assert( Counted::GetDtorCount() == dtorCount + 2 );
+        }
+        assert( Counted::AllDestroyed() );
+        assert( Counted::GetCtorCount() == ctorCount + 3 );
+        assert( Counted::GetDtorCount() == dtorCount + 3 );
+    }
 }
 
 // ----------------------------------------------------------------------------
