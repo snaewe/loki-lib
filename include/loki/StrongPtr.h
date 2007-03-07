@@ -561,7 +561,11 @@ protected:
         Increment( strong );
     }
 
-    ~TwoRefCounts( void );
+    /** The destructor does not need to do anything since the call to
+     ZapPointer inside StrongPtr::~StrongPtr will do the cleanup which
+     this dtor would have done.
+     */
+    inline ~TwoRefCounts( void ) {}
 
     inline bool Release( bool strong )
     {
@@ -656,6 +660,12 @@ protected:
     {
         Increment( strong );
     }
+
+    /** The destructor does not need to do anything since the call to
+     ZapPointer inside StrongPtr::~StrongPtr will do the cleanup which
+     this dtor would have done.
+     */
+    inline ~LockableTwoRefCounts( void ) {}
 
     inline void Lock( void ) const
     {
@@ -1009,9 +1019,9 @@ public:
             // undefined behavior.  Therefore, this must get pointer before
             // zapping it, and then delete the temp pointer.
             T * p = GetPointer();
+            OP::ZapPointer();
             if ( p != 0 )
             {
-                OP::ZapPointer();
                 DP::Delete( p );
             }
         }
