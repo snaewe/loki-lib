@@ -485,6 +485,12 @@ namespace Loki
 ///  \par Warning
 ///  There could be a race condition, see bug "Race condition in RefCountedMTAdj::Release"
 ///  http://sourceforge.net/tracker/index.php?func=detail&aid=1408845&group_id=29557&atid=396644
+///  As stated in bug 1408845, the Release function is not thread safe if a
+///  SmartPtr copy-constructor tries to copy the last pointer to an object in
+///  one thread, while the destructor is acting on the last pointer in another
+///  thread.  The existence of a race between a copy-constructor and destructor
+///  implies a design flaw at a higher level.  That race condition must be
+///  fixed at a higher design level, and no change to this class could fix it.
 ////////////////////////////////////////////////////////////////////////////////
     
     template <template <class, class> class ThreadingModel,
