@@ -15,6 +15,10 @@
 
 // ----------------------------------------------------------------------------
 
+#ifndef LOKI_CLASS_LEVEL_THREADING
+#define LOKI_CLASS_LEVEL_THREADING
+#endif
+
 #include <loki/StrongPtr.h>
 
 #include <iostream>
