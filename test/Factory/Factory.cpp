@@ -119,7 +119,7 @@ public:
 
 class Creator : public AbstractCreator{
 public:
-    Creator(){};
+    Creator(){}
     AbstractProduct* create()                 
     {
         cout << "Creator::create()" << endl;
@@ -139,7 +139,7 @@ public:
 template< class T>
 class CreatorT{
 public:
-    CreatorT(){};
+    CreatorT(){}
     T* create()                 
     {
         cout << "CreatorT<T>::create()" << endl;

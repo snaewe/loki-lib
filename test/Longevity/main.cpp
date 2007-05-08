@@ -76,7 +76,7 @@ public:
     Example(const char * s)
     {
         msg = s;
-    };
+    }
     virtual ~Example()
     {
         echo(msg);

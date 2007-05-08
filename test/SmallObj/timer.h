@@ -27,7 +27,7 @@ public:
     Timer()
     {
         t100 = 0;
-    };
+    }
 
     void start()
     {

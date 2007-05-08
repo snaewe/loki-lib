@@ -40,7 +40,7 @@ public:
     LogClass()
     {
         print("LogClass::LogClass()");
-    };
+    }
     ~LogClass()
     {
         print("LogClass::~LogClass()");

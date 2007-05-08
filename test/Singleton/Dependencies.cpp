@@ -248,7 +248,7 @@ class B1_NoDestroy : public Master1_NoDestroy
 {
 public:
     B1_NoDestroy(){std::cout<<"new B1_NoDestroy. B1_NoDestroy must not be deleted\n";}
-    ~B1_NoDestroy(){std::cout<<"delete B1_NoDestroy\n";};
+    ~B1_NoDestroy(){std::cout<<"delete B1_NoDestroy\n";}
 };
 
 class B1_PhoenixSingleton : public Master1_PhoenixSingleton
@@ -331,7 +331,7 @@ class B2_NoDestroy : public Master2_NoDestroy
 {
 public:
     B2_NoDestroy(){std::cout<<"new B2_NoDestroy. B2_NoDestroy must not be deleted\n";}
-    ~B2_NoDestroy(){std::cout<<"delete B2_NoDestroy\n";};
+    ~B2_NoDestroy(){std::cout<<"delete B2_NoDestroy\n";}
 };
 
 class B2_PhoenixSingleton : public Master2_PhoenixSingleton

@@ -48,11 +48,8 @@ unsigned int MimicCOM::s_destructions = 0;
 // ----------------------------------------------------------------------------
 
 /// Used to check if SmartPtr can be used with a forward-reference.
+/// GCC gives out warnings because of it, you can ignore them.
 class Thingy;
-
-#ifdef __GNUC__
-#warning The warnings are by design: Check if SmartPtr can be used with a forward-reference.
-#endif
 
 typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
     AssertCheck, DefaultSPStorage, PropagateConst >
@@ -1001,10 +998,10 @@ void DoForwardReferenceTest( void )
 }
 
 
-int main( unsigned int argc, const char * argv[] )
+int main( int argc, const char * argv[] )
 {
     bool doThreadTest = false;
-    for ( unsigned int ii = 1; ii < argc; ++ii )
+    for ( int ii = 1; ii < argc; ++ii )
     {
         if ( ::strcmp( argv[ii], "-t" ) == 0 )
             doThreadTest = true;

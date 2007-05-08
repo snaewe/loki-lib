@@ -22,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <cstdio>
+#include <climits>
 #include <string>
 #include <stdexcept>
 #include <utility>

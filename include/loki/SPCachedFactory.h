@@ -171,7 +171,7 @@ namespace Loki
      protected:           
            typedef CallBackSP ProductReturn;
            SmartPointer() : fun(this, &SmartPointer::smartPointerCallbackFunction) {}
-           virtual ~SmartPointer(){};
+           virtual ~SmartPointer(){}
            
            ProductReturn encapsulate(AbstractProduct* pProduct)
            {

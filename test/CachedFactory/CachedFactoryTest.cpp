@@ -72,7 +72,7 @@ using namespace Loki;
 
 class AbstractProduct{
 public:
-    virtual ~AbstractProduct(){};
+    virtual ~AbstractProduct(){}
 };
  
 class Product : public AbstractProduct

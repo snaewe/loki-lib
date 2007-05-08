@@ -188,6 +188,9 @@ namespace Loki
     protected:
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
+		//
+		// If your compiler gives you a warning in this area while
+		// compiling the tests, it is on purpose, please ignore it.
         void Destroy()
         {
             delete pointee_;

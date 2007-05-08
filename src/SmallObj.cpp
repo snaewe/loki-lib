@@ -19,6 +19,7 @@
 #include <loki/SmallObj.h>
 
 #include <cassert>
+#include <climits>
 #include <vector>
 #include <bitset>
 

@@ -33,7 +33,7 @@ int loop = 5;
 
 struct A
 {
-    A(){};
+    A(){}
 
 #define  DO for(int i=0; i<10000000; i++) g++;
 
