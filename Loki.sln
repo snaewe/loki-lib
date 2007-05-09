@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C++ Express 2005
+# Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "src\library.vcproj", "{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Factory", "test\Factory\Factory.vcproj", "{925D5863-2F77-41B7-96F1-CC814762C40F}"
@@ -56,6 +56,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Function", "test\Function\Function.vcproj", "{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CachedFactory", "test\CachedFactory\CachedFactory.vcproj", "{8D186AB4-E544-42D6-B192-1AE2C946875E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CheckReturn", "test\CheckReturn\CheckReturn.vcproj", "{C0826A05-9143-4545-B5DE-811C188CB54E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,6 +141,10 @@ Global
 		{8D186AB4-E544-42D6-B192-1AE2C946875E}.Debug|Win32.Build.0 = Debug|Win32
 		{8D186AB4-E544-42D6-B192-1AE2C946875E}.Release|Win32.ActiveCfg = Release|Win32
 		{8D186AB4-E544-42D6-B192-1AE2C946875E}.Release|Win32.Build.0 = Release|Win32
+		{C0826A05-9143-4545-B5DE-811C188CB54E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C0826A05-9143-4545-B5DE-811C188CB54E}.Debug|Win32.Build.0 = Debug|Win32
+		{C0826A05-9143-4545-B5DE-811C188CB54E}.Release|Win32.ActiveCfg = Release|Win32
+		{C0826A05-9143-4545-B5DE-811C188CB54E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

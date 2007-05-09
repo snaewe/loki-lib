@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Function"
-	ProjectGUID="{925D5863-2F77-41B7-96F1-CC814762C40F}"
+	ProjectGUID="{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}"
 	RootNamespace="Function"
 	Keyword="Win32Proj"
 	>

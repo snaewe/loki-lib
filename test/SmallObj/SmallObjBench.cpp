@@ -274,8 +274,6 @@ template<
 void testSize()
 {
 
-//#define LOKI_ALLOCATOR_PARAMETERS ::Loki::SingleThreaded, 4096, 128, 4, Loki::NoDestroy
-
     typedef Base<Size, void> A;
     typedef Base<Size, Loki::SmallObject< ThreadingModel, chunkSize,
         maxSmallObjectSize, objectAlignSize, LifetimePolicy, MutexPolicy > > B;
