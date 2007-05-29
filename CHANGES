@@ -1,5 +1,20 @@
 _____________________________________
 
+Version 0.1.7
+?, 2007
+_____________________________________
+
+General:
+	- Fixed makefiles for GNU/kFreeBSD, GNU/hurd (lf)
+	- Fixed build errors with gcc 4.3 pre-release (lf)
+	- Fixed compiler error that occurs when using 64 bit pointers (rs)
+	- Added more unit tests (rs)
+	- Several other bug fixes (rs, pk)
+
+CVS commits by Lukas Fittl (lf), Peter Kümmel (pk), Rich Sposato (rs)
+
+_____________________________________
+
 Version 0.1.6
 February 25, 2007
 _____________________________________
