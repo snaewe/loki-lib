@@ -13,21 +13,34 @@ ifeq ($(OS), Darwin)
   SHARED_LIB_VERSIONED := libloki.$(VERSION).dylib
   override LDFLAGS += -dynamiclib -single_module -install_name $(SHARED_LIB_VERSIONED) -fPIC
   LDLIBS := -lpthread
-  RESULT_DIR := ../lib/
 else
 ifeq ($(OS), Linux)
   SHARED_LIB_BASE := libloki.so
   SHARED_LIB_VERSIONED := libloki.so.$(VERSION)
   override LDFLAGS += --shared -Wl,-soname=$(SHARED_LIB_VERSIONED) -fPIC
   LDLIBS := -lpthread
-  RESULT_DIR := ../lib/
+else
+ifeq ($(OS), GNU/kFreeBSD)
+  SHARED_LIB_BASE := libloki.so
+  SHARED_LIB_VERSIONED := libloki.so.$(VERSION)
+  override LDFLAGS += --shared -Wl,-soname=$(SHARED_LIB_VERSIONED) -fPIC
+  LDLIBS := -lpthread
+else
+ifeq ($(OS), GNU)
+  SHARED_LIB_BASE := libloki.so
+  SHARED_LIB_VERSIONED := libloki.so.$(VERSION)
+  override LDFLAGS += --shared -Wl,-soname=$(SHARED_LIB_VERSIONED) -fPIC
+  LDLIBS := -lpthread
 else
   SHARED_LIB_VERSIONED := libloki.dll
   override LDFLAGS += --shared
   LDLIBS :=
-  RESULT_DIR := ../lib/
 endif
 endif
+endif
+endif
+
+RESULT_DIR := ../lib/
 
 .PHONY: all build-static build-shared clean distclean
 all: build-static build-shared
