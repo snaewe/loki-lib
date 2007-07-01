@@ -2062,7 +2062,7 @@ namespace Loki
 // - NonVolatileType : Type with removed 'volatile' qualifier from T, if any
 // - UnqualifiedType : Type with removed 'const' and 'volatile' qualifiers from 
 //                     T, if any
-// - ParameterType: returns the optimal type to be used as a parameter 
+// - ParameterType   : returns the optimal type to be used as a parameter 
 //                       for functions that take 'const T's
 //
 ////////////////////////////////////////////////////////////////////////////////
