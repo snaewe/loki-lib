@@ -2033,7 +2033,7 @@ namespace Loki
 // class template TypeTraits
 //
 // Figures out at compile time various properties of any given type
-// Invocations (T is a type, TypeTraits<T>::Propertie):
+// Invocations (T is a type, TypeTraits<T>::Property):
 //
 // - isPointer       : returns true if T is a pointer type
 // - PointeeType     : returns the type to which T points if T is a pointer 
@@ -2062,7 +2062,7 @@ namespace Loki
 // - NonVolatileType : Type with removed 'volatile' qualifier from T, if any
 // - UnqualifiedType : Type with removed 'const' and 'volatile' qualifiers from 
 //                     T, if any
-// - ConstParameterType: returns the optimal type to be used as a parameter 
+// - ParameterType: returns the optimal type to be used as a parameter 
 //                       for functions that take 'const T's
 //
 ////////////////////////////////////////////////////////////////////////////////
