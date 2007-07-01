@@ -37,7 +37,7 @@ $(BIN1): $(OBJ1) $(LIB1) $(LIB2)
 $(LIB1): $(OBJ2)
 	$(CXX) $(SHARED_LIB_FLAG) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-$(LIB2): $(OBJ3)
+$(LIB2): $(OBJ3) $(LIB1)
 	$(CXX) $(SHARED_LIB_FLAG) $(LDFLAGS) -L. -o $@ $^ -lfoo $(LDLIBS)
 
 clean: cleandeps
