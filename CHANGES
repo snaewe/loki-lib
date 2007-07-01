@@ -5,11 +5,14 @@ Version 0.1.7
 _____________________________________
 
 General:
-	- Fixed makefiles for GNU/kFreeBSD, GNU/hurd (lf)
-	- Fixed build errors with gcc 4.3 pre-release (lf)
-	- Fixed compiler error that occurs when using 64 bit pointers (rs)
-	- Added more unit tests (rs)
-	- Several other bug fixes (rs, pk)
+    - Fixed makefiles for GNU/kFreeBSD, GNU/hurd (lf)
+    - Fixed build errors with gcc 4.3 pre-release (lf)
+    - Fixed compiler error that occurs when using 64 bit pointers (rs)
+    - Added more unit tests (rs)
+    - Several other bug fixes (rs, pk)
+
+Threads:
+    - add possibility to enable recursive mutex support for pthread (pk)
 
 CVS commits by Lukas Fittl (lf), Peter Kümmel (pk), Rich Sposato (rs)
 
@@ -20,8 +23,8 @@ February 25, 2007
 _____________________________________
 
 General:
-	- CacheFactory added by Guillaume Chatelet
-	- Factory documentation improved by Guillaume Chatelet
+    - CacheFactory added by Guillaume Chatelet
+    - Factory documentation improved by Guillaume Chatelet
     - migrated to subversion (pk)
     - Mac linker errors fixed (lf)
     - Makefiles can now be called from sub directories (lf)

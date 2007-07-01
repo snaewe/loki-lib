@@ -89,6 +89,7 @@
 #define LOKI_THREADS_MUTEX_LOCK(x)      ::EnterCriticalSection (x)
 #define LOKI_THREADS_MUTEX_UNLOCK(x)    ::LeaveCriticalSection (x)
 #define LOKI_THREADS_LONG               LONG
+#define LOKI_THREADS_MUTEX_CTOR(x)
 
 #define LOKI_THREADS_ATOMIC_FUNCTIONS                                   \
         static IntType AtomicIncrement(volatile IntType& lval)          \
@@ -110,8 +111,16 @@
 
 #define LOKI_THREADS_MUTEX(x)           pthread_mutex_t (x);
 
-// no recursive mutex support
 #define LOKI_THREADS_MUTEX_INIT(x)      ::pthread_mutex_init(x, 0)
+
+// define to 1 to enable recursive mutex support
+#if 0
+// experimental recursive mutex support
+#define LOKI_THREADS_MUTEX_CTOR(x)      : x(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP)
+#else
+// no recursive mutex support
+#define LOKI_THREADS_MUTEX_CTOR(x)
+#endif
 
 #define LOKI_THREADS_MUTEX_DELETE(x)    ::pthread_mutex_destroy (x)
 #define LOKI_THREADS_MUTEX_LOCK(x)      ::pthread_mutex_lock (x)
@@ -147,6 +156,7 @@
 #define LOKI_THREADS_MUTEX_LOCK(x)         
 #define LOKI_THREADS_MUTEX_UNLOCK(x)       
 #define LOKI_THREADS_LONG               
+#define LOKI_THREADS_MUTEX_CTOR(x)
 
 #endif
 
@@ -165,7 +175,7 @@ namespace Loki
     class Mutex
     {
     public:
-        Mutex()
+        Mutex() LOKI_THREADS_MUTEX_CTOR(mtx_)
         {
             LOKI_THREADS_MUTEX_INIT(&mtx_);
         }
