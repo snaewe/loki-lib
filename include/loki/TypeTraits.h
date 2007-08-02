@@ -93,9 +93,9 @@ namespace Loki
     namespace Private
     {
 #ifndef LOKI_DISABLE_TYPELIST_MACROS    
-        typedef LOKI_TYPELIST_5(unsigned char, unsigned short int,unsigned int, unsigned long int) 
+        typedef LOKI_TYPELIST_4(unsigned char, unsigned short int,unsigned int, unsigned long int) 
             StdUnsignedInts;
-        typedef LOKI_TYPELIST_5(signed char, short int,int, long int) 
+        typedef LOKI_TYPELIST_4(signed char, short int,int, long int) 
             StdSignedInts;
         typedef LOKI_TYPELIST_3(bool, char, wchar_t) 
             StdOtherInts;
