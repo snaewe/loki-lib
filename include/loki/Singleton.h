@@ -759,7 +759,7 @@ namespace Loki
         class X
     >
     typename SingletonHolder<T, C, L, M, X>::PtrInstanceType
-        SingletonHolder<T, C, L, M, X>::pInstance_;
+        SingletonHolder<T, C, L, M, X>::pInstance_ = 0;
 
     template
     <
@@ -769,7 +769,7 @@ namespace Loki
         template <class, class> class M,
         class X
     >
-    bool SingletonHolder<T, C, L, M, X>::destroyed_;
+    bool SingletonHolder<T, C, L, M, X>::destroyed_ = false;
 
     ////////////////////////////////////////////////////////////////////////////////
     // SingletonHolder::Instance
