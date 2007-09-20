@@ -131,6 +131,8 @@ private:
             Align align_;
         } temp;
 
+	--(*Data().begin()); // Harmut Kaiser fix:
+			     // decrement the use count of the remaining object
         new(buf_) Storage(
             *new(temp.buf_) Storage(Data()), 
             flex_string_details::Shallow());
