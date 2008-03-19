@@ -117,6 +117,10 @@ public:
     /// Destruct the object at pointer.
     void destroy( pointer p )
     {
+        // If the Type has no destructor, then some compilers complain about
+        // an unreferenced parameter, so use the void cast trick to prevent
+        // spurious warnings.
+        (void)p;
         p->~Type();
     }
 
