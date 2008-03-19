@@ -77,7 +77,9 @@ public:
     const_pointer address( const_reference elem ) const { return &elem; }
 
     /** Allocate an array of count elements.  Warning!  The true parameter in
-     the call to Allocate means this function can throw exceptions.
+     the call to Allocate means this function can throw exceptions.  This is
+     better than not throwing, and returning a null pointer in case the caller
+     assumes the return value is not null.
      @param count # of elements in array.
      @param hint Place where caller thinks allocation should occur.
      @return Pointer to block of memory.
