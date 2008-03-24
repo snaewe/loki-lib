@@ -17,6 +17,8 @@
 
 #define LOKI_ENABLE_FUNCTION
 
+#include <stdexcept>
+
 #include <loki/Functor.h>
 #include <loki/Sequence.h>
 
