@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Loki" />
+		<Option compiler="cygwin" />
+		<Build>
+			<Target title="Debug">
+				<Option output=".\lib\Loki_D" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Debug\" />
+				<Option type="2" />
+				<Option compiler="cygwin" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-g" />
+					<Add directory="." />
+					<Add directory=".\include" />
+					<Add directory=".\include\loki" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output=".\lib\Loki" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="cygwin" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-W" />
+					<Add directory=".\include\loki" />
+					<Add directory=".\include" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Unit filename="include\loki\AbstractFactory.h" />
+		<Unit filename="include\loki\Allocator.h" />
+		<Unit filename="include\loki\AssocVector.h" />
+		<Unit filename="include\loki\CachedFactory.h" />
+		<Unit filename="include\loki\CheckReturn.h" />
+		<Unit filename="include\loki\Checker.h" />
+		<Unit filename="include\loki\ConstPolicy.h" />
+		<Unit filename="include\loki\DataGenerators.h" />
+		<Unit filename="include\loki\EmptyType.h" />
+		<Unit filename="include\loki\Factory.h" />
+		<Unit filename="include\loki\Function.h" />
+		<Unit filename="include\loki\Functor.h" />
+		<Unit filename="include\loki\HierarchyGenerators.h" />
+		<Unit filename="include\loki\Key.h" />
+		<Unit filename="include\loki\LevelMutex.h" />
+		<Unit filename="include\loki\LockingPtr.h" />
+		<Unit filename="include\loki\LokiExport.h" />
+		<Unit filename="include\loki\LokiTypeInfo.h" />
+		<Unit filename="include\loki\MultiMethods.h" />
+		<Unit filename="include\loki\NullType.h" />
+		<Unit filename="include\loki\OrderedStatic.h" />
+		<Unit filename="include\loki\Pimpl.h" />
+		<Unit filename="include\loki\RefToValue.h" />
+		<Unit filename="include\loki\Register.h" />
+		<Unit filename="include\loki\SPCachedFactory.h" />
+		<Unit filename="include\loki\SafeFormat.h" />
+		<Unit filename="include\loki\ScopeGuard.h" />
+		<Unit filename="include\loki\Sequence.h" />
+		<Unit filename="include\loki\Singleton.h" />
+		<Unit filename="include\loki\SmallObj.h" />
+		<Unit filename="include\loki\SmartPtr.h" />
+		<Unit filename="include\loki\StrongPtr.h" />
+		<Unit filename="include\loki\Threads.h" />
+		<Unit filename="include\loki\Tuple.h" />
+		<Unit filename="include\loki\TypeManip.h" />
+		<Unit filename="include\loki\TypeTraits.h" />
+		<Unit filename="include\loki\Typelist.h" />
+		<Unit filename="include\loki\TypelistMacros.h" />
+		<Unit filename="include\loki\Visitor.h" />
+		<Unit filename="include\loki\static_check.h" />
+		<Unit filename="src\LevelMutex.cpp" />
+		<Unit filename="src\OrderedStatic.cpp" />
+		<Unit filename="src\SafeFormat.cpp" />
+		<Unit filename="src\Singleton.cpp" />
+		<Unit filename="src\SmallObj.cpp" />
+		<Unit filename="src\SmartPtr.cpp" />
+		<Unit filename="src\StrongPtr.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
