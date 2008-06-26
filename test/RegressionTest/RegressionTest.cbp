@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="RegressionTest" />
+		<Option compiler="cygwin" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\RegressionTest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="cygwin" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-g" />
+					<Add directory="..\..\include\loki" />
+					<Add directory="..\..\include" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\RegressionTest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="cygwin" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-W" />
+					<Add directory="..\..\include\loki" />
+					<Add directory="..\..\include" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Unit filename="AbstractFactoryTest.h" />
+		<Unit filename="AssocVectorTest.h" />
+		<Unit filename="DataGeneratorsTest.h" />
+		<Unit filename="FactoryParmTest.h" />
+		<Unit filename="FactoryTest.h" />
+		<Unit filename="FunctorTest.h" />
+		<Unit filename="SequenceTest.h" />
+		<Unit filename="SingletonTest.h" />
+		<Unit filename="SmallObjectTest.h" />
+		<Unit filename="SmartPtrTest.h" />
+		<Unit filename="Test.cpp" />
+		<Unit filename="ThreadsTest.h" />
+		<Unit filename="TypeManipTest.h" />
+		<Unit filename="TypeTraitsTest.h" />
+		<Unit filename="TypeTraitsTest2.h" />
+		<Unit filename="TypelistTest.h" />
+		<Unit filename="UnitTest.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
