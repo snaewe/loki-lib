@@ -31,10 +31,18 @@ ifeq ($(OS), GNU)
   SHARED_LIB_VERSIONED := libloki.so.$(VERSION)
   override LDFLAGS += --shared -Wl,-soname=$(SHARED_LIB_VERSIONED) -fPIC
   LDLIBS := -lpthread
+ifeq ($(OS), HP-UX)
+  SHARED_LIB_BASE := libloki.so
+  SHARED_LIB_VERSIONED := libloki.so.$(VERSION)
+  override LDFLAGS += --shared -fPIC -mlp64
+  override CXXFLAGS += -mlp64
+  LDLIBS := -lpthread
+  RESULT_DIR := ../lib/
 else
   SHARED_LIB_VERSIONED := libloki.dll
   override LDFLAGS += --shared
   LDLIBS :=
+endif
 endif
 endif
 endif
