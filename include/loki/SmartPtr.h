@@ -42,7 +42,11 @@
 #include <string>
 
 #if !defined(_MSC_VER)
-    #include <stdint.h>
+#  if defined(__sparc__)
+#    include <inttypes.h>
+#  else
+#    include <stdint.h>
+#  endif
 #endif
 
 #if defined(_MSC_VER) || defined(__GNUC__)
