@@ -61,6 +61,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CheckReturn", "test\CheckRe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Checker", "test\Checker\Checker.vcproj", "{2148AAC5-5CE3-493E-8D82-439ABC2E8053}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LevelMutex", "test\LevelMutex\LevelMutex_MSVC_9.vcproj", "{7C09E027-5484-4641-8310-BDDEB1EC8676}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -151,6 +153,10 @@ Global
 		{2148AAC5-5CE3-493E-8D82-439ABC2E8053}.Debug|Win32.Build.0 = Debug|Win32
 		{2148AAC5-5CE3-493E-8D82-439ABC2E8053}.Release|Win32.ActiveCfg = Release|Win32
 		{2148AAC5-5CE3-493E-8D82-439ABC2E8053}.Release|Win32.Build.0 = Release|Win32
+		{7C09E027-5484-4641-8310-BDDEB1EC8676}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7C09E027-5484-4641-8310-BDDEB1EC8676}.Debug|Win32.Build.0 = Debug|Win32
+		{7C09E027-5484-4641-8310-BDDEB1EC8676}.Release|Win32.ActiveCfg = Release|Win32
+		{7C09E027-5484-4641-8310-BDDEB1EC8676}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
