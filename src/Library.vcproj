@@ -188,6 +188,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\loki\LevelMutex.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\loki\LockingPtr.h"
 				>
 			</File>
@@ -321,6 +325,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\LevelMutex.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\OrderedStatic.cpp"
 				>
