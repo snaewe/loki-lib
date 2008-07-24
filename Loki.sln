@@ -30,14 +30,23 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Visitor", "test\Visitor\Visitor.vcproj", "{0A696379-10A2-43FB-A26C-B42456FCF657}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flex_string", "test\flex_string\flex_string.vcproj", "{2022B9AD-34CA-4FDA-80C2-42805FABE65B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmallObjCompare", "test\SmallObj\SmallObjCompare.vcproj", "{0A98B714-818C-4DD3-A07C-BDD16399F362}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmallObjSingleton", "test\SmallObj\SmallObjSingleton.vcproj", "{78536B46-8307-4AE5-933E-0CADE2887AFB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeletableSingleton", "test\DeletableSingleton\DeletableSingleton.vcproj", "{B87B3522-7DAA-400D-A47D-A74B9B8B3552}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DefaultAlloc", "test\SmallObj\DefaultAlloc.vcproj", "{D490B134-B794-42CF-8AF8-9FDA524B9D3B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartPtr", "test\SmartPtr\SmartPtr.vcproj", "{D7AB4FEF-E7AF-443D-93A5-37F323F2042D}"
 EndProject
@@ -54,14 +63,29 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LockingPtr", "test\LockingP
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Function", "test\Function\Function.vcproj", "{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CachedFactory", "test\CachedFactory\CachedFactory.vcproj", "{8D186AB4-E544-42D6-B192-1AE2C946875E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CheckReturn", "test\CheckReturn\CheckReturn.vcproj", "{C0826A05-9143-4545-B5DE-811C188CB54E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Checker", "test\Checker\Checker.vcproj", "{2148AAC5-5CE3-493E-8D82-439ABC2E8053}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LevelMutex", "test\LevelMutex\LevelMutex_MSVC_9.vcproj", "{7C09E027-5484-4641-8310-BDDEB1EC8676}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
