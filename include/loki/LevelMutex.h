@@ -582,6 +582,8 @@ public:
      */
     explicit SleepLevelMutex( unsigned int level );
 
+    SleepLevelMutex( unsigned int level, unsigned int sleepTime );
+
     /// Destructs the mutex.
     virtual ~SleepLevelMutex( void );
 
@@ -742,9 +744,9 @@ class LevelMutex : public LevelMutexInfo
 {
 public:
 
-    typedef typename ErrorPolicy EP;
-    typedef typename WaitPolicy  WP;
-    typedef typename MutexPolicy MP;
+    typedef ErrorPolicy EP;
+    typedef WaitPolicy  WP;
+    typedef MutexPolicy MP;
 
     /** This constructor allows callers to replace the default level with another
      value.  It also acts as the default constructor for existing code which uses
@@ -1022,10 +1024,10 @@ public:
     MutexException & operator = ( const MutexException & that ) throw ();
 
     /// Destroys the exception.
-    virtual ~MutexException( void );
+    virtual ~MutexException( void ) throw();
 
     /// Returns a simple message about which operation failed.
-    virtual const char * what( void ) const;
+    virtual const char * what( void ) const throw();
 
     /// Returns level of mutex(es) used when problem occurred.
     unsigned int GetLevel( void ) const { return m_level; }
@@ -1201,6 +1203,6 @@ private:
 
 // ----------------------------------------------------------------------------
 
-}; // end namespace Loki
+} // end namespace Loki
 
 #endif  // end file guardian

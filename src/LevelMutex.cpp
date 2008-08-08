@@ -23,6 +23,7 @@
 #include <loki/LevelMutex.h>
 
 #include <algorithm>
+#include <cerrno>
 
 
 using namespace ::std;
@@ -32,7 +33,7 @@ using namespace ::std;
 #define nullptr 0
 
 
-volatile ::Loki::LevelMutexInfo * ::Loki::LevelMutexInfo::s_currentMutex = nullptr;
+LOKI_THREAD_LOCAL volatile ::Loki::LevelMutexInfo * ::Loki::LevelMutexInfo::s_currentMutex = nullptr;
 
 unsigned int ::Loki::MutexSleepWaits::sleepTime = 1;
 
@@ -116,7 +117,7 @@ unsigned int GetLevel( const ::Loki::LevelMutexInfo::MutexContainer & mutexes )
 
 // ----------------------------------------------------------------------------
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 namespace Loki
 {
@@ -991,8 +992,8 @@ const char * MutexException::what( void ) const throw ()
 // ----------------------------------------------------------------------------
 
 MutexLocker::MutexLocker( volatile LevelMutexInfo & mutex, bool lock ) :
-    m_mutex( mutex ),
-    m_locked( false )
+    m_locked( false ),
+    m_mutex( mutex )
 {
     assert( nullptr != this );
     if ( !lock )
@@ -1007,8 +1008,8 @@ MutexLocker::MutexLocker( volatile LevelMutexInfo & mutex, bool lock ) :
 
 MutexLocker::MutexLocker( volatile LevelMutexInfo & mutex, unsigned int milliSeconds,
     bool lock ) :
-    m_mutex( mutex ),
-    m_locked( false )
+    m_locked( false ),
+    m_mutex( mutex )
 {
     assert( nullptr != this );
     if ( !lock )
@@ -1068,8 +1069,8 @@ bool MutexLocker::Unlock( void )
 
 MultiMutexLocker::MultiMutexLocker( LevelMutexInfo::MutexContainer & mutexes,
     bool lock ) :
-    m_mutexes( mutexes ),
-    m_locked( false )
+    m_locked( false ),
+    m_mutexes( mutexes )
 {
     assert( nullptr != this );
     if ( !lock )
@@ -1085,8 +1086,8 @@ MultiMutexLocker::MultiMutexLocker( LevelMutexInfo::MutexContainer & mutexes,
 
 MultiMutexLocker::MultiMutexLocker( LevelMutexInfo::MutexContainer & mutexes,
     unsigned int milliSeconds, bool lock ) :
-    m_mutexes( mutexes ),
-    m_locked( false )
+    m_locked( false ),
+    m_mutexes( mutexes )
 {
     assert( nullptr != this );
     if ( !lock )
@@ -1145,4 +1146,4 @@ bool MultiMutexLocker::Unlock( void )
 
 // ----------------------------------------------------------------------------
 
-}; // end namespace Loki
+} // end namespace Loki
