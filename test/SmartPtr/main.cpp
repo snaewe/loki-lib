@@ -18,6 +18,7 @@
 #include <loki/SmartPtr.h>
 
 #include <iostream>
+#include <cstring>
 
 #include "base.h"
 

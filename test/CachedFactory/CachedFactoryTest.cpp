@@ -25,6 +25,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <cstring>
 #include <loki/Factory.h>
 
 #ifdef LOKI_DISABLE_TYPELIST_MACROS
