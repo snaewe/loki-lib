@@ -516,7 +516,7 @@ namespace Loki
     	{
     		if(m_vKeys.empty())
     		    throw EvictionException();
-    		size_type random = static_cast<size_type>((m_vKeys.size()*rand())/int(RAND_MAX + 1));
+    		size_type random = static_cast<size_type>((m_vKeys.size()*rand())/(static_cast<size_type>(RAND_MAX) + 1));
     		remove(*(m_vKeys.begin()+random));
     	}
         const char* name(){return "random";}

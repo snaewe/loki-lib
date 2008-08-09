@@ -24,7 +24,7 @@
 #include <cstdio>
 #include <climits>
 #include <string>
-#include <string>
+#include <cstring>
 #include <stdexcept>
 #include <utility>
 #include <cassert>
@@ -207,7 +207,7 @@ namespace Loki
                 result_ = -1;
                 return *this;
             }
-            const size_t len = std::min(strlen(s), prec_);
+			const size_t len = std::min(std::strlen(s), prec_);
             if (width_ > len) {
                 if (LeftJustify()) {
                     Write(s, s + len);
@@ -397,15 +397,8 @@ namespace Loki
             const Char hex1st = uppercase ? 'A' : 'a';
             for (;;) {
                 const LOKI_SAFEFORMAT_UNSIGNED_LONG next = n / base;
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4244)
-#endif
-                Char c = n - next * base;
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-                c += (c <= 9) ? '0' : hex1st - 10;
+                Char c = static_cast<Char>(n - next * base);
+                c += (c <= static_cast<Char>(9)) ? '0' : static_cast<Char>(hex1st - 10);
                 *bufLast = c;
                 n = next;
                 if (n == 0) break;

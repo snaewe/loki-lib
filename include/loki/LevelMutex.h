@@ -34,6 +34,9 @@
     #include <pthread.h>
 #endif
 
+#if !defined(_WIN32) && !defined(_WIN64)
+    #include <unistd.h> // declares sleep under Linux
+#endif
 
 /** @par thread_local Keyword
  The mutexes require compilers to provide thread local storage - meaning each
