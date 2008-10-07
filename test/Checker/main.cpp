@@ -24,6 +24,7 @@
 #include "../../include/loki/Checker.h"
 
 #include <stdexcept>
+#include <iostream>
 #include <vector>
 
 
@@ -34,6 +35,8 @@
 #if !defined( NULL )
     #define NULL 0
 #endif
+
+using namespace std;
 
 
 // ----------------------------------------------------------------------------
@@ -124,7 +127,7 @@ void Thingy::ChangeThat( void )
 
 // ----------------------------------------------------------------------------
 
-// This example shows how static functions can use an invariant checkers.
+// This example shows how static functions can use an invariant checker.
 unsigned int Thingy::GetThat( void )
 {
     CheckStaticInvariants checker( &Thingy::StaticIsValid );
@@ -279,6 +282,7 @@ void Thingy::ClearCounts( void )
 
 // ----------------------------------------------------------------------------
 
+// This is a static validator.
 bool Thingy::StaticIsValid( void )
 {
     assert( s_value != 0 );
@@ -287,6 +291,7 @@ bool Thingy::StaticIsValid( void )
 
 // ----------------------------------------------------------------------------
 
+// This is a per-instance validator.
 bool Thingy::IsValid( void ) const
 {
     assert( nullptr != this );
@@ -339,18 +344,64 @@ void DoSomething( void )
 
 // ----------------------------------------------------------------------------
 
+void ThrowTest( void )
+{
+    Thingy thingy( 10 );
+    throw ::std::logic_error( "Will Thingy assert during an exception?" );
+}
+
+// ----------------------------------------------------------------------------
+
 int main( unsigned int argc, const char * const argv[] )
 {
+
+    try
+    {
+        cout << "Just before call to ThrowTest." << endl;
+        ThrowTest();
+        cout << "Just after call to ThrowTest." << endl;
+    }
+    catch ( const ::std::logic_error & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( const ::std::exception & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( ... )
+    {
+        cout << "Caught an exception!" << endl;
+    }
 
     unsigned int count = 0;
     try
     {
+        cout << "Running basic tests with Thingy." << endl;
         // First do some tests on class member functions.
         Thingy t1( 1 );
         t1.DoSomething( false );
         Thingy t2( 2 );
         t2.DoSomething( true );
+        cout << "Done with basic tests with Thingy." << endl;
+    }
+    catch ( const ::std::logic_error & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( const ::std::exception & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( ... )
+    {
+        cout << "Caught an exception!" << endl;
+    }
 
+    try
+    {
+        Thingy t1( 1 );
+        cout << "Now running tests with Thingy counts." << endl;
         // These lines will exercise the functions with pre- and post-conditions.
         t1.AddCount( 11 );
         t1.AddCount( 13 );
@@ -361,19 +412,60 @@ int main( unsigned int argc, const char * const argv[] )
         count = t1.GetCount( 0 );
         assert( count == 11 );
         t1.ClearCounts();
+        cout << "Done with tests with Thingy counts." << endl;
+    }
+    catch ( const ::std::logic_error & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( const ::std::exception & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( ... )
+    {
+        cout << "Caught an exception!" << endl;
+    }
 
+    try
+    {
+        cout << "Now run tests on static member functions" << endl;
         // Next do some tests with static member functions.
         Thingy::ChangeThat();
         const unsigned int value = Thingy::GetThat();
         assert( value != 0 );
-
-        // Then do a test with a standalone function.
-        DoSomething();
+        cout << "Done with tests on static member functions" << endl;
+    }
+    catch ( const ::std::logic_error & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( const ::std::exception & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
     }
     catch ( ... )
     {
+        cout << "Caught an exception!" << endl;
     }
 
+    try
+    {
+        cout << "Now run test on a standalone function." << endl;
+        // Then do a test with a standalone function.
+        DoSomething();
+        cout << "Done with test on a standalone function." << endl;
+    }
+    catch ( const ::std::exception & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+    }
+    catch ( ... )
+    {
+        cout << "Caught an exception!" << endl;
+    }
+
+    cout << "All done!" << endl;
     return 0;
 }
 
