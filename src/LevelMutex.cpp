@@ -4,9 +4,9 @@
 // Copyright (c) 2008 Richard Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
-// Permission to use, copy, modify, distribute and sell this software for any 
-// purpose is hereby granted without fee, provided that the above copyright 
-// notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+// purpose is hereby granted without fee, provided that the above copyright
+// notice appear in all copies and that both that copyright notice and this
 // permission notice appear in supporting documentation.
 //
 // The author makes no representations about the suitability of this software
@@ -33,7 +33,7 @@ using namespace ::std;
 #define nullptr 0
 
 
-LOKI_THREAD_LOCAL volatile ::Loki::LevelMutexInfo * ::Loki::LevelMutexInfo::s_currentMutex = nullptr;
+volatile ::Loki::LevelMutexInfo * ::Loki::LevelMutexInfo::s_currentMutex = nullptr;
 
 unsigned int ::Loki::MutexSleepWaits::sleepTime = 1;
 
@@ -960,6 +960,7 @@ MutexException::MutexException( const char * message,
 // ----------------------------------------------------------------------------
 
 MutexException::MutexException( const MutexException & that ) throw () :
+    ::std::exception( that ),
     m_message( that.m_message ),
     m_level( that.m_level ),
     m_reason( that.m_reason )
