@@ -26,6 +26,8 @@ typedef ::Loki::CheckReturn< bool > BoolReturn;
 
 typedef ::Loki::CheckReturn< string > StringReturn;
 
+typedef ::Loki::CheckReturn< bool , ::Loki::FprintfStderr > BoolReturnStderr;
+
 
 // ----------------------------------------------------------------------------
 
@@ -40,6 +42,14 @@ BoolReturn CheckRequired( void )
 {
     return BoolReturn( true );
 }
+
+// ----------------------------------------------------------------------------
+
+BoolReturnStderr CheckRequiredStderr( void )
+{
+    return BoolReturnStderr( true );
+}
+
 
 // ----------------------------------------------------------------------------
 
@@ -142,6 +152,11 @@ int main( unsigned int argc, const char * argv[] )
         (bool)CheckRequired( false );
         cout << "Made a nested call to CheckRequired." << endl;
     }
+
+	{
+		BoolReturnStderr check = CheckRequiredStderr();
+	}
+	cout << "There should be a error message: \nCheckReturn: return value was not checked" << endl;
 
     // This should assert since caller does not check return value.
     CheckRequired();

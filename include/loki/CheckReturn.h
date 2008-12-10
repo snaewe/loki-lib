@@ -17,6 +17,8 @@
 
 
 #include <assert.h>
+#include <stdio.h>
+
 
 namespace Loki
 {
@@ -42,7 +44,26 @@ namespace Loki
 ///  can work with other types that have cheap copy operations.
 ////////////////////////////////////////////////////////////////////////////////
 
-template < class Value >
+
+struct TriggerAssert
+{
+	static void run()
+	{
+        assert( 0 );
+	}
+};
+
+
+struct FprintfStderr
+{
+	static void run()
+	{
+		fprintf(stderr, "CheckReturn: return value was not checked\n");
+	}
+};
+
+
+template < class Value , typename OnError = TriggerAssert>
 class CheckReturn
 {
 public:
@@ -61,9 +82,10 @@ public:
     /// Destructor checks if return value was used.
     inline ~CheckReturn( void )
     {
-        // If this assertion fails, then a function failed to check the
+		// If m_checked is false, then a function failed to check the
         // return value from a function call.
-        assert( m_checked );
+		if (!m_checked)
+			OnError::run();
     }
 
     /// Conversion operator changes CheckReturn back to Value type.
