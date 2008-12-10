@@ -33,7 +33,7 @@ using namespace ::std;
 #define nullptr 0
 
 
-volatile ::Loki::LevelMutexInfo * ::Loki::LevelMutexInfo::s_currentMutex = nullptr;
+LOKI_THREAD_LOCAL volatile ::Loki::LevelMutexInfo * ::Loki::LevelMutexInfo::s_currentMutex = nullptr;
 
 unsigned int ::Loki::MutexSleepWaits::sleepTime = 1;
 
