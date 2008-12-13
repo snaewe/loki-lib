@@ -398,7 +398,7 @@ namespace Loki
             for (;;) {
                 const LOKI_SAFEFORMAT_UNSIGNED_LONG next = n / base;
                 Char c = static_cast<Char>(n - next * base);
-                c += (c <= static_cast<Char>(9)) ? '0' : static_cast<Char>(hex1st - 10);
+                c += (c <= static_cast<Char>(9) ? '0' : static_cast<Char>(hex1st - 10));
                 *bufLast = c;
                 n = next;
                 if (n == 0) break;
