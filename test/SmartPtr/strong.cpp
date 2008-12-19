@@ -1185,3 +1185,34 @@ void DoStrongCompareTests( void )
 }
 
 // ----------------------------------------------------------------------------
+
+
+// GCC bug
+// http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38579
+
+struct Policy
+{
+protected:
+	Policy() {}
+	Policy(const Policy&) {}
+};
+
+template<int I, class P>
+struct BugGcc :
+	//protected P
+	public P
+{
+	BugGcc() {}
+
+	template<int I2, class P2>
+	BugGcc(const BugGcc<I2, P2>& t) : P(t) {}
+};
+
+void foo()
+{
+	BugGcc<0, Policy> f1;
+	BugGcc<1, Policy> f2(f1);
+}
+
+
+
