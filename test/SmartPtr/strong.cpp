@@ -1195,6 +1195,7 @@ struct Policy
 protected:
 	Policy() {}
 	Policy(const Policy&) {}
+	int i;
 };
 
 template<int I, class P>
@@ -1212,6 +1213,10 @@ void foo()
 {
 	BugGcc<0, Policy> f1;
 	BugGcc<1, Policy> f2(f1);
+
+	// Policy members are still not public,
+	// this will not compile:
+	//int i = f1.i;
 }
 
 
