@@ -860,7 +860,7 @@ template
     template < class > class ConstnessPolicy = LOKI_DEFAULT_CONSTNESS
 >
 class StrongPtr
-    : protected OwnershipPolicy
+    : public OwnershipPolicy
     , public ConversionPolicy
     , public CheckingPolicy< T * >
     , public ResetPolicy< T >
