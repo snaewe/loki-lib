@@ -2,7 +2,9 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
 		<Project filename="Loki.cbp" active="1" />
-		<Project filename="test\CachedFactory\CachedFactory.cbp" />
+		<Project filename="test\CachedFactory\CachedFactory.cbp">
+			<Depends filename="Loki.cbp" />
+		</Project>
 		<Project filename="test\Checker\Checker.cbp" />
 		<Project filename="test\CheckReturn\CheckReturn.cbp" />
 		<Project filename="test\DeletableSingleton\DeletableSingleton.cbp">
@@ -39,5 +41,6 @@
 			<Depends filename="Loki.cbp" />
 		</Project>
 		<Project filename="test\Visitor\Visitor.cbp" />
+		<Project filename="test\SafeBits\SafeBits.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
