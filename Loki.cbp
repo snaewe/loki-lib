@@ -59,6 +59,7 @@
 		<Unit filename="include\loki\RefToValue.h" />
 		<Unit filename="include\loki\Register.h" />
 		<Unit filename="include\loki\SPCachedFactory.h" />
+		<Unit filename="include\loki\SafeBits.h" />
 		<Unit filename="include\loki\SafeFormat.h" />
 		<Unit filename="include\loki\ScopeGuard.h" />
 		<Unit filename="include\loki\Sequence.h" />
