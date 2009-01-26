@@ -1003,6 +1003,32 @@ void Compare()
        */
     }
 }
+
+/// This function tests out a bug found by Jean-Francois Bastien in the find function.
+void TestBug2536490( void )
+{
+
+    my_string bug;
+    std::cout << "Index of '6' in \"" << bug.c_str() << "\": " << bug.find('6') << std::endl;
+    bug = "12345";
+    std::cout << "Index of '6' in \"" << bug.c_str() << "\": " << bug.find('6') << std::endl;
+    bug = "123456";
+    std::cout << "Index of '6' in \"" << bug.c_str() << "\": " << bug.find('6') << std::endl;
+    bug = "12345";
+    std::cout << "Index of '6' in \"" << bug.c_str() << "\": " << bug.find('6') << std::endl;
+
+    bug = "12345";
+    std::cout << "Index of '123' in \"" << bug.c_str() << "\": " << bug.find("123") << std::endl;
+    bug = "12345";
+    std::cout << "Index of '12345' in \"" << bug.c_str() << "\": " << bug.find("12345") << std::endl;
+    bug = "12345";
+    std::cout << "Index of '345' in \"" << bug.c_str() << "\": " << bug.find("345") << std::endl;
+    bug = "123456";
+    std::cout << "Index of '456' in \"" << bug.c_str() << "\": " << bug.find("456") << std::endl;
+    bug = "12345";
+    std::cout << "Index of '456' in \"" << bug.c_str() << "\": " << bug.find("456") << std::endl;
+}
+
 /*
 #include <string>
 #include <limits>
@@ -1033,6 +1059,7 @@ int main()
 */
 int main()
 {
+    TestBug2536490();
     srand(unsigned(time(0)));
     Compare();
     return 0;
