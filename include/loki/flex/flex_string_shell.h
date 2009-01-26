@@ -890,8 +890,9 @@ public:
     
     size_type find (const value_type* s, size_type pos, size_type n) const
     {
-       	// Mar 13 2007: Changed <= to < below (thanks to Jean-Francois Bastien)
-        for (; pos < size(); ++pos)
+        if (n + pos > size())
+            return npos;
+        for (; pos + n <= size(); ++pos)
         {
             if (traits_type::compare(data() + pos, s, n) == 0)
             {
