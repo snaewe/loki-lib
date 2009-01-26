@@ -37,7 +37,7 @@
 	#define D( x ) ;
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)  || defined(__CYGWIN__)
 #include <time.h>
 #endif
 

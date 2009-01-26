@@ -20,6 +20,8 @@
 
 // ----------------------------------------------------------------------------
 
+#if !defined(__CYGWIN__) || (defined(__CYGWIN__) && __GNUC__ > 3)
+
 #include <loki/LevelMutex.h>
 
 #include <algorithm>
@@ -1148,3 +1150,7 @@ bool MultiMutexLocker::Unlock( void )
 // ----------------------------------------------------------------------------
 
 } // end namespace Loki
+
+
+#endif
+
