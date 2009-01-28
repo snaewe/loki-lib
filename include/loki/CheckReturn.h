@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2007 by Rich Sposato
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author makes no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author makes no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdexcept>
 
 
 namespace Loki
@@ -34,15 +35,38 @@ namespace Loki
 ///  a mechanism by which programmers can force calling functions to check the
 ///  return value.  Or at least make them consciously choose to disregard the
 ///  return value.  If the calling function fails to use or store the return
-///  value, the destructor asserts.
+///  value, the destructor calls the OnError policy.
 ///
-///  \par Return Type
-///  The returned value is copied into CheckReturn rather than accessed via a
-///  a reference or pointer since return value could be local to a function.
-///  CheckReturn works best when the return type is a built-in primitive (bool,
-///  int, etc...) a pointer, or an enum (such as an error condition enum).  It
-///  can work with other types that have cheap copy operations.
+///  \par Template Parameters
+///  CheckReturn has two template parameters, Value and OnError.
+///  - Value is the return type from the function.  CheckReturn stores a copy of
+///  it rather than a reference or pointer since return value could be local to
+///  a function.  CheckReturn works best when the return type is a built-in
+///  primitive (bool, int, etc...) a pointer, or an enum (such as an error
+///  condition enum).  It can work with other types that have cheap copy
+///  operations.
+///
+///  \par OnError Policy
+///  - OnError is a policy class indicating how to handle the situation when a
+///  caller does not check or copy the returned value.  Loki provides some
+///  policy classs and you may also write your own.  For example, you can write
+///  a policy to throw an exception or create a message box when the function
+///  ignores the return value.  If your write your own, you only need to provide
+///  a function named "run".
+///
+///  - IgnoreReturnValue Deliberately ignores when the caller ignores the return value.
+///  - TriggerAssert Asserts in debug builds if the caller ignores the return value.
+///  - FprintfStderr Prints out an error message if the caller ignores the return value.
 ////////////////////////////////////////////////////////////////////////////////
+
+
+struct IgnoreReturnValue
+{
+	static void run()
+	{
+	    /// Do nothing at all.
+	}
+};
 
 
 struct TriggerAssert
@@ -69,7 +93,7 @@ class CheckReturn
 public:
 
     /// Conversion constructor changes Value type to CheckReturn type.
-    inline CheckReturn( Value value ) :
+    inline CheckReturn( const Value & value ) :
         m_value( value ), m_checked( false ) {}
 
     /// Copy-constructor allows functions to call another function within the
@@ -116,3 +140,4 @@ private:
 #endif // end file guardian
 
 // $Log$
+
