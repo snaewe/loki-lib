@@ -60,34 +60,36 @@ namespace Loki
 ////////////////////////////////////////////////////////////////////////////////
 
 
+template<class T>
 struct IgnoreReturnValue
 {
-	static void run()
+	static void run(const T&)
 	{
 	    /// Do nothing at all.
 	}
 };
 
-
+template<class T>
 struct TriggerAssert
 {
-	static void run()
+	static void run(const T&)
 	{
         assert( 0 );
 	}
 };
 
-
+template<class T>
 struct FprintfStderr
 {
-	static void run()
+	static void run(const T&)
 	{
 		fprintf(stderr, "CheckReturn: return value was not checked\n");
 	}
 };
 
 
-template < class Value , typename OnError = TriggerAssert>
+
+template < class Value , template<class> class OnError = TriggerAssert >
 class CheckReturn
 {
 public:
@@ -109,7 +111,7 @@ public:
 		// If m_checked is false, then a function failed to check the
         // return value from a function call.
 		if (!m_checked)
-			OnError::run();
+			OnError<Value>::run(m_value);
     }
 
     /// Conversion operator changes CheckReturn back to Value type.
