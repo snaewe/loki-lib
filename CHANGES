@@ -1,20 +1,65 @@
 _____________________________________
 
 Version 0.1.7
-?, 2007
+January 2009
 _____________________________________
 
 General:
-    - Fixed makefiles for GNU/kFreeBSD, GNU/hurd (lf)
-    - Fixed build errors with gcc 4.3 pre-release (lf)
-    - Fixed compiler error that occurs when using 64 bit pointers (rs)
+    - Fixed makefiles for GNU/kFreeBSD, GNU/hurd. (lf)
+    - Fixed build errors with gcc 4.3 pre-release. (lf)
+    - Fixed compiler error that occurs when using 64 bit pointers. (rs)
+    - Added support for Code::Blocks and MSVC 9. (rs, pk)
     - Added more unit tests (rs)
     - Several other bug fixes (rs, pk)
 
-Threads:
-    - add possibility to enable recursive mutex support for pthread (pk)
+Checker:
+    - Added for this release. (rs)
+    - Added test project. (rs)
 
-CVS commits by Lukas Fittl (lf), Peter Kümmel (pk), Rich Sposato (rs)
+CheckReturn:
+    - Added for this release. (rs, pk)
+    - Added test project. (rs + pk)
+
+flex_string:
+    - Fixed bugs in several functions and storage policies. (aa, rs, jfg)
+
+LevelMutex:
+    - Added for this release. (rs)
+    - Added unit tests for LevelMutex. (rs)
+
+SafeBits:
+    - Added for this release. (rs, fp)
+    - Added unit tests for SafeBits. (rs, fp)
+
+SmartPtr:
+    - Fixed double-delete race condition. (rs)
+
+StrongPtr:
+    - Fixed destructor so cleanup is only done once. (rs)
+    - Fixed test by using class level locking. (lf)
+
+Threads:
+    - Add possibility to enable recursive mutex support for pthread (pk)
+    - Added more atomic functions.  (rs)
+
+Type Traits:
+    - Added 64 bit support. (cg)
+
+CVS commits by:
+	Andrei Alexandrescu (aa)
+	Guillaume Chatelet (cg)
+	Lukas Fittl (lf)
+	Peter Kümmel (pk)
+	Rich Sposato (rs)
+
+Contributions by:
+	Andrei Alexandrescu (aa)
+	Jean-Francois Bastien (jfb)
+	Guillaume Chatelet (cg)
+	Lukas Fittl (lf)
+	Fedor Pikus (fp)
+	Peter Kümmel (pk)
+	Rich Sposato (rs)
 
 _____________________________________
 
