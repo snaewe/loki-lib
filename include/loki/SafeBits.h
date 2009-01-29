@@ -28,9 +28,9 @@ namespace Loki
 
 /*
  ==========================================================================================================================================
-   Safe_bit_field                    - type-safe class for bit fields.
-   Safe_bit_const                    - type-safe class for bit constants.
-   Safe_bit_field is designed to be a [almost] drop-in replacement for integer flags and bit fields where individual bits are set and checked
+   SafeBitField                    - type-safe class for bit fields.
+   SafeBitConst                    - type-safe class for bit constants.
+   SafeBitField is designed to be a [almost] drop-in replacement for integer flags and bit fields where individual bits are set and checked
    using symbolic names for flags:
 
       typedef unsigned long Labels_t;
@@ -49,7 +49,7 @@ namespace Loki
       ...
       if ( kinds & Label_A ) { ... } // Error but compiles
 
-   Safe_bit_field is a drop-in replacement which generates a unique type for each bit field. Bit fields of different types cannot be applied
+   SafeBitField is a drop-in replacement which generates a unique type for each bit field. Bit fields of different types cannot be applied
    to each other:
 
       LOKI_BIT_FIELD( unsigned long ) Labels_t;
@@ -120,10 +120,10 @@ template < typename > struct Forbidden_conversion;  // This struct must not be d
 template <
     unsigned int unique_index,
     typename word_t = unsigned long
-> class Safe_bit_field;
+> class SafeBitField;
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class Safe_bit_const Bit constants.
+/// \class SafeBitConst Bit constants.
 ///  This class defines a bit-field constant - a collection of unchanging bits
 ///  used to compare to bit-fields.  Instances of this class are intended to act
 ///  as labels for bit-fields.
@@ -134,7 +134,7 @@ template <
 ///  - As a templated class, it provides type-safety so bit values and constants
 ///    used for different reasons may not be unknowingly compared to each other.
 ///  - The unique_index template parameter insures the unique type of each bit
-///    bit-field.  It shares the unique_index with a similar Safe_bit_field.
+///    bit-field.  It shares the unique_index with a similar SafeBitField.
 ///  - Its operations only allow comparisons to other bit-constants and
 ///    bit-fields of the same type.
 ////////////////////////////////////////////////////////////////////////////////
@@ -144,61 +144,61 @@ template
     unsigned int unique_index,
     typename word_t = unsigned long
 >
-class Safe_bit_const
+class SafeBitConst
 {
 public:
 
     /// Type of the bit field is available if needed.
     typedef word_t bit_word_t;
     /// Corresponding field type.
-    typedef Safe_bit_field< unique_index, word_t > field_t;
+    typedef SafeBitField< unique_index, word_t > field_t;
     /// Typedef is not allowed in friendship declaration.
-    friend class Safe_bit_field< unique_index, word_t >;
+    friend class SafeBitField< unique_index, word_t >;
 
     // Static factory constructor, creates a bit constant with one bit set. The position of the bit is given by the template parameter,
     // bit 1 is the junior bit, i.e. make_bit_const<1>() returns 1. Bit index 0 is a special case and returns 0.
     // This function should be used only to initialize the static bit constant objects.
     // This function will not compile if the bit index is outside the vaild range.
     // There is also a compile-time assert to make sure the size of the class is the same as the size of the underlaying integer type.
-    // This assert could go into the constructor, but aCC does not seem to understand sizeof(Safe_bit_const) in the constructor.
+    // This assert could go into the constructor, but aCC does not seem to understand sizeof(SafeBitConst) in the constructor.
     //
 #ifndef LOKI_BIT_FIELD_NONTEMPLATE_INIT
-    template < unsigned int i > static Safe_bit_const make_bit_const()
+    template < unsigned int i > static SafeBitConst make_bit_const()
     {
-        LOKI_STATIC_CHECK( i <= 8*sizeof(word_t), Index_is_beyond_size_of_data );
-        LOKI_STATIC_CHECK( sizeof(Safe_bit_const) == sizeof(word_t), Object_size_does_not_match_data_size );
+        LOKI_STATIC_CHECK( i <= ( 8 * sizeof(word_t) ), Index_is_beyond_size_of_data );
+        LOKI_STATIC_CHECK( sizeof(SafeBitConst) == sizeof(word_t), Object_size_does_not_match_data_size );
         // Why check for ( i > 0 ) again inside the shift if the shift
         // can never be evaluated for i == 0? Some compilers see shift by ( i - 1 )
         // and complain that for i == 0 the number is invalid, without
         // checking that shift needs evaluating.
-        return Safe_bit_const( ( i > 0 ) ? ( word_t(1) << ( ( i > 0 ) ? ( i - 1 ) : 0 ) ) : 0 );
+        return SafeBitConst( ( i > 0 ) ? ( word_t(1) << ( ( i > 0 ) ? ( i - 1 ) : 0 ) ) : 0 );
     }
 #else
-    static Safe_bit_const make_bit_const( unsigned int i )
+    static SafeBitConst make_bit_const( unsigned int i )
     {
-        LOKI_STATIC_CHECK( sizeof(Safe_bit_const) == sizeof(word_t), Object_size_does_not_match_data_size );
-        assert( i <= 8*sizeof(word_t) ); // Index is beyond size of data.
+        LOKI_STATIC_CHECK( sizeof(SafeBitConst) == sizeof(word_t), Object_size_does_not_match_data_size );
+        assert( i <= ( 8 * sizeof(word_t) ) ); // Index is beyond size of data.
         // Why check for ( i > 0 ) again inside the shift if the shift
         // can never be evaluated for i == 0? Some compilers see shift by ( i - 1 )
         // and complain that for i == 0 the number is invalid, without
         // checking that shift needs evaluating.
-        return Safe_bit_const( ( i > 0 ) ? ( word_t(1) << ( ( i > 0 ) ? ( i - 1 ) : 0 ) ) : 0 );
+        return SafeBitConst( ( i > 0 ) ? ( word_t(1) << ( ( i > 0 ) ? ( i - 1 ) : 0 ) ) : 0 );
     }
 #endif
 
     /// Default constructor allows client code to construct bit fields on the stack.
-    Safe_bit_const() : word( 0 ) {}
+    SafeBitConst() : word( 0 ) {}
 
     /// Copy constructor.
-    Safe_bit_const( const Safe_bit_const& rhs ) : word( rhs.word ) {}
+    SafeBitConst( const SafeBitConst& rhs ) : word( rhs.word ) {}
 
     /// Comparison operators which take a constant bit value.
-    bool operator == ( const Safe_bit_const & rhs ) const { return word == rhs.word; }
-    bool operator != ( const Safe_bit_const & rhs ) const { return word != rhs.word; }
-    bool operator <  ( const Safe_bit_const & rhs ) const { return word <  rhs.word; }
-    bool operator >  ( const Safe_bit_const & rhs ) const { return word >  rhs.word; }
-    bool operator <= ( const Safe_bit_const & rhs ) const { return word <= rhs.word; }
-    bool operator >= ( const Safe_bit_const & rhs ) const { return word >= rhs.word; }
+    bool operator == ( const SafeBitConst & rhs ) const { return word == rhs.word; }
+    bool operator != ( const SafeBitConst & rhs ) const { return word != rhs.word; }
+    bool operator <  ( const SafeBitConst & rhs ) const { return word <  rhs.word; }
+    bool operator >  ( const SafeBitConst & rhs ) const { return word >  rhs.word; }
+    bool operator <= ( const SafeBitConst & rhs ) const { return word <= rhs.word; }
+    bool operator >= ( const SafeBitConst & rhs ) const { return word >= rhs.word; }
 
     /// Comparision operators for mutable bit fields.
     bool operator == ( const field_t & rhs ) const { return word == rhs.word; }
@@ -210,10 +210,10 @@ public:
 
     /// Bitwise operations.  Operation-assignment operators are not needed,
     /// since bit constants cannot be changed after they are initialized.
-    const Safe_bit_const operator | ( const Safe_bit_const & rhs ) const { return Safe_bit_const( word | rhs.word ); }
-    const Safe_bit_const operator & ( const Safe_bit_const & rhs ) const { return Safe_bit_const( word & rhs.word ); }
-    const Safe_bit_const operator ^ ( const Safe_bit_const & rhs ) const { return Safe_bit_const( word ^ rhs.word ); }
-    const Safe_bit_const operator ~ ( void ) const { return Safe_bit_const( ~word ); }
+    const SafeBitConst operator | ( const SafeBitConst & rhs ) const { return SafeBitConst( word | rhs.word ); }
+    const SafeBitConst operator & ( const SafeBitConst & rhs ) const { return SafeBitConst( word & rhs.word ); }
+    const SafeBitConst operator ^ ( const SafeBitConst & rhs ) const { return SafeBitConst( word ^ rhs.word ); }
+    const SafeBitConst operator ~ ( void ) const { return SafeBitConst( ~word ); }
 
     /// These bitwise operators return a bit-field instead of a bit-const.
     field_t operator | ( const field_t & rhs ) const { return field_t( word | rhs.word ); }
@@ -222,20 +222,20 @@ public:
 
     /// The shift operators move bits inside the bit field.  These are useful in
     /// loops which act over bit fields and increment them.
-    const Safe_bit_const operator << ( unsigned int s ) const { return Safe_bit_const( word << s ); }
-    const Safe_bit_const operator >> ( unsigned int s ) const { return Safe_bit_const( word >> s ); }
+    const SafeBitConst operator << ( unsigned int s ) const { return SafeBitConst( word << s ); }
+    const SafeBitConst operator >> ( unsigned int s ) const { return SafeBitConst( word >> s ); }
 
     /// Word size is also the maximum number of different bit fields for a given word type.
-    static size_t size() { return 8*sizeof( word_t ); }
+    static size_t size() { return ( 8 * sizeof( word_t ) ); }
 
 private:
 
     /// Copy-assignment operator is not implemented since it does not make sense
     /// for a constant object.
-    Safe_bit_const operator = ( const Safe_bit_const & rhs );
+    SafeBitConst operator = ( const SafeBitConst & rhs );
 
     // Private constructor from an integer type.
-    explicit Safe_bit_const( word_t init ) : word( init ) {}
+    explicit SafeBitConst( word_t init ) : word( init ) {}
 
     /// This data stores a single bit value.  It is declared const to enforce
     // constness for all functions of this class.
@@ -244,18 +244,18 @@ private:
     // Here comes the interesting stuff: all the operators designed to
     // trap unintended conversions and make them not compile.
     // Operators below handle code like this:
-    //    Safe_bit_field<1> label1;
-    //    Safe_bit_field<2> label2;
+    //    SafeBitField<1> label1;
+    //    SafeBitField<2> label2;
     //    if ( label1 & label2 ) { ... }
 
     // These operators are private, and will not instantiate in any
     // event because of the incomplete Forbidden_conversion struct.
-    template < typename T > Safe_bit_const operator|( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_const operator&( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_const operator^( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_const operator|=( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_const operator&=( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_const operator^=( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst operator|( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst operator&( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst operator^( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst operator|=( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst operator&=( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst operator^=( T ) const { Forbidden_conversion< T > wrong; return *this; }
 
     // And the same thing for comparisons: private and unusable.
     //    if ( label1 == label2 ) { ... }
@@ -269,7 +269,7 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class Safe_bit_const Bit constants.
+/// \class SafeBitConst Bit constants.
 ///  This class defines a bit-field constant - a collection of unchanging bits
 ///  used to compare to bit-fields.  Instances of this class are intended to
 ///  store bit values.
@@ -280,7 +280,7 @@ private:
 ///  - As a templated class, it provides type-safety so bit values and constants
 ///    used for different reasons may not be unknowingly compared to each other.
 ///  - The unique_index template parameter insures the unique type of each bit
-///    bit-field.  It shares the unique_index with a similar Safe_bit_const.
+///    bit-field.  It shares the unique_index with a similar SafeBitConst.
 ///  - Its operations only allow comparisons to other bit-constants and
 ///    bit-fields of the same type.
 ////////////////////////////////////////////////////////////////////////////////
@@ -290,35 +290,35 @@ template
     unsigned int unique_index,
     typename word_t
 >
-class Safe_bit_field
+class SafeBitField
 {
 public:
 
     /// Type of the bit field is available if needed.
     typedef word_t bit_word_t;
     /// Corresponding field type.
-    typedef Safe_bit_const< unique_index, word_t > const_t;
+    typedef SafeBitConst< unique_index, word_t > const_t;
     /// Typedef is not allowed in friendship declaration.
-    friend class Safe_bit_const<unique_index, word_t>;
+    friend class SafeBitConst<unique_index, word_t>;
 
     /// Default constructor allows client code to construct bit fields on the stack.
-    Safe_bit_field() : word( 0 ) {}
+    SafeBitField() : word( 0 ) {}
 
     /// Copy constructor and assignment operators.
-    Safe_bit_field( const Safe_bit_field & rhs ) : word( rhs.word ) {}
-    Safe_bit_field & operator = ( const Safe_bit_field & rhs ) { word = rhs.word; return *this; }
+    SafeBitField( const SafeBitField & rhs ) : word( rhs.word ) {}
+    SafeBitField & operator = ( const SafeBitField & rhs ) { word = rhs.word; return *this; }
 
     /// Copy constructor and assignment operators from constant bit fields.
-    Safe_bit_field( const const_t & rhs ) : word( rhs.word ) {}
-    Safe_bit_field & operator = ( const const_t & rhs ) { word = rhs.word; return *this; }
+    SafeBitField( const const_t & rhs ) : word( rhs.word ) {}
+    SafeBitField & operator = ( const const_t & rhs ) { word = rhs.word; return *this; }
 
     /// These comparison operators act on bit-fields of the same type.
-    bool operator == ( const Safe_bit_field & rhs ) const { return word == rhs.word; }
-    bool operator != ( const Safe_bit_field & rhs ) const { return word != rhs.word; }
-    bool operator <  ( const Safe_bit_field & rhs ) const { return word <  rhs.word; }
-    bool operator >  ( const Safe_bit_field & rhs ) const { return word >  rhs.word; }
-    bool operator <= ( const Safe_bit_field & rhs ) const { return word <= rhs.word; }
-    bool operator >= ( const Safe_bit_field & rhs ) const { return word >= rhs.word; }
+    bool operator == ( const SafeBitField & rhs ) const { return word == rhs.word; }
+    bool operator != ( const SafeBitField & rhs ) const { return word != rhs.word; }
+    bool operator <  ( const SafeBitField & rhs ) const { return word <  rhs.word; }
+    bool operator >  ( const SafeBitField & rhs ) const { return word >  rhs.word; }
+    bool operator <= ( const SafeBitField & rhs ) const { return word <= rhs.word; }
+    bool operator >= ( const SafeBitField & rhs ) const { return word >= rhs.word; }
 
     /// These comparison operators act on bit-constants of a similar type.
     bool operator == ( const const_t & rhs ) const { return word == rhs.word; }
@@ -329,32 +329,32 @@ public:
     bool operator >= ( const const_t & rhs ) const { return word >= rhs.word; }
 
     /// Bitwise operations that use bit-fields.
-    Safe_bit_field operator |  ( const Safe_bit_field & rhs ) const { return Safe_bit_field( word | rhs.word ); }
-    Safe_bit_field operator &  ( const Safe_bit_field & rhs ) const { return Safe_bit_field( word & rhs.word ); }
-    Safe_bit_field operator ^  ( const Safe_bit_field & rhs ) const { return Safe_bit_field( word ^ rhs.word ); }
-    Safe_bit_field operator ~  ( void ) const { return Safe_bit_field( ~word ); }
-    Safe_bit_field operator |= ( const Safe_bit_field & rhs ) { word |= rhs.word; return Safe_bit_field( *this ); }
-    Safe_bit_field operator &= ( const Safe_bit_field & rhs ) { word &= rhs.word; return Safe_bit_field( *this ); }
-    Safe_bit_field operator ^= ( const Safe_bit_field & rhs ) { word ^= rhs.word; return Safe_bit_field( *this ); }
+    SafeBitField operator |  ( const SafeBitField & rhs ) const { return SafeBitField( word | rhs.word ); }
+    SafeBitField operator &  ( const SafeBitField & rhs ) const { return SafeBitField( word & rhs.word ); }
+    SafeBitField operator ^  ( const SafeBitField & rhs ) const { return SafeBitField( word ^ rhs.word ); }
+    SafeBitField operator ~  ( void ) const { return SafeBitField( ~word ); }
+    SafeBitField operator |= ( const SafeBitField & rhs ) { word |= rhs.word; return SafeBitField( *this ); }
+    SafeBitField operator &= ( const SafeBitField & rhs ) { word &= rhs.word; return SafeBitField( *this ); }
+    SafeBitField operator ^= ( const SafeBitField & rhs ) { word ^= rhs.word; return SafeBitField( *this ); }
 
     /// Bitwise operators that use bit-constants.
-    Safe_bit_field operator |  ( const_t rhs ) const { return Safe_bit_field( word | rhs.word ); }
-    Safe_bit_field operator &  ( const_t rhs ) const { return Safe_bit_field( word & rhs.word ); }
-    Safe_bit_field operator ^  ( const_t rhs ) const { return Safe_bit_field( word ^ rhs.word ); }
-    Safe_bit_field operator |= ( const_t rhs ) { word |= rhs.word; return Safe_bit_field( *this ); }
-    Safe_bit_field operator &= ( const_t rhs ) { word &= rhs.word; return Safe_bit_field( *this ); }
-    Safe_bit_field operator ^= ( const_t rhs ) { word ^= rhs.word; return Safe_bit_field( *this ); }
+    SafeBitField operator |  ( const_t rhs ) const { return SafeBitField( word | rhs.word ); }
+    SafeBitField operator &  ( const_t rhs ) const { return SafeBitField( word & rhs.word ); }
+    SafeBitField operator ^  ( const_t rhs ) const { return SafeBitField( word ^ rhs.word ); }
+    SafeBitField operator |= ( const_t rhs ) { word |= rhs.word; return SafeBitField( *this ); }
+    SafeBitField operator &= ( const_t rhs ) { word &= rhs.word; return SafeBitField( *this ); }
+    SafeBitField operator ^= ( const_t rhs ) { word ^= rhs.word; return SafeBitField( *this ); }
 
     // Conversion to bool.
     // This is a major source of headaches, but it's required to support code like this:
-    //    const static Safe_bit_const<1> Label_value = Safe_bit_const<1>::make_bit_const<1>();
-    //    Safe_bit_field<1> label;
+    //    const static SafeBitConst<1> Label_value = SafeBitConst<1>::make_bit_const<1>();
+    //    SafeBitField<1> label;
     //    if ( label & Label_value ) { ... } // Nice...
     //
     // The downside is that this allows all sorts of nasty conversions. Without additional precautions, bit fields of different types
     // can be converted to bool and then compared or operated on:
-    //    Safe_bit_field<1> label1;
-    //    Safe_bit_field<2> label2;
+    //    SafeBitField<1> label1;
+    //    SafeBitField<2> label2;
     //    if ( label1 == label2 ) { ... } // Yuck!
     //    if ( label1 & label2 ) { ... } // Blech!
     //
@@ -366,21 +366,21 @@ public:
     // Shift operators shift bits inside the bit field. Does not make
     // sense, most of the time, except perhaps to loop over labels and
     // increment them.
-    Safe_bit_field operator <<  ( unsigned int s ) { return Safe_bit_field( word << s ); }
-    Safe_bit_field operator >>  ( unsigned int s ) { return Safe_bit_field( word >> s ); }
-    Safe_bit_field operator <<= ( unsigned int s ) { word <<= s; return *this; }
-    Safe_bit_field operator >>= ( unsigned int s ) { word >>= s; return *this; }
+    SafeBitField operator <<  ( unsigned int s ) { return SafeBitField( word << s ); }
+    SafeBitField operator >>  ( unsigned int s ) { return SafeBitField( word >> s ); }
+    SafeBitField operator <<= ( unsigned int s ) { word <<= s; return *this; }
+    SafeBitField operator >>= ( unsigned int s ) { word >>= s; return *this; }
 
     // Word size is also the maximum number of different bit fields for
     // a given word type.
-    static size_t size( void ) { return 8 * sizeof( word_t ); }
+    static size_t size( void ) { return ( 8 * sizeof( word_t ) ); }
 
 private:
 
     /// Private constructor from an integer type. Don't put too much stock into
     /// explicit declaration, it's better than nothing but does not solve all
-    /// problems with undesired conversions because Safe_bit_field coverts to bool.
-    explicit Safe_bit_field( word_t init ) : word( init ) {}
+    /// problems with undesired conversions because SafeBitField coverts to bool.
+    explicit SafeBitField( word_t init ) : word( init ) {}
 
     /// This stores the bits.
     word_t word;
@@ -388,18 +388,18 @@ private:
     // Here comes the interesting stuff: all the operators designed to
     // trap unintended conversions and make them not compile.
     // Operators below handle code like this:
-    //    Safe_bit_field<1> label1;
-    //    Safe_bit_field<2> label2;
+    //    SafeBitField<1> label1;
+    //    SafeBitField<2> label2;
     //    if ( label1 & label2 ) { ... }
 
     // These operators are private, and will not instantiate in any
     // event because of the incomplete Forbidden_conversion struct.
-    template < typename T > Safe_bit_field operator |  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_field operator &  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_field operator ^  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_field operator |= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_field operator &= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > Safe_bit_field operator ^= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField operator |  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField operator &  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField operator ^  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField operator |= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField operator &= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField operator ^= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
 
     // And the same thing for comparisons:
     //    if ( label1 == label2 ) { ... }
@@ -416,62 +416,62 @@ private:
 // the first argument is an integer and the second one is a label: the
 // label converts to bool and the operator is performed on two integers.
 // These operators catch errors like this:
-//    Safe_bit_field<1> label1;
-//    Safe_bit_field<2> label2;
+//    SafeBitField<1> label1;
+//    SafeBitField<2> label2;
 //    if ( !label1 & label2 ) { ... }
 // where the first label is converted to bool (these errors cannot be
-// caught by member operators of Safe_bit_field class because the first
-// argument is not Safe_bit_field but bool.
+// caught by member operators of SafeBitField class because the first
+// argument is not SafeBitField but bool.
 //
 // If used, these operators will not instantiate because of the
 // incomplete Forbidden_conversion struct.
 
 template < unsigned int unique_index, typename word_t >
-inline Safe_bit_field< unique_index, word_t > operator & ( bool, Safe_bit_field< unique_index, word_t > rhs )
+inline SafeBitField< unique_index, word_t > operator & ( bool, SafeBitField< unique_index, word_t > rhs )
 {
     Forbidden_conversion<word_t> wrong;
     return rhs;
 }
 
 template < unsigned int unique_index, typename word_t >
-inline Safe_bit_field< unique_index, word_t > operator | ( bool, Safe_bit_field< unique_index, word_t > rhs )
+inline SafeBitField< unique_index, word_t > operator | ( bool, SafeBitField< unique_index, word_t > rhs )
 {
     Forbidden_conversion< word_t > wrong;
     return rhs;
 }
 
 template < unsigned int unique_index, typename word_t >
-inline Safe_bit_field< unique_index, word_t > operator ^ ( bool, Safe_bit_field< unique_index, word_t > rhs )
+inline SafeBitField< unique_index, word_t > operator ^ ( bool, SafeBitField< unique_index, word_t > rhs )
 {
     Forbidden_conversion< word_t > wrong;
     return rhs;
 }
 
 template < unsigned int unique_index, typename word_t >
-inline Safe_bit_field< unique_index, word_t > operator == ( bool, Safe_bit_field< unique_index, word_t > rhs )
+inline SafeBitField< unique_index, word_t > operator == ( bool, SafeBitField< unique_index, word_t > rhs )
 {
     Forbidden_conversion< word_t > wrong;
     return rhs;
 }
 
 template < unsigned int unique_index, typename word_t >
-inline Safe_bit_field< unique_index, word_t > operator != ( bool, Safe_bit_field< unique_index, word_t > rhs )
+inline SafeBitField< unique_index, word_t > operator != ( bool, SafeBitField< unique_index, word_t > rhs )
 {
     Forbidden_conversion< word_t > wrong;
     return rhs;
 }
 
-// Finally, few macros. All macros are conditionally defined to use the Safe_bit_field classes if LOKI_SAFE_BIT_FIELD is defined. Otherwise,
+// Finally, few macros. All macros are conditionally defined to use the SafeBitField classes if LOKI_SAFE_BIT_FIELD is defined. Otherwise,
 // the macros fall back on the use of typedefs and integer constants. This provides no addititonal safety but allows the code to support the
 // mixture of compilers which are broken to different degrees.
 #define LOKI_SAFE_BIT_FIELD
 
 // The first macro helps to declare new bit field types:
 // LOKI_BIT_FIELD( ulong ) field_t;
-// This creates a typedef field_t for Safe_bit_field<unique_index, ulong> where index is the current line number. Since line numbers __LINE__ are counted
+// This creates a typedef field_t for SafeBitField<unique_index, ulong> where index is the current line number. Since line numbers __LINE__ are counted
 // separately for all header files, this ends up being the same type in all files using the header which defines field_t.
 #ifdef LOKI_SAFE_BIT_FIELD
-    #define LOKI_BIT_FIELD( word_t ) typedef Safe_bit_field<__LINE__, word_t>
+    #define LOKI_BIT_FIELD( word_t ) typedef SafeBitField<__LINE__, word_t>
 #else
     #define LOKI_BIT_FIELD( word_t ) typedef word_t
 #endif // LOKI_SAFE_BIT_FIELD
