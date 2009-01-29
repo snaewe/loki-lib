@@ -32,6 +32,40 @@ LOKI_BIT_FIELD( unsigned int ) Dog_state;
 LOKI_BIT_CONST( Dog_state, DOG_BARKING,  1 );
 LOKI_BIT_CONST( Dog_state, DOG_CHEWING,  2 );
 LOKI_BIT_CONST( Dog_state, DOG_DROOLING, 3 );
+LOKI_BIT_CONST( Dog_state, DOG_SLEEPING, 4 );
+LOKI_BIT_CONST( Dog_state, DOG_GROWLING, 5 );
+LOKI_BIT_CONST( Dog_state, DOG_TIRED,    6 );
+LOKI_BIT_CONST( Dog_state, DOG_DEAD,     7 );
+LOKI_BIT_CONST( Dog_state, DOG_GROWING,  8 );
+LOKI_BIT_CONST( Dog_state, DOG_THINKING, 9 );
+LOKI_BIT_CONST( Dog_state, DOG_YELPING,  10 );
+LOKI_BIT_CONST( Dog_state, DOG_QUIET,    11 );
+LOKI_BIT_CONST( Dog_state, DOG_FETCHING, 12 );
+LOKI_BIT_CONST( Dog_state, DOG_HOWLING,  13 );
+LOKI_BIT_CONST( Dog_state, DOG_SICK,     14 );
+LOKI_BIT_CONST( Dog_state, DOG_JUMPING,  15 );
+LOKI_BIT_CONST( Dog_state, DOG_SWIMMING, 16 );
+LOKI_BIT_CONST( Dog_state, DOG_BATHING,  17 );
+LOKI_BIT_CONST( Dog_state, DOG_EATING,   18 );
+LOKI_BIT_CONST( Dog_state, DOG_DRINKING, 19 );
+LOKI_BIT_CONST( Dog_state, DOG_PLAYING,  20 );
+LOKI_BIT_CONST( Dog_state, DOG_RUNNING,  21 );
+LOKI_BIT_CONST( Dog_state, DOG_BITING,   22 );
+LOKI_BIT_CONST( Dog_state, DOG_BEGGING,  23 );
+LOKI_BIT_CONST( Dog_state, DOG_WHINING,  24 );
+LOKI_BIT_CONST( Dog_state, DOG_WALKING,  25 );
+LOKI_BIT_CONST( Dog_state, DOG_SINGING,  26 );
+LOKI_BIT_CONST( Dog_state, DOG_FIGHTING, 27 );
+LOKI_BIT_CONST( Dog_state, DOG_MATING,   28 );
+LOKI_BIT_CONST( Dog_state, DOG_FEEDING,  29 );
+LOKI_BIT_CONST( Dog_state, DOG_BIRTHING, 30 );
+LOKI_BIT_CONST( Dog_state, DOG_SHEDDING, 31 );
+LOKI_BIT_CONST( Dog_state, DOG_TALKING,  32 );
+
+#ifdef ERROR0
+    LOKI_BIT_CONST( Dog_state, DOG_TALKING,  20 ); // Can't have two values with same name.
+    LOKI_BIT_CONST( Dog_state, DOG_BLOGGING, 33 ); // Can't set bit 33 in a 32 bit-sized object.
+#endif
 
 int main( void )
 {
@@ -79,8 +113,8 @@ int main( void )
     assert( state & CAT_PLAYING );
     state = CAT_SLEEPING;
     assert( state == cat_state );
-    assert( state.size() == 8 * sizeof( unsigned int ) );
-    assert( sizeof( Cat_state ) == sizeof( unsigned int ) );
+    assert( state.size() == ( 8 * sizeof(unsigned int) ) );
+    assert( sizeof(Cat_state) == sizeof(unsigned int) );
 
     dog_state = DOG_BARKING;
 #ifdef ERROR6
@@ -89,7 +123,7 @@ int main( void )
 
 
 /// @note All These assertions are inside #ifdef sections because they
-/// compare either Safe_bit_field or Safe_bit_const to literal integers.
+/// compare either SafeBitField or SafeBitConst to literal integers.
 /// If you compile any of these assertions they should generate errors.
 /// These #ifdef sections exhaustively demonstrate that all possible
 /// operations and comparisons with literal values are forbidden.
@@ -169,7 +203,7 @@ int main( void )
 
 
 /// @note All These assertions are inside #ifdef sections because they
-/// compare either Safe_bit_field or Safe_bit_const to an int variable.
+/// compare either SafeBitField or SafeBitConst to an int variable.
 /// If you compile any of these assertions they should generate errors.
 /// These #ifdef sections exhaustively demonstrate that all possible
 /// operations and comparisons with integers are forbidden.
