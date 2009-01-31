@@ -57,7 +57,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(ProjectDir)\$(ConfigurationName)\$(ProjectName).exe"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -123,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(ProjectDir)\$(ConfigurationName)\$(ProjectName).exe"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 			/>
@@ -188,7 +188,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(ProjectDir)\$(ConfigurationName)\$(ProjectName).exe"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 			/>
