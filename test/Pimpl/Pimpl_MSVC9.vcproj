@@ -63,6 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
@@ -134,6 +135,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\lib\loki.lib"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -209,6 +211,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\lib\loki.lib"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
