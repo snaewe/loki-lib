@@ -29,8 +29,8 @@ namespace Loki
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// macro STATIC_CHECK
-// Invocation: STATIC_CHECK(expr, id)
+// macro LOKI_STATIC_CHECK
+// Invocation: LOKI_STATIC_CHECK(expr, id)
 // where:
 // expr is a compile-time integral or pointer expression
 // id is a C++ identifier that does not need to be defined
