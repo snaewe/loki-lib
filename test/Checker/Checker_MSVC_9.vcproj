@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(ProjectDir)$(ConfigurationName)\$(ProjectName).exe"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -129,7 +129,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				UseUnicodeResponseFiles="false"
-				OutputFile="$(ProjectDir)$(ConfigurationName)\$(ProjectName).exe"
+				OutputFile="$(ProjectDir)\$(IntDir)\$(ProjectName).exe"
 				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
