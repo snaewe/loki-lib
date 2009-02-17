@@ -101,6 +101,10 @@ typedef Loki::SmartPtr< BaseClass, DestructiveCopy, DisallowConversion,
     AssertCheck, DefaultSPStorage, DontPropagateConst >
     NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr;
 
+typedef Loki::SmartPtr< const BaseClass, DestructiveCopy, DisallowConversion,
+    AssertCheck, DefaultSPStorage, DontPropagateConst >
+    ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr;
+
 typedef Loki::SmartPtr< BaseClass, NoCopy, DisallowConversion,
     AssertCheck, DefaultSPStorage, DontPropagateConst >
     NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr;
@@ -212,6 +216,21 @@ void DoOwnershipConversionTests( void )
 //  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p40( p3 );
 //  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p41( p4 );
 //  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p42( p5 );
+
+    // These constructions are legal because the preserve const-ness.
+    ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p43( p5 );
+    ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p44( p43 );
+    const BaseClass * rawP = new BaseClass;
+    // These constructions are illegal because the don't preserve constness.
+//    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p45( rawP );
+//    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p46( p43 );
+    ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p47( rawP );
+
+    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p48;
+    // This assignment is legal because it preserves constness.
+    p48 = p5;
+    // This assignment is illegal because it won't preserve constness.
+//    p48 = p43;
 
     // illegal assignements!  Can't convert from one ownership policy to another.
 //  p1 = p2;
