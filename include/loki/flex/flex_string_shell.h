@@ -1082,10 +1082,10 @@ public:
         const value_type* s, size_type n2) const
     {
         Enforce(pos1 <= size(), static_cast<std::out_of_range*>(0), "");
-	Procust(n1, size() - pos1);
-	// The line below fixed by Jean-Francois Bastien, 04-23-2007. Thanks!
-	const int r = traits_type::compare(pos1 + data(), s, Min(n1, n2));
-	return r != 0 ? r : n1 > n2 ? 1 : n1 < n2 ? -1 : 0;
+        Procust(n1, size() - pos1);
+        // The line below fixed by Jean-Francois Bastien, 04-23-2007. Thanks!
+        const int r = traits_type::compare(pos1 + data(), s, Min(n1, n2));
+        return r != 0 ? r : n1 > n2 ? 1 : n1 < n2 ? -1 : 0;
     }
     
     int compare(size_type pos1, size_type n1,
@@ -1265,7 +1265,7 @@ std::basic_istream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 operator>>(
     std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
-		typename flex_string<E, T, A, S>::traits_type>& is,
+    typename flex_string<E, T, A, S>::traits_type>& is,
     flex_string<E, T, A, S>& str);
 
 template <typename E, class T, class A, class S>
@@ -1273,7 +1273,7 @@ std::basic_ostream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 operator<<(
     std::basic_ostream<typename flex_string<E, T, A, S>::value_type, 
-		typename flex_string<E, T, A, S>::traits_type>& os,
+    typename flex_string<E, T, A, S>::traits_type>& os,
     const flex_string<E, T, A, S>& str)
 { return os << str.c_str(); }
 
@@ -1284,7 +1284,37 @@ getline(
     std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
         typename flex_string<E, T, A, S>::traits_type>& is,
     flex_string<E, T, A, S>& str,
-    typename flex_string<E, T, A, S>::value_type delim);
+    typename flex_string<E, T, A, S>::value_type delim)
+{
+  size_t nread = 0;
+  typename basic_istream<typename flex_string<E, T, A, S>::value_type,
+    typename flex_string<E, T, A, S>::traits_type>::sentry sentry(is, true);
+  if (sentry) {
+    basic_streambuf<typename flex_string<E, T, A, S>::value_type,
+      typename flex_string<E, T, A, S>::traits_type>* buf = is.rdbuf();
+    str.clear();
+
+    while (nread < str.max_size()) {
+      int c1 = buf->sbumpc();
+      if (flex_string<E, T, A, S>::traits_type::eq_int_type(c1, flex_string<E, T, A, S>::traits_type::eof())) {
+        is.setstate(ios_base::eofbit);
+        break;
+      }
+      else {
+        ++nread;
+        typename flex_string<E, T, A, S>::value_type c = flex_string<E, T, A, S>::traits_type::to_char_type(c1);
+        if (!flex_string<E, T, A, S>::traits_type::eq(c, delim)) 
+          str.push_back(c);
+        else
+          break;              // Character is extracted but not appended.
+      }
+    }
+  }
+  if (nread == 0 || nread >= str.max_size())
+    is.setstate(ios_base::failbit);
+
+  return is;
+}
 
 template <typename E, class T, class A, class S>
 std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
@@ -1292,7 +1322,10 @@ std::basic_istream<typename flex_string<E, T, A, S>::value_type,
 getline(
     std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
         typename flex_string<E, T, A, S>::traits_type>& is,
-    flex_string<E, T, A, S>& str);
+    flex_string<E, T, A, S>& str)
+{
+  return getline(is, str, is.widen('\n'));
+}
 
 template <typename E1, class T, class A, class S>
 const typename flex_string<E1, T, A, S>::size_type
