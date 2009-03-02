@@ -131,8 +131,8 @@ private:
             Align align_;
         } temp;
 
-	--(*Data().begin()); // Harmut Kaiser fix:
-			     // decrement the use count of the remaining object
+        --(*Data().begin()); // Harmut Kaiser fix:
+           // decrement the use count of the remaining object
         new(buf_) Storage(
             *new(temp.buf_) Storage(Data()), 
             flex_string_details::Shallow());
@@ -142,7 +142,7 @@ private:
 public:
     CowStringOpt(const CowStringOpt& s)
     {
-        if (s.GetRefs() == std::numeric_limits<RefCountType>::max())
+        if (s.GetRefs() == (std::numeric_limits<RefCountType>::max)())
         {
             // must make a brand new copy
             new(buf_) Storage(s.Data()); // non shallow
