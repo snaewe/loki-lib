@@ -186,6 +186,7 @@ class flex_string : private Storage
 #else
         Invariant(const flex_string&) {} 
 #endif
+    private:
     Invariant& operator=(const Invariant&);
     };
     
