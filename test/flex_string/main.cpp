@@ -36,7 +36,7 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-using namespace std;  
+using namespace std;
 
 typedef flex_string<
     char,
@@ -87,7 +87,7 @@ void Num2String(String& str, Integral )
 std::list<char> RandomList(unsigned int maxSize)
 {
     std::list<char> lst(random(0u, maxSize));
-    std::list<char>::iterator i = lst.begin(); 
+    std::list<char>::iterator i = lst.begin();
     for (; i != lst.end(); ++i)
     {
         *i = random('a', 'z');
@@ -110,7 +110,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
 
         static unsigned int functionSelector = 0;
         ++functionSelector;
-        currentTest = functionSelector % 90; 
+        currentTest = functionSelector % 95;
         //std::cout << currentTest <<"\n";
         switch (currentTest)
         {
@@ -128,7 +128,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             break;
         case 2:
             // test constructor 21.3.1
-            { 
+            {
                 const size_type
                     pos = random(0, test.size()),
                     n = random(0, test.size() - pos);
@@ -138,7 +138,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             break;
         case 3:
             // test constructor 21.3.1
-            { 
+            {
                 const size_type pos = random(0, test.size());
                 String s(test.c_str() + pos);
                 test = s;
@@ -342,8 +342,8 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.5 modifiers
             {
                 String str = RandomString(&test, maxString);
-                test.insert(random(0, test.size()), 
-                    str, random(0, str.size()), 
+                test.insert(random(0, test.size()),
+                    str, random(0, str.size()),
                     random(0, maxString));
             }
             break;
@@ -351,34 +351,34 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.5 modifiers
             {
                 String str = RandomString(&test, maxString);
-                test.insert(random(0, test.size()), 
+                test.insert(random(0, test.size()),
                     str.c_str(), random(0, str.size()));
             }
             break;
         case 37:
             // 21.3.5 modifiers
-            test.insert(random(0, test.size()), 
+            test.insert(random(0, test.size()),
                 RandomString(&test, maxString).c_str());
             break;
         case 38:
             // 21.3.5 modifiers
-            test.insert(random(0, test.size()), 
+            test.insert(random(0, test.size()),
                 random(0, maxString), random('a', 'z'));
             break;
         case 39:
             // 21.3.5 modifiers
-            test.insert(test.begin() + random(0, test.size()), 
+            test.insert(test.begin() + random(0, test.size()),
                 random('a', 'z'));
             break;
         case 40:
             // 21.3.5 modifiers
             {
                 std::list<char> lst(RandomList(maxString));
-                test.insert(test.begin() + random(0, test.size()), 
+                test.insert(test.begin() + random(0, test.size()),
                       lst.begin(), lst.end());
             }
             break;
-        case 41: 
+        case 41:
             // 21.3.5 modifiers
             test.erase(random(0, test.size()), random(0, maxString));
             break;
@@ -400,7 +400,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
                 const typename String::size_type pos = random(0, test.size());
                 if (avoidAliasing)
                 {
-                    test.replace(pos, random(0, test.size() - pos), 
+                    test.replace(pos, random(0, test.size() - pos),
                         String(test));
                 }
                 else
@@ -413,25 +413,25 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.5 modifiers
             {
                 const typename String::size_type pos = random(0, test.size());
-                test.replace(pos, pos + random(0, test.size() - pos), 
+                test.replace(pos, pos + random(0, test.size() - pos),
                     RandomString(&test, maxString));
             }
             break;
         case 46:
             // 21.3.5 modifiers
             {
-                const size_type 
+                const size_type
                     pos1 = random(0, test.size()),
                     pos2 = random(0, test.size());
                 if (avoidAliasing)
                 {
-                    test.replace(pos1, pos1 + random(0, test.size() - pos1), 
-                        String(test), 
+                    test.replace(pos1, pos1 + random(0, test.size() - pos1),
+                        String(test),
                         pos2, pos2 + random(0, test.size() - pos2));
                 }
                 else
                 {
-                    test.replace(pos1, pos1 + random(0, test.size() - pos1), 
+                    test.replace(pos1, pos1 + random(0, test.size() - pos1),
                         test, pos2, pos2 + random(0, test.size() - pos2));
                 }
             }
@@ -442,7 +442,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
                 const size_type pos1 = random(0, test.size());
                 String str = RandomString(&test, maxString);
                 const size_type pos2 = random(0, str.size());
-                test.replace(pos1, pos1 + random(0, test.size() - pos1), 
+                test.replace(pos1, pos1 + random(0, test.size() - pos1),
                     str, pos2, pos2 + random(0, str.size() - pos2));
             }
             break;
@@ -452,12 +452,12 @@ String Test(String, unsigned int count, bool avoidAliasing)
                 const size_type pos = random(0, test.size());
                 if (avoidAliasing)
                 {
-                    test.replace(pos, random(0, test.size() - pos), 
+                    test.replace(pos, random(0, test.size() - pos),
                         String(test).c_str(), test.size());
                 }
                 else
                 {
-                    test.replace(pos, random(0, test.size() - pos), 
+                    test.replace(pos, random(0, test.size() - pos),
                         test.c_str(), test.size());
                 }
             }
@@ -467,7 +467,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             {
                 const size_type pos = random(0, test.size());
                 String str = RandomString(&test, maxString);
-                test.replace(pos, pos + random(0, test.size() - pos), 
+                test.replace(pos, pos + random(0, test.size() - pos),
                     str.c_str(), str.size());
             }
             break;
@@ -476,7 +476,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             {
                 const size_type pos = random(0, test.size());
                 String str = RandomString(&test, maxString);
-                test.replace(pos, pos + random(0, test.size() - pos), 
+                test.replace(pos, pos + random(0, test.size() - pos),
                     str.c_str());
             }
             break;
@@ -484,7 +484,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.5 modifiers
             {
                 const size_type pos = random(0, test.size());
-                test.replace(pos, random(0, test.size() - pos), 
+                test.replace(pos, random(0, test.size() - pos),
                     random(0, maxString), random('a', 'z'));
             }
             break;
@@ -495,15 +495,15 @@ String Test(String, unsigned int count, bool avoidAliasing)
                 if (avoidAliasing)
                 {
                     test.replace(
-                        test.begin() + pos, 
-                        test.begin() + pos + random(0, test.size() - pos), 
+                        test.begin() + pos,
+                        test.begin() + pos + random(0, test.size() - pos),
                         String(test));
                 }
                 else
                 {
                     test.replace(
-                        test.begin() + pos, 
-                        test.begin() + pos + random(0, test.size() - pos), 
+                        test.begin() + pos,
+                        test.begin() + pos + random(0, test.size() - pos),
                         test);
                 }
             }
@@ -515,17 +515,17 @@ String Test(String, unsigned int count, bool avoidAliasing)
                 if (avoidAliasing)
                 {
                     test.replace(
-                        test.begin() + pos, 
-                        test.begin() + pos + random(0, test.size() - pos), 
-                        String(test).c_str(), 
+                        test.begin() + pos,
+                        test.begin() + pos + random(0, test.size() - pos),
+                        String(test).c_str(),
                         test.size() - random(0, test.size()));
                 }
                 else
                 {
                     test.replace(
-                        test.begin() + pos, 
-                        test.begin() + pos + random(0, test.size() - pos), 
-                        test.c_str(), 
+                        test.begin() + pos,
+                        test.begin() + pos + random(0, test.size() - pos),
+                        test.c_str(),
                         test.size() - random(0, test.size()));
                 }
             }
@@ -533,15 +533,15 @@ String Test(String, unsigned int count, bool avoidAliasing)
         case 54:
             // 21.3.5 modifiers
             {
-                const size_type 
+                const size_type
                     pos = random(0, test.size()),
                     n = random(0, test.size() - pos);
                 typename String::iterator b = test.begin();
                 const String str = RandomString(&test, maxString);
                 const typename String::value_type* s = str.c_str();
                 test.replace(
-                    b + pos, 
-                    b + pos + n, 
+                    b + pos,
+                    b + pos + n,
                     s);
             }
             break;
@@ -550,19 +550,19 @@ String Test(String, unsigned int count, bool avoidAliasing)
             {
                 const size_type pos = random(0, test.size());
                 test.replace(
-                    test.begin() + pos, 
-                    test.begin() + pos + random(0, test.size() - pos), 
+                    test.begin() + pos,
+                    test.begin() + pos + random(0, test.size() - pos),
                     random(0, maxString), random('a', 'z'));
             }
             break;
         case 56:
             // 21.3.5 modifiers
             {
-                std::vector<typename String::value_type> 
+                std::vector<typename String::value_type>
                     vec(random(0, maxString));
                 test.copy(
-                    &vec[0], 
-                    vec.size(), 
+                    &vec[0],
+                    vec.size(),
                     random(0, test.size()));
             }
             break;
@@ -575,14 +575,14 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // exercise c_str() and data()
             assert(test.c_str() == test.data());
             // exercise get_allocator()
-            assert(test.get_allocator() == 
+            assert(test.get_allocator() ==
                 RandomString(&test, maxString).get_allocator());
             break;
         case 59:
             // 21.3.6 string operations
             {
                 String str = test.substr(
-                    random(0, test.size()), 
+                    random(0, test.size()),
                     random(0, test.size()));
                 Num2String(test, test.find(str, random(0, test.size())));
             }
@@ -591,9 +591,9 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = test.substr(
-                    random(0, test.size()), 
+                    random(0, test.size()),
                     random(0, test.size()));
-                Num2String(test, test.find(str.c_str(), 
+                Num2String(test, test.find(str.c_str(),
                     random(0, test.size()),
                     random(0, str.size())));
             }
@@ -602,23 +602,23 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = test.substr(
-                    random(0, test.size()), 
+                    random(0, test.size()),
                     random(0, test.size()));
-                Num2String(test, test.find(str.c_str(), 
+                Num2String(test, test.find(str.c_str(),
                     random(0, test.size())));
             }
             break;
         case 62:
             // 21.3.6 string operations
             Num2String(test, test.find(
-                random('a', 'z'), 
+                random('a', 'z'),
                 random(0, test.size())));
             break;
         case 63:
             // 21.3.6 string operations
             {
                 String str = test.substr(
-                    random(0, test.size()), 
+                    random(0, test.size()),
                     random(0, test.size()));
                 Num2String(test, test.rfind(str, random(0, test.size())));
             }
@@ -627,9 +627,9 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = test.substr(
-                    random(0, test.size()), 
+                    random(0, test.size()),
                     random(0, test.size()));
-                Num2String(test, test.rfind(str.c_str(), 
+                Num2String(test, test.rfind(str.c_str(),
                     random(0, test.size()),
                     random(0, str.size())));
             }
@@ -638,23 +638,23 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = test.substr(
-                    random(0, test.size()), 
+                    random(0, test.size()),
                     random(0, test.size()));
-                Num2String(test, test.rfind(str.c_str(), 
+                Num2String(test, test.rfind(str.c_str(),
                     random(0, test.size())));
             }
             break;
         case 66:
             // 21.3.6 string operations
             Num2String(test, test.rfind(
-                random('a', 'z'), 
+                random('a', 'z'),
                 random(0, test.size())));
             break;
         case 67:
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_first_of(str, 
+                Num2String(test, test.find_first_of(str,
                     random(0, test.size())));
             }
             break;
@@ -662,7 +662,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_first_of(str.c_str(), 
+                Num2String(test, test.find_first_of(str.c_str(),
                     random(0, test.size()),
                     random(0, str.size())));
             }
@@ -671,21 +671,21 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_first_of(str.c_str(), 
+                Num2String(test, test.find_first_of(str.c_str(),
                     random(0, test.size())));
             }
             break;
         case 70:
             // 21.3.6 string operations
             Num2String(test, test.find_first_of(
-                random('a', 'z'), 
+                random('a', 'z'),
                 random(0, test.size())));
             break;
         case 71:
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_last_of(str, 
+                Num2String(test, test.find_last_of(str,
                     random(0, test.size())));
             }
             break;
@@ -693,7 +693,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_last_of(str.c_str(), 
+                Num2String(test, test.find_last_of(str.c_str(),
                     random(0, test.size()),
                     random(0, str.size())));
             }
@@ -702,21 +702,21 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_last_of(str.c_str(), 
+                Num2String(test, test.find_last_of(str.c_str(),
                     random(0, test.size())));
             }
             break;
         case 74:
             // 21.3.6 string operations
             Num2String(test, test.find_last_of(
-                random('a', 'z'), 
+                random('a', 'z'),
                 random(0, test.size())));
             break;
         case 75:
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_first_not_of(str, 
+                Num2String(test, test.find_first_not_of(str,
                     random(0, test.size())));
             }
             break;
@@ -724,7 +724,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_first_not_of(str.c_str(), 
+                Num2String(test, test.find_first_not_of(str.c_str(),
                     random(0, test.size()),
                     random(0, str.size())));
             }
@@ -733,21 +733,21 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_first_not_of(str.c_str(), 
+                Num2String(test, test.find_first_not_of(str.c_str(),
                     random(0, test.size())));
             }
             break;
         case 78:
             // 21.3.6 string operations
             Num2String(test, test.find_first_not_of(
-                random('a', 'z'), 
+                random('a', 'z'),
                 random(0, test.size())));
             break;
         case 79:
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_last_not_of(str, 
+                Num2String(test, test.find_last_not_of(str,
                     random(0, test.size())));
             }
             break;
@@ -755,7 +755,7 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_last_not_of(str.c_str(), 
+                Num2String(test, test.find_last_not_of(str.c_str(),
                     random(0, test.size()),
                     random(0, str.size())));
             }
@@ -764,14 +764,14 @@ String Test(String, unsigned int count, bool avoidAliasing)
             // 21.3.6 string operations
             {
                 String str = RandomString(&test, maxString);
-                Num2String(test, test.find_last_not_of(str.c_str(), 
+                Num2String(test, test.find_last_not_of(str.c_str(),
                     random(0, test.size())));
             }
             break;
         case 82:
             // 21.3.6 string operations
             Num2String(test, test.find_last_not_of(
-                random('a', 'z'), 
+                random('a', 'z'),
                 random(0, test.size())));
             break;
         case 83:
@@ -789,8 +789,8 @@ String Test(String, unsigned int count, bool avoidAliasing)
         case 85:
             {
                 int tristate = test.compare(
-                    random(0, test.size()), 
-                    random(0, test.size()), 
+                    random(0, test.size()),
+                    random(0, test.size()),
                     RandomString(&test, maxString));
                 if (tristate > 0) tristate = 1;
                 else if (tristate < 0) tristate = 2;
@@ -801,10 +801,10 @@ String Test(String, unsigned int count, bool avoidAliasing)
             {
                 String str = RandomString(&test, maxString);
                 int tristate = test.compare(
-                    random(0, test.size()), 
-                    random(0, test.size()), 
+                    random(0, test.size()),
+                    random(0, test.size()),
                     str,
-                    random(0, str.size()), 
+                    random(0, str.size()),
                     random(0, str.size()));
                 if (tristate > 0) tristate = 1;
                 else if (tristate < 0) tristate = 2;
@@ -824,8 +824,8 @@ String Test(String, unsigned int count, bool avoidAliasing)
             {
                 String str = RandomString(&test, maxString);
                 int tristate = test.compare(
-                    random(0, test.size()), 
-                    random(0, test.size()), 
+                    random(0, test.size()),
+                    random(0, test.size()),
                     str.c_str(),
                     random(0, str.size()));
                 if (tristate > 0) tristate = 1;
@@ -834,27 +834,27 @@ String Test(String, unsigned int count, bool avoidAliasing)
             }
             break;
         case 89:
-            test = RandomString(&test, maxString) + 
+            test = RandomString(&test, maxString) +
                 RandomString(&test, maxString);
             break;
         case 90:
-            test = RandomString(&test, maxString).c_str() + 
+            test = RandomString(&test, maxString).c_str() +
                 RandomString(&test, maxString);
             break;
         case 91:
-            test = typename String::value_type(random('a', 'z')) + 
+            test = typename String::value_type(random('a', 'z')) +
                 RandomString(&test, maxString);
             break;
         case 92:
-            test = RandomString(&test, maxString) + 
+            test = RandomString(&test, maxString) +
                 RandomString(&test, maxString).c_str();
             break;
         case 93:
-            test = RandomString(&test, maxString) + 
+            test = RandomString(&test, maxString) +
                 RandomString(&test, maxString).c_str();
             break;
         case 94:
-            test = RandomString(&test, maxString) + 
+            test = RandomString(&test, maxString) +
                 typename String::value_type(random('a', 'z'));
             break;
         default:
@@ -889,7 +889,7 @@ void Compare()
     for (;;)
     {
         cout << ++count << '\r';
-        
+
         unsigned long t = rand(); //time(0);
 
         srand(t);
@@ -1050,9 +1050,9 @@ int main()
    std_string_t s2(L"A std string");
 
    assert(std::numeric_limits<char_type>::is_specialized);
- 
-    assert(std::numeric_limits<std_string_t::iterator::value_type>::is_specialized); 
-    s1.replace<std_string_t::iterator>(s1.begin(), s1.begin(), 
+
+    assert(std::numeric_limits<std_string_t::iterator::value_type>::is_specialized);
+    s1.replace<std_string_t::iterator>(s1.begin(), s1.begin(),
     s2.begin(),s2.end());
     return 0;
 }
