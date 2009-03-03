@@ -807,25 +807,24 @@ private:
 
         const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
             std::distance(s1, s2);
+        assert(n2 >= 0);
 
-        // Empty replacement.
-        if(0 == n2)
-          return;
-
-        assert(n2 > 0);
-
-        // Handle aliased replace
-        static const std::less_equal<const value_type*> le = 
-            std::less_equal<const value_type*>();
-        const bool aliased = le(&*begin(), &*s1) && le(&*s1, &*end());
-        if (aliased /* && capacity() < size() - n1 + n2 */)
+        // Make sure the replacement isn't empty.
+        if(0 != n2)
         {
-            // Aliased replace, copy to new string
-            flex_string temp;
-            temp.reserve(size() - n1 + n2);
-            temp.append(begin(), i1).append(s1, s2).append(i2, end());
-            swap(temp);
-            return;
+          // Handle aliased replace
+          static const std::less_equal<const value_type*> le = 
+              std::less_equal<const value_type*>();
+          const bool aliased = le(&*begin(), &*s1) && le(&*s1, &*end());
+          if (aliased /* && capacity() < size() - n1 + n2 */)
+          {
+              // Aliased replace, copy to new string
+              flex_string temp;
+              temp.reserve(size() - n1 + n2);
+              temp.append(begin(), i1).append(s1, s2).append(i2, end());
+              swap(temp);
+              return;
+          }
         }
 
         if (n1 > n2)
