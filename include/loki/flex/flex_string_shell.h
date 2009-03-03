@@ -804,9 +804,15 @@ private:
         const typename std::iterator_traits<iterator>::difference_type n1 = 
             i2 - i1;
         assert(n1 >= 0);
+
         const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
             std::distance(s1, s2);
-        assert(n2 >= 0);
+
+        // Empty replacement.
+        if(0 == n2)
+          return;
+
+        assert(n2 > 0);
 
         // Handle aliased replace
         static const std::less_equal<const value_type*> le = 
