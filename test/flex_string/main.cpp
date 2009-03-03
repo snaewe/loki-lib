@@ -32,12 +32,14 @@
 
 #include <loki/flex/flex_string.h>
 
-#include <iostream>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-
-using namespace std;
+#include <iostream>
+#include <typeinfo>
+#include <sstream>
+#include <utility>
+#include <vector>
 
 
 namespace StringsToTest
@@ -100,985 +102,1522 @@ namespace StringsToTest
 }
 
 
-template <class Integral1, class Integral2>
+template<class Integral1, class Integral2>
 Integral2 random(Integral1 low, Integral2 up)
 {
-    Integral2 low2(low);
-    assert(up >= low2);
-    if (low2 == up) return low;
-    Integral2 x = Integral2(low2 + (rand() * (up - low2)) / RAND_MAX);
-    assert(x >= low2 && x <= up);
-    return x;
+  Integral2 low2(low);
+  assert(up >= low2);
+  if (low2 == up) return low;
+  Integral2 x = Integral2(low2 + (rand() * (up - low2)) / RAND_MAX);
+  assert(x >= low2 && x <= up);
+  return x;
 }
 
-template <class String>
-String RandomString(const String* /* model */, unsigned int maxSize)
+template<class String>
+String RandomString(size_t maxSize)
 {
-    String result(random(0, maxSize), '\0');
-    size_t i = 0;
-    for (; i != result.size(); ++i)
+  String result(random(0, maxSize), '\0');
+  size_t i = 0;
+  for (; i != result.size(); ++i)
+  {
+    result[i] = random('a', 'z');
+  }
+  return result;
+}
+
+template<class String, class Integral>
+String Num2String(Integral value)
+{
+  typedef typename String::value_type CharType;
+  std::basic_ostringstream<CharType, std::char_traits<CharType>, std::allocator<CharType> > stream;
+  stream << value;
+  return stream.str().c_str();
+}
+
+template<class String>
+std::list<typename String::value_type> RandomList(typename String::size_type maxSize)
+{
+  std::list<typename String::value_type> lst(random(0, maxSize));
+  std::list<typename String::value_type>::iterator i = lst.begin();
+  for (; i != lst.end(); ++i)
+  {
+    *i = random('a', 'z');
+  }
+  return lst;
+}
+
+namespace Tests
+{
+  template<class String>
+  struct MaxString
+  {
+    static const typename String::size_type value = 1050;
+  };
+
+
+  template<class String>
+  String default_constructor(String &)
+  {
+    // 21.3.1
+    return String();
+  }
+
+  template<class String>
+  String copy_constructor(String & test)
+  {
+    // 21.3.1
+    String s(test);
+    return s;
+  }
+
+  template<class String>
+  String copy_constructor_with_size_and_range(String & test)
+  {
+    // 21.3.1
+    const typename String::size_type pos = random(0, test.size());
+    String s(test, pos, random(0, test.size() - pos));
+    return s;
+  }
+
+  template<class String>
+  String constructor_with_cstr_and_size(String & test)
+  {
+    // 21.3.1
+    const typename String::size_type
+      pos = random(0, test.size()),
+      n = random(0, test.size() - pos);
+    String s(test.c_str() + pos, n);
+    return s;
+  }
+
+  template<class String>
+  String constructor_with_cstr(String & test)
+  {
+    // 21.3.1
+    const typename String::size_type pos = random(0, test.size());
+    String s(test.c_str() + pos);
+    return s;
+  }
+
+  template<class String>
+  String assignment(String & test)
+  {
+    // 21.3.1
+    String s(random(0, 1000), '\0');
+    typename String::size_type i = 0;
+    for (; i != s.size(); ++i)
     {
-        result[i] = random('a', 'z');
+      s[i] = random('a', 'z');
     }
+    test = s;
+    return test;
+  }
+
+  template<class String>
+  String assignment_with_cstr(String & test)
+  {
+    // 21.3.1
+    String s(random(0, 1000), '\0');
+    typename String::size_type i = 0;
+    for (; i != s.size(); ++i)
+    {
+      s[i] = random('a', 'z');
+    }
+    test = s.c_str();
+    return test;
+  }
+
+  template<class String>
+  String assignment_aliased(String & test)
+  {
+    // 21.3.1
+    const size_t pos = random(0, test.size());
+    test = test.c_str() + pos;
+    return test;
+  }
+
+  template<class String>
+  String assignment_non_aliased(String & test)
+  {
+    // 21.3.1
+    const size_t pos = random(0, test.size());
+    test = String(test.c_str() + pos);
+    return test;
+  }
+
+  template<class String>
+  String assignment_from_char(String & test)
+  {
+    // 21.3.1
+    test = random('a', 'z');
+    return test;
+  }
+
+  template<class String>
+  String iterators_call(String & test)
+  {
+    // 21.3.2
+    String result;
+    result += Num2String<String>(test.end() - test.begin()) + " -- ";
+    result += Num2String<String>(test.rend() - test.rbegin()) + " -- ";
+    return result;
+  }
+
+  template<class String>
+  String iterators_equality(String & test)
+  {
+    // 21.3.2
+    String result;
+    result += Num2String<String>(test.size()) + " -- ";
+    if(0 != test.size())
+    {
+      result += Num2String<String>(test.begin() != test.end()) + " -- ";
+      result += Num2String<String>(test.rbegin() != test.rend()) + " -- ";
+    }
+    else
+    {
+      result += Num2String<String>(test.begin() == test.end()) + " -- ";
+      result += Num2String<String>(test.rbegin() == test.rend()) + " -- ";
+    }
+    return result;
+  }
+
+  template<class String>
+  String capacity(String & test)
+  {
+    // 21.3.2
+    String result;
+    result += Num2String<String>(test.size()) + " -- ";
+    result += Num2String<String>(test.length()) + " -- ";
+    test.max_size();
+    test.capacity();
+    result += test;
+    return result;
+  }
+
+  template<class String>
+  String capacity_values(String & test)
+  {
+    // 21.3.2
+    String result;
+    result += Num2String<String>(test.size() == test.length()) + " -- ";
+    result += Num2String<String>(test.capacity() >= test.size()) + " -- ";
+    result += Num2String<String>(test.max_size() >= test.size()) + " -- ";
+    result += Num2String<String>(test.max_size() >= test.capacity()) + " -- ";
+    return result;
+  }
+
+  template<class String>
+  String resize(String & test)
+  {
+    test.resize(random(0, test.size()), random('a', 'z'));
+    return test;
+  }
+
+  template<class String>
+  String resize_with_1_argument(String & test)
+  {
+    test.resize(random(0, test.size()));
+    return test;
+  }
+
+  template<class String>
+  String reserve(String & test)
+  {
+    test.reserve(random(0, 1000));
+    return test;
+  }
+
+  template<class String>
+  String clear(String & test)
+  {
+    test.clear();
+    return test;
+  }
+
+  template<class String>
+  String empty1(String & test)
+  {
+    if (test.empty()) test = "empty";
+    else test = "not empty";
+    return test;
+  }
+
+  template<class String>
+  String empty2(String & test)
+  {
+    const char* kEmptyString = "empty";
+    const char* kNonEmptyString = "not empty";
+    if (test.empty()) test = String(kEmptyString, kEmptyString + strlen(kEmptyString));
+    else test = String(kNonEmptyString, kNonEmptyString + strlen(kNonEmptyString));
+    return test;
+  }
+
+  template<class String>
+  String element_access(String & test)
+  {
+    // 21.3.4
+    if(!test.empty())
+    {
+      test[random(0, test.size() - 1)];
+      test.at(random(0, test.size() - 1));
+    }
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_equal(String & test)
+  {
+    test += RandomString<String>(MaxString<String>::value);
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_equal_aliasing(String & test)
+  {
+    test += test;
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_equal_with_cstr(String & test)
+  {
+    // 21.3.5
+    test += RandomString<String>(MaxString<String>::value).c_str();
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_equal_no_aliasing(String & test)
+  {
+    // 21.3.5
+    test += String(test.c_str() + random(0, test.size()));
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_equal_aliasing_cstr(String & test)
+  {
+    // 21.3.5
+    test += test.c_str() + random(0, test.size());
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_equal_char(String & test)
+  {
+    // 21.3.5
+    test += random('a', 'z');
+    return test;
+  }
+
+  template<class String>
+  String append_string(String & test)
+  {
+    // 21.3.5
+    test.append(RandomString<String>(MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String append_string_start_range(String & test)
+  {
+    // 21.3.5
+    String s(RandomString<String>(MaxString<String>::value));
+    test.append(s, random(0, s.size()), random(0, MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String append_cstr_size(String & test)
+  {
+    // 21.3.5
+    String s = RandomString<String>(MaxString<String>::value);
+    test.append(s.c_str(), random(0, s.size()));
+    return test;
+  }
+
+  template<class String>
+  String append_cstr(String & test)
+  {
+    // 21.3.5
+    test.append(RandomString<String>(MaxString<String>::value).c_str());
+    return test;
+  }
+
+  template<class String>
+  String append_iterators(String & test)
+  {
+    // 21.3.5
+    test.append(random(0, MaxString<String>::value), random('a', 'z'));
+    std::list<typename String::value_type> lst(RandomList<String>(MaxString<String>::value));
+    test.append(lst.begin(), lst.end());
+    return test;
+  }
+
+  template<class String>
+  String push_back_char(String & test)
+  {
+    // 21.3.5
+    test.push_back(random('a', 'z'));
+    return test;
+  }
+
+  template<class String>
+  String assign_string(String & test)
+  {
+    // 21.3.5
+    test.assign(RandomString<String>(MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String assign_string_start_size(String & test)
+  {
+    // 21.3.5
+    String str = RandomString<String>(MaxString<String>::value);
+    test.assign(str, random(0, str.size()), random(0, MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String assign_cstr_size(String & test)
+  {
+    // 21.3.5
+    String str = RandomString<String>(MaxString<String>::value);
+    test.assign(str.c_str(), random(0, str.size()));
+    return test;
+  }
+
+  template<class String>
+  String assign_cstr(String & test)
+  {
+    // 21.3.5
+    test.assign(RandomString<String>(MaxString<String>::value).c_str());
+    return test;
+  }
+
+  template<class String>
+  String assign_number_char(String & test)
+  {
+    // 21.3.5
+    test.assign(random(0, MaxString<String>::value), random('a', 'z'));
+    return test;
+  }
+
+  template<class String>
+  String assign_iterators(String & test)
+  {
+    // 21.3.5
+    std::list<typename String::value_type> lst(RandomList<String>(MaxString<String>::value));
+    test.assign(lst.begin(), lst.end());
+    return test;
+  }
+
+  template<class String>
+  String insert_position_string(String & test)
+  {
+    // 21.3.5
+    test.insert(random(0, test.size()), RandomString<String>(MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String insert_position_string_start_end(String & test)
+  {
+    // 21.3.5
+    String str = RandomString<String>(MaxString<String>::value);
+    test.insert(random(0, test.size()),
+      str, random(0, str.size()),
+      random(0, MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String insert_position_cstr_size(String & test)
+  {
+    // 21.3.5
+    String str = RandomString<String>(MaxString<String>::value);
+    test.insert(random(0, test.size()),
+      str.c_str(), random(0, str.size()));
+    return test;
+  }
+
+  template<class String>
+  String insert_position_cstr(String & test)
+  {
+    // 21.3.5
+    test.insert(random(0, test.size()),
+      RandomString<String>(MaxString<String>::value).c_str());
+    return test;
+  }
+
+  template<class String>
+  String insert_position_number_char(String & test)
+  {
+    // 21.3.5
+    test.insert(random(0, test.size()),
+      random(0, MaxString<String>::value), random('a', 'z'));
+    return test;
+  }
+
+  template<class String>
+  String insert_iterator_char(String & test)
+  {
+    // 21.3.5
+    test.insert(test.begin() + random(0, test.size()),
+      random('a', 'z'));
+    return test;
+  }
+
+  template<class String>
+  String insert_iterator_iterator_range(String & test)
+  {
+    // 21.3.5
+    std::list<typename String::value_type> lst(RandomList<String>(MaxString<String>::value));
+    test.insert(test.begin() + random(0, test.size()),
+      lst.begin(), lst.end());
+    return test;
+  }
+
+  template<class String>
+  String erase_position_position(String & test)
+  {
+    // 21.3.5
+    test.erase(random(0, test.size()), random(0, MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String erase_iterator(String & test)
+  {
+    // 21.3.5
+    if(!test.empty())
+      test.erase(test.begin() + random(0, test.size()));
+    return test;
+  }
+
+  template<class String>
+  String erase_iterator_iterator(String & test)
+  {
+    // 21.3.5
+    const typename String::iterator i = test.begin() + random(0, test.size());
+    test.erase(i, i + random(0, size_t(test.end() - i)));
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_copyself(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(pos, random(0, test.size() - pos), String(test));
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_self(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(pos, random(0, test.size() - pos), test);
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_string(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(pos, pos + random(0, test.size() - pos),
+      RandomString<String>(MaxString<String>::value));
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_selfcopy_start_end(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type
+      pos1 = random(0, test.size()),
+      pos2 = random(0, test.size());
+    test.replace(pos1, pos1 + random(0, test.size() - pos1),
+      String(test),
+      pos2, pos2 + random(0, test.size() - pos2));
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_self_start_end(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type
+      pos1 = random(0, test.size()),
+      pos2 = random(0, test.size());
+      test.replace(pos1, pos1 + random(0, test.size() - pos1),
+        test, pos2, pos2 + random(0, test.size() - pos2));
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_string_start_end(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos1 = random(0, test.size());
+    String str = RandomString<String>(MaxString<String>::value);
+    const typename String::size_type pos2 = random(0, str.size());
+    test.replace(pos1, pos1 + random(0, test.size() - pos1),
+      str, pos2, pos2 + random(0, str.size() - pos2));
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_selfcopycstr_size(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(pos, random(0, test.size() - pos),
+      String(test).c_str(), test.size());
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_selfcstr_size(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(pos, random(0, test.size() - pos),
+      test.c_str(), test.size());
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_stringcstr_size(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    String str = RandomString<String>(MaxString<String>::value);
+    test.replace(pos, pos + random(0, test.size() - pos),
+      str.c_str(), str.size());
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_stringcstr(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    String str = RandomString<String>(MaxString<String>::value);
+    test.replace(pos, pos + random(0, test.size() - pos),
+      str.c_str());
+    return test;
+  }
+
+  template<class String>
+  String replace_start_end_number_char(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(pos, random(0, test.size() - pos),
+      random(0, MaxString<String>::value), random('a', 'z'));
+    return test;
+  }
+
+  template<class String>
+  String replace_iterator_iterator_selfcopy(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(
+      test.begin() + pos,
+      test.begin() + pos + random(0, test.size() - pos),
+      String(test));
+    return test;
+  }
+
+  template<class String>
+  String replace_iterator_iterator_self(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(
+      test.begin() + pos,
+      test.begin() + pos + random(0, test.size() - pos),
+      test);
+    return test;
+  }
+
+  template<class String>
+  String replace_iterator_iterator_selfcopycstr_size(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(
+      test.begin() + pos,
+      test.begin() + pos + random(0, test.size() - pos),
+      String(test).c_str(),
+      test.size() - random(0, test.size()));
+    return test;
+  }
+
+  template<class String>
+  String replace_iterator_iterator_selfcstr_size(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(
+      test.begin() + pos,
+      test.begin() + pos + random(0, test.size() - pos),
+      test.c_str(),
+      test.size() - random(0, test.size()));
+    return test;
+  }
+
+  template<class String>
+  String replace_iterator_iterator_stringcstr(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type
+      pos = random(0, test.size()),
+      n = random(0, test.size() - pos);
+    typename String::iterator b = test.begin();
+    const String str = RandomString<String>(MaxString<String>::value);
+    const typename String::value_type* s = str.c_str();
+    test.replace(
+      b + pos,
+      b + pos + n,
+      s);
+    return test;
+  }
+
+  template<class String>
+  String replace_iterator_iterator_number_char(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type pos = random(0, test.size());
+    test.replace(
+      test.begin() + pos,
+      test.begin() + pos + random(0, test.size() - pos),
+      random(0, MaxString<String>::value), random('a', 'z'));
+    return test;
+  }
+
+  template<class String>
+  String copy_pointer_size_position(String & test)
+  {
+    // 21.3.5
+    std::vector<typename String::value_type>
+      vec(random(1, MaxString<String>::value));
+    test.copy(
+      &vec[0],
+      vec.size(),
+      random(0, test.size()));
+    return test;
+  }
+
+  template<class String>
+  String member_swap(String & test)
+  {
+    // 21.3.5
+    RandomString<String>(MaxString<String>::value).swap(test);
+    return test;
+  }
+
+  template<class String>
+  String member_swap2(String & test)
+  {
+    // 21.3.5
+    String s(RandomString<String>(MaxString<String>::value));
+    s.swap(test);
+    return s;
+  }
+
+  template<class String>
+  String swap(String & test)
+  {
+    using std::swap;
+    String s(RandomString<String>(MaxString<String>::value));
+    swap(test, s);
+    return test;
+  }
+
+  template<class String>
+  String swap2(String & test)
+  {
+    using std::swap;
+    String s(RandomString<String>(MaxString<String>::value));
+    swap(test, s);
+    return s;
+  }
+
+  template<class String>
+  String cstr_data_getallocator(String & test)
+  {
+    // 21.3.6
+    String result;
+    result += Num2String<String>(test.c_str() == test.data()) + " -- ";
+    result += Num2String<String>(test.get_allocator() ==
+      RandomString<String>(MaxString<String>::value).get_allocator()) + " -- ";
+    return result;
+  }
+
+  template<class String>
+  String find_string_index(String & test)
+  {
+    // 21.3.6
+    String str = test.substr(
+      random(0, test.size()),
+      random(0, test.size()));
+    test = Num2String<String>(test.find(str, random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_stringcstr_index_length(String & test)
+  {
+    // 21.3.6
+    String str = test.substr(
+      random(0, test.size()),
+      random(0, test.size()));
+    test = Num2String<String>(test.find(str.c_str(),
+      random(0, test.size()),
+      random(0, str.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_stringcstr_index(String & test)
+  {
+    // 21.3.6
+    String str = test.substr(
+      random(0, test.size()),
+      random(0, test.size()));
+    test = Num2String<String>(test.find(str.c_str(),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_char_index(String & test)
+  {
+    // 21.3.6
+    test = Num2String<String>(test.find(
+      random('a', 'z'),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_overflow(String & test)
+  {
+    // This tests bug 2536490.
+
+    test = String();
+
+    String result;
+
+    // Validate that find with a single character doesn't overflow.
+    result += Num2String<String>(test.find('6'));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.find('6'));
+    result += " -- ";
+    test = "123456";
+    result += Num2String<String>(test.find('6'));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.find('6'));
+    result += " -- ";
+
+    // Validate that find with multiple characters doesn't overflow.
+    test = "12345";
+    result += Num2String<String>(test.find("123"));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.find("12345"));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.find("345"));
+    result += " -- ";
+    test = "123456";
+    result += Num2String<String>(test.find("456"));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.find("456"));
+    result += " -- ";
+
+    return result;
+  }
+
+  template<class String>
+  String rfind_overflow(String & test)
+  {
+    test = String();
+
+    String result;
+
+    // Validate that rfind with a single character doesn't overflow.
+    result += Num2String<String>(test.rfind('6'));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.rfind('6'));
+    result += " -- ";
+    test = "123456";
+    result += Num2String<String>(test.rfind('6'));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.rfind('6'));
+    result += " -- ";
+
+    // Validate that rfind with multiple characters doesn't overflow.
+    test = "12345";
+    result += Num2String<String>(test.rfind("123"));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.rfind("12345"));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.rfind("345"));
+    result += " -- ";
+    test = "123456";
+    result += Num2String<String>(test.rfind("456"));
+    result += " -- ";
+    test = "12345";
+    result += Num2String<String>(test.rfind("456"));
+    result += " -- ";
+
+    return result;
+  }
+
+  template<class String>
+  String rfind_string_index(String & test)
+  {
+    // 21.3.6
+    String str = test.substr(
+      random(0, test.size()),
+      random(0, test.size()));
+    test = Num2String<String>(test.rfind(str, random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String rfind_stringcstr_index_length(String & test)
+  {
+    // 21.3.6
+    String str = test.substr(
+      random(0, test.size()),
+      random(0, test.size()));
+    test = Num2String<String>(test.rfind(str.c_str(),
+      random(0, test.size()),
+      random(0, str.size())));
+    return test;
+  }
+
+  template<class String>
+  String rfind_stringcstr_index(String & test)
+  {
+    // 21.3.6
+    String str = test.substr(
+      random(0, test.size()),
+      random(0, test.size()));
+    test = Num2String<String>(test.rfind(str.c_str(),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String rfind_char_index(String & test)
+  {
+    // 21.3.6
+    test = Num2String<String>(test.rfind(
+      random('a', 'z'),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_of_string_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_first_of(str,
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_of_stringcstr_index_length(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_first_of(str.c_str(),
+      random(0, test.size()),
+      random(0, str.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_of_stringcstr_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_first_of(str.c_str(),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_of_char_index(String & test)
+  {
+    // 21.3.6
+    test = Num2String<String>(test.find_first_of(
+      random('a', 'z'),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_of_string_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_last_of(str,
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_of_stringcstr_index_length(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_last_of(str.c_str(),
+      random(0, test.size()),
+      random(0, str.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_of_stringcstr_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_last_of(str.c_str(),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_of_char_index(String & test)
+  {
+    // 21.3.6
+    test = Num2String<String>(test.find_last_of(
+      random('a', 'z'),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_not_of_string_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_first_not_of(str,
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_not_of_stringcstr_index_length(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_first_not_of(str.c_str(),
+      random(0, test.size()),
+      random(0, str.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_not_of_stringcstr_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_first_not_of(str.c_str(),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_first_not_of_char_index(String & test)
+  {
+    // 21.3.6
+    test = Num2String<String>(test.find_first_not_of(
+      random('a', 'z'),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_not_of_string_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_last_not_of(str,
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_not_of_stringcstr_index_length(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_last_not_of(str.c_str(),
+      random(0, test.size()),
+      random(0, str.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_not_of_stringcstr_index(String & test)
+  {
+    // 21.3.6
+    String str = RandomString<String>(MaxString<String>::value);
+    test = Num2String<String>(test.find_last_not_of(str.c_str(),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String find_last_not_of_char_index(String & test)
+  {
+    // 21.3.6
+    test = Num2String<String>(test.find_last_not_of(
+      random('a', 'z'),
+      random(0, test.size())));
+    return test;
+  }
+
+  template<class String>
+  String substr_index_length(String & test)
+  {
+    // 21.3.6
+    test = test.substr(random(0, test.size()), random(0, test.size()));
+    return test;
+  }
+
+  template<class String>
+  String compare_selfcopy(String & test)
+  {
+    int tristate = test.compare(String(test));
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String compare_string(String & test)
+  {
+    int tristate = test.compare(RandomString<String>(MaxString<String>::value));
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String compare_index_length_selfcopy(String & test)
+  {
+    int tristate = test.compare(
+      random(0, test.size()),
+      random(0, test.size()),
+      String(test));
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String compare_index_length_string(String & test)
+  {
+    int tristate = test.compare(
+      random(0, test.size()),
+      random(0, test.size()),
+      RandomString<String>(MaxString<String>::value));
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String compare_index_length_selfcopy_index_length(String & test)
+  {
+    String str = test;
+    int tristate = test.compare(
+      random(0, test.size()),
+      random(0, test.size()),
+      str,
+      random(0, str.size()),
+      random(0, str.size()));
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String compare_index_length_string_index_length(String & test)
+  {
+    String str = RandomString<String>(MaxString<String>::value);
+    int tristate = test.compare(
+      random(0, test.size()),
+      random(0, test.size()),
+      str,
+      random(0, str.size()),
+      random(0, str.size()));
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String compare_stringcstr(String & test)
+  {
+    int tristate = test.compare(
+      RandomString<String>(MaxString<String>::value).c_str());
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String compare_index_length_stringcstr_length(String & test)
+  {
+    String str = RandomString<String>(MaxString<String>::value);
+    int tristate = test.compare(
+      random(0, test.size()),
+      random(0, test.size()),
+      str.c_str(),
+      random(0, str.size()));
+    if (tristate > 0) tristate = 1;
+    else if (tristate < 0) tristate = 2;
+    test = Num2String<String>(tristate);
+    return test;
+  }
+
+  template<class String>
+  String operator_plus(String & test)
+  {
+    test = RandomString<String>(MaxString<String>::value) +
+      RandomString<String>(MaxString<String>::value);
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_lhs_cstr(String & test)
+  {
+    test = RandomString<String>(MaxString<String>::value).c_str() +
+      RandomString<String>(MaxString<String>::value);
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_lhs_char(String & test)
+  {
+    test = typename String::value_type(random('a', 'z')) +
+      RandomString<String>(MaxString<String>::value);
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_rhs_cstr(String & test)
+  {
+    test = RandomString<String>(MaxString<String>::value) +
+      RandomString<String>(MaxString<String>::value).c_str();
+    return test;
+  }
+
+  template<class String>
+  String operator_plus_rhs_char(String & test)
+  {
+    test = RandomString<String>(MaxString<String>::value) +
+      typename String::value_type(random('a', 'z'));
+    return test;
+  }
+
+}
+
+
+template<class String>
+class TestFunctions
+{
+public:
+  typedef String (*TestFunction)(String &);
+
+  TestFunctions()
+  {
+    using namespace Tests;
+
+#define ADD_TEST(test) (testFunctions.push_back(std::make_pair((#test), (test<String>))))
+    ADD_TEST(default_constructor);
+    ADD_TEST(copy_constructor);
+    ADD_TEST(copy_constructor_with_size_and_range);
+    ADD_TEST(constructor_with_cstr_and_size);
+    ADD_TEST(constructor_with_cstr);
+    ADD_TEST(assignment);
+    ADD_TEST(assignment_with_cstr);
+    ADD_TEST(assignment_aliased);
+    ADD_TEST(assignment_non_aliased);
+    ADD_TEST(assignment_from_char);
+    ADD_TEST(iterators_call);
+    ADD_TEST(iterators_equality);
+    ADD_TEST(capacity);
+    ADD_TEST(capacity_values);
+    ADD_TEST(resize);
+    ADD_TEST(resize_with_1_argument);
+    ADD_TEST(reserve);
+    ADD_TEST(clear);
+    ADD_TEST(empty1);
+    ADD_TEST(empty2);
+    ADD_TEST(element_access);
+    ADD_TEST(operator_plus_equal);
+    ADD_TEST(operator_plus_equal_aliasing);
+    ADD_TEST(operator_plus_equal_with_cstr);
+    ADD_TEST(operator_plus_equal_no_aliasing);
+    ADD_TEST(operator_plus_equal_aliasing_cstr);
+    ADD_TEST(operator_plus_equal_char);
+    ADD_TEST(append_string);
+    ADD_TEST(append_string_start_range);
+    ADD_TEST(append_cstr_size);
+    ADD_TEST(append_cstr);
+    ADD_TEST(append_iterators);
+    ADD_TEST(push_back_char);
+    ADD_TEST(assign_string);
+    ADD_TEST(assign_string_start_size);
+    ADD_TEST(assign_cstr_size);
+    ADD_TEST(assign_cstr);
+    ADD_TEST(assign_number_char);
+    ADD_TEST(assign_iterators);
+    ADD_TEST(insert_position_string);
+    ADD_TEST(insert_position_string_start_end);
+    ADD_TEST(insert_position_cstr_size);
+    ADD_TEST(insert_position_cstr);
+    ADD_TEST(insert_position_number_char);
+    ADD_TEST(insert_iterator_char);
+    ADD_TEST(insert_iterator_iterator_range);
+    ADD_TEST(erase_position_position);
+    ADD_TEST(erase_iterator);
+    ADD_TEST(erase_iterator_iterator);
+    ADD_TEST(replace_start_end_copyself);
+    ADD_TEST(replace_start_end_self);
+    ADD_TEST(replace_start_end_string);
+    ADD_TEST(replace_start_end_selfcopy_start_end);
+    ADD_TEST(replace_start_end_self_start_end);
+    ADD_TEST(replace_start_end_string_start_end);
+    ADD_TEST(replace_start_end_selfcopycstr_size);
+    ADD_TEST(replace_start_end_selfcstr_size);
+    ADD_TEST(replace_start_end_stringcstr_size);
+    ADD_TEST(replace_start_end_stringcstr);
+    ADD_TEST(replace_start_end_number_char);
+    ADD_TEST(replace_iterator_iterator_selfcopy);
+    ADD_TEST(replace_iterator_iterator_self);
+    ADD_TEST(replace_iterator_iterator_selfcopycstr_size);
+    ADD_TEST(replace_iterator_iterator_selfcstr_size);
+    ADD_TEST(replace_iterator_iterator_stringcstr);
+    ADD_TEST(replace_iterator_iterator_number_char);
+    ADD_TEST(copy_pointer_size_position);
+    ADD_TEST(member_swap);
+    ADD_TEST(member_swap2);
+    ADD_TEST(swap);
+    ADD_TEST(swap2);
+    ADD_TEST(cstr_data_getallocator);
+    ADD_TEST(find_string_index);
+    ADD_TEST(find_stringcstr_index_length);
+    ADD_TEST(find_stringcstr_index);
+    ADD_TEST(find_char_index);
+    ADD_TEST(find_overflow);
+    ADD_TEST(rfind_overflow);
+    ADD_TEST(rfind_string_index);
+    ADD_TEST(rfind_stringcstr_index_length);
+    ADD_TEST(rfind_stringcstr_index);
+    ADD_TEST(rfind_char_index);
+    ADD_TEST(find_first_of_string_index);
+    ADD_TEST(find_first_of_stringcstr_index_length);
+    ADD_TEST(find_first_of_stringcstr_index);
+    ADD_TEST(find_first_of_char_index);
+    ADD_TEST(find_last_of_string_index);
+    ADD_TEST(find_last_of_stringcstr_index_length);
+    ADD_TEST(find_last_of_stringcstr_index);
+    ADD_TEST(find_last_of_char_index);
+    ADD_TEST(find_first_not_of_string_index);
+    ADD_TEST(find_first_not_of_stringcstr_index_length);
+    ADD_TEST(find_first_not_of_stringcstr_index);
+    ADD_TEST(find_first_not_of_char_index);
+    ADD_TEST(find_last_not_of_string_index);
+    ADD_TEST(find_last_not_of_stringcstr_index_length);
+    ADD_TEST(find_last_not_of_stringcstr_index);
+    ADD_TEST(find_last_not_of_char_index);
+    ADD_TEST(substr_index_length);
+    ADD_TEST(compare_selfcopy);
+    ADD_TEST(compare_string);
+    ADD_TEST(compare_index_length_selfcopy);
+    ADD_TEST(compare_index_length_string);
+    ADD_TEST(compare_index_length_selfcopy_index_length);
+    ADD_TEST(compare_index_length_string_index_length);
+    ADD_TEST(compare_stringcstr);
+    ADD_TEST(compare_index_length_stringcstr_length);
+    ADD_TEST(operator_plus);
+    ADD_TEST(operator_plus_lhs_cstr);
+    ADD_TEST(operator_plus_lhs_char);
+    ADD_TEST(operator_plus_rhs_cstr);
+    ADD_TEST(operator_plus_rhs_char);
+  }
+
+  ~TestFunctions()
+  {
+    testFunctions.clear();
+  }
+
+  size_t getNumberInTestRange(size_t number) const
+  {
+    return number % testFunctions.size();
+  }
+
+  TestFunction getTest(size_t number) const
+  {
+    return testFunctions.at(getNumberInTestRange(number)).second;
+  }
+
+  const char * getTestName(size_t number) const
+  {
+    return testFunctions.at(getNumberInTestRange(number)).first;
+  }
+
+private:
+  std::vector<std::pair<const char *, TestFunction> > testFunctions;
+
+  TestFunctions(const TestFunctions &);
+  TestFunctions & operator=(const TestFunctions &);
+};
+
+
+template <class String>
+String Test(size_t count, const TestFunctions<String> & testFunctions)
+{
+    String test(RandomString<String>(Tests::MaxString<String>::value));
+    String result(testFunctions.getTest(count)(test));
+
     return result;
 }
 
-template <class String, class Integral>
-void Num2String(String& str, Integral )
+template<class String>
+void checkResults(const std::string & reference, const String & tested,
+                  const TestFunctions<String> & testFunctions,
+                  unsigned int seedForThisIteration, size_t count)
 {
-    str.resize(10, '\0');
-//    ultoa((unsigned long)n, &str[0], 10);
-    sprintf(&str[0], "%ul", 10);
-    str.resize(strlen(str.c_str()));
-}
-
-std::list<char> RandomList(unsigned int maxSize)
-{
-    std::list<char> lst(random(0u, maxSize));
-    std::list<char>::iterator i = lst.begin();
-    for (; i != lst.end(); ++i)
-    {
-        *i = random('a', 'z');
-    }
-    return lst;
-}
-
-int currentTest = 0;
-
-template <class String>
-String Test(bool avoidAliasing)
-{
-    typedef typename String::size_type size_type;
-    const size_type maxString = 1000;
-
-    String test;
-
-      test = RandomString(&test, maxString);
-
-      static unsigned int functionSelector = 0;
-      ++functionSelector;
-      currentTest = functionSelector % 95;
-      //std::cout << currentTest <<"\n";
-      switch (currentTest)
-      {
-      case 0:
-          // test default constructor 21.3.1
-          return String();
-          break;
-      case 1:
-          // test copy constructor 21.3.1
-          {
-              const size_type pos = random(0, test.size());
-              String s(test, pos, random(0, static_cast<typename String::size_type>(test.size() - pos)));
-              test = s;
-          }
-          break;
-      case 2:
-          // test constructor 21.3.1
-          {
-              const size_type
-                  pos = random(0, test.size()),
-                  n = random(0, test.size() - pos);
-              String s(test.c_str() + pos, n);
-              test = s;
-          }
-          break;
-      case 3:
-          // test constructor 21.3.1
-          {
-              const size_type pos = random(0, test.size());
-              String s(test.c_str() + pos);
-              test = s;
-          }
-          break;
-      case 4:
-          // test assignment 21.3.1
-          {
-              String s(random(0, 1000), '\0');
-              size_type i = 0;
-              for (; i != s.size(); ++i)
-              {
-                  s[i] = random('a', 'z');
-              }
-              test = s;
-          }
-          break;
-      case 5:
-          // test assignment 21.3.1
-          {
-              String s(random(0, 1000), '\0');
-              size_type i = 0;
-              for (; i != s.size(); ++i)
-              {
-                  s[i] = random('a', 'z');
-              }
-              test = s.c_str();
-          }
-          break;
-      case 6:
-          // test aliased assignment 21.3.1
-          {
-              const size_t pos = random(0, test.size());
-              if (avoidAliasing)
-              {
-                  test = String(test.c_str() + pos);
-              }
-              else
-              {
-                  test = test.c_str() + pos;
-              }
-          }
-          break;
-      case 7:
-          // test assignment 21.3.1
-          test = random('a', 'z');
-          break;
-      case 8:
-          // exercise iterators 21.3.2
-          test.begin();
-          test.end();
-          test.rbegin();
-          test.rend();
-          break;
-      case 9:
-          // exercise capacity 21.3.3
-          test.size();
-          test.length();
-          test.max_size();
-          test.capacity();
-          break;
-      case 10:
-          // test resize
-          test.resize(random(0, test.size()), random('a', 'z'));
-          break;
-      case 11:
-          // test resize with 1 arg
-          test.resize(random(0, test.size()));
-          break;
-      case 12:
-          // test reserve
-          test.reserve(random(0, 1000));
-          break;
-      case 13:
-          // test clear
-          test.clear(); // skip because std::string doesn't support it
-          break;
-      case 14:
-          // exercise empty
-          {
-              const char* kEmptyString = "empty";
-              const char* kNonEmptyString = "not empty";
-              if (test.empty()) test = "empty";
-              else test = "not empty";
-              // the above assignments don't work yet; use iterator assign
-              if (test.empty()) test = String(kEmptyString, kEmptyString + strlen(kEmptyString));
-              else test = String(kNonEmptyString, kNonEmptyString + strlen(kNonEmptyString));
-          }
-          break;
-      case 15:
-          // exercise element access 21.3.4
-          if(!test.empty())
-          {
-              test[random(0, test.size() - 1)];
-              test.at(random(0, test.size() - 1));
-          }
-          break;
-      case 16:
-          // 21.3.5 modifiers
-          test += RandomString(&test, maxString);
-          break;
-      case 17:
-          // aliasing modifiers
-          test += test;
-          break;
-      case 18:
-          // 21.3.5 modifiers
-          test += RandomString(&test, maxString).c_str();
-          break;
-      case 19:
-          // aliasing modifiers
-          if (avoidAliasing)
-          {
-              test += String(test.c_str() + random(0, test.size()));
-          }
-          else
-          {
-              test += test.c_str() + random(0, test.size());
-          }
-          break;
-      case 20:
-          // 21.3.5 modifiers
-          test += random('a', 'z');
-          break;
-      case 21:
-          // 21.3.5 modifiers
-          test.append(RandomString(&test, maxString));
-          break;
-      case 22:
-          // 21.3.5 modifiers
-          {
-              String s(RandomString(&test, maxString));
-              test.append(s, random(0, s.size()), random(0, maxString));
-          }
-          break;
-      case 23:
-          // 21.3.5 modifiers
-          {
-              String s = RandomString(&test, maxString);
-              test.append(s.c_str(), random(0, s.size()));
-          }
-          break;
-      case 24:
-          // 21.3.5 modifiers
-          test.append(RandomString(&test, maxString).c_str());
-          break;
-      case 25:
-          // 21.3.5 modifiers
-          test.append(random(0, maxString), random('a', 'z'));
-          break;
-      case 26:
-          {
-              std::list<char> lst(RandomList(maxString));
-              test.append(lst.begin(), lst.end());
-          }
-          break;
-      case 27:
-          // 21.3.5 modifiers
-          // skip push_back, Dinkumware doesn't support it
-          test.push_back(random('a', 'z'));
-          break;
-      case 28:
-          // 21.3.5 modifiers
-          test.assign(RandomString(&test, maxString));
-          break;
-      case 29:
-          // 21.3.5 modifiers
-          {
-              String str = RandomString(&test, maxString);
-              test.assign(str, random(0, str.size()), random(0, maxString));
-          }
-          break;
-      case 30:
-          // 21.3.5 modifiers
-          {
-              String str = RandomString(&test, maxString);
-              test.assign(str.c_str(), random(0, str.size()));
-          }
-          break;
-      case 31:
-          // 21.3.5 modifiers
-          test.assign(RandomString(&test, maxString).c_str());
-          break;
-      case 32:
-          // 21.3.5 modifiers
-          test.assign(random(0, maxString), random('a', 'z'));
-          break;
-      case 33:
-          // 21.3.5 modifiers
-          {
-              // skip, Dinkumware doesn't support it
-              std::list<char> lst(RandomList(maxString));
-              test.assign(lst.begin(), lst.end());
-          }
-          break;
-      case 34:
-          // 21.3.5 modifiers
-          test.insert(random(0, test.size()), RandomString(&test, maxString));
-          break;
-      case 35:
-          // 21.3.5 modifiers
-          {
-              String str = RandomString(&test, maxString);
-              test.insert(random(0, test.size()),
-                  str, random(0, str.size()),
-                  random(0, maxString));
-          }
-          break;
-      case 36:
-          // 21.3.5 modifiers
-          {
-              String str = RandomString(&test, maxString);
-              test.insert(random(0, test.size()),
-                  str.c_str(), random(0, str.size()));
-          }
-          break;
-      case 37:
-          // 21.3.5 modifiers
-          test.insert(random(0, test.size()),
-              RandomString(&test, maxString).c_str());
-          break;
-      case 38:
-          // 21.3.5 modifiers
-          test.insert(random(0, test.size()),
-              random(0, maxString), random('a', 'z'));
-          break;
-      case 39:
-          // 21.3.5 modifiers
-          test.insert(test.begin() + random(0, test.size()),
-              random('a', 'z'));
-          break;
-      case 40:
-          // 21.3.5 modifiers
-          {
-              std::list<char> lst(RandomList(maxString));
-              test.insert(test.begin() + random(0, test.size()),
-                    lst.begin(), lst.end());
-          }
-          break;
-      case 41:
-          // 21.3.5 modifiers
-          test.erase(random(0, test.size()), random(0, maxString));
-          break;
-      case 42:
-          // 21.3.5 modifiers
-          if(!test.empty())
-              test.erase(test.begin() + random(0, test.size()));
-          break;
-      case 43:
-          // 21.3.5 modifiers
-          {
-              const typename String::iterator i = test.begin() + random(0, test.size());
-              test.erase(i, i + random(0, size_t(test.end() - i)));
-          }
-          break;
-      case 44:
-          // 21.3.5 modifiers
-          {
-              const typename String::size_type pos = random(0, test.size());
-              if (avoidAliasing)
-              {
-                  test.replace(pos, random(0, test.size() - pos),
-                      String(test));
-              }
-              else
-              {
-                  test.replace(pos, random(0, test.size() - pos), test);
-              }
-          }
-          break;
-      case 45:
-          // 21.3.5 modifiers
-          {
-              const typename String::size_type pos = random(0, test.size());
-              test.replace(pos, pos + random(0, test.size() - pos),
-                  RandomString(&test, maxString));
-          }
-          break;
-      case 46:
-          // 21.3.5 modifiers
-          {
-              const size_type
-                  pos1 = random(0, test.size()),
-                  pos2 = random(0, test.size());
-              if (avoidAliasing)
-              {
-                  test.replace(pos1, pos1 + random(0, test.size() - pos1),
-                      String(test),
-                      pos2, pos2 + random(0, test.size() - pos2));
-              }
-              else
-              {
-                  test.replace(pos1, pos1 + random(0, test.size() - pos1),
-                      test, pos2, pos2 + random(0, test.size() - pos2));
-              }
-          }
-          break;
-      case 47:
-          // 21.3.5 modifiers
-          {
-              const size_type pos1 = random(0, test.size());
-              String str = RandomString(&test, maxString);
-              const size_type pos2 = random(0, str.size());
-              test.replace(pos1, pos1 + random(0, test.size() - pos1),
-                  str, pos2, pos2 + random(0, str.size() - pos2));
-          }
-          break;
-      case 48:
-          // 21.3.5 modifiers
-          {
-              const size_type pos = random(0, test.size());
-              if (avoidAliasing)
-              {
-                  test.replace(pos, random(0, test.size() - pos),
-                      String(test).c_str(), test.size());
-              }
-              else
-              {
-                  test.replace(pos, random(0, test.size() - pos),
-                      test.c_str(), test.size());
-              }
-          }
-          break;
-      case 49:
-          // 21.3.5 modifiers
-          {
-              const size_type pos = random(0, test.size());
-              String str = RandomString(&test, maxString);
-              test.replace(pos, pos + random(0, test.size() - pos),
-                  str.c_str(), str.size());
-          }
-          break;
-      case 50:
-          // 21.3.5 modifiers
-          {
-              const size_type pos = random(0, test.size());
-              String str = RandomString(&test, maxString);
-              test.replace(pos, pos + random(0, test.size() - pos),
-                  str.c_str());
-          }
-          break;
-      case 51:
-          // 21.3.5 modifiers
-          {
-              const size_type pos = random(0, test.size());
-              test.replace(pos, random(0, test.size() - pos),
-                  random(0, maxString), random('a', 'z'));
-          }
-          break;
-      case 52:
-          // 21.3.5 modifiers
-          {
-              const size_type pos = random(0, test.size());
-              if (avoidAliasing)
-              {
-                  test.replace(
-                      test.begin() + pos,
-                      test.begin() + pos + random(0, test.size() - pos),
-                      String(test));
-              }
-              else
-              {
-                  test.replace(
-                      test.begin() + pos,
-                      test.begin() + pos + random(0, test.size() - pos),
-                      test);
-              }
-          }
-          break;
-      case 53:
-          // 21.3.5 modifiers
-          {
-              const size_type pos = random(0, test.size());
-              if (avoidAliasing)
-              {
-                  test.replace(
-                      test.begin() + pos,
-                      test.begin() + pos + random(0, test.size() - pos),
-                      String(test).c_str(),
-                      test.size() - random(0, test.size()));
-              }
-              else
-              {
-                  test.replace(
-                      test.begin() + pos,
-                      test.begin() + pos + random(0, test.size() - pos),
-                      test.c_str(),
-                      test.size() - random(0, test.size()));
-              }
-          }
-          break;
-      case 54:
-          // 21.3.5 modifiers
-          {
-              const size_type
-                  pos = random(0, test.size()),
-                  n = random(0, test.size() - pos);
-              typename String::iterator b = test.begin();
-              const String str = RandomString(&test, maxString);
-              const typename String::value_type* s = str.c_str();
-              test.replace(
-                  b + pos,
-                  b + pos + n,
-                  s);
-          }
-          break;
-      case 55:
-          // 21.3.5 modifiers
-          {
-              const size_type pos = random(0, test.size());
-              test.replace(
-                  test.begin() + pos,
-                  test.begin() + pos + random(0, test.size() - pos),
-                  random(0, maxString), random('a', 'z'));
-          }
-          break;
-      case 56:
-          // 21.3.5 modifiers
-          {
-              std::vector<typename String::value_type>
-                  vec(random(0, maxString));
-              test.copy(
-                  &vec[0],
-                  vec.size(),
-                  random(0, test.size()));
-          }
-          break;
-      case 57:
-          // 21.3.5 modifiers
-          RandomString(&test, maxString).swap(test);
-          break;
-      case 58:
-          // 21.3.6 string operations
-          // exercise c_str() and data()
-          assert(test.c_str() == test.data());
-          // exercise get_allocator()
-          assert(test.get_allocator() ==
-              RandomString(&test, maxString).get_allocator());
-          break;
-      case 59:
-          // 21.3.6 string operations
-          {
-              String str = test.substr(
-                  random(0, test.size()),
-                  random(0, test.size()));
-              Num2String(test, test.find(str, random(0, test.size())));
-          }
-          break;
-      case 60:
-          // 21.3.6 string operations
-          {
-              String str = test.substr(
-                  random(0, test.size()),
-                  random(0, test.size()));
-              Num2String(test, test.find(str.c_str(),
-                  random(0, test.size()),
-                  random(0, str.size())));
-          }
-          break;
-      case 61:
-          // 21.3.6 string operations
-          {
-              String str = test.substr(
-                  random(0, test.size()),
-                  random(0, test.size()));
-              Num2String(test, test.find(str.c_str(),
-                  random(0, test.size())));
-          }
-          break;
-      case 62:
-          // 21.3.6 string operations
-          Num2String(test, test.find(
-              random('a', 'z'),
-              random(0, test.size())));
-          break;
-      case 63:
-          // 21.3.6 string operations
-          {
-              String str = test.substr(
-                  random(0, test.size()),
-                  random(0, test.size()));
-              Num2String(test, test.rfind(str, random(0, test.size())));
-          }
-          break;
-      case 64:
-          // 21.3.6 string operations
-          {
-              String str = test.substr(
-                  random(0, test.size()),
-                  random(0, test.size()));
-              Num2String(test, test.rfind(str.c_str(),
-                  random(0, test.size()),
-                  random(0, str.size())));
-          }
-          break;
-      case 65:
-          // 21.3.6 string operations
-          {
-              String str = test.substr(
-                  random(0, test.size()),
-                  random(0, test.size()));
-              Num2String(test, test.rfind(str.c_str(),
-                  random(0, test.size())));
-          }
-          break;
-      case 66:
-          // 21.3.6 string operations
-          Num2String(test, test.rfind(
-              random('a', 'z'),
-              random(0, test.size())));
-          break;
-      case 67:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_first_of(str,
-                  random(0, test.size())));
-          }
-          break;
-      case 68:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_first_of(str.c_str(),
-                  random(0, test.size()),
-                  random(0, str.size())));
-          }
-          break;
-      case 69:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_first_of(str.c_str(),
-                  random(0, test.size())));
-          }
-          break;
-      case 70:
-          // 21.3.6 string operations
-          Num2String(test, test.find_first_of(
-              random('a', 'z'),
-              random(0, test.size())));
-          break;
-      case 71:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_last_of(str,
-                  random(0, test.size())));
-          }
-          break;
-      case 72:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_last_of(str.c_str(),
-                  random(0, test.size()),
-                  random(0, str.size())));
-          }
-          break;
-      case 73:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_last_of(str.c_str(),
-                  random(0, test.size())));
-          }
-          break;
-      case 74:
-          // 21.3.6 string operations
-          Num2String(test, test.find_last_of(
-              random('a', 'z'),
-              random(0, test.size())));
-          break;
-      case 75:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_first_not_of(str,
-                  random(0, test.size())));
-          }
-          break;
-      case 76:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_first_not_of(str.c_str(),
-                  random(0, test.size()),
-                  random(0, str.size())));
-          }
-          break;
-      case 77:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_first_not_of(str.c_str(),
-                  random(0, test.size())));
-          }
-          break;
-      case 78:
-          // 21.3.6 string operations
-          Num2String(test, test.find_first_not_of(
-              random('a', 'z'),
-              random(0, test.size())));
-          break;
-      case 79:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_last_not_of(str,
-                  random(0, test.size())));
-          }
-          break;
-      case 80:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_last_not_of(str.c_str(),
-                  random(0, test.size()),
-                  random(0, str.size())));
-          }
-          break;
-      case 81:
-          // 21.3.6 string operations
-          {
-              String str = RandomString(&test, maxString);
-              Num2String(test, test.find_last_not_of(str.c_str(),
-                  random(0, test.size())));
-          }
-          break;
-      case 82:
-          // 21.3.6 string operations
-          Num2String(test, test.find_last_not_of(
-              random('a', 'z'),
-              random(0, test.size())));
-          break;
-      case 83:
-          // 21.3.6 string operations
-          test = test.substr(random(0, test.size()), random(0, test.size()));
-          break;
-      case 84:
-          {
-              int tristate = test.compare(RandomString(&test, maxString));
-              if (tristate > 0) tristate = 1;
-              else if (tristate < 0) tristate = 2;
-              Num2String(test, tristate);
-          }
-          break;
-      case 85:
-          {
-              int tristate = test.compare(
-                  random(0, test.size()),
-                  random(0, test.size()),
-                  RandomString(&test, maxString));
-              if (tristate > 0) tristate = 1;
-              else if (tristate < 0) tristate = 2;
-              Num2String(test, tristate);
-          }
-          break;
-      case 86:
-          {
-              String str = RandomString(&test, maxString);
-              int tristate = test.compare(
-                  random(0, test.size()),
-                  random(0, test.size()),
-                  str,
-                  random(0, str.size()),
-                  random(0, str.size()));
-              if (tristate > 0) tristate = 1;
-              else if (tristate < 0) tristate = 2;
-              Num2String(test, tristate);
-          }
-          break;
-      case 87:
-          {
-              int tristate = test.compare(
-                  RandomString(&test, maxString).c_str());
-              if (tristate > 0) tristate = 1;
-              else if (tristate < 0) tristate = 2;
-              Num2String(test, tristate);
-          }
-          break;
-      case 88:
-          {
-              String str = RandomString(&test, maxString);
-              int tristate = test.compare(
-                  random(0, test.size()),
-                  random(0, test.size()),
-                  str.c_str(),
-                  random(0, str.size()));
-              if (tristate > 0) tristate = 1;
-              else if (tristate < 0) tristate = 2;
-              Num2String(test, tristate);
-          }
-          break;
-      case 89:
-          test = RandomString(&test, maxString) +
-              RandomString(&test, maxString);
-          break;
-      case 90:
-          test = RandomString(&test, maxString).c_str() +
-              RandomString(&test, maxString);
-          break;
-      case 91:
-          test = typename String::value_type(random('a', 'z')) +
-              RandomString(&test, maxString);
-          break;
-      case 92:
-          test = RandomString(&test, maxString) +
-              RandomString(&test, maxString).c_str();
-          break;
-      case 93:
-          test = RandomString(&test, maxString) +
-              RandomString(&test, maxString).c_str();
-          break;
-      case 94:
-          test = RandomString(&test, maxString) +
-              typename String::value_type(random('a', 'z'));
-          break;
-      default:
-          assert(((functionSelector + 1) % 96) == 0);
-          break;
-      }
-
-    return test;
-}
-
-template<class T>
-void checkResults(const std::string& reference, const T& tested)
-{
-    if( (tested.size() != reference.size())||
-        (std::string(tested.data(), tested.size()) != reference) )
-    {
-        std::cout << "\nTest " << currentTest << " failed: \n";
-        std::cout << "reference.size() = " << reference.size() << "\n";
-        std::cout << "tested.size()    = " << tested.size()    << "\n";
-        std::cout << "reference data   = " <<  reference << "\n";
-        std::cout << "tested    data   = " <<  tested    << "\n";
-    }
-
-    //assert(tested.size() == reference.size());
-    //assert(std::string(tested.data(), tested.size()) == reference);
+  if( (tested.size() != reference.size()) ||
+      (std::string(tested.data(), tested.size()) != reference) )
+  {
+    std::cout << "\n\nTest #"
+              << testFunctions.getNumberInTestRange(count)            << " \""
+              << testFunctions.getTestName(count)                     << "\" failed for string type \""
+              << typeid(String).name()                                << "\":\n"
+              << "seed for this iteration = " << seedForThisIteration << "\n"
+              << "reference.size() = "        << reference.size()     << "\n"
+              << "tested.size()    = "        << tested.size()        << "\n"
+              << "reference data   = {"       << reference            << "}\n"
+              << "tested    data   = {"       << tested               << "}\n\n";
+  }
 }
 
 void Compare()
 {
-    unsigned int count = 0;
-    srand(10);
+    size_t count = 0;
+
+    using namespace StringsToTest;
+    TestFunctions<std::string>                  testFunctions_std;
+    TestFunctions<my_string_SimpleStorage>      testFunctions_SimpleStorage;
+    TestFunctions<my_string_AllocatorStorage>   testFunctions_AllocatorStorage;
+    TestFunctions<my_string_MallocatorStorage>  testFunctions_MallocatorStorage;
+    TestFunctions<my_string_VectorStorage>      testFunctions_VectorStorage;
+    TestFunctions<my_string_SmallStringSimple>  testFunctions_SmallStringSimple;
+    TestFunctions<my_string_SmallStringVector>  testFunctions_SmallStringVector;
+    TestFunctions<my_string_CowSimple>          testFunctions_CowSimple;
+    TestFunctions<my_string_CowAllocator>       testFunctions_CowAllocator;
+
     for (;;)
     {
-        cout << ++count << '\r';
+      std::cout << ++count << '\r';
 
-        unsigned long t = rand(); //time(0);
+      const unsigned int seedForThisIteration = rand();
+      srand(seedForThisIteration);
 
-        srand(t);
-        const std::string reference = Test<std::string>(true);
+      const std::string reference(Test<std::string>(count, testFunctions_std));
 
-        using namespace StringsToTest;
+      {
+        srand(seedForThisIteration);
+        const my_string_SimpleStorage tested(Test<my_string_SimpleStorage>(count, testFunctions_SimpleStorage));
+        checkResults(reference, tested, testFunctions_SimpleStorage, seedForThisIteration, count);
+      }
 
-        {
-            srand(t);
-            const my_string_SimpleStorage tested = Test<my_string_SimpleStorage>(false);
-            checkResults(reference, tested);
-        }
+      {
+        srand(seedForThisIteration);
+        const my_string_AllocatorStorage tested(Test<my_string_AllocatorStorage>(count, testFunctions_AllocatorStorage));
+        checkResults(reference, tested, testFunctions_AllocatorStorage, seedForThisIteration, count);
+      }
 
-        {
-            srand(t);
-            const my_string_AllocatorStorage tested = Test<my_string_AllocatorStorage>(false);
-            checkResults(reference, tested);
-        }
+      {
+        srand(seedForThisIteration);
+        const my_string_MallocatorStorage tested(Test<my_string_MallocatorStorage>(count, testFunctions_MallocatorStorage));
+        checkResults(reference, tested, testFunctions_MallocatorStorage, seedForThisIteration, count);
+      }
 
-        {
-            srand(t);
-            const my_string_MallocatorStorage tested = Test<my_string_MallocatorStorage>(false);
-            checkResults(reference, tested);
-        }
+      {
+        srand(seedForThisIteration);
+        const my_string_VectorStorage tested = Test<my_string_VectorStorage>(count, testFunctions_VectorStorage);
+        checkResults(reference, tested, testFunctions_VectorStorage, seedForThisIteration, count);
+      }
 
-        {
-            srand(t);
-            const my_string_VectorStorage tested = Test<my_string_VectorStorage>(false);
-            checkResults(reference, tested);
-        }
+      {
+        srand(seedForThisIteration);
+        const my_string_SmallStringSimple tested(Test<my_string_SmallStringSimple>(count, testFunctions_SmallStringSimple));
+        checkResults(reference, tested, testFunctions_SmallStringSimple, seedForThisIteration, count);
+      }
 
-        {
-          srand(t);
-          const my_string_SmallStringSimple tested(Test<my_string_SmallStringSimple>(false));
-          checkResults(reference, tested);
-        }
+      {
+        srand(seedForThisIteration);
+        const my_string_SmallStringVector tested(Test<my_string_SmallStringVector>(count, testFunctions_SmallStringVector));
+        checkResults(reference, tested, testFunctions_SmallStringVector, seedForThisIteration, count);
+      }
 
-        {
-            srand(t);
-            const my_string_SmallStringVector tested(Test<my_string_SmallStringVector>(false));
-            checkResults(reference, tested);
-        }
+      {
+        srand(seedForThisIteration);
+        const my_string_CowSimple tested(Test<my_string_CowSimple>(count, testFunctions_CowSimple));
+        checkResults(reference, tested, testFunctions_CowSimple, seedForThisIteration, count);
+      }
 
-        {
-            srand(t);
-            const my_string_CowSimple tested(Test<my_string_CowSimple>(false));
-            checkResults(reference, tested);
-        }
-
-        {
-            srand(t);
-            const my_string_CowAllocator tested(Test<my_string_CowAllocator>(false));
-            checkResults(reference, tested);
-        }
-/*
-        {    // SimpleStringStorage with UTF16 Encoding
-            srand(t);
-            typedef SimpleStringStorage<unicode::UTF16Char>
-                Storage;
-            typedef flex_string<
-                unicode::UTF16Char,
-                std::char_traits<unicode::UTF16Char>,
-                std::allocator<unicode::UTF16Char>,
-                UTF16Encoding<Storage>
-            > my_string;
-            const my_string tested(Test<my_string>(false));
-            assert(tested.size() == reference.size());
-            //assert(std::string(tested.data(), tested.size()) == reference);
-       }
-       */
+      {
+        srand(seedForThisIteration);
+        const my_string_CowAllocator tested(Test<my_string_CowAllocator>(count, testFunctions_CowAllocator));
+        checkResults(reference, tested, testFunctions_CowAllocator, seedForThisIteration, count);
+      }
     }
 }
 
-/// This function tests out a bug found by Jean-Francois Bastien in the find function.
-template<class StringType>
-void TestBug2536490()
-{
-    StringType bug;
-    assert(StringType::npos == bug.find('6'));
-    bug = "12345";
-    assert(StringType::npos == bug.find('6'));
-    bug = "123456";
-    assert(5 == bug.find('6'));
-    bug = "12345";
-    assert(StringType::npos == bug.find('6'));
-
-    bug = "12345";
-    assert(0 == bug.find("123"));
-    bug = "12345";
-    assert(0 == bug.find("12345"));
-    bug = "12345";
-    assert(2 == bug.find("345"));
-    bug = "123456";
-    assert(3 == bug.find("456"));
-    bug = "12345";
-    assert(StringType::npos == bug.find("456"));
-}
-
-/*
-#include <string>
-#include <limits>
-#include <cassert>
-//#include "flex_string.h"
-
 int main()
 {
-   typedef wchar_t char_type;
-   typedef std::basic_string<char_type> std_string_t;
+  const time_t initialSeed(time(0));
+  srand(unsigned(initialSeed));
 
-   typedef flex_string<
-    char_type,
-    std::char_traits<char_type>,
-    std::allocator<char_type>,
-    SimpleStringStorage<char_type, std::allocator<char_type> > > flex_string_t;
+  std::cout << "initial seed = " << initialSeed << "\n\n";
 
-   flex_string_t s1(L"A flex string");
-   std_string_t s2(L"A std string");
+  Compare();
 
-   assert(std::numeric_limits<char_type>::is_specialized);
-
-    assert(std::numeric_limits<std_string_t::iterator::value_type>::is_specialized);
-    s1.replace<std_string_t::iterator>(s1.begin(), s1.begin(),
-    s2.begin(),s2.end());
-    return 0;
-}
-*/
-int main()
-{
-    using namespace StringsToTest;
-
-    TestBug2536490<std::string>();
-    TestBug2536490<my_string_SimpleStorage>();
-    TestBug2536490<my_string_AllocatorStorage>();
-    TestBug2536490<my_string_MallocatorStorage>();
-    TestBug2536490<my_string_VectorStorage>();
-    TestBug2536490<my_string_SmallStringSimple>();
-    TestBug2536490<my_string_SmallStringVector>();
-    TestBug2536490<my_string_CowSimple>();
-    TestBug2536490<my_string_CowAllocator>();
-
-    srand(unsigned(time(0)));
-    Compare();
-
-    return 0;
+  return 0;
 }
