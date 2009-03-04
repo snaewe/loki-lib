@@ -116,7 +116,8 @@ Integral2 random(Integral1 low, Integral2 up)
 template<class String>
 String RandomString(size_t maxSize)
 {
-  String result(random(0, maxSize), '\0');
+  const typename String::size_type size = random(0, maxSize);
+  String result(size, '\0');
   size_t i = 0;
   for (; i != result.size(); ++i)
   {
@@ -137,7 +138,8 @@ String Num2String(Integral value)
 template<class String>
 std::list<typename String::value_type> RandomList(typename String::size_type maxSize)
 {
-  std::list<typename String::value_type> lst(random(0, maxSize));
+  const typename String::size_type size = random(0, maxSize);
+  std::list<typename String::value_type> lst(size);
   std::list<typename String::value_type>::iterator i = lst.begin();
   for (; i != lst.end(); ++i)
   {
@@ -175,7 +177,8 @@ namespace Tests
   {
     // 21.3.1
     const typename String::size_type pos = random(0, test.size());
-    String s(test, pos, random(0, test.size() - pos));
+    const typename String::size_type length = random(0, test.size() - pos);
+    String s(test, pos, length);
     return s;
   }
 
@@ -183,9 +186,8 @@ namespace Tests
   String constructor_with_cstr_and_size(String & test)
   {
     // 21.3.1
-    const typename String::size_type
-      pos = random(0, test.size()),
-      n = random(0, test.size() - pos);
+    const typename String::size_type pos = random(0, test.size());
+    const typename String::size_type n = random(0, test.size() - pos);
     String s(test.c_str() + pos, n);
     return s;
   }
@@ -203,7 +205,8 @@ namespace Tests
   String assignment(String & test)
   {
     // 21.3.1
-    String s(random(0, 1000), '\0');
+    const typename String::size_type size = random(0, 1000);
+    String s(size, '\0');
     typename String::size_type i = 0;
     for (; i != s.size(); ++i)
     {
@@ -217,7 +220,8 @@ namespace Tests
   String assignment_with_cstr(String & test)
   {
     // 21.3.1
-    String s(random(0, 1000), '\0');
+    const typename String::size_type size = random(0, 1000);
+    String s(size, '\0');
     typename String::size_type i = 0;
     for (; i != s.size(); ++i)
     {
@@ -310,21 +314,25 @@ namespace Tests
   template<class String>
   String resize(String & test)
   {
-    test.resize(random(0, test.size()), random('a', 'z'));
+    const typename String::size_type newSize = random(0, test.size());
+    const typename String::value_type value = random('a', 'z');
+    test.resize(newSize, value);
     return test;
   }
 
   template<class String>
   String resize_with_1_argument(String & test)
   {
-    test.resize(random(0, test.size()));
+    const typename String::size_type newSize = random(0, test.size());
+    test.resize(newSize);
     return test;
   }
 
   template<class String>
   String reserve(String & test)
   {
-    test.reserve(random(0, 1000));
+    const typename String::size_type reserveSize = random(0, 1000);
+    test.reserve(reserveSize);
     return test;
   }
 
@@ -359,8 +367,10 @@ namespace Tests
     // 21.3.4
     if(!test.empty())
     {
-      test[random(0, test.size() - 1)];
-      test.at(random(0, test.size() - 1));
+      const typename String::size_type index1 = random(0, test.size() - 1);
+      test += test[index1];
+      const typename String::size_type index2 = random(0, test.size() - 1);
+      test += test.at(index2);
     }
     return test;
   }
@@ -368,7 +378,8 @@ namespace Tests
   template<class String>
   String operator_plus_equal(String & test)
   {
-    test += RandomString<String>(MaxString<String>::value);
+    String str(RandomString<String>(MaxString<String>::value));
+    test += str;
     return test;
   }
 
@@ -383,7 +394,8 @@ namespace Tests
   String operator_plus_equal_with_cstr(String & test)
   {
     // 21.3.5
-    test += RandomString<String>(MaxString<String>::value).c_str();
+    String str(RandomString<String>(MaxString<String>::value));
+    test += str.c_str();
     return test;
   }
 
@@ -391,7 +403,8 @@ namespace Tests
   String operator_plus_equal_no_aliasing(String & test)
   {
     // 21.3.5
-    test += String(test.c_str() + random(0, test.size()));
+    const typename String::size_type offset = random(0, test.size());
+    test += String(test.c_str() + offset);
     return test;
   }
 
@@ -399,7 +412,8 @@ namespace Tests
   String operator_plus_equal_aliasing_cstr(String & test)
   {
     // 21.3.5
-    test += test.c_str() + random(0, test.size());
+    const typename String::size_type offset = random(0, test.size());
+    test += test.c_str() + offset;
     return test;
   }
 
@@ -415,7 +429,8 @@ namespace Tests
   String append_string(String & test)
   {
     // 21.3.5
-    test.append(RandomString<String>(MaxString<String>::value));
+    String str(RandomString<String>(MaxString<String>::value));
+    test.append(str);
     return test;
   }
 
@@ -424,7 +439,9 @@ namespace Tests
   {
     // 21.3.5
     String s(RandomString<String>(MaxString<String>::value));
-    test.append(s, random(0, s.size()), random(0, MaxString<String>::value));
+    const typename String::size_type start = random(0, s.size());
+    const typename String::size_type range = random(0, MaxString<String>::value);
+    test.append(s, start, range);
     return test;
   }
 
@@ -432,8 +449,9 @@ namespace Tests
   String append_cstr_size(String & test)
   {
     // 21.3.5
-    String s = RandomString<String>(MaxString<String>::value);
-    test.append(s.c_str(), random(0, s.size()));
+    String s(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type size = random(0, s.size());
+    test.append(s.c_str(), size);
     return test;
   }
 
@@ -441,7 +459,18 @@ namespace Tests
   String append_cstr(String & test)
   {
     // 21.3.5
-    test.append(RandomString<String>(MaxString<String>::value).c_str());
+    String str(RandomString<String>(MaxString<String>::value));
+    test.append(str.c_str());
+    return test;
+  }
+
+  template<class String>
+  String append_count_char(String & test)
+  {
+    // 21.3.5
+    const typename String::size_type count = random(0, MaxString<String>::value);
+    const typename String::value_type value = random('a', 'z');
+    test.append(count, value);
     return test;
   }
 
@@ -449,7 +478,6 @@ namespace Tests
   String append_iterators(String & test)
   {
     // 21.3.5
-    test.append(random(0, MaxString<String>::value), random('a', 'z'));
     std::list<typename String::value_type> lst(RandomList<String>(MaxString<String>::value));
     test.append(lst.begin(), lst.end());
     return test;
@@ -459,7 +487,8 @@ namespace Tests
   String push_back_char(String & test)
   {
     // 21.3.5
-    test.push_back(random('a', 'z'));
+    const typename String::value_type value = random('a', 'z');
+    test.push_back(value);
     return test;
   }
 
@@ -467,7 +496,8 @@ namespace Tests
   String assign_string(String & test)
   {
     // 21.3.5
-    test.assign(RandomString<String>(MaxString<String>::value));
+    String str(RandomString<String>(MaxString<String>::value));
+    test.assign(str);
     return test;
   }
 
@@ -475,8 +505,10 @@ namespace Tests
   String assign_string_start_size(String & test)
   {
     // 21.3.5
-    String str = RandomString<String>(MaxString<String>::value);
-    test.assign(str, random(0, str.size()), random(0, MaxString<String>::value));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type start = random(0, str.size());
+    const typename String::size_type size = random(0, MaxString<String>::value);
+    test.assign(str, start, size);
     return test;
   }
 
@@ -484,8 +516,9 @@ namespace Tests
   String assign_cstr_size(String & test)
   {
     // 21.3.5
-    String str = RandomString<String>(MaxString<String>::value);
-    test.assign(str.c_str(), random(0, str.size()));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type size = random(0, str.size());
+    test.assign(str.c_str(), size);
     return test;
   }
 
@@ -493,7 +526,8 @@ namespace Tests
   String assign_cstr(String & test)
   {
     // 21.3.5
-    test.assign(RandomString<String>(MaxString<String>::value).c_str());
+    String str(RandomString<String>(MaxString<String>::value));
+    test.assign(str.c_str());
     return test;
   }
 
@@ -501,7 +535,9 @@ namespace Tests
   String assign_number_char(String & test)
   {
     // 21.3.5
-    test.assign(random(0, MaxString<String>::value), random('a', 'z'));
+    const typename String::size_type number = random(0, MaxString<String>::value);
+    const typename String::value_type value = random('a', 'z');
+    test.assign(number, value);
     return test;
   }
 
@@ -518,7 +554,9 @@ namespace Tests
   String insert_position_string(String & test)
   {
     // 21.3.5
-    test.insert(random(0, test.size()), RandomString<String>(MaxString<String>::value));
+    const typename String::size_type position = random(0, test.size());
+    String str(RandomString<String>(MaxString<String>::value));
+    test.insert(position, str);
     return test;
   }
 
@@ -526,10 +564,11 @@ namespace Tests
   String insert_position_string_start_end(String & test)
   {
     // 21.3.5
-    String str = RandomString<String>(MaxString<String>::value);
-    test.insert(random(0, test.size()),
-      str, random(0, str.size()),
-      random(0, MaxString<String>::value));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type position = random(0, test.size());
+    const typename String::size_type start = random(0, str.size());
+    const typename String::size_type end = random(0, MaxString<String>::value);
+    test.insert(position, str, start, end);
     return test;
   }
 
@@ -537,9 +576,10 @@ namespace Tests
   String insert_position_cstr_size(String & test)
   {
     // 21.3.5
-    String str = RandomString<String>(MaxString<String>::value);
-    test.insert(random(0, test.size()),
-      str.c_str(), random(0, str.size()));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type position = random(0, test.size());
+    const typename String::size_type size = random(0, str.size());
+    test.insert(position, str.c_str(), size);
     return test;
   }
 
@@ -547,8 +587,9 @@ namespace Tests
   String insert_position_cstr(String & test)
   {
     // 21.3.5
-    test.insert(random(0, test.size()),
-      RandomString<String>(MaxString<String>::value).c_str());
+    const typename String::size_type position = random(0, test.size());
+    String str(RandomString<String>(MaxString<String>::value));
+    test.insert(position, str.c_str());
     return test;
   }
 
@@ -556,8 +597,10 @@ namespace Tests
   String insert_position_number_char(String & test)
   {
     // 21.3.5
-    test.insert(random(0, test.size()),
-      random(0, MaxString<String>::value), random('a', 'z'));
+    const typename String::size_type position = random(0, test.size());
+    const typename String::size_type number = random(0, MaxString<String>::value);
+    const typename String::value_type value = random('a', 'z');
+    test.insert(position, number, value);
     return test;
   }
 
@@ -565,8 +608,9 @@ namespace Tests
   String insert_iterator_char(String & test)
   {
     // 21.3.5
-    test.insert(test.begin() + random(0, test.size()),
-      random('a', 'z'));
+    const typename String::size_type offset = random(0, test.size());
+    const typename String::value_type value = random('a', 'z');
+    test.insert(test.begin() + offset, value);
     return test;
   }
 
@@ -575,8 +619,8 @@ namespace Tests
   {
     // 21.3.5
     std::list<typename String::value_type> lst(RandomList<String>(MaxString<String>::value));
-    test.insert(test.begin() + random(0, test.size()),
-      lst.begin(), lst.end());
+    const typename String::size_type offset = random(0, test.size());
+    test.insert(test.begin() + offset, lst.begin(), lst.end());
     return test;
   }
 
@@ -584,7 +628,9 @@ namespace Tests
   String erase_position_position(String & test)
   {
     // 21.3.5
-    test.erase(random(0, test.size()), random(0, MaxString<String>::value));
+    const typename String::size_type start = random(0, test.size());
+    const typename String::size_type end = random(0, MaxString<String>::value);
+    test.erase(start, end);
     return test;
   }
 
@@ -593,7 +639,10 @@ namespace Tests
   {
     // 21.3.5
     if(!test.empty())
-      test.erase(test.begin() + random(0, test.size()));
+    {
+      const typename String::size_type offset = random(0, test.size());
+      test.erase(test.begin() + offset);
+    }
     return test;
   }
 
@@ -601,8 +650,10 @@ namespace Tests
   String erase_iterator_iterator(String & test)
   {
     // 21.3.5
-    const typename String::iterator i = test.begin() + random(0, test.size());
-    test.erase(i, i + random(0, size_t(test.end() - i)));
+    const typename String::size_type offset = random(0, test.size());
+    const typename String::iterator i = test.begin() + offset;
+    const typename String::size_type endOffset = random(0, test.end() - i);
+    test.erase(i, i + endOffset);
     return test;
   }
 
@@ -611,7 +662,8 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(pos, random(0, test.size() - pos), String(test));
+    const typename String::size_type end = random(0, test.size() - pos);
+    test.replace(pos, end, String(test));
     return test;
   }
 
@@ -620,7 +672,8 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(pos, random(0, test.size() - pos), test);
+    const typename String::size_type end = random(0, test.size() - pos);
+    test.replace(pos, end, test);
     return test;
   }
 
@@ -629,8 +682,9 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(pos, pos + random(0, test.size() - pos),
-      RandomString<String>(MaxString<String>::value));
+    const typename String::size_type end = random(0, test.size() - pos);
+    String str(RandomString<String>(MaxString<String>::value));
+    test.replace(pos, pos + end, str);
     return test;
   }
 
@@ -638,12 +692,11 @@ namespace Tests
   String replace_start_end_selfcopy_start_end(String & test)
   {
     // 21.3.5
-    const typename String::size_type
-      pos1 = random(0, test.size()),
-      pos2 = random(0, test.size());
-    test.replace(pos1, pos1 + random(0, test.size() - pos1),
-      String(test),
-      pos2, pos2 + random(0, test.size() - pos2));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    const typename String::size_type offset1 = random(0, test.size() - pos1);
+    const typename String::size_type offset2 = random(0, test.size() - pos2);
+    test.replace(pos1, pos1 + offset1, String(test), pos2, pos2 + offset2);
     return test;
   }
 
@@ -651,11 +704,11 @@ namespace Tests
   String replace_start_end_self_start_end(String & test)
   {
     // 21.3.5
-    const typename String::size_type
-      pos1 = random(0, test.size()),
-      pos2 = random(0, test.size());
-      test.replace(pos1, pos1 + random(0, test.size() - pos1),
-        test, pos2, pos2 + random(0, test.size() - pos2));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    const typename String::size_type offset1 = random(0, test.size() - pos1);
+    const typename String::size_type offset2 = random(0, test.size() - pos2);
+    test.replace(pos1, pos1 + offset1, test, pos2, pos2 + offset2);
     return test;
   }
 
@@ -663,11 +716,12 @@ namespace Tests
   String replace_start_end_string_start_end(String & test)
   {
     // 21.3.5
+    String str(RandomString<String>(MaxString<String>::value));
     const typename String::size_type pos1 = random(0, test.size());
-    String str = RandomString<String>(MaxString<String>::value);
     const typename String::size_type pos2 = random(0, str.size());
-    test.replace(pos1, pos1 + random(0, test.size() - pos1),
-      str, pos2, pos2 + random(0, str.size() - pos2));
+    const typename String::size_type offset1 = random(0, test.size() - pos1);
+    const typename String::size_type offset2 = random(0, str.size() - pos2);
+    test.replace(pos1, pos1 + offset1, str, pos2, pos2 + offset2);
     return test;
   }
 
@@ -676,8 +730,8 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(pos, random(0, test.size() - pos),
-      String(test).c_str(), test.size());
+    const typename String::size_type pos2 = random(0, test.size() - pos);
+    test.replace(pos, pos2, String(test).c_str(), test.size());
     return test;
   }
 
@@ -686,8 +740,8 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(pos, random(0, test.size() - pos),
-      test.c_str(), test.size());
+    const typename String::size_type pos2 = random(0, test.size() - pos);
+    test.replace(pos, pos2, test.c_str(), test.size());
     return test;
   }
 
@@ -695,10 +749,10 @@ namespace Tests
   String replace_start_end_stringcstr_size(String & test)
   {
     // 21.3.5
+    String str(RandomString<String>(MaxString<String>::value));
     const typename String::size_type pos = random(0, test.size());
-    String str = RandomString<String>(MaxString<String>::value);
-    test.replace(pos, pos + random(0, test.size() - pos),
-      str.c_str(), str.size());
+    const typename String::size_type offset = random(0, test.size() - pos);
+    test.replace(pos, pos + offset, str.c_str(), str.size());
     return test;
   }
 
@@ -706,10 +760,10 @@ namespace Tests
   String replace_start_end_stringcstr(String & test)
   {
     // 21.3.5
+    String str(RandomString<String>(MaxString<String>::value));
     const typename String::size_type pos = random(0, test.size());
-    String str = RandomString<String>(MaxString<String>::value);
-    test.replace(pos, pos + random(0, test.size() - pos),
-      str.c_str());
+    const typename String::size_type offset = random(0, test.size() - pos);
+    test.replace(pos, pos + offset, str.c_str());
     return test;
   }
 
@@ -717,9 +771,11 @@ namespace Tests
   String replace_start_end_number_char(String & test)
   {
     // 21.3.5
-    const typename String::size_type pos = random(0, test.size());
-    test.replace(pos, random(0, test.size() - pos),
-      random(0, MaxString<String>::value), random('a', 'z'));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size() - pos1);
+    const typename String::size_type number = random(0, MaxString<String>::value);
+    const typename String::value_type value = random('a', 'z');
+    test.replace(pos1, pos2, number, value);
     return test;
   }
 
@@ -728,10 +784,8 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(
-      test.begin() + pos,
-      test.begin() + pos + random(0, test.size() - pos),
-      String(test));
+    const typename String::size_type offset = random(0, test.size() - pos);
+    test.replace(test.begin() + pos, test.begin() + pos + offset, String(test));
     return test;
   }
 
@@ -740,10 +794,8 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(
-      test.begin() + pos,
-      test.begin() + pos + random(0, test.size() - pos),
-      test);
+    const typename String::size_type offset = random(0, test.size() - pos);
+    test.replace(test.begin() + pos, test.begin() + pos + offset, test);
     return test;
   }
 
@@ -752,11 +804,9 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(
-      test.begin() + pos,
-      test.begin() + pos + random(0, test.size() - pos),
-      String(test).c_str(),
-      test.size() - random(0, test.size()));
+    const typename String::size_type offset = random(0, test.size() - pos);
+    const typename String::size_type size = random(0, test.size());
+    test.replace(test.begin() + pos, test.begin() + pos + offset, String(test).c_str(), test.size() - size);
     return test;
   }
 
@@ -765,11 +815,9 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(
-      test.begin() + pos,
-      test.begin() + pos + random(0, test.size() - pos),
-      test.c_str(),
-      test.size() - random(0, test.size()));
+    const typename String::size_type offset = random(0, test.size() - pos);
+    const typename String::size_type size = random(0, test.size());
+    test.replace(test.begin() + pos, test.begin() + pos + offset, test.c_str(), test.size() - size);
     return test;
   }
 
@@ -777,16 +825,12 @@ namespace Tests
   String replace_iterator_iterator_stringcstr(String & test)
   {
     // 21.3.5
-    const typename String::size_type
-      pos = random(0, test.size()),
-      n = random(0, test.size() - pos);
+    const typename String::size_type pos = random(0, test.size());
+    const typename String::size_type n = random(0, test.size() - pos);
     typename String::iterator b = test.begin();
-    const String str = RandomString<String>(MaxString<String>::value);
+    const String str(RandomString<String>(MaxString<String>::value));
     const typename String::value_type* s = str.c_str();
-    test.replace(
-      b + pos,
-      b + pos + n,
-      s);
+    test.replace(b + pos, b + pos + n, s);
     return test;
   }
 
@@ -795,10 +839,10 @@ namespace Tests
   {
     // 21.3.5
     const typename String::size_type pos = random(0, test.size());
-    test.replace(
-      test.begin() + pos,
-      test.begin() + pos + random(0, test.size() - pos),
-      random(0, MaxString<String>::value), random('a', 'z'));
+    const typename String::size_type pos2 = random(0, test.size() - pos);
+    const typename String::size_type number = random(0, MaxString<String>::value);
+    const typename String::value_type value = random('a', 'z');
+    test.replace(test.begin() + pos, test.begin() + pos + pos2, number, value);
     return test;
   }
 
@@ -806,12 +850,9 @@ namespace Tests
   String copy_pointer_size_position(String & test)
   {
     // 21.3.5
-    std::vector<typename String::value_type>
-      vec(random(1, MaxString<String>::value));
-    test.copy(
-      &vec[0],
-      vec.size(),
-      random(0, test.size()));
+    std::vector<typename String::value_type> vec(random(1, MaxString<String>::value));
+    const typename String::size_type pos = random(0, test.size());
+    test.copy(&vec[0], vec.size(), pos);
     return test;
   }
 
@@ -819,8 +860,9 @@ namespace Tests
   String member_swap(String & test)
   {
     // 21.3.5
-    RandomString<String>(MaxString<String>::value).swap(test);
-    return test;
+    String s(RandomString<String>(MaxString<String>::value));
+    s.swap(test);
+    return test + " -- " + s;
   }
 
   template<class String>
@@ -828,8 +870,33 @@ namespace Tests
   {
     // 21.3.5
     String s(RandomString<String>(MaxString<String>::value));
-    s.swap(test);
-    return s;
+    test.swap(s);
+    return test + " -- " + s;
+  }
+
+  template<class String>
+  String member_self_swap(String & test)
+  {
+    // 21.3.5
+    test.swap(test);
+    return test;
+  }
+
+  template<class String>
+  String member_selfcopy_swap(String & test)
+  {
+    // 21.3.5
+    String(test).swap(test);
+    return test;
+  }
+
+  template<class String>
+  String member_selfcopy_swap2(String & test)
+  {
+    // 21.3.5
+    String s(test);
+    test.swap(s);
+    return test + " -- " + s;
   }
 
   template<class String>
@@ -838,7 +905,7 @@ namespace Tests
     using std::swap;
     String s(RandomString<String>(MaxString<String>::value));
     swap(test, s);
-    return test;
+    return test + " -- " + s;
   }
 
   template<class String>
@@ -846,8 +913,34 @@ namespace Tests
   {
     using std::swap;
     String s(RandomString<String>(MaxString<String>::value));
+    swap(s, test);
+    return test + " -- " + s;
+  }
+
+  template<class String>
+  String swap_self(String & test)
+  {
+    using std::swap;
+    swap(test, test);
+    return test;
+  }
+
+  template<class String>
+  String swap_selfcopy(String & test)
+  {
+    using std::swap;
+    String s(test);
     swap(test, s);
-    return s;
+    return test + " -- " + s;
+  }
+
+  template<class String>
+  String swap_selfcopy2(String & test)
+  {
+    using std::swap;
+    String s(test);
+    swap(s, test);
+    return test + " -- " + s;
   }
 
   template<class String>
@@ -855,9 +948,9 @@ namespace Tests
   {
     // 21.3.6
     String result;
+    String str(RandomString<String>(MaxString<String>::value));
     result += Num2String<String>(test.c_str() == test.data()) + " -- ";
-    result += Num2String<String>(test.get_allocator() ==
-      RandomString<String>(MaxString<String>::value).get_allocator()) + " -- ";
+    result += Num2String<String>(test.get_allocator() == str.get_allocator()) + " -- ";
     return result;
   }
 
@@ -865,10 +958,11 @@ namespace Tests
   String find_string_index(String & test)
   {
     // 21.3.6
-    String str = test.substr(
-      random(0, test.size()),
-      random(0, test.size()));
-    test = Num2String<String>(test.find(str, random(0, test.size())));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    String str = test.substr(pos1, pos2);
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find(str, index));
     return test;
   }
 
@@ -876,12 +970,12 @@ namespace Tests
   String find_stringcstr_index_length(String & test)
   {
     // 21.3.6
-    String str = test.substr(
-      random(0, test.size()),
-      random(0, test.size()));
-    test = Num2String<String>(test.find(str.c_str(),
-      random(0, test.size()),
-      random(0, str.size())));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    String str = test.substr(pos1, pos2);
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, str.size());
+    test = Num2String<String>(test.find(str.c_str(), index, length));
     return test;
   }
 
@@ -889,11 +983,11 @@ namespace Tests
   String find_stringcstr_index(String & test)
   {
     // 21.3.6
-    String str = test.substr(
-      random(0, test.size()),
-      random(0, test.size()));
-    test = Num2String<String>(test.find(str.c_str(),
-      random(0, test.size())));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    String str = test.substr(pos1, pos2);
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find(str.c_str(), index));
     return test;
   }
 
@@ -901,9 +995,9 @@ namespace Tests
   String find_char_index(String & test)
   {
     // 21.3.6
-    test = Num2String<String>(test.find(
-      random('a', 'z'),
-      random(0, test.size())));
+    const typename String::value_type value = random('a', 'z');
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find(value, index));
     return test;
   }
 
@@ -993,10 +1087,11 @@ namespace Tests
   String rfind_string_index(String & test)
   {
     // 21.3.6
-    String str = test.substr(
-      random(0, test.size()),
-      random(0, test.size()));
-    test = Num2String<String>(test.rfind(str, random(0, test.size())));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    String str = test.substr(pos1, pos2);
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.rfind(str, index));
     return test;
   }
 
@@ -1004,12 +1099,12 @@ namespace Tests
   String rfind_stringcstr_index_length(String & test)
   {
     // 21.3.6
-    String str = test.substr(
-      random(0, test.size()),
-      random(0, test.size()));
-    test = Num2String<String>(test.rfind(str.c_str(),
-      random(0, test.size()),
-      random(0, str.size())));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    String str = test.substr(pos1, pos2);
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, str.size());
+    test = Num2String<String>(test.rfind(str.c_str(), index, length));
     return test;
   }
 
@@ -1017,11 +1112,11 @@ namespace Tests
   String rfind_stringcstr_index(String & test)
   {
     // 21.3.6
-    String str = test.substr(
-      random(0, test.size()),
-      random(0, test.size()));
-    test = Num2String<String>(test.rfind(str.c_str(),
-      random(0, test.size())));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    String str = test.substr(pos1, pos2);
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.rfind(str.c_str(), index));
     return test;
   }
 
@@ -1029,9 +1124,9 @@ namespace Tests
   String rfind_char_index(String & test)
   {
     // 21.3.6
-    test = Num2String<String>(test.rfind(
-      random('a', 'z'),
-      random(0, test.size())));
+    const typename String::value_type value = random('a', 'z');
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.rfind(value, index));
     return test;
   }
 
@@ -1039,9 +1134,9 @@ namespace Tests
   String find_first_of_string_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_first_of(str,
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_first_of(str, index));
     return test;
   }
 
@@ -1049,10 +1144,10 @@ namespace Tests
   String find_first_of_stringcstr_index_length(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_first_of(str.c_str(),
-      random(0, test.size()),
-      random(0, str.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, str.size());
+    test = Num2String<String>(test.find_first_of(str.c_str(), index, length));
     return test;
   }
 
@@ -1060,9 +1155,9 @@ namespace Tests
   String find_first_of_stringcstr_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_first_of(str.c_str(),
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_first_of(str.c_str(), index));
     return test;
   }
 
@@ -1070,9 +1165,9 @@ namespace Tests
   String find_first_of_char_index(String & test)
   {
     // 21.3.6
-    test = Num2String<String>(test.find_first_of(
-      random('a', 'z'),
-      random(0, test.size())));
+    const typename String::value_type value = random('a', 'z');
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_first_of(value, index));
     return test;
   }
 
@@ -1080,9 +1175,9 @@ namespace Tests
   String find_last_of_string_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_last_of(str,
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_last_of(str, index));
     return test;
   }
 
@@ -1090,10 +1185,10 @@ namespace Tests
   String find_last_of_stringcstr_index_length(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_last_of(str.c_str(),
-      random(0, test.size()),
-      random(0, str.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, str.size());
+    test = Num2String<String>(test.find_last_of(str.c_str(), index, length));
     return test;
   }
 
@@ -1101,9 +1196,9 @@ namespace Tests
   String find_last_of_stringcstr_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_last_of(str.c_str(),
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_last_of(str.c_str(), index));
     return test;
   }
 
@@ -1111,9 +1206,9 @@ namespace Tests
   String find_last_of_char_index(String & test)
   {
     // 21.3.6
-    test = Num2String<String>(test.find_last_of(
-      random('a', 'z'),
-      random(0, test.size())));
+    const typename String::value_type value = random('a', 'z');
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_last_of(value, index));
     return test;
   }
 
@@ -1121,9 +1216,9 @@ namespace Tests
   String find_first_not_of_string_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_first_not_of(str,
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_first_not_of(str, index));
     return test;
   }
 
@@ -1131,10 +1226,10 @@ namespace Tests
   String find_first_not_of_stringcstr_index_length(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_first_not_of(str.c_str(),
-      random(0, test.size()),
-      random(0, str.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, str.size());
+    test = Num2String<String>(test.find_first_not_of(str.c_str(), index, length));
     return test;
   }
 
@@ -1142,9 +1237,9 @@ namespace Tests
   String find_first_not_of_stringcstr_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_first_not_of(str.c_str(),
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_first_not_of(str.c_str(), index));
     return test;
   }
 
@@ -1152,9 +1247,9 @@ namespace Tests
   String find_first_not_of_char_index(String & test)
   {
     // 21.3.6
-    test = Num2String<String>(test.find_first_not_of(
-      random('a', 'z'),
-      random(0, test.size())));
+    const typename String::value_type value = random('a', 'z');
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_first_not_of(value, index));
     return test;
   }
 
@@ -1162,9 +1257,9 @@ namespace Tests
   String find_last_not_of_string_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_last_not_of(str,
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_last_not_of(str, index));
     return test;
   }
 
@@ -1172,10 +1267,10 @@ namespace Tests
   String find_last_not_of_stringcstr_index_length(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_last_not_of(str.c_str(),
-      random(0, test.size()),
-      random(0, str.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, str.size());
+    test = Num2String<String>(test.find_last_not_of(str.c_str(), index, length));
     return test;
   }
 
@@ -1183,9 +1278,9 @@ namespace Tests
   String find_last_not_of_stringcstr_index(String & test)
   {
     // 21.3.6
-    String str = RandomString<String>(MaxString<String>::value);
-    test = Num2String<String>(test.find_last_not_of(str.c_str(),
-      random(0, test.size())));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_last_not_of(str.c_str(), index));
     return test;
   }
 
@@ -1193,9 +1288,9 @@ namespace Tests
   String find_last_not_of_char_index(String & test)
   {
     // 21.3.6
-    test = Num2String<String>(test.find_last_not_of(
-      random('a', 'z'),
-      random(0, test.size())));
+    const typename String::value_type value = random('a', 'z');
+    const typename String::size_type index = random(0, test.size());
+    test = Num2String<String>(test.find_last_not_of(value, index));
     return test;
   }
 
@@ -1203,7 +1298,9 @@ namespace Tests
   String substr_index_length(String & test)
   {
     // 21.3.6
-    test = test.substr(random(0, test.size()), random(0, test.size()));
+    const typename String::size_type pos1 = random(0, test.size());
+    const typename String::size_type pos2 = random(0, test.size());
+    test = test.substr(pos1, pos2);
     return test;
   }
 
@@ -1220,7 +1317,8 @@ namespace Tests
   template<class String>
   String compare_string(String & test)
   {
-    int tristate = test.compare(RandomString<String>(MaxString<String>::value));
+    String str(RandomString<String>(MaxString<String>::value));
+    int tristate = test.compare(str);
     if (tristate > 0) tristate = 1;
     else if (tristate < 0) tristate = 2;
     test = Num2String<String>(tristate);
@@ -1230,10 +1328,9 @@ namespace Tests
   template<class String>
   String compare_index_length_selfcopy(String & test)
   {
-    int tristate = test.compare(
-      random(0, test.size()),
-      random(0, test.size()),
-      String(test));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, test.size());
+    int tristate = test.compare(index, length, String(test));
     if (tristate > 0) tristate = 1;
     else if (tristate < 0) tristate = 2;
     test = Num2String<String>(tristate);
@@ -1243,10 +1340,10 @@ namespace Tests
   template<class String>
   String compare_index_length_string(String & test)
   {
-    int tristate = test.compare(
-      random(0, test.size()),
-      random(0, test.size()),
-      RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, test.size());
+    String str(RandomString<String>(MaxString<String>::value));
+    int tristate = test.compare(index, length, str);
     if (tristate > 0) tristate = 1;
     else if (tristate < 0) tristate = 2;
     test = Num2String<String>(tristate);
@@ -1257,12 +1354,11 @@ namespace Tests
   String compare_index_length_selfcopy_index_length(String & test)
   {
     String str = test;
-    int tristate = test.compare(
-      random(0, test.size()),
-      random(0, test.size()),
-      str,
-      random(0, str.size()),
-      random(0, str.size()));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, test.size());
+    const typename String::size_type index2 = random(0, str.size());
+    const typename String::size_type length2 = random(0, str.size());
+    int tristate = test.compare(index, length, str, index2, length2);
     if (tristate > 0) tristate = 1;
     else if (tristate < 0) tristate = 2;
     test = Num2String<String>(tristate);
@@ -1272,13 +1368,12 @@ namespace Tests
   template<class String>
   String compare_index_length_string_index_length(String & test)
   {
-    String str = RandomString<String>(MaxString<String>::value);
-    int tristate = test.compare(
-      random(0, test.size()),
-      random(0, test.size()),
-      str,
-      random(0, str.size()),
-      random(0, str.size()));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, test.size());
+    const typename String::size_type index2 = random(0, str.size());
+    const typename String::size_type length2 = random(0, str.size());
+    int tristate = test.compare(index, length, str, index2, length2);
     if (tristate > 0) tristate = 1;
     else if (tristate < 0) tristate = 2;
     test = Num2String<String>(tristate);
@@ -1288,8 +1383,8 @@ namespace Tests
   template<class String>
   String compare_stringcstr(String & test)
   {
-    int tristate = test.compare(
-      RandomString<String>(MaxString<String>::value).c_str());
+    String str(RandomString<String>(MaxString<String>::value));
+    int tristate = test.compare(str.c_str());
     if (tristate > 0) tristate = 1;
     else if (tristate < 0) tristate = 2;
     test = Num2String<String>(tristate);
@@ -1299,12 +1394,11 @@ namespace Tests
   template<class String>
   String compare_index_length_stringcstr_length(String & test)
   {
-    String str = RandomString<String>(MaxString<String>::value);
-    int tristate = test.compare(
-      random(0, test.size()),
-      random(0, test.size()),
-      str.c_str(),
-      random(0, str.size()));
+    String str(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type index = random(0, test.size());
+    const typename String::size_type length = random(0, test.size());
+    const typename String::size_type index2 = random(0, str.size());
+    int tristate = test.compare(index, length, str.c_str(), index2);
     if (tristate > 0) tristate = 1;
     else if (tristate < 0) tristate = 2;
     test = Num2String<String>(tristate);
@@ -1314,40 +1408,45 @@ namespace Tests
   template<class String>
   String operator_plus(String & test)
   {
-    test = RandomString<String>(MaxString<String>::value) +
-      RandomString<String>(MaxString<String>::value);
+    String random1(RandomString<String>(MaxString<String>::value));
+    String random2(RandomString<String>(MaxString<String>::value));
+    test = random1 + random2;
     return test;
   }
 
   template<class String>
   String operator_plus_lhs_cstr(String & test)
   {
-    test = RandomString<String>(MaxString<String>::value).c_str() +
-      RandomString<String>(MaxString<String>::value);
+    String random1(RandomString<String>(MaxString<String>::value));
+    String random2(RandomString<String>(MaxString<String>::value));
+    test = random1.c_str() + random2;
     return test;
   }
 
   template<class String>
   String operator_plus_lhs_char(String & test)
   {
-    test = typename String::value_type(random('a', 'z')) +
-      RandomString<String>(MaxString<String>::value);
+    const typename String::value_type value = random('a', 'z');
+    String random1(RandomString<String>(MaxString<String>::value));
+    test = value + random1;
     return test;
   }
 
   template<class String>
   String operator_plus_rhs_cstr(String & test)
   {
-    test = RandomString<String>(MaxString<String>::value) +
-      RandomString<String>(MaxString<String>::value).c_str();
+    String random1(RandomString<String>(MaxString<String>::value));
+    String random2(RandomString<String>(MaxString<String>::value));
+    test = random1 + random2.c_str();
     return test;
   }
 
   template<class String>
   String operator_plus_rhs_char(String & test)
   {
-    test = RandomString<String>(MaxString<String>::value) +
-      typename String::value_type(random('a', 'z'));
+    const typename String::value_type value = random('a', 'z');
+    String random1(RandomString<String>(MaxString<String>::value));
+    test = random1 + value;
     return test;
   }
 
@@ -1396,6 +1495,7 @@ public:
     ADD_TEST(append_string_start_range);
     ADD_TEST(append_cstr_size);
     ADD_TEST(append_cstr);
+    ADD_TEST(append_count_char);
     ADD_TEST(append_iterators);
     ADD_TEST(push_back_char);
     ADD_TEST(assign_string);
@@ -1434,8 +1534,14 @@ public:
     ADD_TEST(copy_pointer_size_position);
     ADD_TEST(member_swap);
     ADD_TEST(member_swap2);
+    ADD_TEST(member_self_swap);
+    ADD_TEST(member_selfcopy_swap);
+    ADD_TEST(member_selfcopy_swap2);
     ADD_TEST(swap);
     ADD_TEST(swap2);
+    ADD_TEST(swap_self);
+    ADD_TEST(swap_selfcopy);
+    ADD_TEST(swap_selfcopy2);
     ADD_TEST(cstr_data_getallocator);
     ADD_TEST(find_string_index);
     ADD_TEST(find_stringcstr_index_length);
@@ -1612,7 +1718,7 @@ void Compare()
 
 int main()
 {
-  const time_t initialSeed(time(0));
+  const time_t initialSeed(1236182091 /*time(0)*/);
   srand(unsigned(initialSeed));
 
   std::cout << "initial seed = " << initialSeed << "\n\n";
