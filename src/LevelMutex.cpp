@@ -574,7 +574,6 @@ void LevelMutexInfo::DecrementCount( void ) volatile
 
 bool LevelMutexInfo::IsLockedByCurrentThread( void ) const volatile
 {
-    assert( IsValid() );
     LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     if ( !IsLocked() )
@@ -593,7 +592,6 @@ bool LevelMutexInfo::IsLockedByCurrentThread( void ) const volatile
 
 bool LevelMutexInfo::IsRecentLock( void ) const volatile
 {
-    assert( IsValid() );
     LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     if ( 0 == m_count )
@@ -615,7 +613,6 @@ bool LevelMutexInfo::IsRecentLock( void ) const volatile
 
 bool LevelMutexInfo::IsRecentLock( unsigned int count ) const volatile
 {
-    assert( IsValid() );
     LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     if ( 0 == count )
@@ -636,7 +633,6 @@ bool LevelMutexInfo::IsRecentLock( unsigned int count ) const volatile
 
 bool LevelMutexInfo::IsLockedByAnotherThread( void ) const volatile
 {
-    assert( IsValid() );
     LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     if ( !IsLocked() )
@@ -652,12 +648,11 @@ bool LevelMutexInfo::IsLockedByAnotherThread( void ) const volatile
 
 void LevelMutexInfo::PostLock( void ) volatile
 {
-    assert( IsValid() );
+    LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
     assert( 0 == m_count );
     assert( nullptr == m_previous );
     assert( this != s_currentMutex );
     assert( !IsLockedByCurrentThread() );
-    LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     m_count = 1;
     m_previous = s_currentMutex;
@@ -668,12 +663,11 @@ void LevelMutexInfo::PostLock( void ) volatile
 
 void LevelMutexInfo::PreUnlock( void ) volatile
 {
-    assert( IsValid() );
+    LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
     assert( 1 == m_count );
     assert( nullptr != s_currentMutex );
     assert( this == s_currentMutex );
     assert( IsLockedByCurrentThread() );
-    LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     s_currentMutex = m_previous;
     m_previous = nullptr;
@@ -684,7 +678,6 @@ void LevelMutexInfo::PreUnlock( void ) volatile
 
 MutexErrors::Type LevelMutexInfo::PreLockCheck( bool forTryLock ) volatile
 {
-    assert( IsValid() );
     LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     const unsigned int currentLevel = GetCurrentThreadsLevel();
@@ -719,7 +712,6 @@ MutexErrors::Type LevelMutexInfo::PreLockCheck( bool forTryLock ) volatile
 
 MutexErrors::Type LevelMutexInfo::PreUnlockCheck( void ) volatile
 {
-    assert( IsValid() );
     LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
     if ( 0 == m_count )
@@ -760,9 +752,9 @@ MutexErrors::Type ThrowOnBadDesignMutexError::CheckError( MutexErrors::Type erro
     unsigned int level )
 {
     if ( ( error == MutexErrors::LevelTooHigh )
-        && ( error == MutexErrors::LevelTooLow ) )
+      || ( error == MutexErrors::LevelTooLow ) )
     {
-        throw MutexException( "Error occurred using mutex.", level, error );
+        throw MutexException( "Design error! Program used mutexes in wrong order.", level, error );
     }
     return error;
 }
