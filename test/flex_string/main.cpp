@@ -205,7 +205,7 @@ namespace Tests
   String assignment(String & test)
   {
     // 21.3.1
-    const typename String::size_type size = random(0, 1000);
+    const typename String::size_type size = random(0, MaxString<String>::value);
     String s(size, '\0');
     typename String::size_type i = 0;
     for (; i != s.size(); ++i)
@@ -220,7 +220,7 @@ namespace Tests
   String assignment_with_cstr(String & test)
   {
     // 21.3.1
-    const typename String::size_type size = random(0, 1000);
+    const typename String::size_type size = random(0, MaxString<String>::value);
     String s(size, '\0');
     typename String::size_type i = 0;
     for (; i != s.size(); ++i)
@@ -331,7 +331,7 @@ namespace Tests
   template<class String>
   String reserve(String & test)
   {
-    const typename String::size_type reserveSize = random(0, 1000);
+    const typename String::size_type reserveSize = random(0, MaxString<String>::value);
     test.reserve(reserveSize);
     return test;
   }
@@ -1718,7 +1718,7 @@ void Compare()
 
 int main()
 {
-  const time_t initialSeed(1236182091 /*time(0)*/);
+  const time_t initialSeed(time(0));
   srand(unsigned(initialSeed));
 
   std::cout << "initial seed = " << initialSeed << "\n\n";
