@@ -83,6 +83,13 @@ namespace StringsToTest
     char,
     std::char_traits<char>,
     std::allocator<char>,
+    SmallStringOpt<SimpleStringStorage<char, std::allocator<char> >, 126>
+  > my_string_SmallStringSimpleBigBuffer;
+
+  typedef flex_string<
+    char,
+    std::char_traits<char>,
+    std::allocator<char>,
     SmallStringOpt<VectorStringStorage<char, std::allocator<char> >, 23>
   > my_string_SmallStringVector;
 
@@ -119,11 +126,18 @@ String RandomString(size_t maxSize)
   const typename String::size_type size = random(0, maxSize);
   String result(size, '\0');
   size_t i = 0;
-  for (; i != result.size(); ++i)
+  for (; i != size; ++i)
   {
     result[i] = random('a', 'z');
   }
   return result;
+}
+
+// Specialize this method for different String types.
+template<class String>
+String Npos()
+{
+  return "{npos}";
 }
 
 template<class String, class Integral>
@@ -133,6 +147,37 @@ String Num2String(Integral value)
   std::basic_ostringstream<CharType, std::char_traits<CharType>, std::allocator<CharType> > stream;
   stream << value;
   return stream.str().c_str();
+}
+
+template<class String>
+String Num2String(typename String::size_type value)
+{
+  if(String::npos != value)
+  {
+    typedef typename String::value_type CharType;
+    std::basic_ostringstream<CharType, std::char_traits<CharType>, std::allocator<CharType> > stream;
+    stream << value;
+    return stream.str().c_str();
+  }
+  else
+  {
+    // Not all strings will have the same value for npos.
+    // Since methods like find return npos on failure we want to represent npos in an implementation-independent manner.
+    return Npos<String>();
+  }
+}
+
+// Some comparison functions return 0 or a value greater/smaller than zero.
+// This function makes the greater/smaller than zero specification implementation-independent.
+template<class String>
+String Tristate2String(int tristate)
+{
+  if(0 == tristate)
+    return Num2String<String>(0);
+  else if(0 < tristate)
+    return Num2String<String>(1);
+  else
+    return Num2String<String>(2);
 }
 
 template<class String>
@@ -1308,10 +1353,7 @@ namespace Tests
   String compare_selfcopy(String & test)
   {
     int tristate = test.compare(String(test));
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1319,10 +1361,7 @@ namespace Tests
   {
     String str(RandomString<String>(MaxString<String>::value));
     int tristate = test.compare(str);
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1331,10 +1370,7 @@ namespace Tests
     const typename String::size_type index = random(0, test.size());
     const typename String::size_type length = random(0, test.size());
     int tristate = test.compare(index, length, String(test));
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1344,10 +1380,7 @@ namespace Tests
     const typename String::size_type length = random(0, test.size());
     String str(RandomString<String>(MaxString<String>::value));
     int tristate = test.compare(index, length, str);
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1359,10 +1392,7 @@ namespace Tests
     const typename String::size_type index2 = random(0, str.size());
     const typename String::size_type length2 = random(0, str.size());
     int tristate = test.compare(index, length, str, index2, length2);
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1374,10 +1404,7 @@ namespace Tests
     const typename String::size_type index2 = random(0, str.size());
     const typename String::size_type length2 = random(0, str.size());
     int tristate = test.compare(index, length, str, index2, length2);
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1385,10 +1412,7 @@ namespace Tests
   {
     String str(RandomString<String>(MaxString<String>::value));
     int tristate = test.compare(str.c_str());
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1399,10 +1423,7 @@ namespace Tests
     const typename String::size_type length = random(0, test.size());
     const typename String::size_type index2 = random(0, str.size());
     int tristate = test.compare(index, length, str.c_str(), index2);
-    if (tristate > 0) tristate = 1;
-    else if (tristate < 0) tristate = 2;
-    test = Num2String<String>(tristate);
-    return test;
+    return Tristate2String<String>(tristate);
   }
 
   template<class String>
@@ -1647,21 +1668,22 @@ void Compare()
     size_t count = 0;
 
     using namespace StringsToTest;
-    TestFunctions<std::string>                  testFunctions_std;
-    TestFunctions<my_string_SimpleStorage>      testFunctions_SimpleStorage;
-    TestFunctions<my_string_AllocatorStorage>   testFunctions_AllocatorStorage;
-    TestFunctions<my_string_MallocatorStorage>  testFunctions_MallocatorStorage;
-    TestFunctions<my_string_VectorStorage>      testFunctions_VectorStorage;
-    TestFunctions<my_string_SmallStringSimple>  testFunctions_SmallStringSimple;
-    TestFunctions<my_string_SmallStringVector>  testFunctions_SmallStringVector;
-    TestFunctions<my_string_CowSimple>          testFunctions_CowSimple;
-    TestFunctions<my_string_CowAllocator>       testFunctions_CowAllocator;
+    TestFunctions<std::string>                          testFunctions_std;
+    TestFunctions<my_string_SimpleStorage>              testFunctions_SimpleStorage;
+    TestFunctions<my_string_AllocatorStorage>           testFunctions_AllocatorStorage;
+    TestFunctions<my_string_MallocatorStorage>          testFunctions_MallocatorStorage;
+    TestFunctions<my_string_VectorStorage>              testFunctions_VectorStorage;
+    TestFunctions<my_string_SmallStringSimple>          testFunctions_SmallStringSimple;
+    TestFunctions<my_string_SmallStringSimpleBigBuffer> testFunctions_smallStringSimpleBigBuffer;
+    TestFunctions<my_string_SmallStringVector>          testFunctions_SmallStringVector;
+    TestFunctions<my_string_CowSimple>                  testFunctions_CowSimple;
+    TestFunctions<my_string_CowAllocator>               testFunctions_CowAllocator;
 
     for (;;)
     {
       std::cout << ++count << '\r';
 
-      const unsigned int seedForThisIteration = rand();
+      const unsigned int seedForThisIteration = count + rand();
       srand(seedForThisIteration);
 
       const std::string reference(Test<std::string>(count, testFunctions_std));
@@ -1694,6 +1716,12 @@ void Compare()
         srand(seedForThisIteration);
         const my_string_SmallStringSimple tested(Test<my_string_SmallStringSimple>(count, testFunctions_SmallStringSimple));
         checkResults(reference, tested, testFunctions_SmallStringSimple, seedForThisIteration, count);
+      }
+
+      {
+        srand(seedForThisIteration);
+        const my_string_SmallStringSimpleBigBuffer tested(Test<my_string_SmallStringSimpleBigBuffer>(count, testFunctions_smallStringSimpleBigBuffer));
+        checkResults(reference, tested, testFunctions_smallStringSimpleBigBuffer, seedForThisIteration, count);
       }
 
       {
