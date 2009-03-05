@@ -103,7 +103,7 @@ private:
         {
             // 11-17-2000: comment added: 
             //     No need to allocate (capacity + 1) to 
-            //     accomodate the terminating 0, because Data already
+            //     accommodate the terminating 0, because Data already
             //     has one one character in there
             pData_ = static_cast<Data*>(
                 malloc(sizeof(Data) + capacity * sizeof(E)));
