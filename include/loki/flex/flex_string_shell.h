@@ -896,9 +896,10 @@ public:
     
     size_type find (const value_type* s, size_type pos, size_type n) const
     {
-        if (n + pos > size())
+        const size_type size(size());
+        if (n + pos > size)
             return npos;
-        for (; pos + n <= size(); ++pos)
+        for (; pos + n <= size; ++pos)
         {
             if (traits_type::compare(data() + pos, s, n) == 0)
             {
