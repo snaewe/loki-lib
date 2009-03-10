@@ -208,10 +208,7 @@ String Num2String(typename String::size_type value)
 {
   if(String::npos != value)
   {
-    typedef typename String::value_type CharType;
-    std::basic_ostringstream<CharType, std::char_traits<CharType>, std::allocator<CharType> > stream;
-    stream << OpenCurlyString<String>() << value << CloseCurlyString<String>();
-    return stream.str().c_str();
+    return Num2String<String, typename String::size_type>(value);
   }
   else
   {
