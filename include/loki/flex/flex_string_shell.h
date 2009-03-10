@@ -47,22 +47,22 @@ public:
     //typedef std::ptrdiff_t    difference_type;
     typedef int               difference_type;
 
-    template <class U> 
+    template <class U>
     struct rebind { typedef mallocator<U> other; };
 
     mallocator() {}
     mallocator(const mallocator&) {}
-    //template <class U> 
+    //template <class U>
     //mallocator(const mallocator<U>&) {}
     ~mallocator() {}
 
     pointer address(reference x) const { return &x; }
-    const_pointer address(const_reference x) const 
-    { 
+    const_pointer address(const_reference x) const
+    {
         return x;
     }
 
-    pointer allocate(size_type n, const_pointer = 0) 
+    pointer allocate(size_type n, const_pointer = 0)
     {
         using namespace std;
         void* p = malloc(n * sizeof(T));
@@ -70,25 +70,25 @@ public:
         return static_cast<pointer>(p);
     }
 
-    void deallocate(pointer p, size_type) 
-    { 
+    void deallocate(pointer p, size_type)
+    {
         using namespace std;
-        free(p); 
+        free(p);
     }
 
-    size_type max_size() const 
-    { 
+    size_type max_size() const
+    {
         return static_cast<size_type>(-1) / sizeof(T);
     }
 
-    void construct(pointer p, const value_type& x) 
-    { 
-        new(p) value_type(x); 
+    void construct(pointer p, const value_type& x)
+    {
+        new(p) value_type(x);
     }
 
-    void destroy(pointer p) 
-    { 
-        p->~value_type(); 
+    void destroy(pointer p)
+    {
+        p->~value_type();
     }
 
 private:
@@ -101,18 +101,18 @@ template<> class mallocator<void>
   typedef void*       pointer;
   typedef const void* const_pointer;
 
-  template <class U> 
+  template <class U>
   struct rebind { typedef mallocator<U> other; };
 };
 
 template <class T>
-inline bool operator==(const mallocator<T>&, 
+inline bool operator==(const mallocator<T>&,
                        const mallocator<T>&) {
   return true;
 }
 
 template <class T>
-inline bool operator!=(const mallocator<T>&, 
+inline bool operator!=(const mallocator<T>&,
                        const mallocator<T>&) {
   return false;
 }
@@ -120,7 +120,7 @@ inline bool operator!=(const mallocator<T>&,
 template <class Allocator>
 typename Allocator::pointer Reallocate(
     Allocator& alloc,
-    typename Allocator::pointer p, 
+    typename Allocator::pointer p,
     typename Allocator::size_type oldObjCount,
     typename Allocator::size_type newObjCount,
     void*)
@@ -131,7 +131,7 @@ typename Allocator::pointer Reallocate(
 template <class Allocator>
 typename Allocator::pointer Reallocate(
     Allocator& alloc,
-    typename Allocator::pointer p, 
+    typename Allocator::pointer p,
     typename Allocator::size_type oldObjCount,
     typename Allocator::size_type newObjCount,
     mallocator<void>*)
@@ -142,8 +142,8 @@ typename Allocator::pointer Reallocate(
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template flex_string
-// a std::basic_string compatible implementation 
-// Uses a Storage policy 
+// a std::basic_string compatible implementation
+// Uses a Storage policy
 ////////////////////////////////////////////////////////////////////////////////
 
 template <typename E,
@@ -184,12 +184,12 @@ class flex_string : private Storage
     private:
         const flex_string& s_;
 #else
-        Invariant(const flex_string&) {} 
+        Invariant(const flex_string&) {}
 #endif
     private:
     Invariant& operator=(const Invariant&);
     };
-    
+
 public:
     // types
     typedef T traits_type;
@@ -197,12 +197,12 @@ public:
     typedef A allocator_type;
     typedef typename A::size_type size_type;
     typedef typename A::difference_type difference_type;
-    
+
     typedef typename Storage::reference reference;
     typedef typename A::const_reference const_reference;
     typedef typename A::pointer pointer;
     typedef typename A::const_pointer const_pointer;
-    
+
     typedef typename Storage::iterator iterator;
     typedef typename Storage::const_iterator const_iterator;
     typedef std::reverse_iterator<iterator
@@ -212,7 +212,7 @@ public:
     > reverse_iterator;
     typedef std::reverse_iterator<const_iterator
 #ifdef NO_ITERATOR_TRAITS
-    , const value_type 
+    , const value_type
 #endif
     > const_reverse_iterator;
 
@@ -225,32 +225,32 @@ private:
     { return lhs > rhs ? lhs : rhs; }
     static void Procust(size_type& n, size_type nmax)
     { if (n > nmax) n = nmax; }
-    
-public:    
+
+public:
     // 21.3.1 construct/copy/destroy
     explicit flex_string(const A& a = A())
-    : Storage(a) 
+    : Storage(a)
     {}
-    
+
     flex_string(const flex_string& str)
-    : Storage(str) 
+    : Storage(str)
     {}
-    
-    flex_string(const flex_string& str, size_type pos, 
+
+    flex_string(const flex_string& str, size_type pos,
         size_type n = npos, const A& a = A())
-    : Storage(a) 
+    : Storage(a)
     {
         assign(str, pos, n);
     }
-    
+
     flex_string(const value_type* s, const A& a = A())
     : Storage(s, traits_type::length(s), a)
     {}
-    
+
     flex_string(const value_type* s, size_type n, const A& a = A())
     : Storage(s, n, a)
     {}
-    
+
     flex_string(size_type n, value_type c, const A& a = A())
     : Storage(n, c, a)
     {}
@@ -264,14 +264,14 @@ public:
 
     ~flex_string()
     {}
-    
+
     flex_string& operator=(const flex_string& str)
     {
         Storage& s = *this;
         s = str;
         return *this;
-    }   
-    
+    }
+
     flex_string& operator=(const value_type* s)
     {
         assign(s);
@@ -283,67 +283,67 @@ public:
         assign(1, c);
         return *this;
     }
-    
+
     // 21.3.2 iterators:
     iterator begin()
     { return Storage::begin(); }
-    
+
     const_iterator begin() const
     { return Storage::begin(); }
-    
+
     iterator end()
     { return Storage::end(); }
-    
+
     const_iterator end() const
     { return Storage::end(); }
 
     reverse_iterator rbegin()
     { return reverse_iterator(end()); }
-    
+
     const_reverse_iterator rbegin() const
     { return const_reverse_iterator(end()); }
-    
+
     reverse_iterator rend()
     { return reverse_iterator(begin()); }
-    
+
     const_reverse_iterator rend() const
     { return const_reverse_iterator(begin()); }
-    
+
     // 21.3.3 capacity:
     size_type size() const
     { return Storage::size(); }
-    
+
     size_type length() const
     { return size(); }
-    
+
     size_type max_size() const
     { return Storage::max_size(); }
 
     void resize(size_type n, value_type c)
     { Storage::resize(n, c); }
-    
+
     void resize(size_type n)
     { resize(n, value_type()); }
-    
+
     size_type capacity() const
     { return Storage::capacity(); }
-    
+
     void reserve(size_type res_arg = 0)
     {
         Enforce(res_arg <= max_size(), static_cast<std::length_error*>(0), "");
         Storage::reserve(res_arg);
     }
-    
+
     void clear()
-    { resize(0); } 
-    
+    { resize(0); }
+
     bool empty() const
     { return size() == 0; }
-    
+
     // 21.3.4 element access:
     const_reference operator[](size_type pos) const
     { return *(c_str() + pos); }
-    
+
     reference operator[](size_type pos)
     { return *(begin() + pos); }
 
@@ -352,42 +352,42 @@ public:
         Enforce(n <= size(), static_cast<std::out_of_range*>(0), "");
         return (*this)[n];
     }
-    
+
     reference at(size_type n)
     {
         Enforce(n < size(), static_cast<std::out_of_range*>(0), "");
         return (*this)[n];
     }
-    
+
     // 21.3.5 modifiers:
     flex_string& operator+=(const flex_string& str)
     { return append(str); }
-    
+
     flex_string& operator+=(const value_type* s)
     { return append(s); }
 
     flex_string& operator+=(const value_type c)
-    { 
+    {
         push_back(c);
         return *this;
     }
-    
+
     flex_string& append(const flex_string& str)
     { return append(str.data(), str.length()); }
-    
+
     flex_string& append(const flex_string& str, const size_type pos,
         size_type n)
-    { 
+    {
         const size_type sz = str.size();
         Enforce(pos <= sz, static_cast<std::out_of_range*>(0), "");
         Procust(n, sz - pos);
-        return append(str.data() + pos, n); 
+        return append(str.data() + pos, n);
     }
-    
+
     flex_string& append(const value_type* s, const size_type n)
-    { 
-        Invariant checker(*this); 
-        (void) checker; 
+    {
+        Invariant checker(*this);
+        (void) checker;
         static std::less_equal<const value_type*> le;
         if (le(&*begin(), s) && le(s, &*end())) // aliasing
         {
@@ -395,28 +395,28 @@ public:
             Storage::reserve(size() + n);
             s = &*begin() + offset;
         }
-        Storage::append(s, s + n); 
+        Storage::append(s, s + n);
         return *this;
     }
-    
+
     flex_string& append(const value_type* s)
     { return append(s, traits_type::length(s)); }
-    
+
     flex_string& append(size_type n, value_type c)
-    { 
+    {
         resize(size() + n, c);
         return *this;
     }
-    
+
     template<class InputIterator>
     flex_string& append(InputIterator first, InputIterator last)
     {
         insert(end(), first, last);
         return *this;
     }
-    
+
     void push_back(const value_type c) // primitive
-    { 
+    {
         const size_type cap = capacity();
         if (size() == cap)
         {
@@ -426,24 +426,24 @@ public:
     }
 
     flex_string& assign(const flex_string& str)
-    { 
+    {
         if (&str == this) return *this;
         return assign(str.data(), str.size());
     }
-    
+
     flex_string& assign(const flex_string& str, const size_type pos,
         size_type n)
-    { 
+    {
         const size_type sz = str.size();
         Enforce(pos <= sz, static_cast<std::out_of_range*>(0), "");
         Procust(n, sz - pos);
         return assign(str.data() + pos, n);
     }
-    
+
     flex_string& assign(const value_type* s, const size_type n)
     {
-        Invariant checker(*this); 
-        (void) checker; 
+        Invariant checker(*this);
+        (void) checker;
         if (size() >= n)
         {
             std::copy(s, s + n, begin());
@@ -457,57 +457,57 @@ public:
         }
         return *this;
     }
-    
+
     flex_string& assign(const value_type* s)
     { return assign(s, traits_type::length(s)); }
-    
+
     template <class ItOrLength, class ItOrChar>
     flex_string& assign(ItOrLength first_or_n, ItOrChar last_or_c)
     { return replace(begin(), end(), first_or_n, last_or_c); }
-    
+
     flex_string& insert(size_type pos1, const flex_string& str)
     { return insert(pos1, str.data(), str.size()); }
-    
+
     flex_string& insert(size_type pos1, const flex_string& str,
         size_type pos2, size_type n)
-    { 
+    {
         Enforce(pos2 <= str.length(), static_cast<std::out_of_range*>(0), "");
         Procust(n, str.length() - pos2);
-        return insert(pos1, str.data() + pos2, n); 
+        return insert(pos1, str.data() + pos2, n);
     }
-    
+
     flex_string& insert(size_type pos, const value_type* s, size_type n)
-    { 
+    {
         Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
-        insert(begin() + pos, s, s + n); 
+        insert(begin() + pos, s, s + n);
         return *this;
     }
-    
+
     flex_string& insert(size_type pos, const value_type* s)
     { return insert(pos, s, traits_type::length(s)); }
-    
+
     flex_string& insert(size_type pos, size_type n, value_type c)
     {
         Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
         insert(begin() + pos, n, c);
         return *this;
     }
-    
-    iterator insert(const iterator p, const value_type c) 
+
+    iterator insert(const iterator p, const value_type c)
     {
         const size_type pos = p - begin();
         insert(p, 1, c);
         return begin() + pos;
     }
-    
+
 private:
     template <int i> class Selector {};
 
-    flex_string& InsertImplDiscr(iterator p, 
+    flex_string& InsertImplDiscr(iterator p,
         size_type n, value_type c, Selector<1>)
-    { 
-        Invariant checker(*this); 
-        (void) checker; 
+    {
+        Invariant checker(*this);
+        (void) checker;
         assert(p >= begin() && p <= end());
         if (capacity() - size() < n)
         {
@@ -521,8 +521,8 @@ private:
         {
             append(oldEnd - n, oldEnd);
             //std::copy(
-            //    reverse_iterator(oldEnd - n), 
-            //    reverse_iterator(p), 
+            //    reverse_iterator(oldEnd - n),
+            //    reverse_iterator(p),
             //    reverse_iterator(oldEnd));
             flex_string_details::pod_move(&*p, &*oldEnd - n, &*p + n);
             std::fill(p, p + n, c);
@@ -534,13 +534,13 @@ private:
             std::fill(p, oldEnd, c);
         }
         return *this;
-    }    
+    }
 
     template<class InputIterator>
     flex_string& InsertImplDiscr(iterator i,
         InputIterator b, InputIterator e, Selector<0>)
-    { 
-        InsertImpl(i, b, e, 
+    {
+        InsertImpl(i, b, e,
             typename std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
@@ -548,22 +548,24 @@ private:
     template <class FwdIterator>
     void InsertImpl(iterator i,
         FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
-    { 
-        Invariant checker(*this); 
+    {
+        // TODO: there is a bug in this method when the range to insert is inside the current range. See bug #2679853.
+
+        Invariant checker(*this);
         (void) checker;
         const size_type pos = i - begin();
-        const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
+        const typename std::iterator_traits<FwdIterator>::difference_type n2 =
             std::distance(s1, s2);
         assert(n2 >= 0);
         using namespace flex_string_details;
         assert(pos <= size());
 
-        const typename std::iterator_traits<FwdIterator>::difference_type maxn2 = 
+        const typename std::iterator_traits<FwdIterator>::difference_type maxn2 =
             capacity() - size();
         if (maxn2 < n2)
         {
             // realloc the string
-            static const std::less_equal<const value_type*> le = 
+            static const std::less_equal<const value_type*> le =
                 std::less_equal<const value_type*>();
             assert(!(le(&*begin(), &*s1) && le(&*s1, &*end())));
             reserve(size() + n2);
@@ -577,7 +579,7 @@ private:
             const iterator tailBegin = end() - n2;
             Storage::append(tailBegin, tailBegin + n2);
             //std::copy(i, tailBegin, i + n2);
-            std::copy(reverse_iterator(tailBegin), reverse_iterator(i), 
+            std::copy(reverse_iterator(tailBegin), reverse_iterator(i),
                 reverse_iterator(tailBegin + n2));
             std::copy(s1, s2, i);
         }
@@ -596,7 +598,7 @@ private:
     template <class InputIterator>
     void InsertImpl(iterator i1, iterator i2,
         InputIterator b, InputIterator e, std::input_iterator_tag)
-    { 
+    {
         flex_string temp(begin(), i1);
         for (; b != e; ++b)
         {
@@ -609,14 +611,14 @@ private:
 public:
     template <class ItOrLength, class ItOrChar>
     void insert(iterator p, ItOrLength first_or_n, ItOrChar last_or_c)
-    { 
+    {
         Selector<std::numeric_limits<ItOrLength>::is_specialized> sel;
         InsertImplDiscr(p, first_or_n, last_or_c, sel);
     }
-    
+
     flex_string& erase(size_type pos = 0, size_type n = npos)
-    { 
-        Invariant checker(*this); 
+    {
+        Invariant checker(*this);
         (void) checker;
         Enforce(pos <= length(), static_cast<std::out_of_range*>(0), "");
         Procust(n, length() - pos);
@@ -624,14 +626,14 @@ public:
         resize(length() - n);
         return *this;
     }
-    
+
     iterator erase(iterator position)
     {
         const size_type pos(position - begin());
         erase(pos, 1);
         return begin() + pos;
     }
-    
+
     iterator erase(iterator first, iterator last)
     {
         const size_type pos(first - begin());
@@ -642,25 +644,25 @@ public:
     // Replaces at most n1 chars of *this, starting with pos1 with the content of str
     flex_string& replace(size_type pos1, size_type n1, const flex_string& str)
     { return replace(pos1, n1, str.data(), str.size()); }
-    
+
     // Replaces at most n1 chars of *this, starting with pos1,
     // with at most n2 chars of str starting with pos2
     flex_string& replace(size_type pos1, size_type n1, const flex_string& str,
         size_type pos2, size_type n2)
     {
         Enforce(pos2 <= str.length(), static_cast<std::out_of_range*>(0), "");
-        return replace(pos1, n1, str.data() + pos2, 
+        return replace(pos1, n1, str.data() + pos2,
             Min(n2, str.size() - pos2));
     }
-    
+
 /*
     // Replaces at most n1 chars of *this, starting with pos,
     // with at most n2 chars of str.
     // str must have at least n2 chars.
-    flex_string& replace(const size_type pos, size_type n1, 
+    flex_string& replace(const size_type pos, size_type n1,
         const value_type* s1, const size_type n2)
     {
-        Invariant checker(*this); 
+        Invariant checker(*this);
         (void) checker;
         Enforce(pos <= size(), (std::out_of_range*)0, "");
         Procust(n1, size() - pos);
@@ -735,43 +737,43 @@ public:
     // Replaces at most n1 chars of *this, starting with pos, with chars from s
     flex_string& replace(size_type pos, size_type n1, const value_type* s)
     { return replace(pos, n1, s, traits_type::length(s)); }
-    
+
     // Replaces at most n1 chars of *this, starting with pos, with n2 occurences of c
     // consolidated with
     // Replaces at most n1 chars of *this, starting with pos,
     // with at most n2 chars of str.
     // str must have at least n2 chars.
     template <class StrOrLength, class NumOrChar>
-    flex_string& replace(size_type pos, size_type n1, 
+    flex_string& replace(size_type pos, size_type n1,
         StrOrLength s_or_n2, NumOrChar n_or_c)
     {
-        Invariant checker(*this); 
+        Invariant checker(*this);
         (void) checker;
         Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
         Procust(n1, length() - pos);
         const iterator b = begin() + pos;
         return replace(b, b + n1, s_or_n2, n_or_c);
     }
-        
+
     flex_string& replace(iterator i1, iterator i2, const flex_string& str)
     { return replace(i1, i2, str.data(), str.length()); }
-    
+
     flex_string& replace(iterator i1, iterator i2, const value_type* s)
     { return replace(i1, i2, s, traits_type::length(s)); }
-    
+
 private:
-    flex_string& ReplaceImplDiscr(iterator i1, iterator i2, 
+    flex_string& ReplaceImplDiscr(iterator i1, iterator i2,
         const value_type* s, size_type n, Selector<2>)
-    { 
+    {
         assert(i1 <= i2);
         assert(begin() <= i1 && i1 <= end());
         assert(begin() <= i2 && i2 <= end());
-        return replace(i1, i2, s, s + n); 
+        return replace(i1, i2, s, s + n);
     }
-    
+
     flex_string& ReplaceImplDiscr(iterator i1, iterator i2,
         size_type n2, value_type c, Selector<1>)
-    { 
+    {
         const size_type n1 = i2 - i1;
         if (n1 > n2)
         {
@@ -784,13 +786,13 @@ private:
             insert(i2, n2 - n1, c);
         }
         return *this;
-    }    
+    }
 
     template <class InputIterator>
     flex_string& ReplaceImplDiscr(iterator i1, iterator i2,
         InputIterator b, InputIterator e, Selector<0>)
-    { 
-        ReplaceImpl(i1, i2, b, e, 
+    {
+        ReplaceImpl(i1, i2, b, e,
             typename std::iterator_traits<InputIterator>::iterator_category());
         return *this;
     }
@@ -798,14 +800,14 @@ private:
     template <class FwdIterator>
     void ReplaceImpl(iterator i1, iterator i2,
         FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
-    { 
-        Invariant checker(*this); 
+    {
+        Invariant checker(*this);
         (void) checker;
-        const typename std::iterator_traits<iterator>::difference_type n1 = 
+        const typename std::iterator_traits<iterator>::difference_type n1 =
             i2 - i1;
         assert(n1 >= 0);
 
-        const typename std::iterator_traits<FwdIterator>::difference_type n2 = 
+        const typename std::iterator_traits<FwdIterator>::difference_type n2 =
             std::distance(s1, s2);
         assert(n2 >= 0);
 
@@ -813,7 +815,7 @@ private:
         if(0 != n2)
         {
           // Handle aliased replace
-          static const std::less_equal<const value_type*> le = 
+          static const std::less_equal<const value_type*> le =
               std::less_equal<const value_type*>();
           const bool aliased = le(&*begin(), &*s1) && le(&*s1, &*end());
           if (aliased /* && capacity() < size() - n1 + n2 */)
@@ -855,45 +857,45 @@ public:
     template <class T1, class T2>
     flex_string& replace(iterator i1, iterator i2,
         T1 first_or_n_or_s, T2 last_or_c_or_n)
-    { 
-        const bool 
+    {
+        const bool
             num1 = std::numeric_limits<T1>::is_specialized,
             num2 = std::numeric_limits<T2>::is_specialized;
-        return ReplaceImplDiscr(i1, i2, first_or_n_or_s, last_or_c_or_n, 
-            Selector<num1 ? (num2 ? 1 : -1) : (num2 ? 2 : 0)>()); 
+        return ReplaceImplDiscr(i1, i2, first_or_n_or_s, last_or_c_or_n,
+            Selector<num1 ? (num2 ? 1 : -1) : (num2 ? 2 : 0)>());
     }
-       
+
     size_type copy(value_type* s, size_type n, size_type pos = 0) const
     {
         Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
         Procust(n, size() - pos);
-        
+
         flex_string_details::pod_copy(
             data() + pos,
             data() + pos + n,
             s);
         return n;
     }
-    
+
     void swap(flex_string& rhs)
     {
         Storage& srhs = rhs;
         this->Storage::swap(srhs);
     }
-    
+
     // 21.3.6 string operations:
     const value_type* c_str() const
     { return Storage::c_str(); }
-    
+
     const value_type* data() const
     { return Storage::data(); }
-    
+
     allocator_type get_allocator() const
     { return Storage::get_allocator(); }
-    
+
     size_type find(const flex_string& str, size_type pos = 0) const
     { return find(str.data(), pos, str.length()); }
-    
+
     size_type find (const value_type* s, size_type pos, size_type n) const
     {
         const size_type size(size());
@@ -908,16 +910,16 @@ public:
         }
         return npos;
     }
-    
+
     size_type find (const value_type* s, size_type pos = 0) const
     { return find(s, pos, traits_type::length(s)); }
 
     size_type find (value_type c, size_type pos = 0) const
     { return find(&c, pos, 1); }
-    
+
     size_type rfind(const flex_string& str, size_type pos = npos) const
     { return rfind(str.data(), pos, str.length()); }
-    
+
     size_type rfind(const value_type* s, size_type pos, size_type n) const
     {
         if (n > length()) return npos;
@@ -927,7 +929,7 @@ public:
         const_iterator i(begin() + pos);
         for (; ; --i)
         {
-            if (traits_type::eq(*i, *s) 
+            if (traits_type::eq(*i, *s)
                 && traits_type::compare(&*i, s, n) == 0)
             {
                 return i - begin();
@@ -942,11 +944,11 @@ public:
 
     size_type rfind(value_type c, size_type pos = npos) const
     { return rfind(&c, pos, 1); }
-    
+
     size_type find_first_of(const flex_string& str, size_type pos = 0) const
     { return find_first_of(str.data(), pos, str.length()); }
-    
-    size_type find_first_of(const value_type* s, 
+
+    size_type find_first_of(const value_type* s,
         size_type pos, size_type n) const
     {
         if (pos > length() || n == 0) return npos;
@@ -961,18 +963,18 @@ public:
         }
         return npos;
     }
-        
+
     size_type find_first_of(const value_type* s, size_type pos = 0) const
     { return find_first_of(s, pos, traits_type::length(s)); }
-    
+
     size_type find_first_of(value_type c, size_type pos = 0) const
     { return find_first_of(&c, pos, 1); }
-    
+
     size_type find_last_of (const flex_string& str,
         size_type pos = npos) const
     { return find_last_of(str.data(), pos, str.length()); }
-    
-    size_type find_last_of (const value_type* s, size_type pos, 
+
+    size_type find_last_of (const value_type* s, size_type pos,
         size_type n) const
     {
         if (!empty() && n > 0)
@@ -991,23 +993,23 @@ public:
         return npos;
     }
 
-    size_type find_last_of (const value_type* s, 
+    size_type find_last_of (const value_type* s,
         size_type pos = npos) const
     { return find_last_of(s, pos, traits_type::length(s)); }
 
     size_type find_last_of (value_type c, size_type pos = npos) const
     { return find_last_of(&c, pos, 1); }
-    
+
     size_type find_first_not_of(const flex_string& str,
         size_type pos = 0) const
     { return find_first_not_of(str.data(), pos, str.size()); }
-    
+
     size_type find_first_not_of(const value_type* s, size_type pos,
         size_type n) const
     {
         if (pos < length())
         {
-            const_iterator 
+            const_iterator
                 i(begin() + pos),
                 finish(end());
             for (; i != finish; ++i)
@@ -1020,18 +1022,18 @@ public:
         }
         return npos;
     }
-    
-    size_type find_first_not_of(const value_type* s, 
+
+    size_type find_first_not_of(const value_type* s,
         size_type pos = 0) const
     { return find_first_not_of(s, pos, traits_type::length(s)); }
-        
+
     size_type find_first_not_of(value_type c, size_type pos = 0) const
     { return find_first_not_of(&c, pos, 1); }
-    
+
     size_type find_last_not_of(const flex_string& str,
         size_type pos = npos) const
     { return find_last_not_of(str.data(), pos, str.length()); }
-    
+
     size_type find_last_not_of(const value_type* s, size_type pos,
         size_type n) const
     {
@@ -1051,13 +1053,13 @@ public:
         return npos;
     }
 
-    size_type find_last_not_of(const value_type* s, 
+    size_type find_last_not_of(const value_type* s,
         size_type pos = npos) const
     { return find_last_not_of(s, pos, traits_type::length(s)); }
-    
+
     size_type find_last_not_of (value_type c, size_type pos = npos) const
     { return find_last_not_of(&c, pos, 1); }
-    
+
     flex_string substr(size_type pos = 0, size_type n = npos) const
     {
         Enforce(pos <= size(), static_cast<std::out_of_range*>(0), "");
@@ -1065,16 +1067,16 @@ public:
     }
 
     int compare(const flex_string& str) const
-    { 
+    {
         // FIX due to Goncalo N M de Carvalho July 18, 2005
         return compare(0, size(), str);
     }
-    
+
     int compare(size_type pos1, size_type n1,
         const flex_string& str) const
     { return compare(pos1, n1, str.data(), str.size()); }
-    
-    // FIX to compare: added the TC 
+
+    // FIX to compare: added the TC
     // (http://www.comeaucomputing.com/iso/lwg-defects.html number 5)
     // Thanks to Caleb Epstein for the fix
 
@@ -1083,7 +1085,7 @@ public:
     {
         return compare(pos1, n1, s, traits_type::length(s));
     }
-    
+
     int compare(size_type pos1, size_type n1,
         const value_type* s, size_type n2) const
     {
@@ -1093,7 +1095,7 @@ public:
         const int r = traits_type::compare(pos1 + data(), s, Min(n1, n2));
         return r != 0 ? r : n1 > n2 ? 1 : n1 < n2 ? -1 : 0;
     }
-    
+
     int compare(size_type pos1, size_type n1,
         const flex_string& str,
         size_type pos2, size_type n2) const
@@ -1115,7 +1117,7 @@ public:
 
 // non-member functions
 template <typename E, class T, class A, class S>
-flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs, 
+flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs,
     const flex_string<E, T, A, S>& rhs)
 {
     flex_string<E, T, A, S> result;
@@ -1125,11 +1127,11 @@ flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs,
 }
 
 template <typename E, class T, class A, class S>
-flex_string<E, T, A, S> operator+(const typename flex_string<E, T, A, S>::value_type* lhs, 
+flex_string<E, T, A, S> operator+(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 {
     flex_string<E, T, A, S> result;
-    const typename flex_string<E, T, A, S>::size_type len = 
+    const typename flex_string<E, T, A, S>::size_type len =
         flex_string<E, T, A, S>::traits_type::length(lhs);
     result.reserve(len + rhs.size());
     result.append(lhs, len).append(rhs);
@@ -1138,7 +1140,7 @@ flex_string<E, T, A, S> operator+(const typename flex_string<E, T, A, S>::value_
 
 template <typename E, class T, class A, class S>
 flex_string<E, T, A, S> operator+(
-    typename flex_string<E, T, A, S>::value_type lhs, 
+    typename flex_string<E, T, A, S>::value_type lhs,
     const flex_string<E, T, A, S>& rhs)
 {
     flex_string<E, T, A, S> result;
@@ -1149,7 +1151,7 @@ flex_string<E, T, A, S> operator+(
 }
 
 template <typename E, class T, class A, class S>
-flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs, 
+flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs,
     const typename flex_string<E, T, A, S>::value_type* rhs)
 {
     typedef typename flex_string<E, T, A, S>::size_type size_type;
@@ -1163,7 +1165,7 @@ flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs,
 }
 
 template <typename E, class T, class A, class S>
-flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs, 
+flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs,
     typename flex_string<E, T, A, S>::value_type rhs)
 {
     flex_string<E, T, A, S> result;
@@ -1174,92 +1176,92 @@ flex_string<E, T, A, S> operator+(const flex_string<E, T, A, S>& lhs,
 }
 
 template <typename E, class T, class A, class S>
-bool operator==(const flex_string<E, T, A, S>& lhs, 
+bool operator==(const flex_string<E, T, A, S>& lhs,
     const flex_string<E, T, A, S>& rhs)
 { return lhs.compare(rhs) == 0; }
 
 template <typename E, class T, class A, class S>
-bool operator==(const typename flex_string<E, T, A, S>::value_type* lhs, 
+bool operator==(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 { return rhs == lhs; }
 
 template <typename E, class T, class A, class S>
-bool operator==(const flex_string<E, T, A, S>& lhs, 
+bool operator==(const flex_string<E, T, A, S>& lhs,
     const typename flex_string<E, T, A, S>::value_type* rhs)
 { return lhs.compare(rhs) == 0; }
 
 template <typename E, class T, class A, class S>
-bool operator!=(const flex_string<E, T, A, S>& lhs, 
+bool operator!=(const flex_string<E, T, A, S>& lhs,
     const flex_string<E, T, A, S>& rhs)
 { return !(lhs == rhs); }
 
 template <typename E, class T, class A, class S>
-bool operator!=(const typename flex_string<E, T, A, S>::value_type* lhs, 
+bool operator!=(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 { return !(lhs == rhs); }
 
 template <typename E, class T, class A, class S>
-bool operator!=(const flex_string<E, T, A, S>& lhs, 
+bool operator!=(const flex_string<E, T, A, S>& lhs,
     const typename flex_string<E, T, A, S>::value_type* rhs)
 { return !(lhs == rhs); }
 
 template <typename E, class T, class A, class S>
-bool operator<(const flex_string<E, T, A, S>& lhs, 
+bool operator<(const flex_string<E, T, A, S>& lhs,
     const flex_string<E, T, A, S>& rhs)
 { return lhs.compare(rhs) < 0; }
 
 template <typename E, class T, class A, class S>
-bool operator<(const flex_string<E, T, A, S>& lhs, 
+bool operator<(const flex_string<E, T, A, S>& lhs,
     const typename flex_string<E, T, A, S>::value_type* rhs)
 { return lhs.compare(rhs) < 0; }
 
 template <typename E, class T, class A, class S>
-bool operator<(const typename flex_string<E, T, A, S>::value_type* lhs, 
+bool operator<(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 { return rhs.compare(lhs) > 0; }
 
 template <typename E, class T, class A, class S>
-bool operator>(const flex_string<E, T, A, S>& lhs, 
+bool operator>(const flex_string<E, T, A, S>& lhs,
     const flex_string<E, T, A, S>& rhs)
 { return rhs < lhs; }
 
 template <typename E, class T, class A, class S>
-bool operator>(const flex_string<E, T, A, S>& lhs, 
+bool operator>(const flex_string<E, T, A, S>& lhs,
     const typename flex_string<E, T, A, S>::value_type* rhs)
 { return rhs < lhs; }
 
 template <typename E, class T, class A, class S>
-bool operator>(const typename flex_string<E, T, A, S>::value_type* lhs, 
+bool operator>(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 { return rhs < lhs; }
 
 template <typename E, class T, class A, class S>
-bool operator<=(const flex_string<E, T, A, S>& lhs, 
+bool operator<=(const flex_string<E, T, A, S>& lhs,
     const flex_string<E, T, A, S>& rhs)
 { return !(rhs < lhs); }
 
 template <typename E, class T, class A, class S>
-bool operator<=(const flex_string<E, T, A, S>& lhs, 
+bool operator<=(const flex_string<E, T, A, S>& lhs,
     const typename flex_string<E, T, A, S>::value_type* rhs)
 { return !(rhs < lhs); }
 
 template <typename E, class T, class A, class S>
-bool operator<=(const typename flex_string<E, T, A, S>::value_type* lhs, 
+bool operator<=(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 { return !(rhs < lhs); }
 
 template <typename E, class T, class A, class S>
-bool operator>=(const flex_string<E, T, A, S>& lhs, 
+bool operator>=(const flex_string<E, T, A, S>& lhs,
     const flex_string<E, T, A, S>& rhs)
 { return !(lhs < rhs); }
 
 template <typename E, class T, class A, class S>
-bool operator>=(const flex_string<E, T, A, S>& lhs, 
+bool operator>=(const flex_string<E, T, A, S>& lhs,
     const typename flex_string<E, T, A, S>::value_type* rhs)
 { return !(lhs < rhs); }
 
 template <typename E, class T, class A, class S>
-bool operator>=(const typename flex_string<E, T, A, S>::value_type* lhs, 
+bool operator>=(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 { return !(lhs < rhs); }
 
@@ -1267,10 +1269,10 @@ bool operator>=(const typename flex_string<E, T, A, S>::value_type* lhs,
 //void swap(flex_string<E, T, A, S>& lhs, flex_string<E, T, A, S>& rhs);    // to do
 
 template <typename E, class T, class A, class S>
-std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
+std::basic_istream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 operator>>(
-    std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
+    std::basic_istream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>& is,
     flex_string<E, T, A, S>& str);
 
@@ -1278,7 +1280,7 @@ template <typename E, class T, class A, class S>
 std::basic_ostream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 operator<<(
-    std::basic_ostream<typename flex_string<E, T, A, S>::value_type, 
+    std::basic_ostream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>& os,
     const flex_string<E, T, A, S>& str)
 { return os << str.c_str(); }
@@ -1287,7 +1289,7 @@ template <typename E, class T, class A, class S>
 std::basic_istream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 getline(
-    std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
+    std::basic_istream<typename flex_string<E, T, A, S>::value_type,
         typename flex_string<E, T, A, S>::traits_type>& is,
     flex_string<E, T, A, S>& str,
     typename flex_string<E, T, A, S>::value_type delim)
@@ -1309,7 +1311,7 @@ getline(
       else {
         ++nread;
         typename flex_string<E, T, A, S>::value_type c = flex_string<E, T, A, S>::traits_type::to_char_type(c1);
-        if (!flex_string<E, T, A, S>::traits_type::eq(c, delim)) 
+        if (!flex_string<E, T, A, S>::traits_type::eq(c, delim))
           str.push_back(c);
         else
           break;              // Character is extracted but not appended.
@@ -1323,10 +1325,10 @@ getline(
 }
 
 template <typename E, class T, class A, class S>
-std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
+std::basic_istream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>&
 getline(
-    std::basic_istream<typename flex_string<E, T, A, S>::value_type, 
+    std::basic_istream<typename flex_string<E, T, A, S>::value_type,
         typename flex_string<E, T, A, S>::traits_type>& is,
     flex_string<E, T, A, S>& str)
 {
