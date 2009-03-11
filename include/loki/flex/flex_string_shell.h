@@ -388,8 +388,7 @@ public:
     {
         Invariant checker(*this);
         (void) checker;
-        static std::less_equal<const value_type*> le;
-        if (le(&*begin(), s) && le(s, &*end())) // aliasing
+        if (IsAliasedRange(s, s + n))
         {
             const size_type offset = s - &*begin();
             Storage::reserve(size() + n);
@@ -501,6 +500,46 @@ public:
     }
 
 private:
+
+    // Care must be taken when dereferencing some iterator types.
+    //
+    // Users can implement this function in their namespace if their storage uses a special iterator type,
+    // the function will be found through ADL.
+    template<class Iterator>
+    const typename std::iterator_traits<Iterator>::value_type * DereferenceValidIterator(Iterator it) const
+    {
+      return &*it;
+    }
+
+    // Care must be taken when dereferencing a reverse iterators, hence this special case.
+    // This isn't in the std namespace so as not to pollute it or create name clashes.
+    template<typename Iterator>
+    const typename std::iterator_traits<Iterator>::value_type * DereferenceValidIterator(
+      std::reverse_iterator<Iterator> it) const
+    {
+      return &*--it;
+    }
+
+    // Determine if the range aliases the current string.
+    //
+    // This method cannot be const because calling begin/end on copy-on-write implementations must have side effects.
+    // A const version wouldn't make the string unique through this call.
+    template<class Iterator>
+    bool IsAliasedRange(Iterator beginIterator, Iterator endIterator)
+    {
+      if(!empty() && beginIterator != endIterator)
+      {
+        typedef const typename std::iterator_traits<Iterator>::value_type * pointer;
+        pointer myBegin(&*begin());
+        pointer myEnd(&*begin() + size());
+        pointer rangeBegin(DereferenceValidIterator(beginIterator));
+        const std::less_equal<pointer> less_equal = std::less_equal<pointer>();
+        if(less_equal(myBegin, rangeBegin) && less_equal(rangeBegin, myEnd))
+          return true;
+      }
+      return false;
+    }
+
     template <int i> class Selector {};
 
     flex_string& InsertImplDiscr(iterator p,
@@ -508,7 +547,7 @@ private:
     {
         Invariant checker(*this);
         (void) checker;
-        assert(p >= begin() && p <= end());
+        assert(begin() <= p && p <= end());
         if (capacity() - size() < n)
         {
             const size_type sz = p - begin();
@@ -549,10 +588,24 @@ private:
     void InsertImpl(iterator i,
         FwdIterator s1, FwdIterator s2, std::forward_iterator_tag)
     {
-        // TODO: there is a bug in this method when the range to insert is inside the current range. See bug #2679853.
+        if(s1 == s2)
+        {
+            // Insert an empty range.
+            return;
+        }
+
+        if(IsAliasedRange(s1, s2))
+        {
+            // The source range is contained in the current string, copy it and recurse.
+            const flex_string temporary(s1, s2);
+            InsertImpl(i, temporary.begin(), temporary.end(),
+              typename std::iterator_traits<FwdIterator>::iterator_category());
+            return;
+        }
 
         Invariant checker(*this);
         (void) checker;
+
         const size_type pos = i - begin();
         const typename std::iterator_traits<FwdIterator>::difference_type n2 =
             std::distance(s1, s2);
@@ -564,10 +617,8 @@ private:
             capacity() - size();
         if (maxn2 < n2)
         {
-            // realloc the string
-            static const std::less_equal<const value_type*> le =
-                std::less_equal<const value_type*>();
-            assert(!(le(&*begin(), &*s1) && le(&*s1, &*end())));
+          // Reallocate the string.
+            assert(!IsAliasedRange(s1, s2));
             reserve(size() + n2);
             i = begin() + pos;
         }
@@ -670,8 +721,7 @@ public:
         return replace(b, b + n1, s1, s1 + n2);
         using namespace flex_string_details;
         const int delta = int(n2 - n1);
-        static const std::less_equal<const value_type*> le;
-        const bool aliased = le(&*begin(), s1) && le(s1, &*end());
+        const bool aliased = IsAliasedRange(s1, s1 + n2);
 
         // From here on we're dealing with an aliased replace
         if (delta <= 0)
@@ -811,33 +861,25 @@ private:
             std::distance(s1, s2);
         assert(n2 >= 0);
 
-        // Make sure the replacement isn't empty.
-        if(0 != n2)
+        if (IsAliasedRange(s1, s2))
         {
-          // Handle aliased replace
-          static const std::less_equal<const value_type*> le =
-              std::less_equal<const value_type*>();
-          const bool aliased = le(&*begin(), &*s1) && le(&*s1, &*end());
-          if (aliased /* && capacity() < size() - n1 + n2 */)
-          {
-              // Aliased replace, copy to new string
-              flex_string temp;
-              temp.reserve(size() - n1 + n2);
-              temp.append(begin(), i1).append(s1, s2).append(i2, end());
-              swap(temp);
-              return;
-          }
+            // Aliased replace, copy to new string.
+            flex_string temporary;
+            temporary.reserve(size() - n1 + n2);
+            temporary.append(begin(), i1).append(s1, s2).append(i2, end());
+            swap(temporary);
+            return;
         }
 
         if (n1 > n2)
         {
-            // shrinks
+            // Shrinks.
             std::copy(s1, s2, i1);
             erase(i1 + n2, i2);
         }
         else
         {
-            // grows
+            // Grows.
             flex_string_details::copy_n(s1, n1, i1);
             std::advance(s1, n1);
             insert(i2, s1, s2);
