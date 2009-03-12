@@ -548,29 +548,27 @@ private:
         Invariant checker(*this);
         (void) checker;
         assert(begin() <= p && p <= end());
-        if (capacity() - size() < n)
+        const size_type insertOffset(p - begin());
+        const size_type originalSize(size());
+        if(n < originalSize - insertOffset)
         {
-            const size_type sz = p - begin();
-            reserve(size() + n);
-            p = begin() + sz;
-        }
-        const iterator oldEnd = end();
-        //if (p + n < oldEnd) // replaced because of crash (pk)
-        if( n < size_type(oldEnd - p))
-        {
-            append(oldEnd - n, oldEnd);
-            //std::copy(
-            //    reverse_iterator(oldEnd - n),
-            //    reverse_iterator(p),
-            //    reverse_iterator(oldEnd));
-            flex_string_details::pod_move(&*p, &*oldEnd - n, &*p + n);
-            std::fill(p, p + n, c);
+            // The new characters fit within the original string.
+            // The characters that are pushed back need to be moved because they're aliased.
+            // The appended characters will all be overwritten by the move.
+            append(n, value_type(0));
+            value_type * begin(&*begin());
+            flex_string_details::pod_move(begin + insertOffset, begin + originalSize, begin + insertOffset + n);
+            std::fill(begin + insertOffset, begin + insertOffset + n, c);
         }
         else
         {
-            append(n - (end() - p), c);
-            append(p, oldEnd);
-            std::fill(p, oldEnd, c);
+            // The new characters exceed the original string.
+            // The characters that are pushed back can simply be copied since they aren't aliased.
+            // The appended characters will partly be overwritten by the copy.
+            append(n, c);
+            value_type * begin(&*begin());
+            flex_string_details::pod_copy(begin + insertOffset, begin + originalSize, begin + insertOffset + n);
+            std::fill(begin + insertOffset, begin + originalSize, c);
         }
         return *this;
     }
