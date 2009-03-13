@@ -608,7 +608,7 @@ namespace Tests
   {
     // 21.3.1
     const typename String::size_type number = random(0, MaxString<String>::value);
-    const typename String::size_type value = random('a', 'z');
+    const typename String::value_type value = random('a', 'z');
     String result(number, value);
     return result;
   }
