@@ -26,7 +26,7 @@ class StoragePolicy
     typedef @ const_iterator;
     typedef A allocator_type;
     typedef @ size_type;
-    
+
     StoragePolicy(const StoragePolicy& s);
     StoragePolicy(const A&);
     StoragePolicy(const E* s, size_type len, const A&);
@@ -37,7 +37,7 @@ class StoragePolicy
     const_iterator begin() const;
     iterator end();
     const_iterator end() const;
-    
+
     size_type size() const;
     size_type max_size() const;
     size_type capacity() const;
@@ -50,10 +50,10 @@ class StoragePolicy
     void resize(size_type newSize, E fill);
 
     void swap(StoragePolicy& rhs);
-    
+
     const E* c_str() const;
     const E* data() const;
-    
+
     A get_allocator() const;
 };
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ class AllocatorStringStorage : public A
 
     void* Alloc(size_type sz, const void* p = 0)
     {
-        return A::allocate(1 + (sz - 1) / sizeof(E), 
+        return A::allocate(1 + (sz - 1) / sizeof(E),
             static_cast<const char*>(p));
     }
 
@@ -118,43 +118,43 @@ class AllocatorStringStorage : public A
             pData_->pEndOfMem_ = pData_->buffer_ + cap;
         }
     }
-    
+
 public:
     typedef E value_type;
     typedef A allocator_type;
     typedef typename A::pointer iterator;
     typedef typename A::const_pointer const_iterator;
 
-    AllocatorStringStorage() 
+    AllocatorStringStorage()
     : A(), pData_(0)
     {
     }
 
-    AllocatorStringStorage(const AllocatorStringStorage& rhs) 
+    AllocatorStringStorage(const AllocatorStringStorage& rhs)
     : A(rhs.get_allocator())
     {
         const size_type sz = rhs.size();
         Init(sz, sz);
         if (sz) flex_string_details::pod_copy(rhs.begin(), rhs.end(), begin());
     }
-    
-    AllocatorStringStorage(const AllocatorStringStorage& s, 
-        flex_string_details::Shallow) 
+
+    AllocatorStringStorage(const AllocatorStringStorage& s,
+        flex_string_details::Shallow)
     : A(s.get_allocator())
     {
         pData_ = s.pData_;
     }
-    
+
     AllocatorStringStorage(const A& a) : A(a)
-    { 
+    {
         pData_ = const_cast<Data*>(
             &SimpleStringStorage<E, A>::emptyString_);
     }
-    
+
     AllocatorStringStorage(const E* s, size_type len, const A& a)
     : A(a)
     {
-        Init(len, len);        
+        Init(len, len);
         flex_string_details::pod_copy(s, s + len, begin());
     }
 
@@ -164,7 +164,7 @@ public:
         Init(len, len);
         flex_string_details::pod_fill(&*begin(), &*end(), c);
     }
-    
+
     AllocatorStringStorage& operator=(const AllocatorStringStorage& rhs)
     {
         const size_type sz = rhs.size();
@@ -173,28 +173,28 @@ public:
         pData_->pEnd_ = &*begin() + rhs.size();
         return *this;
     }
-    
+
     ~AllocatorStringStorage()
     {
         if (capacity())
         {
-            Free(pData_, 
+            Free(pData_,
                 sizeof(Data) + capacity() * sizeof(E));
         }
     }
-        
+
     iterator begin()
     { return pData_->buffer_; }
-    
+
     const_iterator begin() const
     { return pData_->buffer_; }
-    
+
     iterator end()
     { return pData_->pEnd_; }
-    
+
     const_iterator end() const
     { return pData_->pEnd_; }
-    
+
     size_type size() const
     { return size_type(end() - begin()); }
 
@@ -209,7 +209,7 @@ public:
         reserve(n);
         iterator newEnd = begin() + n;
         iterator oldEnd = end();
-        if (newEnd > oldEnd) 
+        if (newEnd > oldEnd)
         {
             // Copy the characters
             flex_string_details::pod_fill(oldEnd, newEnd, c);
@@ -221,23 +221,23 @@ public:
     {
         if (res_arg <= capacity())
         {
-            // @@@ shrink to fit here 
+            // @@@ shrink to fit here
             return;
         }
-        
+
         A& myAlloc = *this;
         AllocatorStringStorage newStr(myAlloc);
         newStr.Init(size(), res_arg);
-        
+
         flex_string_details::pod_copy(begin(), end(), newStr.begin());
-        
+
         swap(newStr);
     }
 
     template <class ForwardIterator>
     void append(ForwardIterator b, ForwardIterator e)
     {
-        const size_type 
+        const size_type
             sz = std::distance(b, e),
             neededCapacity = size() + sz;
 
@@ -251,26 +251,26 @@ public:
         std::copy(b, e, end());
         pData_->pEnd_ += sz;
     }
-    
+
     void swap(AllocatorStringStorage& rhs)
     {
         // @@@ The following line is commented due to a bug in MSVC
         //std::swap(lhsAlloc, rhsAlloc);
         std::swap(pData_, rhs.pData_);
     }
-    
+
     const E* c_str() const
-    { 
-        if (pData_ != &SimpleStringStorage<E, A>::emptyString_) 
+    {
+        if (pData_ != &SimpleStringStorage<E, A>::emptyString_)
         {
             *pData_->pEnd_ = E();
         }
-        return &*begin(); 
+        return &*begin();
     }
 
     const E* data() const
     { return &*begin(); }
-    
+
     A get_allocator() const
     { return *this; }
 };

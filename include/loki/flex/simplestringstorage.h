@@ -26,7 +26,7 @@ class StoragePolicy
     typedef @ const_iterator;
     typedef A allocator_type;
     typedef @ size_type;
-    
+
     StoragePolicy(const StoragePolicy& s);
     StoragePolicy(const A&);
     StoragePolicy(const E* s, size_type len, const A&);
@@ -37,7 +37,7 @@ class StoragePolicy
     const_iterator begin() const;
     iterator end();
     const_iterator end() const;
-    
+
     size_type size() const;
     size_type max_size() const;
     size_type capacity() const;
@@ -50,10 +50,10 @@ class StoragePolicy
     void resize(size_type newSize, E fill);
 
     void swap(StoragePolicy& rhs);
-    
+
     const E* c_str() const;
     const E* data() const;
-    
+
     A get_allocator() const;
 };
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ public:
         E buffer_[1];
     };
     static const Data emptyString_;
-    
+
     typedef typename A::size_type size_type;
 
 private:
@@ -95,14 +95,14 @@ private:
     void Init(size_type size, size_type capacity)
     {
         assert(size <= capacity);
-        if (capacity == 0) 
+        if (capacity == 0)
         {
             pData_ = const_cast<Data*>(&emptyString_);
         }
         else
         {
-            // 11-17-2000: comment added: 
-            //     No need to allocate (capacity + 1) to 
+            // 11-17-2000: comment added:
+            //     No need to allocate (capacity + 1) to
             //     accommodate the terminating 0, because Data already
             //     has one one character in there
             pData_ = static_cast<Data*>(
@@ -112,12 +112,12 @@ private:
             pData_->pEndOfMem_ = pData_->buffer_ + capacity;
         }
     }
-    
+
 private:
     // Warning - this doesn't initialize pData_. Used in reserve()
     SimpleStringStorage()
     { }
-    
+
 public:
     typedef E value_type;
     typedef E* iterator;
@@ -125,23 +125,23 @@ public:
     typedef A allocator_type;
     typedef typename A::reference reference;
 
-    
-    SimpleStringStorage(const SimpleStringStorage& rhs) 
+
+    SimpleStringStorage(const SimpleStringStorage& rhs)
     {
         const size_type sz = rhs.size();
         Init(sz, sz);
         if (sz) flex_string_details::pod_copy(rhs.begin(), rhs.end(), begin());
     }
-    
-    SimpleStringStorage(const SimpleStringStorage& s, 
-        flex_string_details::Shallow) 
+
+    SimpleStringStorage(const SimpleStringStorage& s,
+        flex_string_details::Shallow)
         : pData_(s.pData_)
     {
     }
-    
+
     SimpleStringStorage(const A&)
     { pData_ = const_cast<Data*>(&emptyString_); }
-    
+
     SimpleStringStorage(const E* s, size_type len, const A&)
     {
         Init(len, len);
@@ -153,7 +153,7 @@ public:
         Init(len, len);
         flex_string_details::pod_fill(begin(), end(), c);
     }
-    
+
     SimpleStringStorage& operator=(const SimpleStringStorage& rhs)
     {
         const size_type sz = rhs.size();
@@ -171,16 +171,16 @@ public:
 
     iterator begin()
     { return pData_->buffer_; }
-    
+
     const_iterator begin() const
     { return pData_->buffer_; }
-    
+
     iterator end()
     { return pData_->pEnd_; }
-    
+
     const_iterator end() const
     { return pData_->pEnd_; }
-    
+
     size_type size() const
     { return pData_->pEnd_ - pData_->buffer_; }
 
@@ -198,7 +198,7 @@ public:
             return;
         }
 
-        if (pData_ == &emptyString_) 
+        if (pData_ == &emptyString_)
         {
             Init(0, res_arg);
         }
@@ -206,10 +206,10 @@ public:
         {
             const size_type sz = size();
 
-            void* p = realloc(pData_, 
+            void* p = realloc(pData_,
                 sizeof(Data) + res_arg * sizeof(E));
             if (!p) throw std::bad_alloc();
-        
+
             if (p != pData_)
             {
                 pData_ = static_cast<Data*>(p);
@@ -222,7 +222,7 @@ public:
     template <class InputIterator>
     void append(InputIterator b, InputIterator e)
     {
-        const size_type 
+        const size_type
             sz = std::distance(b, e),
             neededCapacity = size() + sz;
         if (capacity() < neededCapacity)
@@ -235,7 +235,7 @@ public:
         std::copy(b, e, end());
         pData_->pEnd_ += sz;
     }
-    
+
     void resize(size_type newSize, E fill)
     {
         const int delta = int(newSize - size());
@@ -243,7 +243,7 @@ public:
 
         if (delta > 0)
         {
-            if (newSize > capacity()) 
+            if (newSize > capacity())
             {
                 reserve(newSize);
             }
@@ -257,16 +257,16 @@ public:
     {
         std::swap(pData_, rhs.pData_);
     }
-    
+
     const E* c_str() const
     {
         if (pData_ != &emptyString_) *pData_->pEnd_ = E();
-        return pData_->buffer_; 
+        return pData_->buffer_;
     }
 
     const E* data() const
     { return pData_->buffer_; }
-    
+
     A get_allocator() const
     { return A(); }
 };
@@ -274,9 +274,9 @@ public:
 template <typename E, class A>
 const typename SimpleStringStorage<E, A>::Data
 SimpleStringStorage<E, A>::emptyString_;
-//{ 
-//    const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_), 
-//    const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_), 
+//{
+//    const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_),
+//    const_cast<E*>(SimpleStringStorage<E, A>::emptyString_.buffer_),
 //    { E() }
 //};
 

@@ -26,7 +26,7 @@ class StoragePolicy
     typedef @ const_iterator;
     typedef A allocator_type;
     typedef @ size_type;
-    
+
     StoragePolicy(const StoragePolicy& s);
     StoragePolicy(const A&);
     StoragePolicy(const E* s, size_type len, const A&);
@@ -37,7 +37,7 @@ class StoragePolicy
     const_iterator begin() const;
     iterator end();
     const_iterator end() const;
-    
+
     size_type size() const;
     size_type max_size() const;
     size_type capacity() const;
@@ -45,17 +45,17 @@ class StoragePolicy
     void reserve(size_type res_arg);
 
     void append(const E* s, size_type sz);
-    
+
     template <class InputIterator>
     void append(InputIterator b, InputIterator e);
 
     void resize(size_type newSize, E fill);
 
     void swap(StoragePolicy& rhs);
-    
+
     const E* c_str() const;
     const E* data() const;
-    
+
     A get_allocator() const;
 };
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,13 +87,13 @@ public: // protected:
     typedef A allocator_type;
     typedef typename A::size_type size_type;
     typedef typename A::reference reference;
-    
+
     VectorStringStorage(const VectorStringStorage& s) : base(s)
     { }
-    
+
     VectorStringStorage(const A& a) : base(1, value_type(), a)
     { }
-    
+
     VectorStringStorage(const value_type* s, size_type len, const A& a)
     : base(a)
     {
@@ -109,26 +109,26 @@ public: // protected:
         // Terminating zero
         base::back() = value_type();
     }
-    
+
     VectorStringStorage& operator=(const VectorStringStorage& rhs)
     {
         base& v = *this;
         v = rhs;
         return *this;
     }
-   
+
     iterator begin()
     { return base::begin(); }
-    
+
     const_iterator begin() const
     { return base::begin(); }
-    
+
     iterator end()
     { return base::end() - 1; }
-    
+
     const_iterator end() const
     { return base::end() - 1; }
-    
+
     size_type size() const
     { return base::size() - 1; }
 
@@ -139,11 +139,11 @@ public: // protected:
     { return base::capacity() - 1; }
 
     void reserve(size_type res_arg)
-    { 
+    {
         assert(res_arg < max_size());
-        base::reserve(res_arg + 1); 
+        base::reserve(res_arg + 1);
     }
-    
+
     template <class ForwardIterator>
     void append(ForwardIterator b, ForwardIterator e)
     {
@@ -178,13 +178,13 @@ public: // protected:
 
     void swap(VectorStringStorage& rhs)
     { base::swap(rhs); }
-    
+
     const E* c_str() const
     { return &*begin(); }
 
     const E* data() const
     { return &*begin(); }
-    
+
     A get_allocator() const
     { return base::get_allocator(); }
 };
