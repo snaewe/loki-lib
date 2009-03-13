@@ -220,15 +220,7 @@ public:
           new(this) SmallStringOpt(rhs);
         } else {
           SmallStringOpt copy(rhs);
-          if (Small()) {
-            // no need to swap, just destructively read copy into this
-            // ugly but efficient again
-            memcpy(this, &copy, sizeof(*this));
-            copy.buf_[maxSmallString] = maxSmallString; // clear the copy
-          } else {
-            // Use the swap trick
-            copy.swap(*this);
-          }
+          copy.swap(*this);
         }
       }
       return *this;
