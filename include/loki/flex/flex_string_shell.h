@@ -645,16 +645,16 @@ private:
     }
 
     template <class InputIterator>
-    void InsertImpl(iterator i1, iterator i2,
-        InputIterator b, InputIterator e, std::input_iterator_tag)
+    void InsertImpl(iterator insertPosition,
+        InputIterator inputBegin, InputIterator inputEnd, std::input_iterator_tag)
     {
-        flex_string temp(begin(), i1);
-        for (; b != e; ++b)
+        flex_string temporary(begin(), insertPosition);
+        for (; inputBegin != inputEnd; ++inputBegin)
         {
-            temp.push_back(*b);
+            temporary.push_back(*inputBegin);
         }
-        temp.append(i2, end());
-        swap(temp);
+        temporary.append(insertPosition, end());
+        swap(temporary);
     }
 
 public:

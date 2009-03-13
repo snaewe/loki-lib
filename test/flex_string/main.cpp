@@ -36,6 +36,7 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <iterator>
 #include <typeinfo>
 #include <sstream>
 #include <utility>
@@ -621,6 +622,19 @@ namespace Tests
     return result;
   }
 
+  template<class String>
+  String constructor_iterator_iterator__istream_iterator()
+  {
+    // 21.3.5
+    String random1(RandomString<String>(MaxString<String>::value));
+    typedef typename String::value_type value_type;
+    std::basic_stringstream<value_type, std::char_traits<value_type> > stream;
+    stream << random1;
+    std::istreambuf_iterator<value_type, std::char_traits<value_type> > begin(stream), end;
+    String result(begin, end);
+    return result;
+  }
+
   // TODO: destructor
 
   template<class String>
@@ -1052,6 +1066,20 @@ namespace Tests
   }
 
   template<class String>
+  String append_iterator_iterator__istream_iterator()
+  {
+    // 21.3.5
+    String random1(RandomString<String>(MaxString<String>::value));
+    String random2(RandomString<String>(MaxString<String>::value));
+    typedef typename String::value_type value_type;
+    std::basic_stringstream<value_type, std::char_traits<value_type> > stream;
+    stream << random1;
+    std::istreambuf_iterator<value_type, std::char_traits<value_type> > begin(stream), end;
+    random2.append(begin, end);
+    return random2;
+  }
+
+  template<class String>
   String push_back_char()
   {
     // 21.3.5
@@ -1246,6 +1274,20 @@ namespace Tests
   }
 
   template<class String>
+  String assign_iterator_iterator__istream_iterator()
+  {
+    // 21.3.5
+    String random1(RandomString<String>(MaxString<String>::value));
+    String random2(RandomString<String>(MaxString<String>::value));
+    typedef typename String::value_type value_type;
+    std::basic_stringstream<value_type, std::char_traits<value_type> > stream;
+    stream << random1;
+    std::istreambuf_iterator<value_type, std::char_traits<value_type> > begin(stream), end;
+    random2.assign(begin, end);
+    return random2;
+  }
+
+  template<class String>
   String insert_position_string()
   {
     // 21.3.5
@@ -1406,7 +1448,7 @@ namespace Tests
   }
 
   template<class String>
-  String insert_iterator_iterator()
+  String insert_iterator_iterator_iterator()
   {
     // 21.3.5
     String random1(RandomString<String>(MaxString<String>::value));
@@ -1417,7 +1459,7 @@ namespace Tests
   }
 
   template<class String>
-  String insert_iterator_iterator__self()
+  String insert_iterator_iterator_iterator__self()
   {
     // 21.3.5
     String random1(RandomString<String>(MaxString<String>::value));
@@ -1427,7 +1469,7 @@ namespace Tests
   }
 
   template<class String>
-  String insert_iterator_iterator__selfcopy()
+  String insert_iterator_iterator_iterator__selfcopy()
   {
     // 21.3.5
     String random1(RandomString<String>(MaxString<String>::value));
@@ -1438,7 +1480,7 @@ namespace Tests
   }
 
   template<class String>
-  String insert_iterator_iterator__self_reverse()
+  String insert_iterator_iterator_iterator__self_reverse()
   {
     // 21.3.5
     String random1(RandomString<String>(MaxString<String>::value));
@@ -1448,7 +1490,7 @@ namespace Tests
   }
 
   template<class String>
-  String insert_iterator_iterator__selfcopy_reverse()
+  String insert_iterator_iterator_iterator__selfcopy_reverse()
   {
     // 21.3.5
     String random1(RandomString<String>(MaxString<String>::value));
@@ -1456,6 +1498,21 @@ namespace Tests
     const typename String::size_type position = random(0, random1.size());
     random1.insert(random1.begin() + position, copy.rbegin(), copy.rend());
     return random1;
+  }
+
+  template<class String>
+  String insert_iterator_iterator_iterator__istream_iterator()
+  {
+    // 21.3.5
+    String random1(RandomString<String>(MaxString<String>::value));
+    String random2(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type position = random(0, random2.size());
+    typedef typename String::value_type value_type;
+    std::basic_stringstream<value_type, std::char_traits<value_type> > stream;
+    stream << random1;
+    std::istreambuf_iterator<value_type, std::char_traits<value_type> > begin(stream), end;
+    random2.insert(random2.begin() + position, begin, end);
+    return random2;
   }
 
   template<class String>
@@ -1839,6 +1896,22 @@ namespace Tests
     const typename String::size_type position3 = random(0, copy.size());
     const typename String::size_type position4 = random(position3, copy.size());
     random1.replace(random1.begin() + position1, random1.begin() + position2, copy.begin() + position3, copy.begin() + position4);
+    return random1;
+  }
+
+  template<class String>
+  String replace_iterator_iterator_iterator_iterator__istream_iterator()
+  {
+    // 21.3.5
+    String random1(RandomString<String>(MaxString<String>::value));
+    String random2(RandomString<String>(MaxString<String>::value));
+    const typename String::size_type position1 = random(0, random1.size());
+    const typename String::size_type position2 = random(position1, random1.size());
+    typedef typename String::value_type value_type;
+    std::basic_stringstream<value_type, std::char_traits<value_type> > stream;
+    stream << random2;
+    std::istreambuf_iterator<value_type, std::char_traits<value_type> > begin(stream), end;
+    random1.replace(random1.begin() + position1, random1.begin() + position2, begin, end);
     return random1;
   }
 
@@ -2726,6 +2799,7 @@ public:
     ADD_TEST(constructor_cstr_number);
     ADD_TEST(constructor_number_char);
     ADD_TEST(constructor_iterator_iterator);
+    ADD_TEST(constructor_iterator_iterator__istream_iterator);
     ADD_TEST(operator_equal_string);
     ADD_TEST(operator_equal_string__self);
     ADD_TEST(operator_equal_string__selfCopy);
@@ -2765,6 +2839,7 @@ public:
     ADD_TEST(append_iterator_iterator__selfcopy);
     ADD_TEST(append_iterator_iterator__self_reverse);
     ADD_TEST(append_iterator_iterator__selfcopy_reverse);
+    ADD_TEST(append_iterator_iterator__istream_iterator);
     ADD_TEST(push_back_char);
     ADD_TEST(assign_string);
     ADD_TEST(assign_string__self);
@@ -2784,6 +2859,7 @@ public:
     ADD_TEST(assign_iterator_iterator__selfcopy);
     ADD_TEST(assign_iterator_iterator__self_reverse);
     ADD_TEST(assign_iterator_iterator__selfcopy_reverse);
+    ADD_TEST(assign_iterator_iterator__istream_iterator);
     ADD_TEST(insert_position_string);
     ADD_TEST(insert_position_string__self);
     ADD_TEST(insert_position_string__selfcopy);
@@ -2798,11 +2874,12 @@ public:
     ADD_TEST(insert_position_cstr__selfcopy);
     ADD_TEST(insert_iterator_char);
     ADD_TEST(insert_position_number_char);
-    ADD_TEST(insert_iterator_iterator);
-    ADD_TEST(insert_iterator_iterator__self);
-    ADD_TEST(insert_iterator_iterator__selfcopy);
-    ADD_TEST(insert_iterator_iterator__self_reverse);
-    ADD_TEST(insert_iterator_iterator__selfcopy_reverse);
+    ADD_TEST(insert_iterator_iterator_iterator);
+    ADD_TEST(insert_iterator_iterator_iterator__self);
+    ADD_TEST(insert_iterator_iterator_iterator__selfcopy);
+    ADD_TEST(insert_iterator_iterator_iterator__self_reverse);
+    ADD_TEST(insert_iterator_iterator_iterator__selfcopy_reverse);
+    ADD_TEST(insert_iterator_iterator_iterator__istream_iterator);
     ADD_TEST(erase_position_number);
     ADD_TEST(erase_iterator);
     ADD_TEST(erase_iterator_iterator);
@@ -2832,6 +2909,7 @@ public:
     ADD_TEST(replace_iterator_iterator_iterator_iterator);
     ADD_TEST(replace_iterator_iterator_iterator_iterator__self);
     ADD_TEST(replace_iterator_iterator_iterator_iterator__selfcopy);
+    ADD_TEST(replace_iterator_iterator_iterator_iterator__istream_iterator);
     ADD_TEST(copy_char_number_position);
     ADD_TEST(swap);
     ADD_TEST(swap__self);
