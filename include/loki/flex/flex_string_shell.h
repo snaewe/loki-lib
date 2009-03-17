@@ -1305,8 +1305,12 @@ bool operator>=(const typename flex_string<E, T, A, S>::value_type* lhs,
     const flex_string<E, T, A, S>& rhs)
 { return !(lhs < rhs); }
 
-// subclause 21.3.7.8:
-//void swap(flex_string<E, T, A, S>& lhs, flex_string<E, T, A, S>& rhs);    // to do
+template <typename E, class T, class A, class S>
+inline void swap(flex_string<E, T, A, S>& lhs, flex_string<E, T, A, S>& rhs)
+{
+  // 21.3.7.8
+  lhs.swap(rhs);
+}
 
 template <typename E, class T, class A, class S>
 std::basic_istream<typename flex_string<E, T, A, S>::value_type,

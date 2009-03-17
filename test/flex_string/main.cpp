@@ -515,7 +515,7 @@ namespace Tests
   template<class String>
   String swap_string_string()
   {
-    using std::swap;
+    // 21.3.7.8
     String random1(RandomString<String>(MaxString<String>::value));
     String random2(RandomString<String>(MaxString<String>::value));
     swap(random1, random2);
@@ -525,7 +525,7 @@ namespace Tests
   template<class String>
   String swap_string_string__self()
   {
-    using std::swap;
+    // 21.3.7.8
     String random1(RandomString<String>(MaxString<String>::value));
     swap(random1, random1);
     return random1;
@@ -534,7 +534,7 @@ namespace Tests
   template<class String>
   String swap_string_string__selfcopy()
   {
-    using std::swap;
+    // 21.3.7.8
     String random1(RandomString<String>(MaxString<String>::value));
     String copy(random1);
     swap(random1, copy);
@@ -544,7 +544,7 @@ namespace Tests
   template<class String>
   String swap_string_string__selfcopy2()
   {
-    using std::swap;
+    // 21.3.7.8
     String random1(RandomString<String>(MaxString<String>::value));
     String copy(random1);
     swap(copy, random1);
