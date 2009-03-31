@@ -39,7 +39,7 @@ namespace Loki
 
  @par Class & Data Invariants
  The ContractChecker and StaticChecker define invariants as "expressions that
- are true for particular data".  They uses a function which returns true if all
+ are true for particular data".  They call a function which returns true if all
  data are valid, and returns false if any datum is invalid.  This is called the
  validator function, and the host class or function provides a pointer to it.
  The validator could also assert for any invariant which fails rather than
@@ -67,6 +67,40 @@ namespace Loki
  - Basic guarantee: A function will not leak resources and data will remain
    in a valid state if an exception occurs.  (Which I call either the no-leak
    or no-break guarantee depending on context.)
+
+ @par Writing Your Own Policies
+ Loki provides several exception policies for ContractChecker.  These policies
+ assert if an object changed or a function threw an exception.  If you prefer
+ policies that log failures to a file, pop-up a message box, notify your unit-
+ test framework, or whatever else, you can easily write your own policies.
+ Your policy class should have two functions, a constructor and a Check
+ function, both of which accept a pointer to const instance of the host class.
+ Your policy class will become a base class of ContractChecker.  Check should
+ return true if all is okay, and false if any failure was detected.  Check
+ should never throw any exceptions since it is called from ContractChecker's
+ destructor.  You may add other functions to the policy class.  This code
+ snippet shows the signatures for the two required functions.
+ @code
+ class YourPolicy
+ { public:
+    explicit YourPolicy( const Host * );
+    bool Check( const Host * ) const;
+ }
+ @endcode
+ Loki provides two exception policies for StaticChecker - one that asserts if
+ an exception occurred, and one that does not care about exceptions.  You can
+ make your own policy to log failures, send an email, file a bug report, or do
+ whatever.  Just write a policy with a default constructor and a function call
+ Check which look like those shown below.  Make sure your Check function never
+ throws any exceptions.  Any additional functions or features of the policy
+ are up to you.
+ @code
+ class YourPolicy
+ { public:
+    YourPolicy();
+    bool Check() const;
+ }
+ @endcode
  */
 
 // ----------------------------------------------------------------------------
@@ -81,6 +115,7 @@ namespace Loki
  @par Requirements For Host Class:
  This policy imposes no requirements on a host class.
  */
+
 template < class Host >
 class CheckForNoThrow
 {
@@ -173,7 +208,8 @@ private:
 /** @class CheckForEquality
 
  @par Exception Safety Level:
- This exception-checking policy class for ContractChecker asserts if a copy of the host differs from the host object regardless of whether an exception occurs.
+ This exception-checking policy class for ContractChecker asserts if a copy of
+ the host differs from the host object regardless of whether an exception occurs.
  Host classes can use this policy to show which member functions never change
  data members, and thereby provide the strong exception safety level by default.
 
@@ -241,23 +277,23 @@ public:
       something is wrong.
     - Or it could assert if anything is wrong.
     - Ideally, it should be private.
- -# Implement similar functions to check for pre-conditions and post-conditions.
-    Functions which verify pre-conditions and post-conditions do not need to
-    check all class invariants, just conditions specific to certain public
-    functions in the host class.
- -# Declare some typedef's inside the class declaration like these.  Make one
-    typedef for each exception policy you use.  I typedef'ed the CheckForNothing
-    policy as CheckInvariants because even if a function can't provide either the
-    no-throw nor the no-change policies, it should still make sure the object
-    remains in a valid state.
-    - typedef ::Loki::ContractChecker< Host, ::Loki::CheckForNoThrow  > CheckForNoThrow;
-    - typedef ::Loki::ContractChecker< Host, ::Loki::CheckForNoChange > CheckForNoChange;
-    - typedef ::Loki::ContractChecker< Host, ::Loki::CheckForEquality > CheckForEquality;
-    - typedef ::Loki::ContractChecker< Host, ::Loki::CheckForNothing  > CheckInvariants;
- -# Construct a checker near the top of each member function - except in the
-    validator member function.  Pass the this pointer and the address of your
-    validator function into the checker's constructor.  You may also pass in pointers
-    to function which check pre- and post-conditions.
+    - It should never throw an exception.
+ -# Optionally implement similar functions to check for pre-conditions and post-
+    conditions.  Functions which verify pre-conditions and post-conditions do
+    not need to check all class invariants, just conditions specific to certain
+    public functions in the host class.  The post-condition function should never
+    throw exceptions.
+ -# Add this line in the class declaration:
+    - typedef ::Loki::CheckFor< Host > CheckFor;
+ -# Add one of these lines at the top of various class member functions to
+   construct a checker near the top of each public function.  You may also pass
+   in pointers to functions which check pre- and post-conditions.
+   - CheckFor::NoChangeOrThrow checker( this, &Host::IsValid );
+   - CheckFor::NoThrow checker( this, &Host::IsValid );
+   - CheckFor::NoChange checker( this, &Host::IsValid );
+   - CheckFor::Equality checker( this, &Host::IsValid );
+   - CheckFor::Invariants checker( this, &Host::IsValid );
+ -# Use these guidelines to decide which policy to use inside which function:
     - If the function never throws, then use the CheckForNoThrow policy.
     - If the function never changes any data members, then use CheckForEquality
       policy.
@@ -362,6 +398,26 @@ private:
 
 // ----------------------------------------------------------------------------
 
+/** @struct CheckFor
+ This struct declares types of checkers used to validate a host object.  All of
+ Loki's exception-checking policies are named here as typedef's so host classes
+ have a one-stop convenience place for declaring them.  If you write your own
+ exception policies for ContractChecker, you might want to also write a struct
+ similiar to CheckFor to conveniently declare all your policies.
+ */
+template < class Host >
+struct CheckFor
+{
+    // These lines declare checkers for non-static functions in a host class.
+    typedef ContractChecker< Host, CheckForNoChangeOrThrow > NoChangeOrThrow;
+    typedef ContractChecker< Host, CheckForNoThrow         > NoThrow;
+    typedef ContractChecker< Host, CheckForNoChange        > NoChange;
+    typedef ContractChecker< Host, CheckForEquality        > Equality;
+    typedef ContractChecker< Host, CheckForNothing         > Invariants;
+};
+
+// ----------------------------------------------------------------------------
+
 /** @class CheckStaticForNoThrow
 
  @par Exception Safety Level:
@@ -410,18 +466,25 @@ public:
     - The function should return true if everything is okay, but false if
       something is wrong.
     - Or it could assert if anything is wrong.
- -# If the checker is for static functions within a class, declare typedef's
-    inside the class declaration like these.  Make one typedef for each policy
-    you use.  I typedef'ed the CheckForNothing policy as CheckInvariants because
-    even if a function can't provide the no-throw guarantee, it should still
-    make sure that static data remains in a valid state.
-    - typedef ::Loki::StaticChecker< ::Loki::CheckForNoThrow > CheckStaticForNoThrow;
-    - typedef ::Loki::StaticChecker< ::Loki::CheckForNothing > CheckStaticInvariants;
- -# Construct a checker near the top of each member function - except in the
-    validator member function.  Pass the address of your validator function into
-    the checker's constructor.
+    - But it should never throw an exception.
+ -# If the checker validates static functions within a class, add this line to
+    the class declaration.
+    - typedef ::Loki::CheckStaticFor CheckStaticFor;
+ -# Construct a checker near the top of each member function using one of
+    these lines:
+    - CheckStaticFor::NoThrow checker( &Host::StaticIsValid );
+    - CheckStaticFor::Invariants checker( &Host::StaticIsValid );
+ -# These guidelines can help you decide which exception policy to use within
+    each function.
     - If the function never throws, then use the CheckForNoThrow policy.
     - Otherwise use the CheckInvariants policy.
+ -# If the checker validates standalone functions, then just add one of these
+    lines at the top of the function.  You may also want to write validation
+    functions which check pre-conditions and post-conditions of standalone
+    functions which you can pass into the checker as optional 2nd and 3rd
+    parameters.
+    - ::Loki::CheckStaticFor::NoThrow checker( &AllIsValid );
+    - ::Loki::CheckStaticFor::Invariants checker( &AllIsValid );
  -# Recompile a debug version of your program, run it, and see if an assertion
     fails.
  */
@@ -506,6 +569,24 @@ private:
 
     /// Pointer to member function that checks Host object's post-conditions.
     Validator m_post;
+
+};
+
+// ----------------------------------------------------------------------------
+
+/** @struct CheckStaticFor
+ This struct declares types of checkers used to validate standalone functions
+ and class static functions.  All of Loki's exception-checking policies for
+ StaticChecker are named here as typedef's.  If you write your own
+ exception policies for StaticChecker, you might want to also write a struct
+ similiar to CheckStaticFor to conveniently declare all your policies.
+ */
+struct CheckStaticFor
+{
+    // These lines declare checkers for static functions of a host class
+    // or for standalone functions outside any class or struct.
+    typedef StaticChecker< CheckStaticForNoThrow > NoThrow;
+    typedef StaticChecker< CheckStaticForNothing > Invariants;
 
 };
 

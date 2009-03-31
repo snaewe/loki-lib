@@ -92,16 +92,11 @@ private:
     /// This can be used to validate pre-conditions and post-conditions.
     bool IsValidFull( void ) const;
 
-    // These lines show how to declare checkers for non-static functions in a host class.
-    typedef ::Loki::ContractChecker< Thingy, ::Loki::CheckForNoThrow  > CheckForNoThrow;
-    typedef ::Loki::ContractChecker< Thingy, ::Loki::CheckForNoChangeOrThrow > CheckForNoChangeOrThrow;
-    typedef ::Loki::ContractChecker< Thingy, ::Loki::CheckForNoChange > CheckForNoChange;
-    typedef ::Loki::ContractChecker< Thingy, ::Loki::CheckForEquality > CheckForEquality;
-    typedef ::Loki::ContractChecker< Thingy, ::Loki::CheckForNothing  > CheckInvariants;
+    // This shows how to declare checkers for non-static functions in a host class.
+    typedef ::Loki::CheckFor< Thingy > CheckFor;
 
-    // These lines show how to declare checkers for static functions of a host class.
-    typedef ::Loki::StaticChecker< ::Loki::CheckStaticForNoThrow  > CheckStaticForNoThrow;
-    typedef ::Loki::StaticChecker< ::Loki::CheckStaticForNothing  > CheckStaticInvariants;
+    // This shows how to declare checkers for static functions of a host class.
+    typedef ::Loki::CheckStaticFor CheckStaticFor;
 
     typedef ::std::vector< unsigned int > IntBlock;
 
@@ -120,7 +115,7 @@ unsigned int Thingy::s_value = 10;
 // This example shows how static functions can use a no-throw checkers.
 void Thingy::ChangeThat( void )
 {
-    CheckStaticForNoThrow checker( &Thingy::StaticIsValid );
+    CheckStaticFor::NoThrow checker( &Thingy::StaticIsValid );
     (void)checker;
     s_value--;
 }
@@ -130,7 +125,7 @@ void Thingy::ChangeThat( void )
 // This example shows how static functions can use an invariant checker.
 unsigned int Thingy::GetThat( void )
 {
-    CheckStaticInvariants checker( &Thingy::StaticIsValid );
+    CheckStaticFor::Invariants checker( &Thingy::StaticIsValid );
     (void)checker;
     return s_value;
 }
@@ -142,7 +137,7 @@ Thingy::Thingy( unsigned int value ) :
     m_value( value ),
     m_counts()
 {
-    CheckInvariants checker( this, &Thingy::IsValid );
+    CheckFor::Invariants checker( this, &Thingy::IsValid );
     (void)checker;
 }
 
@@ -152,7 +147,7 @@ Thingy::Thingy( const Thingy & that ) :
     m_value( that.m_value ),
     m_counts( that.m_counts )
 {
-    CheckInvariants checker( this, &Thingy::IsValid );
+    CheckFor::Invariants checker( this, &Thingy::IsValid );
     (void)checker;
 }
 
@@ -160,7 +155,7 @@ Thingy::Thingy( const Thingy & that ) :
 
 Thingy & Thingy::operator = ( const Thingy & that )
 {
-    CheckInvariants checker( this, &Thingy::IsValid );
+    CheckFor::Invariants checker( this, &Thingy::IsValid );
     (void)checker;
     if ( &that != this )
     {
@@ -184,9 +179,9 @@ Thingy::~Thingy( void )
 // A swap function gets 2 checkers - one for this, and another for that.
 void Thingy::Swap( Thingy & that )
 {
-    CheckInvariants checker1( this, &Thingy::IsValid );
+    CheckFor::Invariants checker1( this, &Thingy::IsValid );
     (void)checker1;
-    CheckInvariants checker2( &that, &Thingy::IsValid );
+    CheckFor::Invariants checker2( &that, &Thingy::IsValid );
     (void)checker2;
 
     const IntBlock counts( m_counts );
@@ -216,7 +211,7 @@ void Thingy::DoSomethingEvil( void )
 // This example shows how to use the no-throw checker.
 unsigned int Thingy::GetValue( void ) const
 {
-    CheckForNoThrow checker( this, &Thingy::IsValid );
+    CheckFor::NoThrow checker( this, &Thingy::IsValid );
     (void)checker;
     return m_value;
 }
@@ -226,7 +221,7 @@ unsigned int Thingy::GetValue( void ) const
 // This example shows how to use the equality checker.
 unsigned int Thingy::DoSomething( bool doThrow ) const
 {
-    CheckForEquality checker( this, &Thingy::IsValid );
+    CheckFor::Equality checker( this, &Thingy::IsValid );
     (void)checker;
     if ( doThrow )
         throw ::std::logic_error( "Test Exception." );
@@ -238,7 +233,7 @@ unsigned int Thingy::DoSomething( bool doThrow ) const
 // This example shows how to use the no-change checker.
 void Thingy::DoSomethingElse( void ) const
 {
-    CheckForNoChange checker( this, &Thingy::IsValid );
+    CheckFor::NoChange checker( this, &Thingy::IsValid );
     (void)checker;
 }
 
@@ -250,7 +245,7 @@ void Thingy::AddCount( unsigned int count )
     // but does not need to check pre-conditions, so it passes in a nullptr for
     // the pre-condition validator.  Ths post-condition validator just makes sure
     // the container has at least 1 element.
-    CheckInvariants checker( this, &Thingy::IsValid, nullptr, &Thingy::IsValidFull );
+    CheckFor::Invariants checker( this, &Thingy::IsValid, nullptr, &Thingy::IsValidFull );
     m_counts.push_back( count );
 }
 
@@ -261,7 +256,7 @@ unsigned int Thingy::GetCount( unsigned int index ) const
     // This function's checker cares about class invariants and both the pre- and
     // post-conditions, so it passes in pointers for all 3 validators.  The pre-
     // and post-conditions are both about making sure the container is not empty.
-    CheckForNoChangeOrThrow checker( this, &Thingy::IsValid, &Thingy::IsValidFull, &Thingy::IsValidFull );
+    CheckFor::NoChangeOrThrow checker( this, &Thingy::IsValid, &Thingy::IsValidFull, &Thingy::IsValidFull );
     if ( m_counts.size() <= index )
         return 0;
     const unsigned int count = m_counts[ index ];
@@ -276,7 +271,7 @@ void Thingy::ClearCounts( void )
     // but does not need to check pre-conditions, so it passes in a nullptr for
     // the pre-condition validator.  Ths post-condition validator just makes sure
     // the container has no elements.
-    CheckForNoThrow checker( this, &Thingy::IsValid, nullptr, &Thingy::IsValidEmpty );
+    CheckFor::NoThrow checker( this, &Thingy::IsValid, nullptr, &Thingy::IsValidEmpty );
     m_counts.clear();
 }
 
@@ -328,16 +323,10 @@ bool AllIsValid( void )
 
 // ----------------------------------------------------------------------------
 
-// These lines show how to declare checkers for standalone functions.
-typedef ::Loki::StaticChecker< ::Loki::CheckStaticForNoThrow  > CheckStaticForNoThrow;
-typedef ::Loki::StaticChecker< ::Loki::CheckStaticForNothing  > CheckStaticInvariants;
-
-// ----------------------------------------------------------------------------
-
 void DoSomething( void )
 {
     // This example shows how to use a checker in a stand-alone function.
-    CheckStaticForNoThrow checker( &AllIsValid );
+    ::Loki::CheckStaticFor::NoThrow checker( &AllIsValid );
     (void)checker;
     Thingy::ChangeThat();
 }
@@ -355,6 +344,8 @@ void ThrowTest( void )
 int main( unsigned int argc, const char * const argv[] )
 {
 
+    (void)argc;
+    (void)argv;
     try
     {
         cout << "Just before call to ThrowTest." << endl;
