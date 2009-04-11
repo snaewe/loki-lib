@@ -1531,7 +1531,7 @@ namespace Loki
     >
     inline bool operator==(const SmartPtr<T, OP, CP, KP, SP, CNP1 >& lhs,
         U* rhs)
-    { return GetImpl(lhs) == rhs; }
+    { return ( GetImpl( lhs ) == rhs ); }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  operator== for lhs = raw pointer, rhs = SmartPtr
@@ -1550,7 +1550,7 @@ namespace Loki
     >
     inline bool operator==(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP, CNP1 >& rhs)
-    { return rhs == lhs; }
+    { return ( GetImpl( rhs ) == lhs ); }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  operator!= for lhs = SmartPtr, rhs = raw pointer
@@ -1569,7 +1569,7 @@ namespace Loki
     >
     inline bool operator!=(const SmartPtr<T, OP, CP, KP, SP, CNP >& lhs,
         U* rhs)
-    { return !(lhs == rhs); }
+    { return ( GetImpl( lhs ) != rhs ); }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  operator!= for lhs = raw pointer, rhs = SmartPtr
@@ -1588,7 +1588,7 @@ namespace Loki
     >
     inline bool operator!=(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP, CNP >& rhs)
-    { return rhs != lhs; }
+    { return ( GetImpl( rhs ) != lhs ); }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  operator< for lhs = SmartPtr, rhs = raw pointer
@@ -1629,7 +1629,7 @@ namespace Loki
     inline bool operator<(U* lhs,
         const SmartPtr<T, OP, CP, KP, SP, CNP >& rhs)
     {
-        return ( GetImpl( rhs ) < lhs );
+        return ( lhs < GetImpl( rhs ) );
     }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1649,7 +1649,7 @@ namespace Loki
     >
     inline bool operator>(const SmartPtr<T, OP, CP, KP, SP, CNP >& lhs,
         U* rhs)
-    { return rhs < lhs; }
+    { return rhs < GetImpl( lhs ); }
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  operator> for lhs = raw pointer, rhs = SmartPtr
