@@ -373,6 +373,102 @@ void DoRefLinkSwapTests( void )
     NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p5;
     NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p6( new BaseClass );
 
+    BaseClass * pBare1 = GetImpl( p1 );
+    BaseClass * pBare2 = GetImpl( p2 );
+    BaseClass * pBare6 = GetImpl( p6 );
+    const bool is1LessThan2 = ( pBare1 < pBare2 );
+    const bool is1LessThan6 = ( pBare1 < pBare6 );
+    const bool is2LessThan6 = ( pBare2 < pBare6 );
+    assert( pBare1 != pBare2 );
+    assert( pBare1 != pBare6 );
+    assert( pBare2 != pBare6 );
+    assert( p1 == pBare1 );
+    assert( p2 == pBare2 );
+    assert( p6 == pBare6 );
+    assert( pBare1 == p1 );
+    assert( pBare2 == p2 );
+    assert( pBare6 == p6 );
+    assert( pBare2 != p1 );
+    assert( p1 != pBare2 );
+
+    if ( is1LessThan2 )
+    {
+        assert( p1 < p2 );
+        assert( p1 <= p2 );
+        assert( p1 != p2 );
+        assert( p2 > p1 );
+        assert( p2 >= p1 );
+        assert( p1 < pBare2 );
+        assert( p1 <= pBare2 );
+        assert( pBare2 > p1 );
+        assert( pBare2 >= p1 );
+    }
+    else
+    {
+        assert( p2 < p1 );
+        assert( p2 <= p1 );
+        assert( p2 != p1 );
+        assert( p1 > p2 );
+        assert( p1 >= p2 );
+        assert( p2 < pBare1 );
+        assert( p2 <= pBare1 );
+        assert( p2 != pBare1 );
+        assert( pBare1 > p2 );
+        assert( pBare1 >= p2 );
+    }
+
+    if ( is1LessThan6 )
+    {
+        assert( p1 < p6 );
+        assert( p1 <= p6 );
+        assert( p1 != p6 );
+        assert( p6 > p1 );
+        assert( p6 >= p1 );
+        assert( p1 < pBare6 );
+        assert( p1 <= pBare6 );
+        assert( pBare6 > p1 );
+        assert( pBare6 >= p1 );
+    }
+    else
+    {
+        assert( p6 < p1 );
+        assert( p6 <= p1 );
+        assert( p6 != p1 );
+        assert( p1 > p6 );
+        assert( p1 >= p6 );
+        assert( p6 < pBare1 );
+        assert( p6 <= pBare1 );
+        assert( p6 != pBare1 );
+        assert( pBare1 > p6 );
+        assert( pBare1 >= p6 );
+    }
+
+    if ( is2LessThan6 )
+    {
+        assert( p2 < p6 );
+        assert( p2 <= p6 );
+        assert( p2 != p6 );
+        assert( p6 > p2 );
+        assert( p6 >= p2 );
+        assert( p2 < pBare6 );
+        assert( p2 <= pBare6 );
+        assert( pBare6 > p2 );
+        assert( pBare6 >= p2 );
+    }
+    else
+    {
+        assert( p6 < p2 );
+        assert( p6 <= p2 );
+        assert( p6 != p2 );
+        assert( p2 > p6 );
+        assert( p2 >= p6 );
+        assert( p6 < pBare2 );
+        assert( p6 <= pBare2 );
+        assert( p6 != pBare2 );
+        assert( pBare2 > p6 );
+        assert( pBare2 >= p6 );
+    }
+
     // p1 <---> p3    and    p2 <---> p4   and   p5   and   p6
     assert( p1 == p3 );
     assert( p1 != p2 );
