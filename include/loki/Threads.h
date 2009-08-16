@@ -92,6 +92,9 @@
 #define LOKI_THREADS_MUTEX_CTOR(x)
 
 #define LOKI_THREADS_ATOMIC_FUNCTIONS                                   \
+    private:                                                            \
+        static CRITICAL_SECTION atomic_mutex_;                          \
+    public:                                                             \
         static IntType AtomicMultiply(volatile IntType& lval, const IntType val) \
         {                                                               \
             ::EnterCriticalSection( &atomic_mutex_ );                   \
