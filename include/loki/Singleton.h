@@ -815,8 +815,8 @@ namespace Loki
         {
             if (destroyed_)
             {
-                destroyed_ = false;
                 LifetimePolicy<T>::OnDeadReference();
+                destroyed_ = false;
             }
             pInstance_ = CreationPolicy<T>::Create();
             LifetimePolicy<T>::ScheduleDestruction(pInstance_, 
