@@ -80,6 +80,17 @@ public:
 
 private:
 
+    class Memento
+    {
+    public:
+        explicit Memento( const Thingy & t ) : m_count( t.m_counts.size() ) {}
+        bool operator == ( const Thingy & t ) const
+        {
+            return ( m_count == t.m_counts.size() );
+        }
+        unsigned int m_count;
+    };
+
     /// This is a static validator.
     static bool StaticIsValid( void );
 
@@ -94,6 +105,9 @@ private:
 
     // This shows how to declare checkers for non-static functions in a host class.
     typedef ::Loki::CheckFor< Thingy > CheckFor;
+
+    // This shows how to declare checkers for non-static functions in a host class.
+    typedef ::Loki::CheckFor< Thingy, Memento > CheckMementoFor;
 
     // This shows how to declare checkers for static functions of a host class.
     typedef ::Loki::CheckStaticFor CheckStaticFor;
@@ -221,7 +235,7 @@ unsigned int Thingy::GetValue( void ) const
 // This example shows how to use the equality checker.
 unsigned int Thingy::DoSomething( bool doThrow ) const
 {
-    CheckFor::Equality checker( this, &Thingy::IsValid );
+    CheckMementoFor::Equality checker( this, &Thingy::IsValid );
     (void)checker;
     if ( doThrow )
         throw ::std::logic_error( "Test Exception." );
@@ -233,7 +247,7 @@ unsigned int Thingy::DoSomething( bool doThrow ) const
 // This example shows how to use the no-change checker.
 void Thingy::DoSomethingElse( void ) const
 {
-    CheckFor::NoChange checker( this, &Thingy::IsValid );
+    CheckMementoFor::NoChange checker( this, &Thingy::IsValid );
     (void)checker;
 }
 
@@ -256,7 +270,7 @@ unsigned int Thingy::GetCount( unsigned int index ) const
     // This function's checker cares about class invariants and both the pre- and
     // post-conditions, so it passes in pointers for all 3 validators.  The pre-
     // and post-conditions are both about making sure the container is not empty.
-    CheckFor::NoChangeOrThrow checker( this, &Thingy::IsValid, &Thingy::IsValidFull, &Thingy::IsValidFull );
+    CheckMementoFor::NoChangeOrThrow checker( this, &Thingy::IsValid, &Thingy::IsValidFull, &Thingy::IsValidFull );
     if ( m_counts.size() <= index )
         return 0;
     const unsigned int count = m_counts[ index ];
@@ -456,7 +470,7 @@ int main( unsigned int argc, const char * const argv[] )
         cout << "Caught an exception!" << endl;
     }
 
-    cout << "All done!" << endl;
+    cout << "All done!  If you see this line, and no assertions failed, then the test passed!" << endl;
     return 0;
 }
 
