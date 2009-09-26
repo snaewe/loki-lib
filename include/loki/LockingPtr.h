@@ -60,7 +60,7 @@ namespace Loki
         /** Constructor locks mutex associated with an object.
          @param lockpair a std::pair of pointers to the object and the mutex
          */
-        LockingPtr( Pair lockpair )
+        explicit LockingPtr( Pair lockpair )
            : pObject_( const_cast< SharedObject * >( lockpair.first ) ),
             pMutex_( lockpair.second )
         {
