@@ -99,6 +99,8 @@ int main ()
 {
     std::vector<Thread*> threads;
 
+    Printf("--------------------------------------------------------------------------------------\n");
+
     for(int i=0; i<numThreads; i++)
     {
         Printf("Creating thread %d\n")(i);
@@ -111,7 +113,18 @@ int main ()
     Thread::DeleteThreads(threads);
 
     Printf("--------------------------------------------------------------------------------------\n");
-    Printf("--------------------------------------------------------------------------------------\n");
+
+    for(int i=0; i<numThreads; i++)
+    {
+        Printf("Creating thread %d\n")(i);
+        threads.push_back(new Thread(RunConstLocked,reinterpret_cast<void*>(i)));
+    }
+    for(int i=0; i<numThreads; i++)
+        threads.at(i)->start();
+
+    Thread::JoinThreads(threads);
+    Thread::DeleteThreads(threads);
+
     Printf("--------------------------------------------------------------------------------------\n");
 
     for(int i=0; i<numThreads; i++)
@@ -125,6 +138,7 @@ int main ()
     Thread::JoinThreads(threads);
     Thread::DeleteThreads(threads);
 
+    Printf("--------------------------------------------------------------------------------------\n");
     
     // test pair ctor
     volatile A a;
