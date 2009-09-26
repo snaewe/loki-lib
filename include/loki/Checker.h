@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // The Loki Library
-// Copyright (c) 2008 Rich Sposato
+// Copyright (c) 2008, 2009 Rich Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
 // Permission to use, copy, modify, distribute and sell this software for any
@@ -32,15 +32,25 @@ namespace Loki
 {
 
 /** @par ContractChecker and StaticChecker Overview
- The ContractChecker and StaticChecker classes have two purposes:
- - provide a mechanism by which programmers can determine which functions
+ ContractChecker and StaticChecker classes provide a mechanism to enforce
+ "Design by Contract" programming practices.  According to Design by Contract,
+ each function and class provides a contract with client code.  Each contract
+ says:
+ - what operations the class or function performs,
+ - what input it needs,
+ - what output it provides,
+ - what exception safety level it guarantees, and
+ - what constraints it enforces on its data.
+
+ ContractChecker and StaticChecker encourage Design by Contract by:
+ - providing a mechanism by which programmers can determine if functions
    violate class/data invariants,
- - and determine which exception safety a function provides.
+ - and determining which exception safety level a function provides.
 
  @par Class & Data Invariants
- The ContractChecker and StaticChecker define invariants as "expressions that
- are true for particular data".  They call a function which returns true if all
- data are valid, and returns false if any datum is invalid.  This is called the
+ ContractChecker and StaticChecker define invariants as "expressions that are
+ true for particular data".  They call a function which returns true if all data
+ are valid, and returns false if any datum is invalid.  This is called the
  validator function, and the host class or function provides a pointer to it.
  The validator could also assert for any invariant which fails rather than
  return false.  If the validator is a static member function, you can use it
@@ -68,25 +78,76 @@ namespace Loki
    in a valid state if an exception occurs.  (Which I call either the no-leak
    or no-break guarantee depending on context.)
 
- @par Writing Your Own Policies
+ @par Provided Exception Policies
+ Loki provides several exception policies for use with ContractChecker.
+ - CheckForNoChangeOrThrow
+ - CheckForNoThrow
+ - CheckForNoChange
+ - CheckForEquality
+ - CheckForNothing
+ Loki also provides these two policies for StaticChecker.
+ - CheckStaticForNoThrow
+ - CheckStaticForNothing
+
+ @par Writing Your Own Policies for ContractChecker
  Loki provides several exception policies for ContractChecker.  These policies
  assert if an object changed or a function threw an exception.  If you prefer
- policies that log failures to a file, pop-up a message box, notify your unit-
- test framework, or whatever else, you can easily write your own policies.
- Your policy class should have two functions, a constructor and a Check
- function, both of which accept a pointer to const instance of the host class.
- Your policy class will become a base class of ContractChecker.  Check should
- return true if all is okay, and false if any failure was detected.  Check
- should never throw any exceptions since it is called from ContractChecker's
- destructor.  You may add other functions to the policy class.  This code
- snippet shows the signatures for the two required functions.
+ policies that log failures to a file, send an email, file a bug report, pop-up
+ a message box, notify your unit-test framework, or whatever else, you can
+ easily write your own policies.  Please follow these guidelines when writing
+ your own policies:
+ - Each policy class must provide three public functions, a constructor, a destructor, and a Check function.
+ - The destructor could be implied.  (Not actually written, and provided by the compiler.)
+ - The constructor and Check functions accept a pointer to const instance of the host class.
+ - Your policy class will become a base class of ContractChecker.
+ - Check should return true if all is okay, and false for any failures.
+ - Check should never throw any exceptions since it is called by a destructor.
+ - You may add other functions or features to your policy class.
+
+ @par Using a Memento
+ Sometimes copying or comparing the host object is very expensive.  If you do
+ not want ContractChecker to copy the host object, you can provide an optional
+ template parameter called Memento.  The memento stores a little information on
+ the host object's state so that when the Host's function ends, ContractChecker
+ will use the memento to determine if the host object changed.  A Host class can
+ declare a Memento class as an internal class.  These guidelines will help you
+ design a memento class:
+ - Your exception policy's constructor should not copy the host object but use a memento to store info about the host.
+ - The memento should provide a constructor, an equality operator, and a destructor.
+ - The memento's destructor could be implied.  (Not actually written, and provided by the compiler.)
+ - The memento's constructor and equality operator must accept a reference to a const Host object.
+ - The memento's equality operator should return false if the memento differs from the host.
+
+ This code snippet shows the template parameters for an exception policy that
+ uses a Memento and the signatures for the three required functions for a
+ ContractChecker policy.
  @code
+ template < class Host, class Memento >
  class YourPolicy
- { public:
+ {
+ public:
     explicit YourPolicy( const Host * );
     bool Check( const Host * ) const;
+    ~YourPolicy();
+  private:
+    Memento m_compare;
  }
  @endcode
+
+ The following code snippet shows the template parameters and function
+ declarations for an exception policy that does not use a Memento.
+ @code
+ template < class Host >
+ class YourPolicy< Host, void >
+ {
+ public:
+    explicit YourPolicy( const Host * );
+    bool Check( const Host * ) const;
+    ~YourPolicy();
+ }
+ @endcode
+
+ @par Writing Your Own Policies for StaticChecker
  Loki provides two exception policies for StaticChecker - one that asserts if
  an exception occurred, and one that does not care about exceptions.  You can
  make your own policy to log failures, send an email, file a bug report, or do
@@ -101,7 +162,36 @@ namespace Loki
     bool Check() const;
  }
  @endcode
+
+ @par Requirements for Host Object
+ CheckForNoThrow and CheckForNothing impose no restrictions on the host class.
+ The policies for StaticChecker impose no restrictions either.  All other
+ policies require the Host class to either provide a Memento class or have a
+ public copy-constructor, destructor, and equality operator.  If the Host class
+ provides a Memento class, then follow the guidelines listed above in the
+ section called "Using a Memento".
+
+ @par Writing Your Own Policies for StaticChecker
+ Loki provides two exception policies for StaticChecker - one that asserts if
+ an exception occurred, and one that does not care about exceptions.  Please
+ follow these guidelines when writing policies:
+ - Each policy needs a default constructor, a destructor, and a function named Check.
+ - The constructor and destructor may be implied.
+ - Make sure your Check function never throws any exceptions.
+ - Any additional functions or features of the policy are up to you.
+
+ This code snippet shows the signatures for the three required functions for a
+ StaticChecker policy.
+ @code
+ class YourPolicy
+ { public:
+    YourPolicy();
+    bool Check() const;
+    ~YourPolicy();
+ }
+ @endcode
  */
+
 
 // ----------------------------------------------------------------------------
 
@@ -110,13 +200,16 @@ namespace Loki
  @par Exception Safety Level:
  This exception-checking policy class for ContractChecker asserts if an
  exception exists.  Host classes can use this to show that a member function
- provides the no-throw exception safety guarantees.
+ provides the no-throw exception safety guarantees.  Since this policy does not
+ care if the host object changed, use this policy for operations which change
+ the host object but never throw.
 
  @par Requirements For Host Class:
- This policy imposes no requirements on a host class.
+ This policy imposes no requirements on a host class.  This ignores the Memento
+ template parameter.
  */
 
-template < class Host >
+template < class Host, class Memento >
 class CheckForNoThrow
 {
 public:
@@ -133,6 +226,8 @@ public:
 
 // ----------------------------------------------------------------------------
 
+template < class Host, class Memento > class CheckForNoChange;
+
 /** @class CheckForNoChange
 
  @par Exception Safety Level:
@@ -144,11 +239,10 @@ public:
  @par Requirements:
  This policy requires hosts to provide both the copy-constructor and the
  equality operator, and is intended for classes with value semantics.
- equality operator.
  */
 
 template < class Host >
-class CheckForNoChange
+class CheckForNoChange< Host, void >
 {
 public:
 
@@ -167,23 +261,70 @@ private:
     Host m_compare;
 };
 
+template < class Host, class Memento >
+class CheckForNoChange
+{
+public:
+
+    inline explicit CheckForNoChange( const Host * host ) :
+        m_compare( *host ) {}
+
+    inline bool Check( const Host * host ) const
+    {
+        const bool okay = ( !::std::uncaught_exception() )
+            || ( m_compare == *host );
+        assert( okay );
+        return okay;
+    }
+
+private:
+    Memento m_compare;
+};
+
 // ----------------------------------------------------------------------------
 
+template < class Host, class Memento > class CheckForNoChangeOrThrow;
+
 /** @class CheckForNoChangeOrThrow
+ This policy comes in two forms - one uses a memento, and one does not.  The
+ memento form does not copy the host object, but stores info about the host in
+ a memento for later comparison with the host.  The other form copies the host
+ object to a temporary and then compares that to the original.
 
  @par Exception Safety Level:
  This exception-checking policy class for ContractChecker asserts either if a
  copy of the host differs from the original host object, or if an exception
  occurs. Host classes can use this policy to show which member functions provide
- the no-throw exception guarantee, and would never change data anyway.
+ the no-throw exception guarantee and never change data anyway.
 
  @par Requirements For Host Class:
  This policy requires hosts to provide both the copy-constructor and the
  equality operator, and is intended for classes with value semantics.
  */
 
-template < class Host >
+template < class Host, class Memento >
 class CheckForNoChangeOrThrow
+{
+public:
+
+    inline explicit CheckForNoChangeOrThrow( const Host * host ) :
+        m_compare( *host ) {}
+
+    inline bool Check( const Host * host ) const
+    {
+        bool okay = ( !::std::uncaught_exception() );
+        assert( okay );
+        okay = ( m_compare == *host );
+        assert( okay );
+        return okay;
+    }
+
+private:
+    Memento m_compare;
+};
+
+template < class Host >
+class CheckForNoChangeOrThrow< Host, void >
 {
 public:
 
@@ -205,6 +346,8 @@ private:
 
 // ----------------------------------------------------------------------------
 
+template < class Host, class Memento > class CheckForEquality;
+
 /** @class CheckForEquality
 
  @par Exception Safety Level:
@@ -216,10 +359,33 @@ private:
  @par Requirements For Host Class:
  This policy requires hosts to provide both the copy-constructor and the
  equality operator, and is intended for classes with value semantics.
+
+ @par Requirements For Memento Class:
+ This policy requires Memento to provide a constructor and an equality operator
+ that accept a reference to a const host.
  */
 
-template < class Host >
+template < class Host, class Memento >
 class CheckForEquality
+{
+public:
+
+    inline explicit CheckForEquality( const Host * host ) :
+        m_compare( *host ) {}
+
+    inline bool Check( const Host * host ) const
+    {
+        const bool okay = ( m_compare == *host );
+        assert( okay );
+        return okay;
+    }
+
+private:
+    Memento m_compare;
+};
+
+template < class Host >
+class CheckForEquality< Host, void >
 {
 public:
 
@@ -245,13 +411,15 @@ private:
  This exception-checking policy class for ContractChecker does nothing when
  called.  Host classes can use this to show which member functions provide
  neither the strong nor no-throw exception guarantees.  The best guarantee such
- functions can provide is that nothing gets leaked.
+ functions can provide is that nothing gets leaked.  Use this policy for any
+ function that may throw exceptions and will change the host object.
 
  @par Requirements For Host Class:
- This policy imposes no requirements on a host class.
+ This policy imposes no requirements on a host class.  This ignores the Memento
+ template parameter.
  */
 
-template < class Host >
+template < class Host, class Memento >
 class CheckForNothing
 {
 public:
@@ -308,12 +476,13 @@ public:
 template
 <
     class Host,
-    template < class > class ExceptionPolicy
+    template < class, class > class ExceptionPolicy,
+    class Memento = void
 >
-class ContractChecker : public ExceptionPolicy< Host >
+class ContractChecker : public ExceptionPolicy< Host, Memento >
 {
     /// Shorthand for the ExceptionPolicy class.
-    typedef ExceptionPolicy< Host > Ep;
+    typedef ExceptionPolicy< Host, Memento > Ep;
 
 public:
 
@@ -405,15 +574,15 @@ private:
  exception policies for ContractChecker, you might want to also write a struct
  similiar to CheckFor to conveniently declare all your policies.
  */
-template < class Host >
+template < class Host, class Memento = void >
 struct CheckFor
 {
     // These lines declare checkers for non-static functions in a host class.
-    typedef ContractChecker< Host, CheckForNoChangeOrThrow > NoChangeOrThrow;
-    typedef ContractChecker< Host, CheckForNoThrow         > NoThrow;
-    typedef ContractChecker< Host, CheckForNoChange        > NoChange;
-    typedef ContractChecker< Host, CheckForEquality        > Equality;
-    typedef ContractChecker< Host, CheckForNothing         > Invariants;
+    typedef ContractChecker< Host, CheckForNoChangeOrThrow, Memento > NoChangeOrThrow;
+    typedef ContractChecker< Host, CheckForNoThrow,         Memento > NoThrow;
+    typedef ContractChecker< Host, CheckForNoChange,        Memento > NoChange;
+    typedef ContractChecker< Host, CheckForEquality,        Memento > Equality;
+    typedef ContractChecker< Host, CheckForNothing,         Memento > Invariants;
 };
 
 // ----------------------------------------------------------------------------
