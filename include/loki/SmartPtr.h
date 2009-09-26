@@ -88,7 +88,7 @@ namespace Loki
         HeapStorage(const HeapStorage<U>&) : pointee_(0)
         {}
 
-        HeapStorage(const StoredType& p) : pointee_(p) {}
+        explicit HeapStorage(const StoredType& p) : pointee_(p) {}
 
         PointerType operator->() const { return pointee_; }
 
@@ -170,7 +170,7 @@ namespace Loki
         DefaultSPStorage(const DefaultSPStorage<U>&) : pointee_(0)
         {}
 
-        DefaultSPStorage(const StoredType& p) : pointee_(p) {}
+        explicit DefaultSPStorage(const StoredType& p) : pointee_(p) {}
 
         PointerType operator->() const { return pointee_; }
 
@@ -249,7 +249,7 @@ namespace Loki
     class Locker
     {
     public:
-        Locker( const T * p ) : pointee_( const_cast< T * >( p ) )
+        explicit Locker( const T * p ) : pointee_( const_cast< T * >( p ) )
         {
             if ( pointee_ != 0 )
                 pointee_->Lock();
@@ -293,7 +293,7 @@ namespace Loki
 
         LockedStorage( const LockedStorage&) : pointee_( 0 ) {}
 
-        LockedStorage( const StoredType & p ) : pointee_( p ) {}
+        explicit LockedStorage( const StoredType & p ) : pointee_( p ) {}
 
         PointerType operator->()
         {
@@ -377,7 +377,7 @@ namespace Loki
         ArrayStorage(const ArrayStorage<U>&) : pointee_(0)
         {}
 
-        ArrayStorage(const StoredType& p) : pointee_(p) {}
+        explicit ArrayStorage(const StoredType& p) : pointee_(p) {}
 
         PointerType operator->() const { return pointee_; }
 
