@@ -295,7 +295,7 @@ namespace Loki
 
         explicit LockedStorage( const StoredType & p ) : pointee_( p ) {}
 
-        PointerType operator->()
+        PointerType operator->() const
         {
             return Locker< T >( pointee_ );
         }
