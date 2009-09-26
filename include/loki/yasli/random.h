@@ -5,6 +5,8 @@
 
 
 #include <ctime>
+#include <limits.h>
+
 
 class Random 
 {
