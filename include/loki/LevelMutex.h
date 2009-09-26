@@ -280,8 +280,9 @@ protected:
     {
     public:
         inline explicit Checker( const volatile LevelMutexInfo * mutex ) :
-            m_mutex( mutex ) {}
-        inline ~Checker( void ) { m_mutex->IsValid(); }
+            m_mutex( mutex ) { Check(); }
+        inline ~Checker( void ) { Check(); }
+        inline bool Check( void ) const { return m_mutex->IsValid(); }
     private:
         Checker( void );
         Checker( const Checker & );
@@ -782,7 +783,6 @@ public:
 
     virtual MutexErrors::Type TryLock( void ) volatile
     {
-        assert( IsValid() );
         LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( true );
@@ -804,7 +804,6 @@ public:
 
     virtual MutexErrors::Type Lock( void ) volatile
     {
-        assert( IsValid() );
         LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( false );
@@ -824,7 +823,6 @@ public:
 
     virtual MutexErrors::Type Lock( unsigned int milliSeconds ) volatile
     {
-        assert( IsValid() );
         LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( false );
@@ -860,7 +858,6 @@ public:
 
     virtual MutexErrors::Type Unlock( void ) volatile
     {
-        assert( IsValid() );
         LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreUnlockCheck();
@@ -906,7 +903,6 @@ private:
      */
     virtual MutexErrors::Type LockThis( void ) volatile
     {
-        assert( IsValid() );
         LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
         assert( this != LevelMutexInfo::GetCurrentMutex() );
 
@@ -927,7 +923,6 @@ private:
      */
     virtual MutexErrors::Type LockThis( unsigned int milliSeconds ) volatile
     {
-        assert( IsValid() );
         LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 
         clock_t timeOut = clock() + milliSeconds;
@@ -953,9 +948,8 @@ private:
      */
     virtual MutexErrors::Type UnlockThis( void ) volatile
     {
-        assert( IsValid() );
-        assert( NULL != LevelMutexInfo::GetCurrentMutex() );
         LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        assert( NULL != LevelMutexInfo::GetCurrentMutex() );
 
         if ( 1 < LevelMutexInfo::GetLockCount() )
         {
