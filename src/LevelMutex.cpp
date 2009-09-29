@@ -20,7 +20,25 @@
 
 // ----------------------------------------------------------------------------
 
-#if (!defined(__CYGWIN__) || (defined(__CYGWIN__) && __GNUC__ > 3)) && !defined(__APPLE__)
+// First assume the compiler does allow thread-local storage by #defining the
+// macro which allows compiler to see the code inside this file.
+// Then #undefine the macro for compilers which are known for not supporting
+// thread-local storage.
+#define COMPILER_ALLOWS_THREAD_LOCAL_STORAGE 1
+
+// The __APPLE__ macro does not refer to a compiler, but to the Apple OSX operating system.
+#if defined( __APPLE__ )
+    #warning "GCC for Apple does not allow thread_local storage, so you can not use Loki::LevelMutex."
+    #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+#endif
+
+#if ( defined( __CYGWIN__ ) && ( __GNUC__ <= 3 ) )
+    #warning "Older versions of GCC for Cygwin do not allow thread_local storage, so you can not use Loki::LevelMutex."
+    #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+#endif
+
+#if defined( COMPILER_ALLOWS_THREAD_LOCAL_STORAGE )
+
 
 #include <loki/LevelMutex.h>
 
@@ -1143,6 +1161,4 @@ bool MultiMutexLocker::Unlock( void )
 
 } // end namespace Loki
 
-
-#endif
-
+#endif // #if defined( COMPILER_ALLOWS_THREAD_LOCAL_STORAGE )
