@@ -40,8 +40,11 @@
 #if defined( COMPILER_ALLOWS_THREAD_LOCAL_STORAGE )
 
 
-#include <loki/LevelMutex.h>
+#include "../include/loki/LevelMutex.h"
 
+#if !defined( _MSC_VER )
+    #include <unistd.h> // needed for usleep function.
+#endif
 #include <algorithm>
 #include <cerrno>
 
@@ -784,7 +787,9 @@ void MutexSleepWaits::Wait( void )
 #if defined( _MSC_VER )
     ::SleepEx( sleepTime, true );
 #else
-    ::sleep( sleepTime );
+    if ( 0 == sleepTime )
+        sleepTime = 1;
+    ::usleep( sleepTime * 1000 );
 #endif
 }
 
@@ -911,28 +916,27 @@ MutexErrors::Type SpinLevelMutex::Unlock( void ) volatile
 
 // ----------------------------------------------------------------------------
 
-#if defined( _MSC_VER )
-
 SleepLevelMutex::SleepLevelMutex( unsigned int level ) :
     SpinLevelMutex( level ),
-    m_sleepTime( 1 ),
-    m_wakable( true )
+    m_sleepTime( 1 )
+#if defined( _MSC_VER )
+    , m_wakable( true )
+#endif
 {
 }
 
 // ----------------------------------------------------------------------------
 
-#else
-
 SleepLevelMutex::SleepLevelMutex( unsigned int level, unsigned int sleepTime ) :
     SpinLevelMutex( level ),
-    m_sleepTime( sleepTime / 1000 )
+    m_sleepTime( sleepTime )
+#if defined( _MSC_VER )
+    , m_wakable( true )
+#endif
 {
     if ( 0 == m_sleepTime )
-        m_sleepTime = 1; // Can't have a resolution less than 1 second.
+        m_sleepTime = 1; // Can't have a resolution less than 1 millisecond.
 }
-
-#endif
 
 // ----------------------------------------------------------------------------
 
@@ -953,7 +957,7 @@ MutexErrors::Type SleepLevelMutex::Lock( void ) volatile
 #if defined( _MSC_VER )
         ::SleepEx( m_sleepTime, m_wakable );
 #else
-        ::sleep( m_sleepTime );
+        ::usleep( m_sleepTime * 1000 );
 #endif
     }
     return MutexErrors::Success;
