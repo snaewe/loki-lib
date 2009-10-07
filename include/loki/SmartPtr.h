@@ -70,7 +70,7 @@ namespace Loki
     template <class T>
     class HeapStorage
     {
-    public:
+    protected:
         typedef T* StoredType;      /// the type of the pointee_ object
         typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;     /// type returned by operator->
@@ -152,7 +152,7 @@ namespace Loki
     template <class T>
     class DefaultSPStorage
     {
-    public:
+    protected:
         typedef T* StoredType;    // the type of the pointee_ object
         typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;   // type returned by operator->
@@ -359,7 +359,7 @@ namespace Loki
     template <class T>
     class ArrayStorage
     {
-    public:
+    protected:
         typedef T* StoredType;    // the type of the pointee_ object
         typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;   // type returned by operator->
@@ -435,7 +435,7 @@ namespace Loki
     template <class P>
     class RefCounted
     {
-    public:
+    protected:
         RefCounted()
             : pCount_(static_cast<uintptr_t*>(
                 SmallObject<>::operator new(sizeof(uintptr_t))))
@@ -511,7 +511,7 @@ namespace Loki
             typedef typename base_type::IntType       CountType;
             typedef volatile CountType               *CountPtrType;
 
-        public:
+        protected:
             RefCountedMT()
             {
                 pCount_ = static_cast<CountPtrType>(
@@ -574,7 +574,7 @@ namespace Loki
     template <class P>
     class COMRefCounted
     {
-    public:
+    protected:
         COMRefCounted()
         {}
 
@@ -614,6 +614,7 @@ namespace Loki
     template <class P>
     struct DeepCopy
     {
+    protected:
         DeepCopy()
         {}
 
@@ -673,7 +674,7 @@ namespace Loki
     template <class P>
     class RefLinked : public Private::RefLinkedBase
     {
-    public:
+    protected:
         RefLinked()
         {}
 
@@ -706,7 +707,7 @@ namespace Loki
     template <class P>
     class DestructiveCopy
     {
-    public:
+    protected:
         DestructiveCopy()
         {}
 
@@ -742,7 +743,7 @@ namespace Loki
     template <class P>
     class NoCopy
     {
-    public:
+    protected:
         NoCopy()
         {}
 
