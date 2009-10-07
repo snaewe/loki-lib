@@ -70,11 +70,13 @@ namespace Loki
     template <class T>
     class HeapStorage
     {
-    protected:
+    public:
         typedef T* StoredType;      /// the type of the pointee_ object
         typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;     /// type returned by operator->
         typedef T& ReferenceType;   /// type returned by operator*
+
+    protected:
 
         HeapStorage() : pointee_(Default())
         {}
@@ -107,7 +109,6 @@ namespace Loki
         template <class F>
         friend typename HeapStorage<F>::StoredType& GetImplRef(HeapStorage<F>& sp);
 
-    protected:
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
         void Destroy()
@@ -152,11 +153,13 @@ namespace Loki
     template <class T>
     class DefaultSPStorage
     {
-    protected:
+    public:
         typedef T* StoredType;    // the type of the pointee_ object
         typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;   // type returned by operator->
         typedef T& ReferenceType; // type returned by operator*
+
+    protected:
 
         DefaultSPStorage() : pointee_(Default())
         {}
@@ -189,7 +192,6 @@ namespace Loki
         template <class F>
         friend typename DefaultSPStorage<F>::StoredType& GetImplRef(DefaultSPStorage<F>& sp);
 
-    protected:
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
 		//
@@ -287,6 +289,8 @@ namespace Loki
         typedef Locker< T > PointerType; /// type returned by operator->
         typedef T& ReferenceType;        /// type returned by operator*
 
+    protected:
+
         LockedStorage() : pointee_( Default() ) {}
 
         ~LockedStorage( void ) {}
@@ -315,7 +319,6 @@ namespace Loki
         template <class F>
         friend typename LockedStorage<F>::StoredType& GetImplRef(LockedStorage<F>& sp);
 
-    protected:
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
         void Destroy()
@@ -359,11 +362,14 @@ namespace Loki
     template <class T>
     class ArrayStorage
     {
-    protected:
+    public:
+
         typedef T* StoredType;    // the type of the pointee_ object
         typedef T* InitPointerType; /// type used to declare OwnershipPolicy type.
         typedef T* PointerType;   // type returned by operator->
         typedef T& ReferenceType; // type returned by operator*
+
+    protected:
 
         ArrayStorage() : pointee_(Default())
         {}
@@ -396,7 +402,6 @@ namespace Loki
         template <class F>
         friend typename ArrayStorage<F>::StoredType& GetImplRef(ArrayStorage<F>& sp);
 
-    protected:
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
         void Destroy()
@@ -507,6 +512,8 @@ namespace Loki
         template <class P>
         class RefCountedMT : public ThreadingModel< RefCountedMT<P>, MX >
         {
+        public:
+
             typedef ThreadingModel< RefCountedMT<P>, MX > base_type;
             typedef typename base_type::IntType       CountType;
             typedef volatile CountType               *CountPtrType;
@@ -646,7 +653,7 @@ namespace Loki
     {
         class LOKI_EXPORT RefLinkedBase
         {
-        public:
+        protected:
             RefLinkedBase()
             { prev_ = next_ = this; }
 
@@ -818,6 +825,8 @@ namespace Loki
     template <class P>
     struct NoCheck
     {
+    protected:
+
         NoCheck()
         {}
 
@@ -850,6 +859,8 @@ namespace Loki
     template <class P>
     struct AssertCheck
     {
+    protected:
+
         AssertCheck()
         {}
 
@@ -886,6 +897,8 @@ namespace Loki
     template <class P>
     struct AssertCheckStrict
     {
+    protected:
+
         AssertCheckStrict()
         {}
 
@@ -940,6 +953,8 @@ namespace Loki
     template <class P>
     struct RejectNullStatic
     {
+    protected:
+
         RejectNullStatic()
         {}
 
@@ -988,6 +1003,8 @@ namespace Loki
     template <class P>
     struct RejectNull
     {
+    protected:
+
         RejectNull()
         {}
 
@@ -1022,6 +1039,8 @@ namespace Loki
     template <class P>
     struct RejectNullStrict
     {
+    protected:
+
         RejectNullStrict()
         {}
 
