@@ -45,6 +45,9 @@
 
 // ----------------------------------------------------------------------------
 
+#include <stdio.h>
+#include <string.h>
+
 #include <iostream>
 #include <new>
 
@@ -430,7 +433,7 @@ const char * GetGnuVersion( void )
     static char buffer[ 64 ];
     sprintf( buffer, "GNU version %d.%d.%d", major, minor, patch );
     return buffer;
-    
+
 #else
     return "not a GNU compiler";
 #endif
@@ -751,11 +754,11 @@ void RunTests( void )
 
 // ----------------------------------------------------------------------------
 
-int main( unsigned int argc, const char * const argv[] )
+int main( int argc, const char * const argv[] )
 {
 
     bool caught = false;
-    for ( unsigned int aa = 1; aa < argc; ++aa )
+    for ( int aa = 1; aa < argc; ++aa )
     {
         if ( ::strcmp( argv[aa], "-v" ) == 0 )
             s_verbose = true;
