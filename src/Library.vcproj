@@ -160,6 +160,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\loki\CachedFactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\loki\Checker.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\loki\CheckReturn.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\loki\ConstPolicy.h"
 				>
 			</File>
