@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Part of LevelMutex test program for The Loki Library
-// Copyright (c) 2008 Richard Sposato
+// Copyright (c) 2008, 2009 Richard Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
-// Permission to use, copy, modify, distribute and sell this software for any 
-// purpose is hereby granted without fee, provided that the above copyright 
-// notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+// purpose is hereby granted without fee, provided that the above copyright
+// notice appear in all copies and that both that copyright notice and this
 // permission notice appear in supporting documentation.
 //
 // The author makes no representations about the suitability of this software
@@ -22,6 +22,9 @@
 #include "Thing.hpp"
 
 #include <assert.h>
+#if !defined( _MSC_VER )
+    #include <unistd.h>
+#endif
 #include <algorithm>
 #include <functional>
 
@@ -68,11 +71,9 @@ ExceptionTossingMutex::ExceptionTossingMutex( unsigned int level ) :
 {
     assert( NULL != this );
 #if defined( _MSC_VER )
-    SetSleepTime( 5 );
     SetWakable( false );
-#else
-    SetSleepTime( 1 );
 #endif
+    SetSleepTime( 5 );
 }
 
 // ----------------------------------------------------------------------------
@@ -262,10 +263,10 @@ void GoToSleep( unsigned int milliSeconds )
 #if defined( _MSC_VER )
     ::SleepEx( milliSeconds, true );
 #elif ( __GNUC__ )
-    unsigned int seconds = milliSeconds / 1000;
-    if ( 0 == seconds )
-        seconds = 1;
-    ::_sleep( seconds );
+    unsigned int microseconds = milliSeconds * 1000;
+    if ( 0 == microseconds )
+        microseconds = 1;
+    ::usleep( microseconds );
 #else
     #error "Find out if your compiler supports a sleep command and add it here."
 #endif
@@ -346,11 +347,9 @@ Thing::Thing( unsigned int value ) :
 {
     assert( NULL != this );
 #if defined( _MSC_VER )
-    m_mutex.GetMutexPolicy().SetSleepTime( 5 );
     m_mutex.GetMutexPolicy().SetWakable( false );
-#else
-    m_mutex.GetMutexPolicy().SetSleepTime( 1 );
 #endif
+    m_mutex.GetMutexPolicy().SetSleepTime( 5 );
 }
 
 // ----------------------------------------------------------------------------
@@ -365,8 +364,11 @@ Thing::~Thing( void )
 void Thing::Print( unsigned int value, unsigned int index, unsigned int startSize ) const volatile
 {
     assert( NULL != this );
-    volatile SleepMutex & mutex = const_cast< volatile SleepMutex & >( m_mutex );
-    ConstSingleThingLocker pSafeThis( *this, mutex );
+    MutexLocker locker( m_mutex );
+    assert( m_mutex.IsLockedByCurrentThread() );
+//    volatile SleepMutex & mutex = const_cast< volatile SleepMutex & >( m_mutex );
+//    ConstSingleThingLocker pSafeThis( *this, mutex );
+    const Thing * pSafeThis = const_cast< const Thing * >( this );
     pSafeThis->Print( value, index, startSize );
 }
 
@@ -453,11 +455,9 @@ LevelThing::LevelThing( unsigned int level, unsigned int place ) :
 {
     assert( NULL != this );
 #if defined( _MSC_VER )
-    m_mutex.GetMutexPolicy().SetSleepTime( 5 );
     m_mutex.GetMutexPolicy().SetWakable( false );
-#else
-    m_mutex.GetMutexPolicy().SetSleepTime( 1 );
 #endif
+    m_mutex.GetMutexPolicy().SetSleepTime( 5 );
 }
 
 // ----------------------------------------------------------------------------
@@ -469,7 +469,7 @@ LevelThing::~LevelThing( void )
 
 // ----------------------------------------------------------------------------
 
-LevelThing::Unlocker LevelThing::LockHierarchy( void ) volatile
+LevelThing::MyUnlocker LevelThing::LockHierarchy( void ) volatile
 {
     assert( NULL != this );
     for ( signed ii = m_place; 0 <= ii; --ii )
@@ -481,7 +481,7 @@ LevelThing::Unlocker LevelThing::LockHierarchy( void ) volatile
             break;
     }
 
-    Unlocker unlocker( this );
+    MyUnlocker unlocker( this );
     return unlocker;
 }
 
@@ -578,11 +578,9 @@ SomeThing::SomeThing( unsigned int level, unsigned int place ) :
 {
     assert( NULL != this );
 #if defined( _MSC_VER )
-    m_mutex.GetMutexPolicy().SetSleepTime( 5 );
     m_mutex.GetMutexPolicy().SetWakable( false );
-#else
-    m_mutex.GetMutexPolicy().SetSleepTime( 1 );
 #endif
+    m_mutex.GetMutexPolicy().SetSleepTime( 5 );
 }
 
 // ----------------------------------------------------------------------------
