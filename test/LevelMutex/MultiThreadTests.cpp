@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Part of LevelMutex test program for The Loki Library
-// Copyright (c) 2008 Richard Sposato
+// Copyright (c) 2008, 2009 Richard Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
 // Permission to use, copy, modify, distribute and sell this software for any 
@@ -855,7 +855,7 @@ void * SafeHierarchyTest( void * p )
             {
                 thing = LevelThing::GetFromPool( ii );
                 assert( nullptr != thing );
-                LevelThing::Unlocker unlocker( thing->LockHierarchy() );
+                LevelThing::MyUnlocker unlocker( thing->LockHierarchy() );
                 (void)unlocker;
                 thing->SetValue( value );
                 ::GoToSleep( 3 );
@@ -867,7 +867,7 @@ void * SafeHierarchyTest( void * p )
                 const unsigned int randomIndex = ( ::rand() % thingCount );
                 thing = LevelThing::GetFromPool( randomIndex );
                 assert( nullptr != thing );
-                LevelThing::Unlocker unlocker( thing->LockHierarchy() );
+                LevelThing::MyUnlocker unlocker( thing->LockHierarchy() );
                 (void)unlocker;
                 thing->SetValue( value );
                 ::GoToSleep( 3 );

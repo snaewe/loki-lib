@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Part of LevelMutex test program for The Loki Library
-// Copyright (c) 2008 Richard Sposato
+// Copyright (c) 2008, 2009 Richard Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
-// Permission to use, copy, modify, distribute and sell this software for any 
-// purpose is hereby granted without fee, provided that the above copyright 
-// notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+// purpose is hereby granted without fee, provided that the above copyright
+// notice appear in all copies and that both that copyright notice and this
 // permission notice appear in supporting documentation.
 //
 // The author makes no representations about the suitability of this software
@@ -207,7 +207,7 @@ class LevelThing
 {
 public:
 
-    typedef Unlocker< LevelThing > Unlocker;
+    typedef Unlocker< LevelThing > MyUnlocker;
 
     static volatile LevelThing * GetFromPool( unsigned int index );
 
@@ -215,7 +215,7 @@ public:
 
     static void DestroyPool( void );
 
-    Unlocker LockHierarchy( void ) volatile;
+    MyUnlocker LockHierarchy( void ) volatile;
 
     void UnlockHierarchy( void ) volatile;
 
