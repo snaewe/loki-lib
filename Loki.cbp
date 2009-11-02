@@ -95,6 +95,7 @@
 		<Unit filename="include\loki\SmallObj.h" />
 		<Unit filename="include\loki\SmartPtr.h" />
 		<Unit filename="include\loki\StrongPtr.h" />
+		<Unit filename="include\loki\ThreadLocal.h" />
 		<Unit filename="include\loki\Threads.h" />
 		<Unit filename="include\loki\Tuple.h" />
 		<Unit filename="include\loki\TypeManip.h" />
