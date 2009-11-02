@@ -4,9 +4,9 @@
 // Copyright (c) 2008 Richard Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
-// Permission to use, copy, modify, distribute and sell this software for any 
-// purpose is hereby granted without fee, provided that the above copyright 
-// notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+// purpose is hereby granted without fee, provided that the above copyright
+// notice appear in all copies and that both that copyright notice and this
 // permission notice appear in supporting documentation.
 //
 // The author makes no representations about the suitability of this software
@@ -18,6 +18,9 @@
 // ----------------------------------------------------------------------------
 
 #include <vector>
+
+#include <loki/ThreadLocal.h>
+
 
 // ----------------------------------------------------------------------------
 
@@ -44,34 +47,6 @@ typedef void * ( * CallFunction )( void * );
                  pthread_create( handle, attr, func, arg )
     #define LokiThreadJoin( thread ) pthread_join( thread, NULL )
 
-#endif
-
-
-/** @par thread_local Keyword
- The mutexes require compilers to provide thread local storage - meaning each
- thread gets its own copy of the data.  The next version of C++ will have a
- new keyword, thread_local for that purpose.  Some existing compilers already
- provide thread local storage using different syntax, so these lines use
- thread_local to mimic that syntax.  If your compiler provides thread local
- storage but using different syntax besides "thread_local", you may want to
- modify these lines.  If your compiler does not support thread local storage,
- you can't use LevelMutex.
- */
-#ifndef LOKI_THREAD_LOCAL
-    #if defined( _MSC_VER )
-        #if ( _MSC_VER >= 1300 )
-            #define LOKI_THREAD_LOCAL __declspec( thread )
-        #else
-            #error "Only Visual Studio versions 7.0 and after supported."
-        #endif
-
-    #elif ( __GNUC__ )
-        #define LOKI_THREAD_LOCAL __thread
-
-    #else
-        #warning "Check if your compiler provides thread local storage."
-        #define LOKI_THREAD_LOCAL thread_local
-    #endif
 #endif
 
 
