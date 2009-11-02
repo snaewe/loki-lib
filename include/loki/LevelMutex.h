@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // LevelMutex facility for the Loki Library
-// Copyright (c) 2008 Richard Sposato
+// Copyright (c) 2008, 2009 Richard Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
-// Permission to use, copy, modify, distribute and sell this software for any 
-// purpose is hereby granted without fee, provided that the above copyright 
-// notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+// purpose is hereby granted without fee, provided that the above copyright
+// notice appear in all copies and that both that copyright notice and this
 // permission notice appear in supporting documentation.
 //
 // The author makes no representations about the suitability of this software
@@ -35,35 +35,14 @@
 #endif
 
 #if !defined(_WIN32) && !defined(_WIN64)
-    #include <unistd.h> // declares sleep under Linux
+    #include <unistd.h> // declares usleep under Linux
 #endif
 
-/** @par thread_local Keyword
- The mutexes require compilers to provide thread local storage - meaning each
- thread gets its own copy of the data.  The next version of C++ will have a
- new keyword, thread_local for that purpose.  Some existing compilers already
- provide thread local storage using different syntax, so these lines use
- thread_local to mimic that syntax.  If your compiler provides thread local
- storage but using different syntax besides "thread_local", you may want to
- modify these lines.  If your compiler does not support thread local storage,
- you can't use LevelMutex.
- */
-#ifndef LOKI_THREAD_LOCAL
-    #if defined( _MSC_VER )
-        #if ( _MSC_VER >= 1300 )
-            #define LOKI_THREAD_LOCAL __declspec( thread )
-        #else
-            #error "Only Visual Studio versions 7.0 and after supported."
-        #endif
+#include <loki/ThreadLocal.h> // Include Loki's form of thread_local declaration.
 
-    #elif ( __GNUC__ )
-        #define LOKI_THREAD_LOCAL __thread
-
-    #else
-        #warning "Check if your compiler provides thread local storage."
-        #define LOKI_THREAD_LOCAL thread_local
-    #endif
-#endif
+#if !defined( LOKI_THREAD_LOCAL )
+    #warning "Your compiler will not allow Loki::LevelMutex."
+#else
 
 #if defined( DEBUG ) || defined( _DEBUG )
     #define LOKI_MUTEX_DEBUG_CODE( x ) x
@@ -106,7 +85,11 @@ public:
         InvalidAttribute,   ///< PThread mutex improperly initialized.
         InvalidAddress,     ///< Bad pointer used to initialize a PThread mutex.
         ExceptionThrown,    ///< Exception caught in mutex operation.
+        InvertedPriority,   ///< Mutex already locked by thread with lower priority.
         MayDeadlock,        ///< Locking this mutex may cause a deadlock.
+        NotPrivileged,      ///< Program does not have privilege to initialize mutexes.
+        NotEnoughMemory,    ///< Program does not have enough memory to initialize mutex.
+        NotEnoughResources, ///< Program does not have enough resources to initialize mutex.
         OtherError          ///< Unknown error occurred.
     };
 };
@@ -374,7 +357,7 @@ private:
      */
     virtual MutexErrors::Type LockThis( unsigned int milliSeconds ) volatile = 0;
 
-    /// Called only by MultiUnlock to unlock each particular mutex within a container. 
+    /// Called only by MultiUnlock to unlock each particular mutex within a container.
     virtual MutexErrors::Type UnlockThis( void ) volatile = 0;
 
     /// Pointer to singly-linked list of mutexes locked by the current thread.
@@ -565,7 +548,7 @@ private:
  Implements a sleeping loop to wait for the mutex to unlock.
 
  @par Purpose
- Since this class puts the thread to sleep for short intervals, you can use this 
+ Since this class puts the thread to sleep for short intervals, you can use this
  class for most of your mutexes. Especially for locking any high level resources
  where any one operation on the resouce consumes many CPU cycles.  The purpose of
  this mutex is to reduce the number of CPU cycles spent in idle loops.  All
@@ -1101,7 +1084,7 @@ public:
     /// Returns true if the mutex is locked by this object.
     inline bool IsLocked( void ) const { return m_locked; }
 
-    /// Provides access to mutex controlled by this. 
+    /// Provides access to mutex controlled by this.
     const volatile LevelMutexInfo & GetMutex( void ) const { return m_mutex; }
 
 private:
@@ -1179,7 +1162,7 @@ public:
     /// Returns true if the mutexes are locked by this object.
     inline bool IsLocked( void ) const { return m_locked; }
 
-    /// Provides access to the collection of mutexes controlled by this. 
+    /// Provides access to the collection of mutexes controlled by this.
     const LevelMutexInfo::MutexContainer & GetMutexes( void ) const { return m_mutexes; }
 
 private:
@@ -1201,5 +1184,7 @@ private:
 // ----------------------------------------------------------------------------
 
 } // end namespace Loki
+
+#endif // end else if compiler allows thread_local storage
 
 #endif  // end file guardian
