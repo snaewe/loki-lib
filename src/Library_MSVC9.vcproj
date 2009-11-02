@@ -329,6 +329,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\loki\ThreadLocal.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\loki\Threads.h"
 				>
 			</File>
