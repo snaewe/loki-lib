@@ -21,6 +21,9 @@
 #include <assert.h>
 
 #include <process.h>
+#if !defined( _MSC_VER )
+    #include <unistd.h> // needed for the usleep function.
+#endif
 
 
 using namespace ::std;
@@ -36,7 +39,7 @@ using namespace ::std;
 #endif
 
 
-volatile Thread * Thread::s_thread = nullptr;
+volatile LOKI_THREAD_LOCAL Thread * Thread::s_thread = nullptr;
 
 
 // ----------------------------------------------------------------------------
@@ -94,7 +97,7 @@ bool Thread::WaitForThread( void ) volatile
 #if defined( _MSC_VER )
         ::SleepEx( 1, true );
 #else
-        ::sleep( 1 );
+        ::usleep( 1000 );
 #endif
     }
     return true;
@@ -343,7 +346,7 @@ volatile Thread * ThreadPool::Start( CallFunction function, void * parm ) volati
 #if defined( _MSC_VER )
         ::SleepEx( 1, true );
 #else
-        ::sleep( 1 );
+        ::usleep( 1000 );
 #endif
         if ( thread->m_status == Thread::Starting )
         {
