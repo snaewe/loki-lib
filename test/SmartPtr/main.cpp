@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Test program for The Loki Library
 // Copyright (c) 2006 Richard Sposato
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The authors make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The authors make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +35,7 @@ extern void DoWeakCycleTests( void );
 extern void DoStrongConstTests( void );
 extern void DoStrongForwardReferenceTest( void );
 extern void DoStrongCompareTests( void );
+extern void DoStrongPtrDynamicCastTests( void );
 
 extern void DoLockedPtrTest( void );
 extern void DoLockedStorageTest( void );
@@ -1113,6 +1114,122 @@ void DoForwardReferenceTest( void )
     //p6 = p5;
 }
 
+// ----------------------------------------------------------------------------
+
+namespace
+{
+
+    class Feline
+    {
+    public:
+        virtual ~Feline() {}
+    };
+
+    class Lion : public Feline
+    {
+    public:
+        virtual ~Lion() {}
+    };
+
+    class Tiger : public Feline
+    {
+    public:
+        virtual ~Tiger() {}
+    };
+
+    class Dog
+    {
+    public:
+        virtual ~Dog() {}
+    };
+
+};
+
+// ----------------------------------------------------------------------------
+
+void DoSmartPtrDynamicCastTests( void )
+{
+    typedef ::Loki::SmartPtr< Feline > FelinePtr;
+    typedef ::Loki::SmartPtr< Lion > LionPtr;
+    typedef ::Loki::SmartPtr< Tiger > TigerPtr;
+    typedef ::Loki::SmartPtr< Dog > DogPtr;
+
+    Feline * feline = new Lion;
+    Lion * lion = new Lion;
+    Tiger * tiger = new Tiger;
+    Dog * dog = new Dog;
+
+    FelinePtr pFeline( feline );
+    LionPtr pLion( lion );
+    TigerPtr pTiger( tiger );
+    DogPtr pDog( dog );
+
+    // This is legal because C++ allows an automatic down-cast to public base class.
+    pFeline = pLion;
+
+#ifdef CHECK_TYPE_CAST
+    pLion = pFeline; // Fails as the compiler cannot convert pointers in SmartPtr
+#endif // CHECK_TYPE_CAST
+
+    assert( pFeline );
+    // Can up-cast from feline to lion only if the feline is a lion.
+    pLion.DynamicCastFrom( pFeline );
+    assert( pLion );
+    assert( pLion == pFeline );
+
+    // Can't cast from lion to tiger since although these are both types of felines,
+    // they are not related to one another.
+    pTiger.DynamicCastFrom( pLion );
+    assert( !pTiger );
+
+    // Can't cast from dog to lion since a dog is not a type of feline.
+    pLion.DynamicCastFrom( pDog );
+    assert( !pLion );
+
+    pLion.DynamicCastFrom( pFeline );
+    assert( pLion );
+    assert( pLion == pFeline );
+
+    // Can't cast from lion to dog since these animal types are not related.
+    pDog.DynamicCastFrom( pLion );
+    assert( !pDog );
+
+    feline = new Lion;
+    lion = new Lion;
+    tiger = new Tiger;
+    dog = new Dog;
+
+    // Now do tests when converting from const pointers.
+    const FelinePtr pcFeline( feline );
+    const LionPtr pcLion( lion );
+    const TigerPtr pcTiger( tiger );
+    const DogPtr pcDog( dog );
+
+    assert( pcFeline );
+    // Can up-cast from feline to lion only if the feline is a lion.
+    pLion.DynamicCastFrom( pcFeline );
+    assert( pLion );
+    assert( pLion == pcFeline );
+
+    // Can't cast from lion to tiger since although these are both types of felines,
+    // they are not related to one another.
+    pTiger.DynamicCastFrom( pcLion );
+    assert( !pTiger );
+
+    // Can't cast from dog to lion since a dog is not a type of feline.
+    pLion.DynamicCastFrom( pcDog );
+    assert( !pLion );
+
+    pLion.DynamicCastFrom( pcFeline );
+    assert( pLion );
+    assert( pLion == pcFeline );
+
+    // Can't cast from lion to dog since these animal types are not related.
+    pDog.DynamicCastFrom( pcLion );
+    assert( !pDog );
+}
+
+// ----------------------------------------------------------------------------
 
 int main( int argc, const char * argv[] )
 {
@@ -1146,6 +1263,8 @@ int main( int argc, const char * argv[] )
     DoConstConversionTests();
     DoOwnershipConversionTests();
     DoInheritanceConversionTests();
+    DoSmartPtrDynamicCastTests();
+    DoStrongPtrDynamicCastTests();
 
 #if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
     if ( doThreadTest )
@@ -1176,15 +1295,15 @@ struct Foo
 };
 
 typedef Loki::SmartPtr
-< 
+<
     BaseClass, RefCounted, DisallowConversion,
-    AssertCheck, DefaultSPStorage, DontPropagateConst 
-> 
+    AssertCheck, DefaultSPStorage, DontPropagateConst
+>
 Ptr;
 
 bool Compare( const Ptr&, const Ptr&)
 {
-    return true; 
+    return true;
 }
 
 void friend_handling()

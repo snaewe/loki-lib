@@ -1186,6 +1186,285 @@ void DoStrongCompareTests( void )
 
 // ----------------------------------------------------------------------------
 
+namespace
+{
+
+    class Feline
+    {
+    public:
+        virtual ~Feline() {}
+    };
+
+    class Lion : public Feline
+    {
+    public:
+        virtual ~Lion() {}
+    };
+
+    class Tiger : public Feline
+    {
+    public:
+        virtual ~Tiger() {}
+    };
+
+    class Dog
+    {
+    public:
+        virtual ~Dog() {}
+    };
+
+};
+
+// ----------------------------------------------------------------------------
+
+void DoStrongPtrDynamicCastTests( void )
+{
+    typedef ::Loki::StrongPtr< Feline, true, ::Loki::TwoRefCounts > FelineCountPtr;
+    typedef ::Loki::StrongPtr< Tiger,  true, ::Loki::TwoRefCounts > TigerCountPtr;
+    typedef ::Loki::StrongPtr< Lion,   true, ::Loki::TwoRefCounts > LionCountPtr;
+    typedef ::Loki::StrongPtr< Dog,    true, ::Loki::TwoRefCounts > DogCountPtr;
+
+    typedef ::Loki::StrongPtr< Feline, true, ::Loki::LockableTwoRefCounts > FelineLockPtr;
+    typedef ::Loki::StrongPtr< Tiger,  true, ::Loki::LockableTwoRefCounts > TigerLockPtr;
+    typedef ::Loki::StrongPtr< Lion,   true, ::Loki::LockableTwoRefCounts > LionLockPtr;
+    typedef ::Loki::StrongPtr< Dog,    true, ::Loki::LockableTwoRefCounts > DogLockPtr;
+
+    typedef ::Loki::StrongPtr< Feline, true, ::Loki::TwoRefLinks > FelineLinksPtr;
+    typedef ::Loki::StrongPtr< Tiger,  true, ::Loki::TwoRefLinks > TigerLinksPtr;
+    typedef ::Loki::StrongPtr< Lion,   true, ::Loki::TwoRefLinks > LionLinksPtr;
+    typedef ::Loki::StrongPtr< Dog,    true, ::Loki::TwoRefLinks > DogLinksPtr;
+
+    {
+        Feline * feline = new Lion;
+        Tiger * tiger = new Tiger;
+        Lion * lion = new Lion;
+        Dog * dog = new Dog;
+
+        FelineCountPtr pFeline( feline );
+        TigerCountPtr pTiger( tiger );
+        LionCountPtr pLion( lion );
+        DogCountPtr pDog( dog );
+
+        // This is legal because C++ allows an automatic down-cast to public base class.
+        pFeline = pLion;
+
+#ifdef CHECK_TYPE_CAST
+        pLion = pFeline; // Fails as the compiler cannot convert pointers in SmartPtr
+#endif // CHECK_TYPE_CAST
+
+        assert( pFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
+
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pLion );
+        assert( !pTiger );
+
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pDog );
+        assert( !pLion );
+
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
+
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pLion );
+        assert( !pDog );
+
+        feline = new Lion;
+        lion = new Lion;
+        tiger = new Tiger;
+        dog = new Dog;
+
+        // Now do tests when converting from const pointers.
+        const FelineCountPtr pcFeline( feline );
+        const TigerCountPtr pcTiger( tiger );
+        const LionCountPtr pcLion( lion );
+        const DogCountPtr pcDog( dog );
+
+        assert( pcFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
+
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pcLion );
+        assert( !pTiger );
+
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pcDog );
+        assert( !pLion );
+
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
+
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pcLion );
+        assert( !pDog );
+    }
+
+    {
+        Feline * feline = new Lion;
+        Tiger * tiger = new Tiger;
+        Lion * lion = new Lion;
+        Dog * dog = new Dog;
+
+        FelineLockPtr pFeline( feline );
+        TigerLockPtr pTiger( tiger );
+        LionLockPtr pLion( lion );
+        DogLockPtr pDog( dog );
+
+        // This is legal because C++ allows an automatic down-cast to public base class.
+        pFeline = pLion;
+
+#ifdef CHECK_TYPE_CAST
+        pLion = pFeline; // Fails as the compiler cannot convert pointers in SmartPtr
+#endif // CHECK_TYPE_CAST
+
+        assert( pFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
+
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pLion );
+        assert( !pTiger );
+
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pDog );
+        assert( !pLion );
+
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
+
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pLion );
+        assert( !pDog );
+
+        feline = new Lion;
+        tiger = new Tiger;
+        lion = new Lion;
+        dog = new Dog;
+
+        // Now do tests when converting from const pointers.
+        const FelineLockPtr pcFeline( feline );
+        const TigerLockPtr pcTiger( tiger );
+        const LionLockPtr pcLion( lion );
+        const DogLockPtr pcDog( dog );
+
+        assert( pcFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
+
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pcLion );
+        assert( !pTiger );
+
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pcDog );
+        assert( !pLion );
+
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
+
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pcLion );
+        assert( !pDog );
+    }
+
+    {
+        Feline * feline = new Lion;
+        Tiger * tiger = new Tiger;
+        Lion * lion = new Lion;
+        Dog * dog = new Dog;
+
+        FelineLinksPtr pFeline( feline );
+        TigerLinksPtr pTiger( tiger );
+        LionLinksPtr pLion( lion );
+        DogLinksPtr pDog( dog );
+
+        // This is legal because C++ allows an automatic down-cast to public base class.
+        pFeline = pLion;
+
+#ifdef CHECK_TYPE_CAST
+        pLion = pFeline; // Fails as the compiler cannot convert pointers in SmartPtr
+#endif // CHECK_TYPE_CAST
+
+        assert( pFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
+
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pLion );
+        assert( !pTiger );
+
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pDog );
+        assert( !pLion );
+
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
+
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pLion );
+        assert( !pDog );
+
+        feline = new Lion;
+        tiger = new Tiger;
+        lion = new Lion;
+        dog = new Dog;
+
+        // Now do tests when converting from const pointers.
+        const FelineLinksPtr pcFeline( feline );
+        const TigerLinksPtr pcTiger( tiger );
+        const LionLinksPtr pcLion( lion );
+        const DogLinksPtr pcDog( dog );
+
+        assert( pcFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
+
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pcLion );
+        assert( !pTiger );
+
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pcDog );
+        assert( !pLion );
+
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
+
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pcLion );
+        assert( !pDog );
+    }
+}
+
+// ----------------------------------------------------------------------------
+
 
 // GCC bug
 // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38579
@@ -1193,30 +1472,30 @@ void DoStrongCompareTests( void )
 struct Policy
 {
 protected:
-	Policy() {}
-	Policy(const Policy&) {}
-	int i;
+    Policy() {}
+    Policy(const Policy&) {}
+    int i;
 };
 
 template<int I, class P>
 struct BugGcc :
-	//protected P
-	public P
+    //protected P
+    public P
 {
-	BugGcc() {}
+    BugGcc() {}
 
-	template<int I2, class P2>
-	BugGcc(const BugGcc<I2, P2>& t) : P(t) {}
+    template<int I2, class P2>
+    BugGcc(const BugGcc<I2, P2>& t) : P(t) {}
 };
 
 void foo()
 {
-	BugGcc<0, Policy> f1;
-	BugGcc<1, Policy> f2(f1);
+    BugGcc<0, Policy> f1;
+    BugGcc<1, Policy> f2(f1);
 
-	// Policy members are still not public,
-	// this will not compile:
-	//int i = f1.i;
+    // Policy members are still not public,
+    // this will not compile:
+    //int i = f1.i;
 }
 
 
