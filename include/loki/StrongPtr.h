@@ -564,6 +564,8 @@ protected:
         Increment( strong );
     }
 
+    TwoRefCounts( const TwoRefCounts & rhs, bool isNull, bool strong );
+
     /** The destructor does not need to do anything since the call to
      ZapPointer inside StrongPtr::~StrongPtr will do the cleanup which
      this dtor would have done.
@@ -662,6 +664,24 @@ protected:
         m_counts( rhs.m_counts )
     {
         Increment( strong );
+    }
+
+    LockableTwoRefCounts( const LockableTwoRefCounts & rhs, bool isNull, bool strong ) :
+        m_counts( ( isNull ) ? NULL : rhs.m_counts )
+    {
+        if ( isNull )
+        {
+            void * temp = ThreadSafePointerAllocator::operator new(
+                sizeof(Loki::Private::LockableTwoRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
+            assert( temp != 0 );
+#endif
+            m_counts = new ( temp ) Loki::Private::LockableTwoRefCountInfo( strong );
+        }
+        else
+        {
+            Increment( strong );
+        }
     }
 
     /** The destructor does not need to do anything since the call to
@@ -789,6 +809,8 @@ protected:
 
     TwoRefLinks( const TwoRefLinks & rhs, bool strong );
 
+    TwoRefLinks( const TwoRefLinks & rhs, bool isNull, bool strong );
+
     bool Release( bool strong );
 
     void Swap( TwoRefLinks & rhs );
@@ -892,6 +914,49 @@ private:
     typedef const StoredType& ImplicitArg;
     typedef typename Select<false, const StoredType&, NeverMatched>::Result ExplicitArg;
 #endif
+
+    /// StrongPtr uses this helper class to specify the dynamic-caster constructor.
+    class DynamicCastHelper {};
+
+    /// Private constructor is only used for dynamic-casting.
+    template
+    <
+        typename T1,
+        bool S1,
+        class OP1,
+        class CP1,
+        template < class > class KP1,
+        template < class > class RP1,
+        template < class > class DP1,
+        template < class > class CNP1
+    >
+    StrongPtr( const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs,
+        bool isNull, const DynamicCastHelper & helper )
+        // Dynamic casting from T1 to T and saving result in ownership policy.
+        : OP( rhs, isNull, Strong )
+    {
+        (void)helper; // do void cast to remove compiler warning.
+    }
+
+    /// Private constructor is only used for dynamic-casting.
+    template
+    <
+        typename T1,
+        bool S1,
+        class OP1,
+        class CP1,
+        template < class > class KP1,
+        template < class > class RP1,
+        template < class > class DP1,
+        template < class > class CNP1
+    >
+    StrongPtr( StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs,
+        bool isNull, const DynamicCastHelper & helper )
+        // Dynamic casting from T1 to T and saving result in ownership policy.
+        : OP( rhs, isNull, Strong )
+    {
+        (void)helper; // do void cast to remove compiler warning.
+    }
 
 public:
 
@@ -1030,6 +1095,56 @@ public:
                 DP::Delete( p );
             }
         }
+    }
+
+    /// Dynamically-casts parameter pointer to the type specified by this SmartPtr type.
+    template
+    <
+        typename T1,
+        bool S1,
+        class OP1,
+        class CP1,
+        template < class > class KP1,
+        template < class > class RP1,
+        template < class > class DP1,
+        template < class > class CNP1
+    >
+    StrongPtr & DynamicCastFrom( const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
+    {
+        typedef typename StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 >::PointerType RightPointerType;
+        const StrongPtr & sp = reinterpret_cast< const StrongPtr & >( rhs );
+        PointerType p = sp.GetPointer();
+        const RightPointerType rp = reinterpret_cast< const RightPointerType >( p );
+        p = dynamic_cast< const PointerType >( rp );
+        const bool isNull = ( NULL == p );
+        StrongPtr temp( rhs, isNull, DynamicCastHelper() );
+        Swap( temp );
+        return *this;
+    }
+
+    /// Dynamically-casts parameter pointer to the type specified by this SmartPtr type.
+    template
+    <
+        typename T1,
+        bool S1,
+        class OP1,
+        class CP1,
+        template < class > class KP1,
+        template < class > class RP1,
+        template < class > class DP1,
+        template < class > class CNP1
+    >
+    StrongPtr & DynamicCastFrom( StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
+    {
+        typedef typename StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 >::PointerType RightPointerType;
+        StrongPtr & sp = reinterpret_cast< StrongPtr & >( rhs );
+        PointerType p = sp.GetPointer();
+        RightPointerType rp = reinterpret_cast< RightPointerType >( p );
+        p = dynamic_cast< PointerType >( rp );
+        const bool isNull = ( NULL == p );
+        StrongPtr temp( rhs, isNull, DynamicCastHelper() );
+        Swap( temp );
+        return *this;
     }
 
 #ifdef LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
@@ -1663,35 +1778,4 @@ inline bool operator >= ( U * lhs,
 namespace std
 {
     ////////////////////////////////////////////////////////////////////////////////
-    ///  specialization of std::less for StrongPtr
-    ///  \ingroup SmartPointerGroup
-    ////////////////////////////////////////////////////////////////////////////////
-    template
-    <
-        typename T,
-        bool S,
-        class OP,
-        class CP,
-        template < class > class KP,
-        template < class > class RP,
-        template < class > class DP,
-        template < class > class CNP
-    >
-    struct less< Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > >
-        : public binary_function<
-            Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP >,
-            Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP >, bool >
-    {
-        bool operator () (
-            const Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs,
-            const Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs ) const
-        {
-            return ( lhs < rhs );
-        }
-    };
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif // end file guardian
-
+    ///  specialization of std::less for StroeTracker@Private@Loki@@@std@@@std@@QBEXABV123@@Z ??_C@_1BBK@FOBGIJMK@?$AAs?$AAt?$AAd?$AA?3?$AA?3?$AAl?$AAi?$AAs?$AAt?$AA?$DM?$AAc?$AAl?$AAa?$AAs?$AAs?$AA?5?$AAL?$AAo?$AAk?$AAi?$AA?3?$AA?3?$AAP?$AAr?$AAi?$AAv?$AAa?$AAt?$AAe?$AA?3?$AA?3?$AAL@ ??_C@_1DI@MDELDGPI@?$AAl?$AAi?$AAs?$AAt?$AA?5?$AAi?$AAt?$AAe?$AAr?$AAa?$AAt?$AAo?$AAr?$AAs?$AA?5?$AAi?$AAn?$AAc?$AAo?$AAm?$AAp?$AAa?$AAt?$AAi?$AAb?$AAl?$AAe?$AA?$AA@ ??$_Debug_lt_pred@P6A_NPBVLifetimeTracker@Private@Loki@@0@ZPAV123@PAV123@@std@@YA_NP6A_NPBVLifetimeTracker@Private@Loki@@0@ZAAPAV123@2PB_WI@Z                                                                                                                                                                                                                                                                                                                                                                                                                                    

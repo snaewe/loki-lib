@@ -194,9 +194,9 @@ namespace Loki
 
         // Destroys the data stored
         // (Destruction might be taken over by the OwnershipPolicy)
-		//
-		// If your compiler gives you a warning in this area while
-		// compiling the tests, it is on purpose, please ignore it.
+        //
+        // If your compiler gives you a warning in this area while
+        // compiling the tests, it is on purpose, please ignore it.
         void Destroy()
         {
             delete pointee_;
@@ -1172,6 +1172,45 @@ namespace Loki
         typedef typename Select<false, const StoredType&, NeverMatched>::Result ExplicitArg;
 #endif
 
+        /// SmartPtr uses this helper class to specify the dynamic-caster constructor.
+        class DynamicCastHelper {};
+
+        /// Private constructor is only used for dynamic-casting.
+        template
+        <
+            typename T1,
+            template < class > class OP1,
+            class CP1,
+            template < class > class KP1,
+            template < class > class SP1,
+            template < class > class CNP1
+        >
+        SmartPtr( const SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs, const DynamicCastHelper & helper )
+        {
+            (void)helper; // do void cast to remove compiler warning.
+            // Dynamic casting from T1 to T and saving result in `this''s pointer
+            PointerType p = dynamic_cast< PointerType >( GetImplRef( rhs ) );
+            GetImplRef( *this ) = OP::Clone( p );
+        }
+
+        /// Private constructor is only used for dynamic-casting.
+        template
+        <
+            typename T1,
+            template < class > class OP1,
+            class CP1,
+            template < class > class KP1,
+            template < class > class SP1,
+            template < class > class CNP1
+        >
+        SmartPtr( SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs, const DynamicCastHelper & helper )
+        {
+            (void)helper; // do void cast to remove compiler warning.
+            // Dynamic casting from T1 to T and saving result in `this''s pointer
+            PointerType p = dynamic_cast< PointerType >( GetImplRef( rhs ) );
+            GetImplRef( *this ) = OP::Clone( p );
+        }
+
     public:
 
         SmartPtr()
@@ -1206,7 +1245,9 @@ namespace Loki
         >
         SmartPtr(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-        { GetImplRef(*this) = OP::Clone(GetImplRef(rhs)); }
+        {
+            GetImplRef(*this) = OP::Clone(GetImplRef(rhs));
+        }
 
         template
         <
@@ -1283,6 +1324,40 @@ namespace Loki
             {
                 SP::Destroy();
             }
+        }
+
+        /// Dynamically-casts parameter pointer to the type specified by this SmartPtr type.
+        template
+        <
+            typename T1,
+            template < class > class OP1,
+            class CP1,
+            template < class > class KP1,
+            template < class > class SP1,
+            template < class > class CNP1
+        >
+        SmartPtr & DynamicCastFrom( const SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs )
+        {
+            SmartPtr temp( rhs, DynamicCastHelper() );
+            temp.Swap( *this );
+            return *this;
+        }
+
+        /// Dynamically-casts parameter pointer to the type specified by this SmartPtr type.
+        template
+        <
+            typename T1,
+            template < class > class OP1,
+            class CP1,
+            template < class > class KP1,
+            template < class > class SP1,
+            template < class > class CNP1
+        >
+        SmartPtr & DynamicCastFrom( SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 > & rhs )
+        {
+            SmartPtr temp( rhs, DynamicCastHelper() );
+            temp.Swap( *this );
+            return *this;
         }
 
 #ifdef LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
