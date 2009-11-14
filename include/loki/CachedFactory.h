@@ -4,16 +4,16 @@
 //
 // Code covered by the MIT License
 //
-// Permission to use, copy, modify, distribute and sell this software for any 
-// purpose is hereby granted without fee, provided that the above copyright 
-// notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+// purpose is hereby granted without fee, provided that the above copyright
+// notice appear in all copies and that both that copyright notice and this
 // permission notice appear in supporting documentation.
 //
 // The authors make no representations about the suitability of this software
 // for any purpose. It is provided "as is" without express or implied warranty.
 //
 // This code DOES NOT accompany the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,6 +22,7 @@
 
 // $Id$
 
+#include <time.h> ///< For clock_t definition.
 #include <functional>
 #include <algorithm>
 #include <iostream>
@@ -47,7 +48,7 @@
  * \ingroup		FactoriesGroup
  * \brief		CachedFactory provides an extension of a Factory with caching
  * support.
- * 
+ *
  * Once used objects are returned to the CachedFactory that manages its
  * destruction.
  * If your code uses lots of "long to construct/destruct objects" using the
@@ -64,11 +65,11 @@ namespace Loki
 	 * \class	SimplePointer
 	 * \ingroup	EncapsulationPolicyCachedFactoryGroup
 	 * \brief	No encaspulation : returns the pointer
-	 * 
+	 *
 	 * This implementation does not make any encapsulation.
 	 * It simply returns the object's pointer.
 	 */
-     template<class AbstractProduct>     
+     template<class AbstractProduct>
      class SimplePointer
      {
      protected:
@@ -77,7 +78,7 @@ namespace Loki
            {
                 return pProduct;
            }
-           
+
            AbstractProduct* release(ProductReturn &pProduct)
            {
                 AbstractProduct* pPointer(pProduct);
@@ -91,7 +92,7 @@ namespace Loki
  * \defgroup	CreationPolicyCachedFactoryGroup		Creation policies
  * \ingroup		CachedFactoryGroup
  * \brief		Defines a way to limit the creation operation.
- * 
+ *
  * For instance one may want to be alerted (Exception) when
  * - Cache has created a more than X object within the last x seconds
  * - Cache creation rate has increased dramatically
@@ -102,7 +103,7 @@ namespace Loki
 	 * \class	NeverCreate
 	 * \ingroup	CreationPolicyCachedFactoryGroup
 	 * \brief	Never allows creation. Testing purposes only.
-	 * 
+	 *
 	 * Using this policy will throw an exception.
 	 */
      class NeverCreate
@@ -112,22 +113,22 @@ namespace Loki
             {
                 const char* what() const throw() { return "NeverFetch Policy : No Fetching allowed"; }
             };
-            
+
             bool canCreate()
             {
                 throw Exception();
             }
-            
+
             void onCreate(){}
             void onDestroy(){}
             const char* name(){return "never";}
      };
-     
+
      /**
       * \class		AlwaysCreate
       * \ingroup	CreationPolicyCachedFactoryGroup
       * \brief		Always allows creation.
-      * 
+      *
       * Doesn't limit the creation in any way
       */
      class AlwaysCreate
@@ -148,7 +149,7 @@ namespace Loki
      * \class	RateLimitedCreation
      * \ingroup	CreationPolicyCachedFactoryGroup
      * \brief	Limit in rate.
-     * 
+     *
      * This implementation will prevent from Creating more than maxCreation objects
      * within byTime ms by throwing an exception.
      * Could be usefull to detect prevent loads (http connection for instance).
@@ -167,7 +168,7 @@ namespace Loki
             unsigned maxCreation;
             clock_t timeValidity;
             clock_t lastUpdate;
-          
+
             void cleanVector()
             {
             	using namespace std;
@@ -193,7 +194,7 @@ namespace Loki
                 }
                 lastUpdate = currentTime;
             }
-#ifdef DO_EXTRA_LOKI_TESTS        
+#ifdef DO_EXTRA_LOKI_TESTS
             void displayVector()
             {
                 std::cout << "Vector : ";
@@ -204,12 +205,12 @@ namespace Loki
      protected:
             RateLimitedCreation() : maxCreation(10), timeValidity(CLOCKS_PER_SEC), lastUpdate(clock())
             {}
-            
+
             struct Exception : public std::exception
             {
                 const char* what() const throw() { return "RateLimitedCreation Policy : Exceeded the authorized creation rate"; }
             };
-            
+
             bool canCreate()
             {
                 cleanVector();
@@ -223,7 +224,7 @@ namespace Loki
             {
 				m_vTimes.push_back(clock());
             }
-            
+
             void onDestroy()
             {
             }
@@ -239,12 +240,12 @@ namespace Loki
                 D( std::cout << "Setting no more than "<< maxCreation <<" creation within " << this->timeValidity <<" ms"<< std::endl; )
             }
      };
-     
+
     /**
      * \class	AmountLimitedCreation
      * \ingroup	CreationPolicyCachedFactoryGroup
      * \brief	Limit by number of objects
-     * 
+     *
      * This implementation will prevent from Creating more than maxCreation objects
      * within byTime ms by calling eviction policy.
      * Use the setRate method to set the rate parameters.
@@ -255,11 +256,11 @@ namespace Loki
      private:
             unsigned maxCreation;
             unsigned created;
-            
+
      protected:
             AmountLimitedCreation() : maxCreation(10), created(0)
             {}
-            
+
             bool canCreate()
             {
             	return !(created>=maxCreation);
@@ -269,7 +270,7 @@ namespace Loki
             {
                 ++created;
             }
-            
+
             void onDestroy()
             {
                 --created;
@@ -284,7 +285,7 @@ namespace Loki
                 D( std::cout << "Setting no more than " << maxCreation <<" creation" << std::endl; )
             }
      };
-     
+
 /**
  * \defgroup	EvictionPolicyCachedFactoryGroup		Eviction policies
  * \ingroup	CachedFactoryGroup
@@ -316,7 +317,7 @@ namespace Loki
     	typedef	typename SwappedHitMap::iterator	SwappedHitMapItr;
     protected:
         HitMap										m_mHitCount;
-    	
+
     	// This function sorts the map according to the score
     	// and returns the lower bound of the sorted container
     	DT&	getLowerBound(){
@@ -330,15 +331,15 @@ namespace Loki
     		return (*copyMap.begin()).second;
     	}
     };
-    
+
 	/**
 	 * \class	EvictLRU
 	 * \ingroup	EvictionPolicyCachedFactoryGroup
 	 * \brief	Evicts least accessed objects first.
-	 * 
+	 *
 	 * Implementation of the Least recent used algorithm as
 	 * described in http://en.wikipedia.org/wiki/Page_replacement_algorithms .
-	 * 
+	 *
 	 * WARNING : If an object is heavily fetched
 	 * (more than ULONG_MAX = UINT_MAX = 4294967295U)
 	 * it could unfortunately be removed from the cache.
@@ -353,20 +354,20 @@ namespace Loki
     private:
     	typedef EvictionHelper< ST , DT >	EH;
     protected:
-        
+
         virtual ~EvictLRU(){}
-        
+
     	// OnStore initialize the counter for the new key
     	// If the key already exists, the counter is reseted
     	void onCreate(const DT& key)
         {
     		EH::m_mHitCount[key] = 0;
     	}
-    	
+
     	void onFetch(const DT&)
         {
     	}
-    	
+
     	// onRelease increments the hit counter associated with the object
         void onRelease(const DT& key)
         {
@@ -377,7 +378,7 @@ namespace Loki
     	{
             EH::m_mHitCount.erase(key);
     	}
-    	
+
     	// this function is implemented in Cache and redirected
     	// to the Storage Policy
     	virtual void remove(DT const key)=0;
@@ -389,15 +390,15 @@ namespace Loki
     	}
         const char* name(){return "LRU";}
     };
-    
+
 	/**
 	 * \class	EvictAging
 	 * \ingroup	EvictionPolicyCachedFactoryGroup
 	 * \brief	LRU aware of the time span of use
-	 * 
+	 *
 	 * Implementation of the Aging algorithm as
 	 * described in http://en.wikipedia.org/wiki/Page_replacement_algorithms .
-	 * 
+	 *
 	 * This method is much more costly than evict LRU so
 	 * if you need extreme performance consider switching to EvictLRU
 	 */
@@ -414,7 +415,7 @@ namespace Loki
     	typedef EvictionHelper< ST, DT >		       		EH;
     	typedef typename EH::HitMap						HitMap;
     	typedef typename EH::HitMapItr					HitMapItr;
-    	
+
     	// update the counter
 		template<class T> struct updateCounter : public std::unary_function<T, void>
 		{
@@ -432,15 +433,15 @@ namespace Loki
     protected:
          EvictAging(){}
          virtual ~EvictAging(){}
-         
+
     	// OnStore initialize the counter for the new key
     	// If the key already exists, the counter is reseted
     	void onCreate(const DT& key){
     		EH::m_mHitCount[key] = 0;
     	}
-    	
+
     	void onFetch(const DT&){}
-    	
+
     	// onRelease increments the hit counter associated with the object
     	// Updating every counters by iterating over the map
     	// If the key is the key of the fetched object :
@@ -451,7 +452,7 @@ namespace Loki
         {
         	std::for_each(EH::m_mHitCount.begin(), EH::m_mHitCount.end(), updateCounter< typename HitMap::value_type >(key));
         }
-        
+
         void onDestroy(const DT& key)
         {
             EH::m_mHitCount.erase(key);
@@ -468,12 +469,12 @@ namespace Loki
     	}
         const char* name(){return "LRU with aging";}
     };
-    
+
 	/**
 	 * \class	EvictRandom
 	 * \ingroup	EvictionPolicyCachedFactoryGroup
 	 * \brief	Evicts a random object
-	 * 
+	 *
 	 * Implementation of the Random algorithm as
 	 * described in http://en.wikipedia.org/wiki/Page_replacement_algorithms .
 	 */
@@ -490,24 +491,24 @@ namespace Loki
     	typedef typename std::vector< DT >::iterator		iterator;
 
     protected:
-    
+
      	virtual ~EvictRandom(){}
-     	
+
     	void onCreate(const DT&){
     	}
-    	
+
     	void onFetch(const DT& ){
     	}
 
     	void onRelease(const DT& key){
             m_vKeys.push_back(key);
     	}
-    	
+
     	void onDestroy(const DT& key){
     		using namespace std;
             m_vKeys.erase(remove_if(m_vKeys.begin(), m_vKeys.end(), bind2nd(equal_to< DT >(), key)), m_vKeys.end());
     	}
-    	
+
     	// Implemented in Cache and redirected to the Storage Policy
     	virtual void remove(DT const key)=0;
 
@@ -526,7 +527,7 @@ namespace Loki
  * \defgroup	StatisticPolicyCachedFactoryGroup		Statistic policies
  * \ingroup	CachedFactoryGroup
  * \brief	Gathers information about the cache.
- * 
+ *
  * For debugging purpose this policy proposes to gather informations
  * about the cache. This could be useful to determine whether the cache is
  * mandatory or if the policies are well suited to the application.
@@ -536,7 +537,7 @@ namespace Loki
 	 * \ingroup	StatisticPolicyCachedFactoryGroup
 	 * \brief	Do nothing
 	 *
-	 * Should be used in release code for better performances  
+	 * Should be used in release code for better performances
 	 */
     class NoStatisticPolicy
     {
@@ -548,7 +549,7 @@ namespace Loki
         void onDestroy(){}
         const char* name(){return "no";}
     };
-    
+
 	/**
 	 * \class	SimpleStatisticPolicy
 	 * \ingroup	StatisticPolicyCachedFactoryGroup
@@ -572,7 +573,7 @@ namespace Loki
         SimpleStatisticPolicy() : allocated(0), created(0), hit(0), out(0), fetched(0)
         {
         }
-        
+
         void onDebug()
         {
         	using namespace std;
@@ -592,7 +593,7 @@ namespace Loki
             }
             cout << endl;
         }
-        
+
         void onFetch()
         {
             ++fetched;
@@ -623,8 +624,8 @@ namespace Loki
         unsigned getAllocated(){return allocated;}
         unsigned getOut(){return out;}
         unsigned getDestroyed(){return created-allocated;}
-    }; 
-    
+    };
+
     ///////////////////////////////////////////////////////////////////////////
     // Cache Factory definition
     ///////////////////////////////////////////////////////////////////////////
@@ -633,16 +634,16 @@ namespace Loki
     public:
         const char* what() const throw() { return "Internal Cache Error"; }
     };
-	
+
 	/**
 	 * \class		CachedFactory
 	 * \ingroup		CachedFactoryGroup
 	 * \brief		Factory with caching support
-	 * 
+	 *
      * This class acts as a Factory (it creates objects)
      * but also keeps the already created objects to prevent
      * long constructions time.
-	 * 
+	 *
 	 * Note this implementation do not retain ownership.
 	 */
 	 template
@@ -657,7 +658,7 @@ namespace Loki
         template<typename, class> class FactoryErrorPolicy = DefaultFactoryError,
         class ObjVector = std::vector<AbstractProduct*>
      >
-	 class CachedFactory : 
+	 class CachedFactory :
             protected EncapsulationPolicy<AbstractProduct>,
             public CreationPolicy, public StatisticPolicy, EvictionPolicy< AbstractProduct * , unsigned >
 	 {
@@ -669,7 +670,7 @@ namespace Loki
         typedef CreationPolicy  CP;
         typedef StatisticPolicy SP;
         typedef EvictionPolicy< AbstractProduct* , unsigned > EP;
-                
+
         typedef typename Impl::Parm1 Parm1;
         typedef typename Impl::Parm2 Parm2;
         typedef typename Impl::Parm3 Parm3;
@@ -685,14 +686,14 @@ namespace Loki
         typedef typename Impl::Parm13 Parm13;
         typedef typename Impl::Parm14 Parm14;
         typedef typename Impl::Parm15 Parm15;
-        
+
      public:
         typedef typename NP::ProductReturn ProductReturn;
      private:
         typedef Key< Impl, IdentifierType > MyKey;
         typedef std::map< MyKey, ObjVector >  KeyToObjVectorMap;
         typedef std::map< AbstractProduct*, MyKey >  FetchedObjToKeyMap;
-        
+
         MyFactory			factory;
         KeyToObjVectorMap   fromKeyToObjVector;
         FetchedObjToKeyMap  providedObjects;
@@ -702,7 +703,7 @@ namespace Loki
             return fromKeyToObjVector[key];
         }
 
-        AbstractProduct* const getPointerToObjectInContainer(ObjVector &entry)
+        AbstractProduct* getPointerToObjectInContainer(ObjVector &entry)
         {
             if(entry.empty()) // No object available
             {   // the object will be created in the calling function.
@@ -718,7 +719,7 @@ namespace Loki
                 return pObject;
             }
         }
-        
+
         bool shouldCreateObject(AbstractProduct * const pProduct){
             if(pProduct!=NULL) // object already exists
                 return false;
@@ -726,40 +727,40 @@ namespace Loki
                 EP::evict(); // calling Eviction Policy to clean up
             return true;
         }
-        
+
         void ReleaseObjectFromContainer(ObjVector &entry, AbstractProduct * const object)
         {
             entry.push_back(object);
         }
-        
+
         void onFetch(AbstractProduct * const pProduct)
         {
             SP::onFetch();
             EP::onFetch(pProduct);
             ++outObjects;
         }
-        
+
         void onRelease(AbstractProduct * const pProduct)
         {
             SP::onRelease();
             EP::onRelease(pProduct);
             --outObjects;
         }
-        
+
         void onCreate(AbstractProduct * const pProduct)
         {
             CP::onCreate();
             SP::onCreate();
             EP::onCreate(pProduct);
         }
-        
+
         void onDestroy(AbstractProduct * const pProduct)
         {
             CP::onDestroy();
             SP::onDestroy();
             EP::onDestroy(pProduct);
         }
-		
+
 		// delete the object
 		template<class T> struct deleteObject : public std::unary_function<T, void>
 		{
@@ -779,7 +780,7 @@ namespace Loki
 		template<class T> struct deleteMapKeys : public std::unary_function<T, void>
 		{
 			void operator()(T x){ delete x.first; }
-		};            
+		};
 
      protected:
         virtual void remove(AbstractProduct * const pProduct)
@@ -834,23 +835,23 @@ namespace Loki
                 );
             }
         }
-        
+
         ///////////////////////////////////
         // Acts as the proxy pattern and //
         // forwards factory methods      //
         ///////////////////////////////////
-        
+
         bool Register(const IdentifierType& id, ProductCreator creator)
         {
             return factory.Register(id, creator);
         }
-        
+
         template <class PtrObj, typename CreaFn>
         bool Register(const IdentifierType& id, const PtrObj& p, CreaFn fn)
         {
             return factory.Register(id, p, fn);
         }
-        
+
         bool Unregister(const IdentifierType& id)
         {
             return factory.Unregister(id);
@@ -875,7 +876,7 @@ namespace Loki
             providedObjects[pProduct] = key;
             return NP::encapsulate(pProduct);
         }
-        
+
         ProductReturn CreateObject(const IdentifierType& id,
 				    Parm1 p1)
         {
@@ -1020,7 +1021,7 @@ namespace Loki
             providedObjects[pProduct] = key;
             return NP::encapsulate(pProduct);
         }
-        
+
         ProductReturn CreateObject(const IdentifierType& id,
 				    Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
 				    Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9,Parm10 p10)
@@ -1147,7 +1148,7 @@ namespace Loki
             ReleaseObjectFromContainer(getContainerFromKey((*itr).second), pProduct);
             providedObjects.erase(itr);
         }
-        
+
         /// display the cache configuration
         void displayCacheType()
         {
