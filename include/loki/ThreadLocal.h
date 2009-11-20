@@ -20,7 +20,7 @@
 
 // First assume the compiler does allow thread-local storage by #defining the
 // macro which allows compiler to see the code inside this file.
-// Then #undefine the macro for compilers which are known for not supporting
+// Then #undef the macro for compilers which are known for not supporting
 // thread-local storage.
 #define LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE 1
 
@@ -59,6 +59,7 @@
 
     #else
         #warning "Check if your compiler provides thread local storage."
+        #warning "Run ThreadLocal test project to see if the compiler implements thread_local correctly."
         #define LOKI_THREAD_LOCAL thread_local
     #endif
 
