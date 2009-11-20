@@ -67,6 +67,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LevelMutex", "test\LevelMut
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SafeBits", "test\SafeBits\SafeBits_MSVC_9.vcproj", "{ECD7ED50-B99D-44BE-BA38-E17D6110C3E5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadLocal", "test\ThreadLocal\ThreadLocal.vcproj", "{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -212,6 +214,12 @@ Global
 		{ECD7ED50-B99D-44BE-BA38-E17D6110C3E5}.Release_MultiThreaded|Win32.Build.0 = Release|Win32
 		{ECD7ED50-B99D-44BE-BA38-E17D6110C3E5}.Release|Win32.ActiveCfg = Release|Win32
 		{ECD7ED50-B99D-44BE-BA38-E17D6110C3E5}.Release|Win32.Build.0 = Release|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Debug|Win32.ActiveCfg = Debug|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Debug|Win32.Build.0 = Debug|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release_MultiThreaded|Win32.ActiveCfg = Release|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release_MultiThreaded|Win32.Build.0 = Release|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release|Win32.ActiveCfg = Release|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

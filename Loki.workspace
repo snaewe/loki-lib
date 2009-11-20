@@ -42,5 +42,6 @@
 		</Project>
 		<Project filename="test\Visitor\Visitor.cbp" />
 		<Project filename="test\SafeBits\SafeBits.cbp" />
+		<Project filename="test\ThreadLocal\ThreadLocal.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
