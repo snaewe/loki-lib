@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2006 Rich Sposato
 // The copyright on this file is protected under the terms of the MIT license.
@@ -1778,4 +1778,36 @@ inline bool operator >= ( U * lhs,
 namespace std
 {
     ////////////////////////////////////////////////////////////////////////////////
+    ///  specialization of std::less for StrongPtr
+    ///  \ingroup SmartPointerGroup
+    ////////////////////////////////////////////////////////////////////////////////
+    template
+    <
+        typename T,
+        bool S,
+        class OP,
+        class CP,
+        template < class > class KP,
+        template < class > class RP,
+        template < class > class DP,
+        template < class > class CNP
+    >
+    struct less< Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > >
+        : public binary_function<
+            Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP >,
+            Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP >, bool >
+    {
+        bool operator () (
+            const Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & lhs,
+            const Loki::StrongPtr< T, S, OP, CP, KP, RP, DP, CNP > & rhs ) const
+        {
+            return ( lhs < rhs );
+        }
+    };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+#endif // end file guardian
+
     ///  specialization of std::less for StroeTracker@Private@Loki@@@std@@@std@@QBEXABV123@@Z ??_C@_1BBK@FOBGIJMK@?$AAs?$AAt?$AAd?$AA?3?$AA?3?$AAl?$AAi?$AAs?$AAt?$AA?$DM?$AAc?$AAl?$AAa?$AAs?$AAs?$AA?5?$AAL?$AAo?$AAk?$AAi?$AA?3?$AA?3?$AAP?$AAr?$AAi?$AAv?$AAa?$AAt?$AAe?$AA?3?$AA?3?$AAL@ ??_C@_1DI@MDELDGPI@?$AAl?$AAi?$AAs?$AAt?$AA?5?$AAi?$AAt?$AAe?$AAr?$AAa?$AAt?$AAo?$AAr?$AAs?$AA?5?$AAi?$AAn?$AAc?$AAo?$AAm?$AAp?$AAa?$AAt?$AAi?$AAb?$AAl?$AAe?$AA?$AA@ ??$_Debug_lt_pred@P6A_NPBVLifetimeTracker@Private@Loki@@0@ZPAV123@PAV123@@std@@YA_NP6A_NPBVLifetimeTracker@Private@Loki@@0@ZAAPAV123@2PB_WI@Z                                                                                                                                                                                                                                                                                                                                                                                                                                    
