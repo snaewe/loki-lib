@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include <loki/Register.h>
+#include <loki/Sequence.h>
 
 
 struct Base

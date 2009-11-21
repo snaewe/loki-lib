@@ -16,6 +16,8 @@
 #include "foo.h"
 #include <iostream>
 
+#include <loki/Register.h>
+
 Base::~Base(){}
 
 Foo::Foo(){}
