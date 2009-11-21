@@ -45,7 +45,11 @@ namespace Loki
 
           ForEachTypeImpl( Callable& callable ) : ForEachTypeImpl<Tail, Callable>(callable) 
           {
+#ifdef _MSC_VER
               callable.operator()<value, Head>();
+#else
+              callable.template operator()<value, Head>();
+#endif
           }
           
         };
@@ -60,7 +64,11 @@ namespace Loki
 
             ForEachTypeImpl( Callable& callable )
             {
+#ifdef _MSC_VER
                 callable.operator()<value, Head>();
+#else
+                callable.template operator()<value, Head>();
+#endif
             }
         };
          
