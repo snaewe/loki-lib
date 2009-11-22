@@ -41,16 +41,16 @@ namespace Loki
         struct ForEachTypeImpl<Typelist<Head, Tail>, Callable>
             :  public ForEachTypeImpl<Tail, Callable>
         {
-          enum { value = 1 + ForEachTypeImpl<Tail, Callable>::value };
+            enum { value = 1 + ForEachTypeImpl<Tail, Callable>::value };
 
-          ForEachTypeImpl( Callable& callable ) : ForEachTypeImpl<Tail, Callable>(callable) 
-          {
+            ForEachTypeImpl( Callable& callable ) : ForEachTypeImpl<Tail, Callable>(callable) 
+            {
 #ifdef _MSC_VER
-              callable.operator()<value, Head>();
+                callable.operator()<value, Head>();
 #else
-              callable.template operator()<value, Head>();
+                callable.template operator()<value, Head>();
 #endif
-          }
+            }
           
         };
 
