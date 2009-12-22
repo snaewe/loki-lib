@@ -751,6 +751,7 @@ template <typename AP, typename Id, typename P1 >
     >
     class Factory : public FactoryErrorPolicy<IdentifierType, AbstractProduct>
     {
+    protected:
         typedef FactoryImpl< AbstractProduct, IdentifierType, CreatorParmTList > Impl;
 
         typedef typename Impl::Parm1 Parm1;
@@ -771,6 +772,7 @@ template <typename AP, typename Id, typename P1 >
 
         typedef Functor<AbstractProduct*, CreatorParmTList> ProductCreator;
 
+    private:
         typedef AssocVector<IdentifierType, ProductCreator> IdToProductMap;
 
         IdToProductMap associations_;
@@ -804,6 +806,11 @@ template <typename AP, typename Id, typename P1 >
         bool Unregister(const IdentifierType& id)
         {
             return associations_.erase(id) != 0;
+        }
+
+        bool IsRegistered(const IdentifierType& id)
+        {
+            return associations_.find(id) != associations_.end();
         }
 
         std::vector<IdentifierType> RegisteredIds()
