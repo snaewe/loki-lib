@@ -790,6 +790,8 @@ bool FixedAllocator::TrimChunkList( void )
         return false;
     // Use the "make-a-temp-and-swap" trick to remove excess capacity.
     Chunks( chunks_ ).swap( chunks_ );
+    deallocChunk_ = &chunks_.front();
+    allocChunk_ = &chunks_.back();
 
     return true;
 }
