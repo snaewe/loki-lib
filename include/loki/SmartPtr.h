@@ -29,12 +29,12 @@
 ///  \defgroup  SmartPointerCheckingGroup Checking policies
 ///  \ingroup   SmartPointerGroup
 
-#include "LokiExport.h"
-#include "SmallObj.h"
-#include "TypeManip.h"
-#include "static_check.h"
-#include "RefToValue.h"
-#include "ConstPolicy.h"
+#include <loki/LokiExport.h>
+#include <loki/SmallObj.h>
+#include <loki/TypeManip.h>
+#include <loki/static_check.h>
+#include <loki/RefToValue.h>
+#include <loki/ConstPolicy.h>
 
 #include <functional>
 #include <stdexcept>

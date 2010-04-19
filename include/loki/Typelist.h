@@ -18,9 +18,9 @@
 // $Id$
 
 
-#include "NullType.h"
-#include "TypeManip.h"
-#include "TypelistMacros.h"
+#include <loki/NullType.h>
+#include <loki/TypeManip.h>
+#include <loki/TypelistMacros.h>
 
 
 namespace Loki

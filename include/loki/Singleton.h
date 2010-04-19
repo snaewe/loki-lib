@@ -18,8 +18,8 @@
 // $Id$
 
 
-#include "LokiExport.h"
-#include "Threads.h"
+#include <loki/LokiExport.h>
+#include <loki/Threads.h>
 #include <algorithm>
 #include <stdexcept>
 #include <cassert>

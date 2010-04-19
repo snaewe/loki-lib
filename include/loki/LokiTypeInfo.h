@@ -2,14 +2,14 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Wesley Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef LOKI_LOKITYPEINFO_INC_
@@ -20,7 +20,7 @@
 
 #include <typeinfo>
 #include <cassert>
-#include "Typelist.h"
+#include <loki/Typelist.h>
 
 namespace Loki
 {
@@ -45,24 +45,24 @@ namespace Loki
     private:
         const std::type_info* pInfo_;
     };
-    
+
 // Implementation
-    
+
     inline TypeInfo::TypeInfo()
     {
         class Nil {};
         pInfo_ = &typeid(Nil);
         assert(pInfo_);
     }
-    
+
     inline TypeInfo::TypeInfo(const std::type_info& ti)
     : pInfo_(&ti)
     { assert(pInfo_); }
-    
+
     inline bool TypeInfo::before(const TypeInfo& rhs) const
     {
         assert(pInfo_);
-        // type_info::before return type is int in some VC libraries 
+        // type_info::before return type is int in some VC libraries
         return pInfo_->before(*rhs.pInfo_) != 0;
     }
 
@@ -71,7 +71,7 @@ namespace Loki
         assert(pInfo_);
         return *pInfo_;
     }
-    
+
     inline const char* TypeInfo::name() const
     {
         assert(pInfo_);
@@ -79,7 +79,7 @@ namespace Loki
     }
 
 // Comparison operators
-    
+
     inline bool operator==(const TypeInfo& lhs, const TypeInfo& rhs)
     // type_info::operator== return type is int in some VC libraries
     { return (lhs.Get() == rhs.Get()) != 0; }
@@ -88,14 +88,14 @@ namespace Loki
     { return lhs.before(rhs); }
 
     inline bool operator!=(const TypeInfo& lhs, const TypeInfo& rhs)
-    { return !(lhs == rhs); }    
-    
+    { return !(lhs == rhs); }
+
     inline bool operator>(const TypeInfo& lhs, const TypeInfo& rhs)
     { return rhs < lhs; }
-    
+
     inline bool operator<=(const TypeInfo& lhs, const TypeInfo& rhs)
     { return !(lhs > rhs); }
-     
+
     inline bool operator>=(const TypeInfo& lhs, const TypeInfo& rhs)
     { return !(lhs < rhs); }
 }

@@ -2,7 +2,7 @@
 // The Loki Library
 // Data Generator by Shannon Barber
 // This code DOES NOT accompany the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 //
 // Code covered by the MIT License
@@ -15,7 +15,7 @@
 // $Id$
 
 
-#include "Typelist.h"
+#include <loki/Typelist.h>
 
 //Reference version
 
@@ -64,7 +64,7 @@ namespace Loki
             };
     template <class TList, template <class> class GenFunc>
     struct IterateTypes;
-     
+
     template <class T1, class T2, template <class> class GenFunc>
     struct IterateTypes<Typelist<T1, T2>, GenFunc>
     {
@@ -79,7 +79,7 @@ namespace Loki
         tail.operator()(ii);
         }
     };
-     
+
     template <class AtomicType, template <class> class GenFunc>
     struct IterateTypes
     {
@@ -91,7 +91,7 @@ namespace Loki
         ++ii; //Is this even needed?
         }
     };
-    
+
     template <template <class> class GenFunc>
     struct IterateTypes<NullType, GenFunc>
     {
@@ -99,7 +99,7 @@ namespace Loki
     void operator()(II ii)
         {}
     };
-    
+
     template<typename Types, template <class> class UnitFunc, typename II>
     void iterate_types(II ii)
         {

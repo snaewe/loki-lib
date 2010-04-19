@@ -18,9 +18,9 @@
 // $Id$
 
 
-#include "LokiExport.h"
-#include "Threads.h"
-#include "Singleton.h"
+#include <loki/LokiExport.h>
+#include <loki/Threads.h>
+#include <loki/Singleton.h>
 #include <cstddef>
 #include <new> // needed for std::nothrow_t parameter.
 

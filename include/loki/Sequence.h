@@ -15,7 +15,7 @@
 // $Id$
 
 
-#include "Typelist.h"
+#include <loki/Typelist.h>
 
 namespace Loki
 {

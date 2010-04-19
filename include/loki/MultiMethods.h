@@ -18,10 +18,10 @@
 // $Id$
 
 
-#include "Typelist.h"
-#include "LokiTypeInfo.h"
-#include "Functor.h"
-#include "AssocVector.h"
+#include <loki/Typelist.h>
+#include <loki/LokiTypeInfo.h>
+#include <loki/Functor.h>
+#include <loki/AssocVector.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // IMPORTANT NOTE:

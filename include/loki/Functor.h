@@ -18,11 +18,11 @@
 // $Id$
 
 
-#include "Typelist.h"
-#include "Sequence.h"
-#include "EmptyType.h"
-#include "SmallObj.h"
-#include "TypeTraits.h"
+#include <loki/Typelist.h>
+#include <loki/Sequence.h>
+#include <loki/EmptyType.h>
+#include <loki/SmallObj.h>
+#include <loki/TypeTraits.h>
 #include <typeinfo>
 #include <memory>
 
