@@ -75,7 +75,10 @@ namespace Loki
 
     } 
 
-    class FixedAllocator;
+    namespace Private
+    {
+        class FixedAllocator;
+    }; // end namespace Private
 
     /** @class SmallObjAllocator
         @ingroup SmallObjectGroupInternal
@@ -92,8 +95,8 @@ namespace Loki
          @param maxObjectSize Max # of bytes which this may allocate.
          @param objectAlignSize # of bytes between alignment boundaries.
          */
-        SmallObjAllocator( std::size_t pageSize, std::size_t maxObjectSize,
-            std::size_t objectAlignSize );
+        SmallObjAllocator( ::std::size_t pageSize, ::std::size_t maxObjectSize,
+            ::std::size_t objectAlignSize );
 
         /** Destructor releases all blocks, all Chunks, and FixedAllocator's.
          Any outstanding blocks are unavailable, and should not be used after
@@ -150,7 +153,7 @@ namespace Loki
         void Deallocate( void * p );
 
         /// Returns max # of bytes which this can allocate.
-        inline std::size_t GetMaxObjectSize() const
+        inline ::std::size_t GetMaxObjectSize() const
         { return maxSmallObjectSize_; }
 
         /// Returns # of bytes between allocation boundaries.
@@ -184,15 +187,14 @@ namespace Loki
         SmallObjAllocator & operator = ( const SmallObjAllocator & );
 
         /// Pointer to array of fixed-size allocators.
-        Loki::FixedAllocator * pool_;
+        ::Loki::Private::FixedAllocator * pool_;
 
         /// Largest object size supported by allocators.
-        const std::size_t maxSmallObjectSize_;
+        const ::std::size_t maxSmallObjectSize_;
 
         /// Size of alignment boundaries.
-        const std::size_t objectAlignSize_;
+        const ::std::size_t objectAlignSize_;
     };
-
 
     /** @class AllocatorSingleton
         @ingroup SmallObjectGroupInternal

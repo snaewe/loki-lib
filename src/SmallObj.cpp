@@ -15,6 +15,7 @@
 
 // $Id$
 
+// ----------------------------------------------------------------------------
 
 #include <loki/SmallObj.h>
 
@@ -32,12 +33,16 @@
 #endif
 
 #if !defined( nullptr )
-    #define nullptr
+    #define nullptr 0
 #endif
 
 
 namespace Loki
 {
+namespace Private
+{
+
+// ----------------------------------------------------------------------------
 
     /** @struct Chunk
         @ingroup SmallObjectGroupInternal
@@ -301,6 +306,26 @@ namespace Loki
 
     unsigned char FixedAllocator::MinObjectsPerChunk_ = 8;
     unsigned char FixedAllocator::MaxObjectsPerChunk_ = UCHAR_MAX;
+
+/** @ingroup SmallObjectGroupInternal
+ Calls the default allocator when SmallObjAllocator decides not to handle a
+ request.  SmallObjAllocator calls this if the number of bytes is bigger than
+ the size which can be handled by any FixedAllocator.
+ @param numBytes number of bytes
+ @param doThrow True if this function should throw an exception, or false if it
+  should indicate failure by returning a nullptr pointer.
+*/
+void * DefaultAllocator( std::size_t numBytes, bool doThrow );
+
+/** @ingroup SmallObjectGroupInternal
+ Calls default deallocator when SmallObjAllocator decides not to handle a
+ request.  The default deallocator could be the global delete operator or the
+ free function.  The free function is the preferred default deallocator since
+ it matches malloc which is the preferred default allocator.  SmallObjAllocator
+ will call this if an address was not found among any of its own blocks.
+ */
+void DefaultDeallocator( void * p );
+
 
 // Chunk::Init ----------------------------------------------------------------
 
@@ -1024,14 +1049,7 @@ inline std::size_t GetOffset( std::size_t numBytes, std::size_t alignment )
 }
 
 // DefaultAllocator -----------------------------------------------------------
-/** @ingroup SmallObjectGroupInternal
- Calls the default allocator when SmallObjAllocator decides not to handle a
- request.  SmallObjAllocator calls this if the number of bytes is bigger than
- the size which can be handled by any FixedAllocator.
- @param numBytes number of bytes
- @param doThrow True if this function should throw an exception, or false if it
-  should indicate failure by returning a nullptr pointer.
-*/
+
 void * DefaultAllocator( std::size_t numBytes, bool doThrow )
 {
 #ifdef USE_NEW_TO_ALLOCATE
@@ -1046,13 +1064,7 @@ void * DefaultAllocator( std::size_t numBytes, bool doThrow )
 }
 
 // DefaultDeallocator ---------------------------------------------------------
-/** @ingroup SmallObjectGroupInternal
- Calls default deallocator when SmallObjAllocator decides not to handle a
- request.  The default deallocator could be the global delete operator or the
- free function.  The free function is the preferred default deallocator since
- it matches malloc which is the preferred default allocator.  SmallObjAllocator
- will call this if an address was not found among any of its own blocks.
- */
+
 void DefaultDeallocator( void * p )
 {
 #ifdef USE_NEW_TO_ALLOCATE
@@ -1061,6 +1073,13 @@ void DefaultDeallocator( void * p )
     ::std::free( p );
 #endif
 }
+
+// ----------------------------------------------------------------------------
+
+}; // end namespace Private
+
+using namespace ::Loki::Private;
+
 
 // SmallObjAllocator::SmallObjAllocator ---------------------------------------
 
@@ -1176,8 +1195,8 @@ void SmallObjAllocator::Deallocate( void * p )
 {
     if ( nullptr == p ) return;
     assert( nullptr != pool_ );
-    FixedAllocator * pAllocator = nullptr;
-    const std::size_t allocCount = GetOffset( GetMaxObjectSize(), GetAlignment() );
+    ::Loki::Private::FixedAllocator * pAllocator = nullptr;
+    const std::size_t allocCount = ::Loki::Private::GetOffset( GetMaxObjectSize(), GetAlignment() );
     Chunk * chunk = nullptr;
 
     for ( std::size_t ii = 0; ii < allocCount; ++ii )
@@ -1230,4 +1249,3 @@ bool SmallObjAllocator::IsCorrupt( void ) const
 }
 
 } // end namespace Loki
-
