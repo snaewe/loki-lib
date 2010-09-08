@@ -821,10 +821,23 @@ bool FixedAllocator::TrimChunkList( void )
 
     if ( chunks_.size() == chunks_.capacity() )
         return false;
-    // Use the "make-a-temp-and-swap" trick to remove excess capacity.
-    Chunks( chunks_ ).swap( chunks_ );
-    deallocChunk_ = &chunks_.front();
-    allocChunk_ = &chunks_.back();
+
+    {
+        // Use the "make-a-temp-and-swap" trick to remove excess capacity.
+        Chunks temp( chunks_ );
+        temp.swap( chunks_ );
+    }
+
+    if ( chunks_.empty() )
+    {
+        deallocChunk_ = nullptr;
+        allocChunk_ = nullptr;
+    }
+    else
+    {
+        deallocChunk_ = &chunks_.front();
+        allocChunk_ = &chunks_.back();
+    }
 
     return true;
 }
@@ -929,7 +942,15 @@ bool FixedAllocator::Deallocate( void * p, Chunk * hint )
     assert( &chunks_.back() >= allocChunk_ );
     assert( CountEmptyChunks() < 2 );
 
-    Chunk * foundChunk = ( nullptr == hint ) ? VicinityFind( p ) : hint;
+    Chunk * foundChunk = nullptr;
+    if ( ( nullptr != hint ) && ( hint->HasBlock( p, numBlocks_ * blockSize_ ) ) )
+        foundChunk = hint;
+    else if ( deallocChunk_->HasBlock( p, numBlocks_ * blockSize_ ) )
+        foundChunk = deallocChunk_;
+    else if ( allocChunk_->HasBlock( p, numBlocks_ * blockSize_ ) )
+        foundChunk = allocChunk_;
+    else
+        foundChunk = VicinityFind( p );
     if ( nullptr == foundChunk )
         return false;
 
