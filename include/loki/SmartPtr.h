@@ -54,6 +54,11 @@
 #define LOKI_ENABLE_FRIEND_TEMPLATE_TEMPLATE_PARAMETER_WORKAROUND
 #endif
 
+#if defined( _MSC_VER )
+    #pragma warning( push )
+    #pragma warning( disable: 4355 )
+#endif
+
 
 namespace Loki
 {
@@ -654,8 +659,9 @@ namespace Loki
         class LOKI_EXPORT RefLinkedBase
         {
         protected:
-            RefLinkedBase()
-            { prev_ = next_ = this; }
+            RefLinkedBase( void ) :
+                prev_( this ), next_( this )
+            {}
 
             RefLinkedBase(const RefLinkedBase& rhs);
 
@@ -1869,5 +1875,10 @@ namespace std
     };
 }
 
-#endif // end file guardian
+// ----------------------------------------------------------------------------
 
+#if defined( _MSC_VER )
+    #pragma warning( pop )
+#endif
+
+#endif // end file guardian
