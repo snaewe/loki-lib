@@ -3,14 +3,14 @@
 // Copyright (c) 2001 by Andrei Alexandrescu
 // Copyright (c) 2006 Richard Sposato
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above  copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above  copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author or Addison-Wesley Longman make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -37,10 +37,10 @@ namespace Private
 
 // ----------------------------------------------------------------------------
 
-RefLinkedBase::RefLinkedBase(const RefLinkedBase& rhs) 
+RefLinkedBase::RefLinkedBase( const RefLinkedBase & rhs ) :
+    prev_( &rhs ),
+    next_( rhs.next_ )
 {
-    prev_ = &rhs;
-    next_ = rhs.next_;
     prev_->next_ = this;
     next_->prev_ = this;
 
@@ -70,7 +70,7 @@ bool RefLinkedBase::Release()
         return false;
     }
     else if (next_ == this)
-    {   
+    {
         assert(prev_ == this);
         // Set these to NULL to prevent re-entrancy.
         prev_ = NULL;
