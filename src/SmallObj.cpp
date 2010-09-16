@@ -943,18 +943,19 @@ bool FixedAllocator::Deallocate( void * p, Chunk * hint )
     assert( CountEmptyChunks() < 2 );
 
     Chunk * foundChunk = nullptr;
-    if ( ( nullptr != hint ) && ( hint->HasBlock( p, numBlocks_ * blockSize_ ) ) )
+    const ::std::size_t chunkLength = numBlocks_ * blockSize_;
+    if ( ( nullptr != hint ) && ( hint->HasBlock( p, chunkLength ) ) )
         foundChunk = hint;
-    else if ( deallocChunk_->HasBlock( p, numBlocks_ * blockSize_ ) )
+    else if ( deallocChunk_->HasBlock( p, chunkLength ) )
         foundChunk = deallocChunk_;
-    else if ( allocChunk_->HasBlock( p, numBlocks_ * blockSize_ ) )
+    else if ( allocChunk_->HasBlock( p, chunkLength ) )
         foundChunk = allocChunk_;
     else
         foundChunk = VicinityFind( p );
     if ( nullptr == foundChunk )
         return false;
 
-    assert( foundChunk->HasBlock( p, numBlocks_ * blockSize_ ) );
+    assert( foundChunk->HasBlock( p, chunkLength ) );
 #ifdef LOKI_CHECK_FOR_CORRUPTION
     if ( foundChunk->IsCorrupt( numBlocks_, blockSize_, true ) )
     {
