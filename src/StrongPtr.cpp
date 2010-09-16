@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2006 Rich Sposato
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author makes no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author makes no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,11 @@
 #endif
 
 #include <loki/SmallObj.h>
+
+#if defined( _MSC_VER )
+    #pragma warning( push )
+    #pragma warning( disable: 4355 )
+#endif
 
 
 // ----------------------------------------------------------------------------
@@ -134,8 +139,9 @@ void TwoRefCounts::ZapPointer( void )
 TwoRefLinks::TwoRefLinks( const void * p, bool strong )
     : m_pointer( const_cast< void * >( p ) )
     , m_strong( strong )
+    , m_prev( this )
+    , m_next( this )
 {
-    m_prev = m_next = this;
 #ifdef DO_EXTRA_LOKI_TESTS
     assert( CountPrevCycle( this ) == CountNextCycle( this ) );
 #endif
@@ -246,7 +252,7 @@ bool TwoRefLinks::Release( bool strong )
         return false;
     }
     else if (m_next == this)
-    {   
+    {
 #ifdef DO_EXTRA_LOKI_TESTS
         assert(m_prev == this);
 #endif
@@ -573,5 +579,8 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
 
 // ----------------------------------------------------------------------------
 
-} // end namespace Loki
+#if defined( _MSC_VER )
+    #pragma warning( pop )
+#endif
 
+} // end namespace Loki
