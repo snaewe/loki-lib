@@ -22,6 +22,11 @@
     #include <loki/Threads.h>
 #endif
 
+#if defined( _MSC_VER )
+    #pragma warning( push )
+    #pragma warning( disable: 4355 )
+#endif
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -801,8 +806,9 @@ protected:
     inline explicit TwoRefLinks( bool strong )
         : m_pointer( 0 )
         , m_strong( strong )
+        , m_prev( this )
+        , m_next( this )
     {
-        m_prev = m_next = this;
     }
 
     TwoRefLinks( const void * p, bool strong );
@@ -1808,5 +1814,8 @@ namespace std
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // end file guardian
+#if defined( _MSC_VER )
+    #pragma warning( pop )
+#endif
 
+#endif // end file guardian
