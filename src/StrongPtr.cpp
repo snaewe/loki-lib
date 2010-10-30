@@ -33,6 +33,42 @@
 namespace Loki
 {
 
+namespace Private
+{
+
+// ----------------------------------------------------------------------------
+
+OneOwnerRefCountInfo::OneOwnerRefCountInfo( SingleOwnerRefCount * ptr )
+    : m_pointer( NULL )
+    , m_strongPtr( ptr )
+    , m_weakCount( ( NULL == ptr ) ? 1 : 0 )
+{
+    assert( NULL != this );
+}
+
+// ----------------------------------------------------------------------------
+
+OneOwnerRefCountInfo::OneOwnerRefCountInfo( const void * p,
+    SingleOwnerRefCount * ptr )
+    : m_pointer( p )
+    , m_strongPtr( ptr )
+    , m_weakCount( ( NULL == ptr ) ? 1 : 0 )
+{
+    assert( NULL != this );
+}
+
+// ----------------------------------------------------------------------------
+
+void OneOwnerRefCountInfo::SetStrongCoPtr( SingleOwnerRefCount * ptr )
+{
+    assert( NULL != this );
+    m_strongPtr = ptr;
+}
+
+// ----------------------------------------------------------------------------
+
+} // end namespace Private
+
 // ----------------------------------------------------------------------------
 
 TwoRefCounts::TwoRefCounts( bool strong )
@@ -111,7 +147,7 @@ bool TwoRefCounts::Decrement( bool strong )
 
 void TwoRefCounts::Swap( TwoRefCounts & rhs )
 {
-    std::swap( m_counts, rhs.m_counts );
+    ::std::swap( m_counts, rhs.m_counts );
 }
 
 // ----------------------------------------------------------------------------
@@ -133,6 +169,164 @@ void TwoRefCounts::ZapPointer( void )
     }
 }
 
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefCount::SingleOwnerRefCount( bool strong )
+    : m_info( NULL )
+{
+    assert( NULL != this );
+
+    void * temp = SmallObject<>::operator new(
+        sizeof(Loki::Private::OneOwnerRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
+    assert( temp != 0 );
+#endif
+
+    SingleOwnerRefCount * ptr = ( strong ) ? this : NULL;
+    m_info = new ( temp ) ::Loki::Private::OneOwnerRefCountInfo( ptr );
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefCount::SingleOwnerRefCount( const void * p, bool strong )
+    : m_info( NULL )
+{
+    assert( NULL != this );
+
+    void * temp = SmallObject<>::operator new(
+        sizeof(Loki::Private::OneOwnerRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
+    assert( temp != 0 );
+#endif
+
+    SingleOwnerRefCount * ptr = ( strong ) ? this : NULL;
+    m_info = new ( temp ) ::Loki::Private::OneOwnerRefCountInfo( p, ptr );
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefCount::SingleOwnerRefCount( const SingleOwnerRefCount & rhs,
+    bool strong )
+    : m_info( NULL )
+{
+    assert( NULL != this );
+
+    if ( strong && rhs.HasStrongPointer() )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+
+    m_info = rhs.m_info;
+    if ( strong )
+    {
+        m_info->SetStrongCoPtr( this );
+    }
+    else
+    {
+        m_info->IncWeakCount();
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefCount::SingleOwnerRefCount( const SingleOwnerRefCount & rhs,
+    bool isNull, bool strong )
+    : m_info( NULL )
+{
+    assert( NULL != this );
+
+    if ( isNull )
+    {
+        void * temp = SmallObject<>::operator new(
+            sizeof(Loki::Private::OneOwnerRefCountInfo) );
+#ifdef DO_EXTRA_LOKI_TESTS
+        assert( temp != 0 );
+#endif
+
+        SingleOwnerRefCount * ptr = ( strong ) ? this : NULL;
+        m_info = new ( temp ) ::Loki::Private::OneOwnerRefCountInfo( ptr );
+        return;
+    }
+
+    if ( strong && rhs.HasStrongPointer() )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+
+    m_info = rhs.m_info;
+    if ( strong )
+    {
+        m_info->SetStrongCoPtr( this );
+    }
+    else
+    {
+        m_info->IncWeakCount();
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+void SingleOwnerRefCount::Swap( SingleOwnerRefCount & rhs )
+{
+    assert( NULL != this );
+
+    if ( IsStrong() && rhs.IsStrong() )
+    {
+        // These two strong pointers are trading resources.
+        SingleOwnerRefCount * temp = rhs.m_info->GetStrongCoPointer();
+        rhs.m_info->SetStrongCoPtr( this );
+        m_info->SetStrongCoPtr( temp );
+    }
+    ::std::swap( m_info, rhs.m_info );
+}
+
+// ----------------------------------------------------------------------------
+
+bool SingleOwnerRefCount::Release( bool strong )
+{
+    assert( NULL != this );
+
+    assert( strong == IsStrong() );
+    if ( strong )
+    {
+        m_info->SetStrongCoPtr( NULL );
+        return true;
+    }
+
+    assert( 0 < m_info->GetWeakCount() );
+    m_info->DecWeakCount();
+    const bool noOwner = ( !m_info->HasStrongPointer() );
+    return ( ( 0 == m_info->GetWeakCount() ) && noOwner );
+}
+
+// ----------------------------------------------------------------------------
+
+void SingleOwnerRefCount::ZapPointer( void )
+{
+    assert( !m_info->HasStrongPointer() );
+    if ( m_info->HasWeakPointer() )
+    {
+        m_info->ZapPointer();
+    }
+    else
+    {
+        SmallObject<>::operator delete ( m_info,
+            sizeof(Loki::Private::OneOwnerRefCountInfo) );
+        m_info = NULL;
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+void SingleOwnerRefCount::SetPointer( void * p )
+{
+    assert( NULL != this );
+    if ( IsStrong() || ( 1 == m_info->GetWeakCount() ) )
+    {
+        // Only a strong pointer or the last weak pointer may change a resource.
+        m_info->SetPointer( p );
+    }
+}
 
 // ----------------------------------------------------------------------------
 
@@ -142,9 +336,7 @@ TwoRefLinks::TwoRefLinks( const void * p, bool strong )
     , m_prev( this )
     , m_next( this )
 {
-#ifdef DO_EXTRA_LOKI_TESTS
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
-#endif
+    assert( IsValid() );
 }
 
 // ----------------------------------------------------------------------------
@@ -159,14 +351,11 @@ TwoRefLinks::TwoRefLinks( const TwoRefLinks & rhs, bool strong )
     m_next->m_prev = this;
 
 #ifdef DO_EXTRA_LOKI_TESTS
-    assert( m_prev->HasPrevNode( this ) );
-    assert( m_next->HasNextNode( this ) );
     assert( rhs.m_next->HasNextNode( this ) );
     assert( rhs.m_prev->HasPrevNode( this ) );
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
     assert( CountPrevCycle( this ) == CountNextCycle( &rhs ) );
-    assert( AllNodesHaveSamePointer() );
 #endif
+    assert( IsValid() );
 }
 
 // ----------------------------------------------------------------------------
@@ -177,6 +366,8 @@ TwoRefLinks::TwoRefLinks( const TwoRefLinks & rhs, bool isNull, bool strong )
     , m_next( ( isNull ) ? 0 : rhs.m_next )
     , m_strong( strong )
 {
+    assert( rhs.IsValid() );
+
     if ( isNull )
     {
         m_prev = m_next = this;
@@ -185,16 +376,24 @@ TwoRefLinks::TwoRefLinks( const TwoRefLinks & rhs, bool isNull, bool strong )
     {
         m_prev->m_next = this;
         m_next->m_prev = this;
-
-#ifdef DO_EXTRA_LOKI_TESTS
-        assert( m_prev->HasPrevNode( this ) );
-        assert( m_next->HasNextNode( this ) );
         assert( rhs.m_next->HasNextNode( this ) );
         assert( rhs.m_prev->HasPrevNode( this ) );
-        assert( CountPrevCycle( this ) == CountNextCycle( this ) );
         assert( CountPrevCycle( this ) == CountNextCycle( &rhs ) );
-        assert( AllNodesHaveSamePointer() );
-#endif
+    }
+    assert( IsValid() );
+}
+
+// ----------------------------------------------------------------------------
+
+TwoRefLinks::~TwoRefLinks( void )
+{
+    assert( IsValid() );
+
+    if ( ( NULL != m_prev ) && ( this != m_prev ) )
+    {
+        TwoRefLinks * next = m_next;
+        m_prev->m_next = next;
+        m_next->m_prev = m_prev;
     }
 }
 
@@ -202,60 +401,41 @@ TwoRefLinks::TwoRefLinks( const TwoRefLinks & rhs, bool isNull, bool strong )
 
 void TwoRefLinks::SetPointer( void * p )
 {
-    TwoRefLinks * node = m_prev;
-    if ( ( this == node ) || ( 0 == node ) )
-        return;
+    assert( IsValid() );
 
-#ifdef DO_EXTRA_LOKI_TESTS
-    assert( m_prev->HasPrevNode( this ) );
-    assert( m_next->HasNextNode( this ) );
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
-    assert( AllNodesHaveSamePointer() );
-#endif
+    TwoRefLinks * node = m_next;
+    if ( ( this == node ) || ( NULL == node ) )
+    {
+        m_pointer = p;
+        return;
+    }
 
     while ( node != this )
     {
         node->m_pointer = p;
         node = node->m_next;
     }
-    m_pointer = node;
+    m_pointer = p;
 
-#ifdef DO_EXTRA_LOKI_TESTS
-    assert( m_prev->HasPrevNode( this ) );
-    assert( m_next->HasNextNode( this ) );
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
-    assert( AllNodesHaveSamePointer() );
-#endif
+    assert( IsValid() );
 }
 
 // ----------------------------------------------------------------------------
 
 bool TwoRefLinks::Release( bool strong )
 {
-
-    (void)strong;
-#ifdef DO_EXTRA_LOKI_TESTS
+    assert( IsValid() );
     assert( strong == m_strong );
-    assert( m_prev->HasPrevNode( this ) );
-    assert( m_next->HasNextNode( this ) );
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
-    assert( AllNodesHaveSamePointer() );
-#endif
+    (void)strong;
 
     if ( NULL == m_next )
     {
-#ifdef DO_EXTRA_LOKI_TESTS
-        assert( NULL == m_prev );
-#endif
         // Return false so it does not try to destroy shared object
         // more than once.
         return false;
     }
-    else if (m_next == this)
+    else if ( m_next == this )
     {
-#ifdef DO_EXTRA_LOKI_TESTS
-        assert(m_prev == this);
-#endif
         // Set these to NULL to prevent re-entrancy.
         m_prev = NULL;
         m_next = NULL;
@@ -263,22 +443,21 @@ bool TwoRefLinks::Release( bool strong )
         return true;
     }
 
-#ifdef DO_EXTRA_LOKI_TESTS
     assert( this != m_prev );
     assert( NULL != m_prev );
-    assert( m_prev->HasPrevNode( this ) );
-    assert( m_next->HasNextNode( this ) );
-#endif
-
     // If a single node is strong, then return false so it won't release.
     if ( HasStrongPointer() )
     {
         // A cyclic chain of pointers is only as strong as the strongest link.
         m_prev->m_next = m_next;
         m_next->m_prev = m_prev;
+        m_next = this;
+        m_prev = this;
+        assert( IsValid() );
         return false;
     }
 
+    assert( IsValid() );
     return true;
 }
 
@@ -286,8 +465,10 @@ bool TwoRefLinks::Release( bool strong )
 
 void TwoRefLinks::ZapAllNodes( void )
 {
+    assert( IsValid() );
+
     TwoRefLinks * p = m_prev;
-    if ( ( this == p ) || ( 0 == p ) )
+    if ( ( this == p ) || ( NULL == p ) )
         return;
 #ifdef DO_EXTRA_LOKI_TESTS
     assert( AllNodesHaveSamePointer() );
@@ -296,28 +477,28 @@ void TwoRefLinks::ZapAllNodes( void )
     while ( p != this )
     {
         TwoRefLinks * p1 = p->m_prev;
-        p->m_pointer = 0;
+        p->m_pointer = NULL;
         p->m_next = p;
         p->m_prev = p;
         p = p1;
     }
-    m_pointer = 0;
+    m_pointer = NULL;
+    m_next = this;
+    m_prev = this;
+
+    assert( IsValid() );
 }
 
 // ----------------------------------------------------------------------------
 
 void TwoRefLinks::Swap( TwoRefLinks & rhs )
 {
+    assert( IsValid() );
+    assert( rhs.IsValid() );
+    if ( GetPointer() == rhs.GetPointer() )
+        return;
 
-#ifdef DO_EXTRA_LOKI_TESTS
-    assert( m_prev->HasPrevNode( this ) );
-    assert( m_next->HasNextNode( this ) );
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
-    assert( AllNodesHaveSamePointer() );
-    assert( rhs.AllNodesHaveSamePointer() );
-#endif
-
-    std::swap( rhs.m_pointer, m_pointer );
+    ::std::swap( rhs.m_pointer, m_pointer );
     if (m_next == this)
     {
 #ifdef DO_EXTRA_LOKI_TESTS
@@ -376,19 +557,8 @@ void TwoRefLinks::Swap( TwoRefLinks & rhs )
         std::swap(m_next->m_prev, rhs.m_next->m_prev);
     }
 
-#ifdef DO_EXTRA_LOKI_TESTS
-    assert( m_next == this ? m_prev == this : m_prev != this);
-    assert( m_prev == this ? m_next == this : m_next != this);
-    assert( m_prev->HasPrevNode( this ) );
-    assert( m_next->HasNextNode( this ) );
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
-    assert( rhs.m_prev->HasPrevNode( &rhs ) );
-    assert( rhs.m_next->HasNextNode( &rhs ) );
-    assert( CountPrevCycle( &rhs ) == CountNextCycle( &rhs ) );
-    assert( AllNodesHaveSamePointer() );
-    assert( rhs.AllNodesHaveSamePointer() );
-#endif
-
+    assert( IsValid() );
+    assert( rhs.IsValid() );
 }
 
 // ----------------------------------------------------------------------------
@@ -457,6 +627,7 @@ bool TwoRefLinks::HasPrevNode( const TwoRefLinks * p ) const
 {
     if ( this == p )
         return true;
+
     const TwoRefLinks * prev = m_prev;
     if ( NULL == prev )
         return false;
@@ -475,6 +646,7 @@ bool TwoRefLinks::HasNextNode( const TwoRefLinks * p ) const
 {
     if ( this == p )
         return true;
+
     const TwoRefLinks * next = m_next;
     if ( NULL == next )
         return false;
@@ -491,6 +663,8 @@ bool TwoRefLinks::HasNextNode( const TwoRefLinks * p ) const
 
 bool TwoRefLinks::HasStrongPointer( void ) const
 {
+    assert( IsValid() );
+
     const TwoRefLinks * next = m_next;
     if ( NULL == next )
         return false;
@@ -507,12 +681,12 @@ bool TwoRefLinks::HasStrongPointer( void ) const
 
 bool TwoRefLinks::Merge( TwoRefLinks & rhs )
 {
+    assert( IsValid() );
+    assert( rhs.IsValid() );
 
     if ( NULL == m_next )
     {
-#ifdef DO_EXTRA_LOKI_TESTS
         assert( NULL == m_prev );
-#endif
         return false;
     }
     TwoRefLinks * prhs = &rhs;
@@ -520,14 +694,11 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
         return true;
     if ( NULL == prhs->m_next )
     {
-#ifdef DO_EXTRA_LOKI_TESTS
         assert( NULL == prhs->m_prev );
-#endif
         return true;
     }
 
 #ifdef DO_EXTRA_LOKI_TESTS
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
     assert( CountPrevCycle( prhs ) == CountNextCycle( prhs ) );
 #endif
     // If rhs node is already in this cycle, then no need to merge.
@@ -542,9 +713,7 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
     if ( prhs == prhs->m_next )
     {
         /// rhs is in a cycle with 1 node.
-#ifdef DO_EXTRA_LOKI_TESTS
         assert( prhs->m_prev == prhs );
-#endif
         prhs->m_prev = m_prev;
         prhs->m_next = this;
         m_prev->m_next = prhs;
@@ -553,9 +722,7 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
     else if ( this == m_next )
     {
         /// this is in a cycle with 1 node.
-#ifdef DO_EXTRA_LOKI_TESTS
         assert( m_prev == this );
-#endif
         m_prev = prhs->m_prev;
         m_next = prhs;
         prhs->m_prev->m_next = this;
@@ -571,10 +738,234 @@ bool TwoRefLinks::Merge( TwoRefLinks & rhs )
 
 
 #ifdef DO_EXTRA_LOKI_TESTS
-    assert( CountPrevCycle( this ) == CountNextCycle( this ) );
+    assert( IsValid() );
 #endif
 
     return true;
+}
+
+// ----------------------------------------------------------------------------
+
+unsigned int TwoRefLinks::GetStrongPointerCount( void ) const
+{
+    assert( IsValid() );
+
+    unsigned int strongCount = ( m_strong ) ? 1 : 0;
+    const TwoRefLinks * next = m_next;
+    if ( ( this == next ) || ( NULL == next ) )
+        return strongCount;
+
+    while ( next != this )
+    {
+        if ( next->m_strong )
+        {
+            ++strongCount;
+        }
+        next = next->m_next;
+    }
+
+    return strongCount;
+}
+
+// ----------------------------------------------------------------------------
+
+const TwoRefLinks * TwoRefLinks::GetNextStrongPointer( void ) const
+{
+    assert( IsValid() );
+
+    for ( const TwoRefLinks * next = m_next;
+        ( next != this ); next = next->m_next )
+    {
+        if ( next->m_strong )
+        {
+            return next;
+        }
+    }
+
+    return this;
+}
+
+// ----------------------------------------------------------------------------
+
+bool TwoRefLinks::IsValid( void ) const
+{
+    assert( NULL != this );
+
+    const bool isThisNext = ( m_next == this );
+    const bool isThisPrev = ( m_prev == this );
+    assert( isThisNext == isThisPrev );
+    (void)isThisNext;
+    (void)isThisPrev;
+
+    const bool isNextNull = ( m_next == NULL );
+    const bool isPrevNull = ( m_prev == NULL );
+    assert( isNextNull == isPrevNull );
+    (void)isNextNull;
+    (void)isPrevNull;
+
+    if ( NULL != m_prev )
+    {
+        assert( NULL != m_next );
+        assert( this == m_next->m_prev );
+        assert( this == m_prev->m_next );
+        assert( m_prev->HasPrevNode( this ) );
+    }
+    if ( NULL != m_next )
+    {
+        assert( NULL != m_prev );
+        assert( this == m_next->m_prev );
+        assert( this == m_prev->m_next );
+        assert( m_next->HasNextNode( this ) );
+    }
+    const unsigned int prevCycleCount = CountPrevCycle( this );
+    const unsigned int nextCycleCount = CountNextCycle( this );
+    assert( prevCycleCount == nextCycleCount );
+    (void)prevCycleCount;
+    (void)nextCycleCount;
+
+    assert( AllNodesHaveSamePointer() );
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefLinks::SingleOwnerRefLinks( bool strong )
+    : TwoRefLinks( strong )
+{
+    assert( NULL != this );
+    const unsigned int strongCount = GetStrongPointerCount();
+    if ( 1 < strongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefLinks::SingleOwnerRefLinks( const void * p, bool strong )
+    : TwoRefLinks( p, strong )
+{
+    assert( NULL != this );
+    const unsigned int strongCount = GetStrongPointerCount();
+    if ( 1 < strongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefLinks::SingleOwnerRefLinks( const SingleOwnerRefLinks & rhs, bool strong )
+    : TwoRefLinks( rhs, strong )
+{
+    assert( NULL != this );
+    const unsigned int strongCount = rhs.GetStrongPointerCount();
+    if ( 1 < strongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefLinks::SingleOwnerRefLinks( const SingleOwnerRefLinks & rhs,
+    bool isNull, bool strong )
+    : TwoRefLinks( rhs, isNull, strong )
+{
+    assert( NULL != this );
+    const unsigned int strongCount = GetStrongPointerCount();
+    if ( 1 < strongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+SingleOwnerRefLinks::~SingleOwnerRefLinks( void )
+{
+    assert( NULL != this );
+    const unsigned int strongCount = GetStrongPointerCount();
+    // Use assert instead of throw inside a destructor.
+    assert( strongCount < 2 );
+    (void)strongCount;
+}
+
+// ----------------------------------------------------------------------------
+
+void SingleOwnerRefLinks::Swap( SingleOwnerRefLinks & rhs )
+{
+    assert( NULL != this );
+    if ( GetPointer() == rhs.GetPointer() )
+        return;
+
+    const unsigned int lhsStrongCount = GetStrongPointerCount();
+    if ( 1 < lhsStrongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+    const unsigned int rhsStrongCount = rhs.GetStrongPointerCount();
+    if ( 1 < rhsStrongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+
+    TwoRefLinks::Swap( rhs );
+}
+
+// ----------------------------------------------------------------------------
+
+bool SingleOwnerRefLinks::Merge( SingleOwnerRefLinks & rhs )
+{
+    assert( NULL != this );
+
+    const unsigned int lhsStrongCount = GetStrongPointerCount();
+    if ( 1 < lhsStrongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+    const unsigned int rhsStrongCount = rhs.GetStrongPointerCount();
+    if ( 1 < rhsStrongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+    if ( 1 < lhsStrongCount + rhsStrongCount )
+    {
+        throw ::std::logic_error( StrongPtr_Single_Owner_Exception_Message );
+    }
+
+    const bool success = TwoRefLinks::Merge( rhs );
+    return success;
+}
+
+// ----------------------------------------------------------------------------
+
+bool SingleOwnerRefLinks::Release( bool strong )
+{
+    assert( NULL != this );
+
+    if ( strong )
+    {
+        const TwoRefLinks * pStrong = GetNextStrongPointer();
+        if ( this != pStrong )
+        {
+            // There is another strong pointer in this linked pointer cycle,
+            // so just return false to prevent this strong pointer from
+            // deleting the same resource multiple times.
+            TwoRefLinks::Release( strong );
+            return false;
+        }
+    }
+
+    const unsigned int strongCount = GetStrongPointerCount();
+    // Use assert instead of throw because Release function only gets called
+    // from StrongPtr destructor, and destructors must not throw exceptions.
+    assert( strongCount < 2 );
+    (void)strongCount;
+
+    const bool doZap = TwoRefLinks::Release( strong );
+    return doZap;
 }
 
 // ----------------------------------------------------------------------------
