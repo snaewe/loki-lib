@@ -109,13 +109,13 @@ struct FprintfStderr
 
 
 
-template < class Value , template<class> class OnError = TriggerAssert >
+template < class ValueType , template<class> class OnError = TriggerAssert >
 class CheckReturn
 {
 public:
 
 	/// Conversion constructor changes Value type to CheckReturn type.
-	inline CheckReturn( const Value & value ) :
+	inline CheckReturn( const ValueType & value ) :
 		m_value( value ), m_checked( false ) {}
 
 	/// Copy-constructor allows functions to call another function within the
@@ -131,11 +131,11 @@ public:
 		// If m_checked is false, then a function failed to check the
 		// return value from a function call.
 		if (!m_checked)
-			OnError<Value>::run(m_value);
+			OnError< ValueType >::run(m_value);
 	}
 
 	/// Conversion operator changes CheckReturn back to Value type.
-	inline operator Value ( void )
+	inline operator ValueType ( void )
 	{
 		m_checked = true;
 		return m_value;
@@ -149,7 +149,7 @@ private:
 	CheckReturn & operator = ( const CheckReturn & that );
 
 	/// Copy of returned value.
-	Value m_value;
+	ValueType m_value;
 
 	/// Flag for whether calling function checked return value yet.
 	mutable bool m_checked;
