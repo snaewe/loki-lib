@@ -52,7 +52,7 @@
 
 #include <cassert>
 
-#if defined(LOKI_CLASS_LEVEL_THREADING) || defined(LOKI_OBJECT_LEVEL_THREADING)
+#if defined( LOKI_CLASS_LEVEL_THREADING ) || defined( LOKI_OBJECT_LEVEL_THREADING )
 
     #define LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL ::Loki::ClassLevelLockable
 
@@ -77,11 +77,11 @@
 
 #endif
 
-#ifndef LOKI_DEFAULT_MUTEX
-#define LOKI_DEFAULT_MUTEX ::Loki::Mutex
+#if !defined( LOKI_DEFAULT_MUTEX )
+    #define LOKI_DEFAULT_MUTEX ::Loki::Mutex
 #endif
 
-#ifdef LOKI_WINDOWS_H
+#if defined( LOKI_WINDOWS_H )
 
 #define LOKI_THREADS_MUTEX(x)           CRITICAL_SECTION (x);
 #define LOKI_THREADS_MUTEX_INIT(x)      ::InitializeCriticalSection (x)
