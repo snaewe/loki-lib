@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2006 Peter K�mmel
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author makes no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author makes no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +19,11 @@
 #include <string>
 #include <iostream>
 #include <assert.h>
+
+using namespace Loki;
+
+
+// ----------------------------------------------------------------------------
 
 void HasNone( void )
 {
@@ -59,9 +64,9 @@ void HasFive( int p1, int p2, int p3, int p4, int p5 )
     (void)p5;
 }
 
-void Decrement( unsigned int & x ) 
-{ 
-    --x; 
+void Decrement( unsigned int & x )
+{
+    --x;
 }
 
 struct UserDatabase
@@ -87,7 +92,7 @@ public:
     size_t countFriends() const;
 
 	void DoSomething() const;
-   
+
     unsigned int fCount;
 
     void HasNone( void ) const;
@@ -167,7 +172,7 @@ size_t User::countFriends() const
 
 void User::AddFriend(User& newFriend)
 {
-	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this,
+	ScopeGuard invariantGuard = MakeObjGuard( *this,
 		&User::CheckIfValid, __FUNCTION__, __LINE__ );
 	(void)invariantGuard;
     friends_.push_back(&newFriend);
@@ -177,15 +182,15 @@ void User::AddFriend(User& newFriend)
 
 void User::AddFriendGuarded(User& newFriend)
 {
-	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this,
+	ScopeGuard invariantGuard = MakeObjGuard( *this,
 		&User::CheckIfValid, __FUNCTION__, __LINE__ );
 	(void)invariantGuard;
-	::Loki::ScopeGuard guard1 = ::Loki::MakeObjGuard( *this, &User::DoSomething );
+	ScopeGuard guard1 = MakeObjGuard( *this, &User::DoSomething );
     (void)guard1;
 
     friends_.push_back(&newFriend);
     Loki::ScopeGuard guard = Loki::MakeObjGuard(friends_, &UserCont::pop_back);
-    
+
     fCount++;
     Loki::ScopeGuard guardRef = Loki::MakeGuard(Decrement, Loki::ByRef(fCount));
 
@@ -196,7 +201,7 @@ void User::AddFriendGuarded(User& newFriend)
 
 void User::AddFriendGuardedMacros(User&)
 {
-	::Loki::ScopeGuard invariantGuard = ::Loki::MakeObjGuard( *this,
+	ScopeGuard invariantGuard = MakeObjGuard( *this,
 		&User::CheckIfValid, __FUNCTION__, __LINE__ );
 	(void)invariantGuard;
     LOKI_ON_BLOCK_EXIT_OBJ(friends_, &UserCont::pop_back); (void) LOKI_ANONYMOUS_VARIABLE(scopeGuard);
@@ -211,12 +216,12 @@ void User::AddFriendGuardedMacros(User&)
 
 void DoStandaloneFunctionTests()
 {
-    ::Loki::ScopeGuard guard0 = ::Loki::MakeGuard( &HasNone );
-    ::Loki::ScopeGuard guard1 = ::Loki::MakeGuard( &HasOne, 1 );
-    ::Loki::ScopeGuard guard2 = ::Loki::MakeGuard( &HasTwo, 1, 2 );
-    ::Loki::ScopeGuard guard3 = ::Loki::MakeGuard( &HasThree, 1, 2, 3 );
-    ::Loki::ScopeGuard guard4 = ::Loki::MakeGuard( &HasFour, 1, 2, 3, 4 );
-    ::Loki::ScopeGuard guard5 = ::Loki::MakeGuard( &HasFive, 1, 2, 3, 4, 5 );
+    ScopeGuard guard0 = MakeGuard( &HasNone );
+    ScopeGuard guard1 = MakeGuard( &HasOne, 1 );
+    ScopeGuard guard2 = MakeGuard( &HasTwo, 1, 2 );
+    ScopeGuard guard3 = MakeGuard( &HasThree, 1, 2, 3 );
+    ScopeGuard guard4 = MakeGuard( &HasFour, 1, 2, 3, 4 );
+    ScopeGuard guard5 = MakeGuard( &HasFive, 1, 2, 3, 4, 5 );
     (void)guard0;
     (void)guard1;
     (void)guard2;
@@ -227,15 +232,295 @@ void DoStandaloneFunctionTests()
 
 void DoMemberFunctionTests( User & user )
 {
-    ::Loki::ScopeGuard guard0 = ::Loki::MakeObjGuard( user, &User::HasNone );
-    ::Loki::ScopeGuard guard1 = ::Loki::MakeObjGuard( user, &User::HasOne,   1 );
-    ::Loki::ScopeGuard guard2 = ::Loki::MakeObjGuard( user, &User::HasTwo,   1, 2 );
-    ::Loki::ScopeGuard guard3 = ::Loki::MakeObjGuard( user, &User::HasThree, 1, 2, 3 );
+    ScopeGuard guard0 = MakeObjGuard( user, &User::HasNone );
+    ScopeGuard guard1 = MakeObjGuard( user, &User::HasOne,   1 );
+    ScopeGuard guard2 = MakeObjGuard( user, &User::HasTwo,   1, 2 );
+    ScopeGuard guard3 = MakeObjGuard( user, &User::HasThree, 1, 2, 3 );
     (void)guard0;
     (void)guard1;
     (void)guard2;
     (void)guard3;
 }
+
+// ----------------------------------------------------------------------------
+
+void CalledAlways( void )
+{
+	const bool anyThrown = ::std::uncaught_exception();
+	const char * message = ( anyThrown ) ? "thrown" : "not thrown";
+	::std::cout << __FUNCTION__ << "   Exception was " << message << ::std::endl;
+}
+
+// ----------------------------------------------------------------------------
+
+void CalledIfNoException( void )
+{
+	const bool anyThrown = ::std::uncaught_exception();
+	const char * message = ( anyThrown ) ? "thrown" : "not thrown";
+	::std::cout << __FUNCTION__ << "   Exception was " << message << ::std::endl;
+}
+
+// ----------------------------------------------------------------------------
+
+void CalledIfException( void )
+{
+	const bool anyThrown = ::std::uncaught_exception();
+	const char * message = ( anyThrown ) ? "thrown" : "not thrown";
+	::std::cout << __FUNCTION__ << "   Exception was " << message << ::std::endl;
+}
+
+// ----------------------------------------------------------------------------
+
+void FunctionMightThrow( bool willThrow )
+{
+	if ( willThrow )
+		throw ::std::exception();
+}
+
+// ----------------------------------------------------------------------------
+
+void DoExceptionTests( void )
+{
+	::std::cout << ::std::endl;
+
+	{
+		try
+		{
+			::std::cout << "The function should be called." << ::std::endl;
+			ScopeGuard guard = MakeGuard( &CalledAlways );
+			(void)guard;
+			FunctionMightThrow( false );
+		}
+		catch ( ... )
+		{
+			::std::cout << "Caught exception." << ::std::endl;
+			assert( false );
+		}
+	}
+
+	::std::cout << ::std::endl;
+
+	{
+		try
+		{
+			::std::cout << "The function should be called." << ::std::endl;
+			ScopeGuard guard = MakeGuard( &CalledAlways );
+			(void)guard;
+			FunctionMightThrow( true );
+			assert( false );
+		}
+		catch ( ... )
+		{
+			::std::cout << "Caught exception." << ::std::endl;
+		}
+	}
+
+	::std::cout << ::std::endl;
+
+	{
+		try
+		{
+			::std::cout << "The function should be called." << ::std::endl;
+			ScopeGuard guard = MakeGuard( &CalledIfNoException );
+			guard.SetExceptionPolicy( ScopeGuardImplBase::CallIfNoException );
+			FunctionMightThrow( false );
+			::std::cout << "No exception thrown." << ::std::endl;
+		}
+		catch ( ... )
+		{
+			::std::cout << "Caught exception." << ::std::endl;
+			assert( false );
+		}
+	}
+
+	::std::cout << ::std::endl;
+
+	{
+		try
+		{
+			::std::cout << "The function should not be called." << ::std::endl;
+			ScopeGuard guard = MakeGuard( &CalledIfNoException );
+			guard.SetExceptionPolicy( ScopeGuardImplBase::CallIfNoException );
+			FunctionMightThrow( true );
+			assert( false );
+		}
+		catch ( ... )
+		{
+			::std::cout << "Caught exception." << ::std::endl;
+		}
+	}
+
+	::std::cout << ::std::endl;
+
+	{
+		try
+		{
+			::std::cout << "The function should not be called." << ::std::endl;
+			ScopeGuard guard = MakeGuard( &CalledIfException );
+			guard.SetExceptionPolicy( ScopeGuardImplBase::CallIfException );
+			FunctionMightThrow( false );
+			::std::cout << "No exception thrown." << ::std::endl;
+		}
+		catch ( ... )
+		{
+			::std::cout << "Caught exception." << ::std::endl;
+			assert( false );
+		}
+	}
+
+	::std::cout << ::std::endl;
+
+	{
+		try
+		{
+			::std::cout << "The function should be called." << ::std::endl;
+			ScopeGuard guard = MakeGuard( &CalledIfException );
+			guard.SetExceptionPolicy( ScopeGuardImplBase::CallIfException );
+			FunctionMightThrow( true );
+			assert( false );
+		}
+		catch ( ... )
+		{
+			::std::cout << "Caught exception." << ::std::endl;
+		}
+	}
+
+	::std::cout << ::std::endl;
+}
+
+// ----------------------------------------------------------------------------
+
+class Junk
+{
+public:
+
+	Junk( void );
+	~Junk( void );
+
+	bool IsUgly( void ) const;
+
+	bool IsUseful( void ) const;
+
+};
+
+// ----------------------------------------------------------------------------
+
+Junk::Junk( void )
+{
+    assert( NULL != this );
+}
+
+// ----------------------------------------------------------------------------
+
+Junk::~Junk( void )
+{
+    assert( NULL != this );
+}
+
+// ----------------------------------------------------------------------------
+
+bool Junk::IsUgly( void ) const
+{
+    assert( NULL != this );
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool Junk::IsUseful( void ) const
+{
+    assert( NULL != this );
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+class Attic
+{
+public:
+
+	Attic( void );
+	~Attic( void );
+
+	Junk * RemoveUselessJunk( void );
+
+private:
+
+	typedef ::std::vector< Junk * > JunkPile;
+	typedef JunkPile::iterator JunkPileIter;
+
+	void CheckInvariants( const char * function, unsigned int line ) const;
+
+	void CallObservers( void ) const;
+
+	void EliminateHoles( void );
+
+    JunkPile m_storage;
+
+};
+
+// ----------------------------------------------------------------------------
+
+Attic::Attic( void ) :
+	m_storage()
+{
+}
+
+// ----------------------------------------------------------------------------
+
+Attic::~Attic( void )
+{
+}
+
+// ----------------------------------------------------------------------------
+
+Junk * Attic::RemoveUselessJunk( void )
+{
+    ScopeGuard callGuard = MakeObjGuard( *this, &Attic::CallObservers );
+    ScopeGuard testGuard = MakeObjGuard( *this, &Attic::CheckInvariants, __FUNCTION__, __LINE__ );
+    ScopeGuard fixGuard = MakeObjGuard( *this, &Attic::EliminateHoles );
+	callGuard.SetExceptionPolicy( ScopeGuardImplBase::CallIfNoException );
+	(void)testGuard;
+	(void)fixGuard;
+
+    for ( JunkPileIter it( m_storage.begin() );
+          it != m_storage.end();
+          ++it )
+    {
+        Junk * junk = *it;
+        if ( junk->IsUgly() )
+            return junk;
+        if ( junk->IsUseful() )
+			continue;
+        delete junk;
+        *it = NULL;
+    }
+
+    return NULL;
+}
+
+// ----------------------------------------------------------------------------
+
+void Attic::CheckInvariants( const char * function, unsigned int line ) const
+{
+    assert( NULL != this );
+	(void)function;
+	(void)line;
+}
+
+// ----------------------------------------------------------------------------
+
+void Attic::CallObservers( void ) const
+{
+}
+
+// ----------------------------------------------------------------------------
+
+void Attic::EliminateHoles( void )
+{
+}
+
+// ----------------------------------------------------------------------------
 
 int main()
 {
@@ -256,6 +541,7 @@ int main()
 
     DoStandaloneFunctionTests();
     DoMemberFunctionTests( u1 );
+	DoExceptionTests();
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
     system("PAUSE");
