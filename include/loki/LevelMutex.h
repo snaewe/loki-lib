@@ -24,17 +24,17 @@
 
 // ----------------------------------------------------------------------------
 
-#include <vector>
-#include <assert.h>
-#include <time.h>
-
 #if defined( _MSC_VER )
     #include <Windows.h>
 #else
     #include <pthread.h>
 #endif
 
-#if !defined(_WIN32) && !defined(_WIN64)
+#include <vector>
+#include <assert.h>
+#include <time.h>
+
+#if !defined( _WIN32 ) && !defined( _WIN64 )
     #include <unistd.h> // declares usleep under Linux
 #endif
 
