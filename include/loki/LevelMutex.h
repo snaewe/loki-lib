@@ -30,6 +30,7 @@
     #include <pthread.h>
 #endif
 
+#include <exception>
 #include <vector>
 #include <assert.h>
 #include <time.h>
