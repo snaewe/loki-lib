@@ -127,11 +127,17 @@
             return lval;                                                \
         }                                                               \
                                                                         \
-        static void AtomicAssign(volatile IntType& lval, const IntType val)   \
-        { InterlockedExchange(&const_cast<IntType&>(lval), val); }      \
+        static IntType AtomicAssign(volatile IntType& lval, const IntType val)   \
+        {                                                               \
+            InterlockedExchange(&const_cast<IntType&>(lval), val);      \
+            return lval;                                                \
+        }                                                               \
                                                                         \
-        static void AtomicAssign(IntType& lval, volatile const IntType& val)  \
-        { InterlockedExchange(&lval, val); }                            \
+        static IntType AtomicAssign(IntType& lval, volatile const IntType& val)  \
+        {                                                               \
+            InterlockedExchange(&lval, val);                            \
+            return lval;                                                \
+        }                                                               \
                                                                         \
         static IntType AtomicIncrement(volatile IntType& lval, const IntType compare, bool & matches )  \
         {                                                               \
@@ -249,7 +255,7 @@
             return lval;                                                 \
         }                                                                \
                                                                          \
-        static void AtomicAssign(volatile IntType& lval, const IntType val) \
+        static IntType AtomicAssign(volatile IntType& lval, const IntType val) \
         {                                                                \
             ::pthread_mutex_lock( &atomic_mutex_ );                      \
             lval = val;                                                  \
@@ -257,7 +263,7 @@
             return lval;                                                 \
         }                                                                \
                                                                          \
-        static void AtomicAssign(IntType& lval, volatile const IntType& val) \
+        static IntType AtomicAssign(IntType& lval, volatile const IntType& val) \
         {                                                                \
             ::pthread_mutex_lock( &atomic_mutex_ );                      \
             lval = val;                                                  \
@@ -394,11 +400,17 @@ namespace Loki
         static IntType AtomicDecrement(volatile IntType& lval)
         { return --lval; }
 
-        static void AtomicAssign(volatile IntType & lval, const IntType val)
-        { lval = val; }
+        static IntType AtomicAssign(volatile IntType & lval, const IntType val)
+        {
+            lval = val;
+            return lval;
+        }
 
-        static void AtomicAssign(IntType & lval, volatile IntType & val)
-        { lval = val; }
+        static IntType AtomicAssign(IntType & lval, volatile IntType & val)
+        {
+            lval = val;
+            return lval;
+        }
 
         static IntType AtomicAdd(volatile IntType& lval, const IntType val, const IntType compare, bool & matches )
         {
