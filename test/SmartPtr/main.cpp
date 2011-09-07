@@ -54,7 +54,7 @@ unsigned int MimicCOM::s_destructions = 0;
 class Thingy;
 
 typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
-    AssertCheck, DefaultSPStorage, PropagateConst >
+    NoCheck, DefaultSPStorage, PropagateConst >
     Thingy_DefaultStorage_ptr;
 
 typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
@@ -69,18 +69,23 @@ typedef Loki::SmartPtr< BaseClass, RefCounted, DisallowConversion,
     AssertCheck, DefaultSPStorage, DontPropagateConst >
     NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr;
 
-/// @note These 3 are used for testing const policies.
-typedef Loki::SmartPtr< const BaseClass, RefCounted, DisallowConversion,
-    AssertCheck, DefaultSPStorage, DontPropagateConst >
-    ConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr;
-
-typedef Loki::SmartPtr< const BaseClass, RefCounted, DisallowConversion,
-    AssertCheck, DefaultSPStorage, PropagateConst >
-    ConstBase_RefCount_NoConvert_Assert_Propagate_ptr;
+/// @note These 4 are used for testing const policies.
 
 typedef Loki::SmartPtr< BaseClass, RefCounted, DisallowConversion,
-    AssertCheck, DefaultSPStorage, PropagateConst >
-    NonConstBase_RefCount_NoConvert_Assert_Propagate_ptr;
+    NoCheck, DefaultSPStorage, DontPropagateConst >
+    NonConstBase_RefCount_NoConvert_NoCheck_DontPropagate_ptr;
+
+typedef Loki::SmartPtr< const BaseClass, RefCounted, DisallowConversion,
+    NoCheck, DefaultSPStorage, DontPropagateConst >
+    ConstBase_RefCount_NoConvert_NoCheck_DontPropagate_ptr;
+
+typedef Loki::SmartPtr< const BaseClass, RefCounted, DisallowConversion,
+    NoCheck, DefaultSPStorage, PropagateConst >
+    ConstBase_RefCount_NoConvert_NoCheck_Propagate_ptr;
+
+typedef Loki::SmartPtr< BaseClass, RefCounted, DisallowConversion,
+    NoCheck, DefaultSPStorage, PropagateConst >
+    NonConstBase_RefCount_NoConvert_NoCheck_Propagate_ptr;
 
 
 // ----------------------------------------------------------------------------
@@ -135,11 +140,12 @@ typedef Loki::SmartPtr< MimicCOM, COMRefCounted, DisallowConversion,
 
 void DoConstConversionTests( void )
 {
+    cout << "Starting DoConstConversionTests." << endl;
 
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1;
-    ConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p2( p1 );
-    ConstBase_RefCount_NoConvert_Assert_Propagate_ptr p3( p1 );
-    NonConstBase_RefCount_NoConvert_Assert_Propagate_ptr p4( p1 );
+    NonConstBase_RefCount_NoConvert_NoCheck_DontPropagate_ptr p1;
+    ConstBase_RefCount_NoConvert_NoCheck_DontPropagate_ptr p2( p1 );
+    ConstBase_RefCount_NoConvert_NoCheck_Propagate_ptr p3( p1 );
+    NonConstBase_RefCount_NoConvert_NoCheck_Propagate_ptr p4( p1 );
 
 //  p1 = p2;  // illegal! converts const to non-const.
 //  p1 = p3;  // illegal! converts const to non-const.
@@ -153,775 +159,824 @@ void DoConstConversionTests( void )
     p4 = p1;  // legal, but dubious. Changes const-propagation policy.
 //  p4 = p2;  // illegal! converts const to non-const.
 //  p4 = p3;  // illegal! converts const to non-const.
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoConstConversionTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoOwnershipConversionTests( void )
 {
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1;
-    NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p2;
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p3;
-    NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p4( new BaseClass );
-    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p5;
-    NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p6;
+    cout << "Starting DoOwnershipConversionTests." << endl;
 
-    // legal constructions.  Each should allow copy with same policies.
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p7( p1 );
-    NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p8( p2 );
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p9( p3 );
-    NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p10( p4 );
-    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p11( p5 );
+    {
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1( new BaseClass );
+        NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p2( new BaseClass );
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p3( new BaseClass );
+        NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p4( new BaseClass );
+        NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p5( new BaseClass );
+        NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p6( new BaseClass );
 
-    // illegal construction!  Can't copy anything with NoCopy policy.
-    // NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p12( p6 );
+        // legal constructions.  Each should allow copy with same policies.
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p7( p1 );
+        NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p8( p2 );
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p9( p3 );
+        NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p10( p4 );
+        NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p11( p5 );
 
-    // illegal constructions!  Can't convert from one ownership policy to another.
-//  NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p13( p2 );
-//  NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p14( p3 );
-//  NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p15( p4 );
-//  NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p16( p5 );
-//  NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p17( p6 );
+        // illegal construction!  Can't copy anything with NoCopy policy.
+        // NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p12( p6 );
 
-    // illegal constructions!  Can't convert from one ownership policy to another.
-//  NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p18( p1 );
-//  NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p19( p3 );
-//  NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p20( p4 );
-//  NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p21( p5 );
-//  NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p22( p6 );
+        // illegal constructions!  Can't convert from one ownership policy to another.
+        // NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p13( p2 );
+        // NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p14( p3 );
+        // NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p15( p4 );
+        // NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p16( p5 );
+        // NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p17( p6 );
 
-    // illegal constructions!  Can't convert from one ownership policy to another.
-//  NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p23( p1 );
-//  NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p24( p2 );
-//  NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p25( p4 );
-//  NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p26( p5 );
-//  NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p27( p6 );
+        // illegal constructions!  Can't convert from one ownership policy to another.
+        // NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p18( p1 );
+        // NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p19( p3 );
+        // NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p20( p4 );
+        // NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p21( p5 );
+        // NonConstBase_ComRef_NoConvert_Assert_DontPropagate_ptr p22( p6 );
 
-    // illegal constructions!  Can't convert from one ownership policy to another.
-//  NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p28( p1 );
-//  NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p29( p2 );
-//  NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p30( p3 );
-//  NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p31( p5 );
-//  NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p32( p6 );
+        // illegal constructions!  Can't convert from one ownership policy to another.
+        // NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p23( p1 );
+        // NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p24( p2 );
+        // NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p25( p4 );
+        // NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p26( p5 );
+        // NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p27( p6 );
 
-    // illegal constructions!  Can't convert from one ownership policy to another.
-//  NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p33( p1 );
-//  NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p34( p2 );
-//  NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p35( p3 );
-//  NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p36( p4 );
-//  NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p37( p6 );
+        // illegal constructions!  Can't convert from one ownership policy to another.
+        // NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p28( p1 );
+        // NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p29( p2 );
+        // NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p30( p3 );
+        // NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p31( p5 );
+        // NonConstBase_DeepCopy_NoConvert_Assert_DontPropagate_ptr p32( p6 );
 
-    // illegal constructions!  Can't convert from one ownership policy to another.
-//  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p38( p1 );
-//  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p39( p2 );
-//  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p40( p3 );
-//  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p41( p4 );
-//  NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p42( p5 );
+        // illegal constructions!  Can't convert from one ownership policy to another.
+        // NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p33( p1 );
+        // NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p34( p2 );
+        // NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p35( p3 );
+        // NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p36( p4 );
+        // NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p37( p6 );
 
-    // These constructions are legal because the preserve const-ness.
-    ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p43( p5 );
-    ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p44( p43 );
-    const BaseClass * rawP = new BaseClass;
-    // These constructions are illegal because the don't preserve constness.
-//    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p45( rawP );
-//    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p46( p43 );
-    ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p47( rawP );
+        // illegal constructions!  Can't convert from one ownership policy to another.
+        // NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p38( p1 );
+        // NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p39( p2 );
+        // NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p40( p3 );
+        // NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p41( p4 );
+        // NonConstBase_NoCopy_NoConvert_Assert_DontPropagate_ptr p42( p5 );
+    }
 
-    NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p48;
-    // This assignment is legal because it preserves constness.
-    p48 = p5;
-    // This assignment is illegal because it won't preserve constness.
-//    p48 = p43;
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
 
-    // illegal assignements!  Can't convert from one ownership policy to another.
-//  p1 = p2;
-//  p1 = p3;
-//  p1 = p4;
-//  p1 = p5;
-//  p1 = p6;
-//  p2 = p1;
-//  p2 = p3;
-//  p2 = p4;
-//  p2 = p5;
-//  p2 = p6;
-//  p3 = p1;
-//  p3 = p2;
-//  p3 = p4;
-//  p3 = p5;
-//  p3 = p6;
-//  p4 = p1;
-//  p4 = p2;
-//  p4 = p3;
-//  p4 = p5;
-//  p4 = p6;
-//  p5 = p1;
-//  p5 = p2;
-//  p5 = p3;
-//  p5 = p4;
-//  p5 = p6;
-//  p6 = p1;
-//  p6 = p2;
-//  p6 = p3;
-//  p6 = p4;
-//  p6 = p5;
+    {
+        // These constructions are legal because the preserve const-ness.
+        const BaseClass * rawP = new BaseClass;
+        ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p43( rawP );
+        ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p44( p43 );
+        rawP = new BaseClass;
+        // These constructions are illegal because the don't preserve constness.
+        // NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p45( rawP );
+        // NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p46( p43 );
+        ConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p47( rawP );
+
+        NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p48;
+        NonConstBase_KillCopy_NoConvert_Assert_DontPropagate_ptr p49( new BaseClass );
+        // This assignment is legal because it preserves constness.
+        p48 = p49;
+        // This assignment is illegal because it won't preserve constness.
+        // p48 = p43;
+
+        // illegal assignments!  Can't convert from one ownership policy to another.
+        // p1 = p2;
+        // p1 = p3;
+        // p1 = p4;
+        // p1 = p5;
+        // p1 = p6;
+        // p2 = p1;
+        // p2 = p3;
+        // p2 = p4;
+        // p2 = p5;
+        // p2 = p6;
+        // p3 = p1;
+        // p3 = p2;
+        // p3 = p4;
+        // p3 = p5;
+        // p3 = p6;
+        // p4 = p1;
+        // p4 = p2;
+        // p4 = p3;
+        // p4 = p5;
+        // p4 = p6;
+        // p5 = p1;
+        // p5 = p2;
+        // p5 = p3;
+        // p5 = p4;
+        // p5 = p6;
+        // p6 = p1;
+        // p6 = p2;
+        // p6 = p3;
+        // p6 = p4;
+        // p6 = p5;
+    }
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoOwnershipConversionTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoInheritanceConversionTests( void )
 {
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1;
-    PublicSub_RefCount_NoConvert_Assert_DontPropagate_ptr p2;
-    PrivateSub_RefCount_NoConvert_Assert_DontPropagate_ptr p3;
+    cout << "Starting DoInheritanceConversionTests." << endl;
 
-    p1 = p2;  // legal.  Cast to public base class allowed.
-    assert( p1 == p2 );
-//  p1 = p3;  // illegal!  Can't assign pointer since base class is private.
-//  p2 = p1;  // illegal!  Can't do cast to derived class in pointer assignment.
-//  p2 = p3;  // illegal!  Can't assign when types are unrelated.
-//  p3 = p1;  // illegal!  Can't do cast to derived class in pointer assignment.
-//  p3 = p2;  // illegal!  Can't assign when types are unrelated.
+    {
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1;
+        PublicSub_RefCount_NoConvert_Assert_DontPropagate_ptr p2( new PublicSubClass );
+        PrivateSub_RefCount_NoConvert_Assert_DontPropagate_ptr p3;
 
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p4( p2 );
-    assert( p4 == p1 );
-    assert( p4 == p2 );
-    // These copy-constructions are illegal for reasons shown above.
-//  NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p5( p3 );
-//  PublicSub_RefCount_NoConvert_Assert_DontPropagate_ptr p6( p1 );
-//  PublicSub_RefCount_NoConvert_Assert_DontPropagate_ptr p7( p3 );
-//  PrivateSub_RefCount_NoConvert_Assert_DontPropagate_ptr p8( p1 );
-//  PrivateSub_RefCount_NoConvert_Assert_DontPropagate_ptr p9( p2 );
+        p1 = p2;  // legal.  Cast to public base class allowed.
+        assert( p1 == p2 );
+//      p1 = p3;  // illegal!  Can't assign pointer since base class is private.
+//      p2 = p1;  // illegal!  Can't do cast to derived class in pointer assignment.
+//      p2 = p3;  // illegal!  Can't assign when types are unrelated.
+//      p3 = p1;  // illegal!  Can't do cast to derived class in pointer assignment.
+//      p3 = p2;  // illegal!  Can't assign when types are unrelated.
+
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p4( p2 );
+        assert( p4 == p1 );
+        assert( p4 == p2 );
+        // These copy-constructions are illegal for reasons shown above.
+//      NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p5( p3 );
+//      PublicSub_RefCount_NoConvert_Assert_DontPropagate_ptr p6( p1 );
+//      PublicSub_RefCount_NoConvert_Assert_DontPropagate_ptr p7( p3 );
+//      PrivateSub_RefCount_NoConvert_Assert_DontPropagate_ptr p8( p1 );
+//      PrivateSub_RefCount_NoConvert_Assert_DontPropagate_ptr p9( p2 );
+    }
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoInheritanceConversionTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoRefCountSwapTests( void )
 {
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1( new BaseClass );
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p2( new BaseClass );
+    cout << "Starting DoRefCountSwapTests." << endl;
 
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p3( p1 );
-    NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p4( p2 );
+    {
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1( new BaseClass );
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p2( new BaseClass );
 
-    // p1 == p3    and    p2 == p4
-    assert( p1 == p3 );
-    assert( p1 != p2 );
-    assert( p1 != p4 );
-    assert( p2 == p4 );
-    assert( p2 != p3 );
-    assert( p2 != p1 );
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p3( p1 );
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p4( p2 );
 
-    // p1 == p4    and    p2 == p3
-    p3.Swap( p4 );
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
+        // p1 == p3    and    p2 == p4
+        assert( p1 == p3 );
+        assert( p1 != p2 );
+        assert( p1 != p4 );
+        assert( p2 == p4 );
+        assert( p2 != p3 );
+        assert( p2 != p1 );
 
-    // p1 == p3    and    p2 == p4
-    p3.Swap( p4 );
-    assert( p1 == p3 );
-    assert( p1 != p2 );
-    assert( p1 != p4 );
-    assert( p2 == p4 );
-    assert( p2 != p3 );
-    assert( p2 != p1 );
+        // p1 == p4    and    p2 == p3
+        p3.Swap( p4 );
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
 
-    // p2 == p3    and    p1 == p4
-    p1.Swap( p2 );
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
+        // p1 == p3    and    p2 == p4
+        p3.Swap( p4 );
+        assert( p1 == p3 );
+        assert( p1 != p2 );
+        assert( p1 != p4 );
+        assert( p2 == p4 );
+        assert( p2 != p3 );
+        assert( p2 != p1 );
 
-    // p2 == p3    and    p1 == p4
-    p1.Swap( p1 );
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
+        // p2 == p3    and    p1 == p4
+        p1.Swap( p2 );
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
 
-    // p2 == p3    and    p4 == p1
-    p1.Swap( p4 );
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
+        // p2 == p3    and    p1 == p4
+        p1.Swap( p1 );
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+
+        // p2 == p3    and    p4 == p1
+        p1.Swap( p4 );
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+    }
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoRefCountSwapTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoRefLinkSwapTests( void )
 {
+    cout << "Starting DoRefLinkSwapTests." << endl;
 
-    BaseClass * pBaseClass = new BaseClass;
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p1( pBaseClass );
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p2( new BaseClass );
-    p1->DoThat();
-    p2->DoThat();
-
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p3( p1 );
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p4( p2 );
-
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p5;
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p6( new BaseClass );
-
-    BaseClass * pBare1 = GetImpl( p1 );
-    BaseClass * pBare2 = GetImpl( p2 );
-    BaseClass * pBare6 = GetImpl( p6 );
-    const bool is1LessThan2 = ( pBare1 < pBare2 );
-    const bool is1LessThan6 = ( pBare1 < pBare6 );
-    const bool is2LessThan6 = ( pBare2 < pBare6 );
-    assert( pBare1 != pBare2 );
-    assert( pBare1 != pBare6 );
-    assert( pBare2 != pBare6 );
-    assert( p1 == pBare1 );
-    assert( p2 == pBare2 );
-    assert( p6 == pBare6 );
-    assert( pBare1 == p1 );
-    assert( pBare2 == p2 );
-    assert( pBare6 == p6 );
-    assert( pBare2 != p1 );
-    assert( p1 != pBare2 );
-
-    if ( is1LessThan2 )
     {
-        assert( p1 < p2 );
-        assert( p1 <= p2 );
+        BaseClass * pBaseClass = new BaseClass;
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p1( pBaseClass );
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p2( new BaseClass );
+        p1->DoThat();
+        p2->DoThat();
+
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p3( p1 );
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p4( p2 );
+
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p5;
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p6( new BaseClass );
+
+        BaseClass * pBare1 = GetImpl( p1 );
+        BaseClass * pBare2 = GetImpl( p2 );
+        BaseClass * pBare6 = GetImpl( p6 );
+        const bool is1LessThan2 = ( pBare1 < pBare2 );
+        const bool is1LessThan6 = ( pBare1 < pBare6 );
+        const bool is2LessThan6 = ( pBare2 < pBare6 );
+        assert( pBare1 != pBare2 );
+        assert( pBare1 != pBare6 );
+        assert( pBare2 != pBare6 );
+        assert( p1 == pBare1 );
+        assert( p2 == pBare2 );
+        assert( p6 == pBare6 );
+        assert( pBare1 == p1 );
+        assert( pBare2 == p2 );
+        assert( pBare6 == p6 );
+        assert( pBare2 != p1 );
+        assert( p1 != pBare2 );
+
+        if ( is1LessThan2 )
+        {
+            assert( p1 < p2 );
+            assert( p1 <= p2 );
+            assert( p1 != p2 );
+            assert( p2 > p1 );
+            assert( p2 >= p1 );
+            assert( p1 < pBare2 );
+            assert( p1 <= pBare2 );
+            assert( pBare2 > p1 );
+            assert( pBare2 >= p1 );
+        }
+        else
+        {
+            assert( p2 < p1 );
+            assert( p2 <= p1 );
+            assert( p2 != p1 );
+            assert( p1 > p2 );
+            assert( p1 >= p2 );
+            assert( p2 < pBare1 );
+            assert( p2 <= pBare1 );
+            assert( p2 != pBare1 );
+            assert( pBare1 > p2 );
+            assert( pBare1 >= p2 );
+        }
+
+        if ( is1LessThan6 )
+        {
+            assert( p1 < p6 );
+            assert( p1 <= p6 );
+            assert( p1 != p6 );
+            assert( p6 > p1 );
+            assert( p6 >= p1 );
+            assert( p1 < pBare6 );
+            assert( p1 <= pBare6 );
+            assert( pBare6 > p1 );
+            assert( pBare6 >= p1 );
+        }
+        else
+        {
+            assert( p6 < p1 );
+            assert( p6 <= p1 );
+            assert( p6 != p1 );
+            assert( p1 > p6 );
+            assert( p1 >= p6 );
+            assert( p6 < pBare1 );
+            assert( p6 <= pBare1 );
+            assert( p6 != pBare1 );
+            assert( pBare1 > p6 );
+            assert( pBare1 >= p6 );
+        }
+
+        if ( is2LessThan6 )
+        {
+            assert( p2 < p6 );
+            assert( p2 <= p6 );
+            assert( p2 != p6 );
+            assert( p6 > p2 );
+            assert( p6 >= p2 );
+            assert( p2 < pBare6 );
+            assert( p2 <= pBare6 );
+            assert( pBare6 > p2 );
+            assert( pBare6 >= p2 );
+        }
+        else
+        {
+            assert( p6 < p2 );
+            assert( p6 <= p2 );
+            assert( p6 != p2 );
+            assert( p2 > p6 );
+            assert( p2 >= p6 );
+            assert( p6 < pBare2 );
+            assert( p6 <= pBare2 );
+            assert( p6 != pBare2 );
+            assert( pBare2 > p6 );
+            assert( pBare2 >= p6 );
+        }
+
+        // p1 <---> p3    and    p2 <---> p4   and   p5   and   p6
+        assert( p1 == p3 );
         assert( p1 != p2 );
-        assert( p2 > p1 );
-        assert( p2 >= p1 );
-        assert( p1 < pBare2 );
-        assert( p1 <= pBare2 );
-        assert( pBare2 > p1 );
-        assert( pBare2 >= p1 );
-    }
-    else
-    {
-        assert( p2 < p1 );
-        assert( p2 <= p1 );
+        assert( p1 != p4 );
+        assert( p2 == p4 );
+        assert( p2 != p3 );
         assert( p2 != p1 );
-        assert( p1 > p2 );
-        assert( p1 >= p2 );
-        assert( p2 < pBare1 );
-        assert( p2 <= pBare1 );
-        assert( p2 != pBare1 );
-        assert( pBare1 > p2 );
-        assert( pBare1 >= p2 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p3.Swap( p4 );  // p1 <---> p4    and    p2 <---> p3   and   p5   and   p6
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p3.Swap( p4 );   // p1 <---> p3    and    p2 <---> p4   and   p5   and   p6
+        assert( p1 == p3 );
+        assert( p1 != p2 );
+        assert( p1 != p4 );
+        assert( p2 == p4 );
+        assert( p2 != p3 );
+        assert( p2 != p1 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p1.Swap( p2 );  // p2 <---> p3    and    p1 <---> p4   and   p5   and   p6
+        assert( p1 != pBaseClass );
+        assert( p2 == pBaseClass );
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p1.Swap( p1 );  // p2 <---> p3    and    p1 <---> p4   and   p5   and   p6
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p1.Swap( p4 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p4.Swap( p1 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p5.Swap( p5 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+
+        p5.Swap( p1 );  // p2 <---> p3    and    p4 <---> p5   and   p1   and   p6
+        assert( p5 == p4 );
+        assert( p5 != p2 );
+        assert( p5 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p5 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p4 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p6.Swap( p1 );  // p2 <---> p3    and    p4 <---> p5   and   p1   and   p6
+        assert( p5 == p4 );
+        assert( p5 != p2 );
+        assert( p5 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p5 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p4 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+
+        p5.Swap( p1 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
+        assert( p1 == p4 );
+        assert( p1 != p2 );
+        assert( p1 != p3 );
+        assert( p2 == p3 );
+        assert( p2 != p4 );
+        assert( p2 != p1 );
+        assert( p1 != p5 );
+        assert( p2 != p5 );
+        assert( p3 != p5 );
+        assert( p4 != p5 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+
+        p6 = p2;  // p6 <---> p2 <---> p3    and    p4 <---> p1   and   p5
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p5 != p3 );
+        assert( p2 != p4 );
+        assert( p2 != p5 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+
+        p5 = p3;  // p6 <---> p2 <---> p3 <---> p5   and    p4 <---> p1
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+
+        p5.Swap( p3 );  // p6 <---> p2 <---> p5 <---> p3   and    p4 <---> p1
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+
+        p2.Swap( p3 );  // p6 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+
+        bool merged = false;
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p7( pBaseClass );
+        assert( p7 == p7 );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        merged = p7.Merge( p6 );
+        // p7 <---> p6 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
+        assert( merged );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+        assert( p7 == p7 );
+
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p8( pBaseClass );
+        assert( p6 == p8 );
+        assert( p1 != p8 );
+        merged = p6.Merge( p8 );
+        // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
+        assert( merged );
+        assert( p6 == p8 );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+        assert( p7 == p7 );
+        assert( p8 == p8 );
+
+        merged = p6.Merge( p6 );
+        // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
+        assert( merged );
+        assert( p6 == p8 );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+        assert( p7 == p7 );
+        assert( p8 == p8 );
+
+        merged = p6.Merge( p3 );
+        // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
+        assert( merged );
+        assert( p6 == p8 );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+        assert( p7 == p7 );
+        assert( p8 == p8 );
+
+        merged = p5.Merge( p1 );
+        // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
+        assert( !merged );
+        assert( p6 == p8 );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+        assert( p7 == p7 );
+        assert( p8 == p8 );
+
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p9( pBaseClass );
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr pA( p9 );
+        assert( p9 == pA );
+        assert( p9 == p8 );
+        assert( p1 != p8 );
+        merged = p9.Merge( p1 );
+        // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2
+        //   and    p4 <---> p1   and   p9 <---> pA
+        assert( !merged );
+        assert( p6 == p8 );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+        assert( p7 == p7 );
+        assert( p8 == p8 );
+        assert( p9 == p9 );
+        assert( pA == pA );
+
+        merged = p9.Merge( p2 );
+        // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2 <---> p9 <---> pA
+        //   and    p4 <---> p1
+        assert( merged );
+        assert( p6 == p8 );
+        assert( p6 == p7 );
+        assert( p1 != p7 );
+        assert( p6 == p5 );
+        assert( p6 == p2 );
+        assert( p6 == p3 );
+        assert( p5 == p3 );
+        assert( p2 == p3 );
+        assert( p1 == p4 );
+        assert( p2 != p4 );
+        assert( p1 != p5 );
+        assert( p2 != p1 );
+        assert( p3 != p1 );
+        assert( p1 == p1 );
+        assert( p2 == p2 );
+        assert( p3 == p3 );
+        assert( p4 == p4 );
+        assert( p5 == p5 );
+        assert( p6 == p6 );
+        assert( p7 == p7 );
+        assert( p8 == p8 );
+        assert( p9 == p9 );
+        assert( pA == pA );
     }
 
-    if ( is1LessThan6 )
-    {
-        assert( p1 < p6 );
-        assert( p1 <= p6 );
-        assert( p1 != p6 );
-        assert( p6 > p1 );
-        assert( p6 >= p1 );
-        assert( p1 < pBare6 );
-        assert( p1 <= pBare6 );
-        assert( pBare6 > p1 );
-        assert( pBare6 >= p1 );
-    }
-    else
-    {
-        assert( p6 < p1 );
-        assert( p6 <= p1 );
-        assert( p6 != p1 );
-        assert( p1 > p6 );
-        assert( p1 >= p6 );
-        assert( p6 < pBare1 );
-        assert( p6 <= pBare1 );
-        assert( p6 != pBare1 );
-        assert( pBare1 > p6 );
-        assert( pBare1 >= p6 );
-    }
-
-    if ( is2LessThan6 )
-    {
-        assert( p2 < p6 );
-        assert( p2 <= p6 );
-        assert( p2 != p6 );
-        assert( p6 > p2 );
-        assert( p6 >= p2 );
-        assert( p2 < pBare6 );
-        assert( p2 <= pBare6 );
-        assert( pBare6 > p2 );
-        assert( pBare6 >= p2 );
-    }
-    else
-    {
-        assert( p6 < p2 );
-        assert( p6 <= p2 );
-        assert( p6 != p2 );
-        assert( p2 > p6 );
-        assert( p2 >= p6 );
-        assert( p6 < pBare2 );
-        assert( p6 <= pBare2 );
-        assert( p6 != pBare2 );
-        assert( pBare2 > p6 );
-        assert( pBare2 >= p6 );
-    }
-
-    // p1 <---> p3    and    p2 <---> p4   and   p5   and   p6
-    assert( p1 == p3 );
-    assert( p1 != p2 );
-    assert( p1 != p4 );
-    assert( p2 == p4 );
-    assert( p2 != p3 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p3.Swap( p4 );  // p1 <---> p4    and    p2 <---> p3   and   p5   and   p6
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p3.Swap( p4 );   // p1 <---> p3    and    p2 <---> p4   and   p5   and   p6
-    assert( p1 == p3 );
-    assert( p1 != p2 );
-    assert( p1 != p4 );
-    assert( p2 == p4 );
-    assert( p2 != p3 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p1.Swap( p2 );  // p2 <---> p3    and    p1 <---> p4   and   p5   and   p6
-    assert( p1 != pBaseClass );
-    assert( p2 == pBaseClass );
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p1.Swap( p1 );  // p2 <---> p3    and    p1 <---> p4   and   p5   and   p6
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p1.Swap( p4 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p4.Swap( p1 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p5.Swap( p5 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-
-    p5.Swap( p1 );  // p2 <---> p3    and    p4 <---> p5   and   p1   and   p6
-    assert( p5 == p4 );
-    assert( p5 != p2 );
-    assert( p5 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p5 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p4 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p6.Swap( p1 );  // p2 <---> p3    and    p4 <---> p5   and   p1   and   p6
-    assert( p5 == p4 );
-    assert( p5 != p2 );
-    assert( p5 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p5 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p4 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-
-    p5.Swap( p1 );  // p2 <---> p3    and    p4 <---> p1   and   p5   and   p6
-    assert( p1 == p4 );
-    assert( p1 != p2 );
-    assert( p1 != p3 );
-    assert( p2 == p3 );
-    assert( p2 != p4 );
-    assert( p2 != p1 );
-    assert( p1 != p5 );
-    assert( p2 != p5 );
-    assert( p3 != p5 );
-    assert( p4 != p5 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-
-    p6 = p2;  // p6 <---> p2 <---> p3    and    p4 <---> p1   and   p5
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p5 != p3 );
-    assert( p2 != p4 );
-    assert( p2 != p5 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-
-    p5 = p3;  // p6 <---> p2 <---> p3 <---> p5   and    p4 <---> p1
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-
-    p5.Swap( p3 );  // p6 <---> p2 <---> p5 <---> p3   and    p4 <---> p1
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-
-    p2.Swap( p3 );  // p6 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-
-    bool merged = false;
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p7( pBaseClass );
-    assert( p7 == p7 );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    merged = p7.Merge( p6 );
-    // p7 <---> p6 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
-    assert( merged );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-    assert( p7 == p7 );
-
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p8( pBaseClass );
-    assert( p6 == p8 );
-    assert( p1 != p8 );
-    merged = p6.Merge( p8 );
-    // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
-    assert( merged );
-    assert( p6 == p8 );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-    assert( p7 == p7 );
-    assert( p8 == p8 );
-
-    merged = p6.Merge( p6 );
-    // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
-    assert( merged );
-    assert( p6 == p8 );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-    assert( p7 == p7 );
-    assert( p8 == p8 );
-
-    merged = p6.Merge( p3 );
-    // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
-    assert( merged );
-    assert( p6 == p8 );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-    assert( p7 == p7 );
-    assert( p8 == p8 );
-
-    merged = p5.Merge( p1 );
-    // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2   and    p4 <---> p1
-    assert( !merged );
-    assert( p6 == p8 );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-    assert( p7 == p7 );
-    assert( p8 == p8 );
-
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p9( pBaseClass );
-    NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr pA( p9 );
-    assert( p9 == pA );
-    assert( p9 == p8 );
-    assert( p1 != p8 );
-    merged = p9.Merge( p1 );
-    // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2
-    //   and    p4 <---> p1   and   p9 <---> pA
-    assert( !merged );
-    assert( p6 == p8 );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-    assert( p7 == p7 );
-    assert( p8 == p8 );
-    assert( p9 == p9 );
-    assert( pA == pA );
-
-    merged = p9.Merge( p2 );
-    // p7 <---> p6 <---> p8 <---> p3 <---> p5 <---> p2 <---> p9 <---> pA
-    //   and    p4 <---> p1
-    assert( merged );
-    assert( p6 == p8 );
-    assert( p6 == p7 );
-    assert( p1 != p7 );
-    assert( p6 == p5 );
-    assert( p6 == p2 );
-    assert( p6 == p3 );
-    assert( p5 == p3 );
-    assert( p2 == p3 );
-    assert( p1 == p4 );
-    assert( p2 != p4 );
-    assert( p1 != p5 );
-    assert( p2 != p1 );
-    assert( p3 != p1 );
-    assert( p1 == p1 );
-    assert( p2 == p2 );
-    assert( p3 == p3 );
-    assert( p4 == p4 );
-    assert( p5 == p5 );
-    assert( p6 == p6 );
-    assert( p7 == p7 );
-    assert( p8 == p8 );
-    assert( p9 == p9 );
-    assert( pA == pA );
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoRefLinkSwapTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoRefLinkTests( void )
 {
+    cout << "Starting DoRefLinkTests." << endl;
 
     const unsigned int ctorCount = BaseClass::GetCtorCount(); (void) ctorCount;
     const unsigned int dtorCount = BaseClass::GetDtorCount(); (void) dtorCount;
@@ -951,12 +1006,18 @@ void DoRefLinkTests( void )
     assert( dtorCount + 2 == BaseClass::GetDtorCount() );
     assert( BaseClass::GetCtorCount() == BaseClass::GetDtorCount() );
 
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoRefLinkTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoRefCountNullPointerTests( void )
 {
+    cout << "Starting DoRefCountNullPointerTests." << endl;
+
     BaseClass * pNull = NULL; (void) pNull;
     const unsigned int ctorCount = BaseClass::GetCtorCount(); (void) ctorCount;
     const unsigned int dtorCount = BaseClass::GetDtorCount(); (void) dtorCount;
@@ -965,7 +1026,7 @@ void DoRefCountNullPointerTests( void )
     {
         NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p0;
         NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p1;
-        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p2( p0 );
+        NonConstBase_RefCount_NoConvert_Assert_DontPropagate_ptr p2;
 
         assert( !p0 );
         assert( !p1 );
@@ -1005,12 +1066,19 @@ void DoRefCountNullPointerTests( void )
     }
     assert( ctorCount == BaseClass::GetCtorCount() );
     assert( dtorCount == BaseClass::GetDtorCount() );
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoRefCountNullPointerTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoRefLinkNullPointerTests( void )
 {
+    cout << "Starting DoRefLinkNullPointerTests." << endl;
+
     BaseClass * pNull = NULL; (void) pNull;
     const unsigned int ctorCount = BaseClass::GetCtorCount(); (void) ctorCount;
     const unsigned int dtorCount = BaseClass::GetDtorCount(); (void) dtorCount;
@@ -1019,7 +1087,7 @@ void DoRefLinkNullPointerTests( void )
     {
         NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p0;
         NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p1;
-        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p2( p0 );
+        NonConstBase_RefLink_NoConvert_Assert_DontPropagate_ptr p2;
 
         assert( !p0 );
         assert( !p1 );
@@ -1059,12 +1127,18 @@ void DoRefLinkNullPointerTests( void )
     }
     assert( ctorCount == BaseClass::GetCtorCount() );
     assert( dtorCount == BaseClass::GetDtorCount() );
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoRefLinkNullPointerTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoComRefTest( void )
 {
+    cout << "Starting DoComRefTest." << endl;
 
     const unsigned int ctorCount = MimicCOM::GetCtorCount(); (void) ctorCount;
     const unsigned int dtorCount = MimicCOM::GetDtorCount(); (void) dtorCount;
@@ -1090,12 +1164,19 @@ void DoComRefTest( void )
     }
     assert( ctorCount+2 == MimicCOM::GetCtorCount() );
     assert( dtorCount+2 == MimicCOM::GetDtorCount() );
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoComRefTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void DoForwardReferenceTest( void )
 {
+    cout << "Starting DoForwardReferenceTest." << endl;
+
     /** @note These lines should cause the compiler to make a warning message
      about attempting to delete an undefined type.  But it should not produce
      any error messages.
@@ -1112,6 +1193,11 @@ void DoForwardReferenceTest( void )
     //Thingy_HeapStorage_ptr p5( p4 );
     //Thingy_HeapStorage_ptr p6;
     //p6 = p5;
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoForwardReferenceTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -1122,25 +1208,63 @@ namespace
     class Feline
     {
     public:
-        virtual ~Feline() {}
+
+        static inline bool AllDestroyed( void )
+        {
+            return ( s_constructions == s_destructions );
+        }
+
+        static inline bool ExtraConstructions( void )
+        {
+            return ( s_constructions > s_destructions );
+        }
+
+        static inline bool ExtraDestructions( void )
+        {
+            return ( s_constructions < s_destructions );
+        }
+
+        static inline unsigned int GetCtorCount( void )
+        {
+            return s_constructions;
+        }
+
+        static inline unsigned int GetDtorCount( void )
+        {
+            return s_destructions;
+        }
+
+        Feline( void ) { s_constructions++; }
+        virtual ~Feline() { s_destructions++; }
+        virtual Feline * Clone( void ) const = 0;
+
+    private:
+        static unsigned int s_constructions;
+        static unsigned int s_destructions;
+    };
+
+    unsigned int Feline::s_constructions = 0;
+    unsigned int Feline::s_destructions = 0;
+
+    class Tiger : public Feline
+    {
+    public:
+        virtual ~Tiger() {}
+        virtual Tiger * Clone( void ) const { return new Tiger( *this ); }
     };
 
     class Lion : public Feline
     {
     public:
         virtual ~Lion() {}
-    };
-
-    class Tiger : public Feline
-    {
-    public:
-        virtual ~Tiger() {}
+        virtual Lion * Clone( void ) const { return new Lion( *this ); }
     };
 
     class Dog
     {
     public:
         virtual ~Dog() {}
+        virtual Dog * Clone( void ) const { return new Dog( *this ); }
     };
 
 }
@@ -1149,84 +1273,184 @@ namespace
 
 void DoSmartPtrDynamicCastTests( void )
 {
-    typedef ::Loki::SmartPtr< Feline > FelinePtr;
-    typedef ::Loki::SmartPtr< Lion > LionPtr;
-    typedef ::Loki::SmartPtr< Tiger > TigerPtr;
-    typedef ::Loki::SmartPtr< Dog > DogPtr;
+    cout << "Starting DoSmartPtrDynamicCastTests." << endl;
 
-    Feline * feline = new Lion;
-    Lion * lion = new Lion;
-    Tiger * tiger = new Tiger;
-    Dog * dog = new Dog;
+    typedef ::Loki::SmartPtr< Feline, RefCounted, DisallowConversion, NoCheck > FelinePtr;
+    typedef ::Loki::SmartPtr< Tiger,  RefCounted, DisallowConversion, NoCheck > TigerPtr;
+    typedef ::Loki::SmartPtr< Lion,   RefCounted, DisallowConversion, NoCheck > LionPtr;
+    typedef ::Loki::SmartPtr< Dog,    RefCounted, DisallowConversion, NoCheck > DogPtr;
 
-    FelinePtr pFeline( feline );
-    LionPtr pLion( lion );
-    TigerPtr pTiger( tiger );
-    DogPtr pDog( dog );
+    {
+        Feline * feline = new Lion;
+        Lion * lion = new Lion;
+        Tiger * tiger = new Tiger;
+        Dog * dog = new Dog;
 
-    // This is legal because C++ allows an automatic down-cast to public base class.
-    pFeline = pLion;
+        FelinePtr pFeline( feline );
+        LionPtr pLion( lion );
+        TigerPtr pTiger( tiger );
+        DogPtr pDog( dog );
+
+        // This is legal because C++ allows an automatic down-cast to public base class.
+        pFeline = pLion;
 
 #ifdef CHECK_TYPE_CAST
-    pLion = pFeline; // Fails as the compiler cannot convert pointers in SmartPtr
+        pLion = pFeline; // Fails as the compiler cannot convert pointers in SmartPtr
 #endif // CHECK_TYPE_CAST
 
-    assert( pFeline );
-    // Can up-cast from feline to lion only if the feline is a lion.
-    pLion.DynamicCastFrom( pFeline );
-    assert( pLion );
-    assert( pLion == pFeline );
+        assert( pFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
 
-    // Can't cast from lion to tiger since although these are both types of felines,
-    // they are not related to one another.
-    pTiger.DynamicCastFrom( pLion );
-    assert( !pTiger );
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pLion );
+        assert( !pTiger );
 
-    // Can't cast from dog to lion since a dog is not a type of feline.
-    pLion.DynamicCastFrom( pDog );
-    assert( !pLion );
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pDog );
+        assert( !pLion );
 
-    pLion.DynamicCastFrom( pFeline );
-    assert( pLion );
-    assert( pLion == pFeline );
+        pLion.DynamicCastFrom( pFeline );
+        assert( pLion );
+        assert( pLion == pFeline );
 
-    // Can't cast from lion to dog since these animal types are not related.
-    pDog.DynamicCastFrom( pLion );
-    assert( !pDog );
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pLion );
+        assert( !pDog );
 
-    feline = new Lion;
-    lion = new Lion;
-    tiger = new Tiger;
-    dog = new Dog;
+        feline = new Lion;
+        lion = new Lion;
+        tiger = new Tiger;
+        dog = new Dog;
 
-    // Now do tests when converting from const pointers.
-    const FelinePtr pcFeline( feline );
-    const LionPtr pcLion( lion );
-    const TigerPtr pcTiger( tiger );
-    const DogPtr pcDog( dog );
+        // Now do tests when converting from const pointers.
+        const FelinePtr pcFeline( feline );
+        const LionPtr pcLion( lion );
+        const TigerPtr pcTiger( tiger );
+        const DogPtr pcDog( dog );
 
-    assert( pcFeline );
-    // Can up-cast from feline to lion only if the feline is a lion.
-    pLion.DynamicCastFrom( pcFeline );
-    assert( pLion );
-    assert( pLion == pcFeline );
+        assert( pcFeline );
+        // Can up-cast from feline to lion only if the feline is a lion.
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
 
-    // Can't cast from lion to tiger since although these are both types of felines,
-    // they are not related to one another.
-    pTiger.DynamicCastFrom( pcLion );
-    assert( !pTiger );
+        // Can't cast from lion to tiger since although these are both types of felines,
+        // they are not related to one another.
+        pTiger.DynamicCastFrom( pcLion );
+        assert( !pTiger );
 
-    // Can't cast from dog to lion since a dog is not a type of feline.
-    pLion.DynamicCastFrom( pcDog );
-    assert( !pLion );
+        // Can't cast from dog to lion since a dog is not a type of feline.
+        pLion.DynamicCastFrom( pcDog );
+        assert( !pLion );
 
-    pLion.DynamicCastFrom( pcFeline );
-    assert( pLion );
-    assert( pLion == pcFeline );
+        pLion.DynamicCastFrom( pcFeline );
+        assert( pLion );
+        assert( pLion == pcFeline );
 
-    // Can't cast from lion to dog since these animal types are not related.
-    pDog.DynamicCastFrom( pcLion );
-    assert( !pDog );
+        // Can't cast from lion to dog since these animal types are not related.
+        pDog.DynamicCastFrom( pcLion );
+        assert( !pDog );
+    }
+
+    assert( Feline::AllDestroyed() );
+    assert( !Feline::ExtraConstructions() );
+    assert( !Feline::ExtraDestructions() );
+    cout << "Finished DoSmartPtrDynamicCastTests." << endl;
+}
+
+// ----------------------------------------------------------------------------
+
+/// @note Used for testing exception-throwing policy, and for checking for null-pointer dereference.
+typedef ::Loki::SmartPtr< Feline, DeepCopy, DisallowConversion, RejectNullStatic, DefaultSPStorage, DontPropagateConst > Feline_DeepCopy_Ptr;
+typedef ::Loki::SmartPtr< Tiger,  DeepCopy, DisallowConversion, RejectNullStatic, DefaultSPStorage, DontPropagateConst > Tiger_DeepCopy_Ptr;
+typedef ::Loki::SmartPtr< Lion,   DeepCopy, DisallowConversion, RejectNullStatic, DefaultSPStorage, DontPropagateConst > Lion_DeepCopy_Ptr;
+typedef ::Loki::SmartPtr< Dog,    DeepCopy, DisallowConversion, RejectNullStatic, DefaultSPStorage, DontPropagateConst > Dog_DeepCopy_Ptr;
+
+
+// ----------------------------------------------------------------------------
+
+void DoDeepCopyTests( void )
+{
+    cout << "Starting DoDeepCopyTests." << endl;
+
+    try
+    {
+        const Dog_DeepCopy_Ptr p1( NULL );
+        Dog_DeepCopy_Ptr p2( p1 );
+        assert( false );
+    }
+    catch ( ... )
+    {
+        assert( true );
+    }
+
+    try
+    {
+        Dog_DeepCopy_Ptr p1( NULL );
+        Dog_DeepCopy_Ptr p2( p1 );
+        assert( false );
+    }
+    catch ( ... )
+    {
+        assert( true );
+    }
+
+    try
+    {
+        const Dog_DeepCopy_Ptr p1( NULL );
+        Dog_DeepCopy_Ptr p2( NULL );
+        p2 = p1;
+        assert( false );
+    }
+    catch ( ... )
+    {
+        assert( true );
+    }
+
+    try
+    {
+        Dog_DeepCopy_Ptr p1( NULL );
+        Dog_DeepCopy_Ptr p2( NULL );
+        p2 = p1;
+        assert( false );
+    }
+    catch ( ... )
+    {
+        assert( true );
+    }
+
+    try
+    {
+        Tiger_DeepCopy_Ptr p1( new Tiger );
+        Lion_DeepCopy_Ptr p2( NULL );
+        p2.DynamicCastFrom( p1 );
+        assert( false );
+    }
+    catch ( ... )
+    {
+        assert( true );
+    }
+
+    try
+    {
+        const Tiger_DeepCopy_Ptr p1( new Tiger );
+        Lion_DeepCopy_Ptr p2( NULL );
+        p2.DynamicCastFrom( p1 );
+        assert( false );
+    }
+    catch ( ... )
+    {
+        assert( true );
+    }
+
+    assert( Feline::AllDestroyed() );
+    assert( !Feline::ExtraConstructions() );
+    assert( !Feline::ExtraDestructions() );
+    cout << "Finished DoDeepCopyTests." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -1240,6 +1464,7 @@ int main( int argc, const char * argv[] )
             doThreadTest = true;
     }
 
+    DoDeepCopyTests();
     DoRefLinkTests();
     DoWeakLeakTest();
     DoStrongRefCountTests();
