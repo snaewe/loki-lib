@@ -73,6 +73,7 @@ int main( void )
 
     Cat_state cat_state = CAT_SLEEPING;
     assert( cat_state );
+    Dog_state dog_now;
     Dog_state dog_state = DOG_DROOLING;
     assert( dog_state );
     bool happy = cat_state & ( CAT_SLEEPING | CAT_PURRING );    // OK
@@ -116,7 +117,8 @@ int main( void )
     assert( state.size() == ( 8 * sizeof(unsigned int) ) );
     assert( sizeof(Cat_state) == sizeof(unsigned int) );
 
-    dog_state = DOG_BARKING;
+    dog_now = dog_state = DOG_BARKING;
+    assert( dog_now == dog_state );
 #ifdef ERROR6
     if ( dog_state == cat_state ) {}                          // Don't allow comparison of different types.
 #endif
@@ -307,10 +309,12 @@ int main( void )
 #endif
 
 
-    dog_state |= DOG_CHEWING;
+    dog_now = dog_state |= DOG_CHEWING;
     assert( dog_state & ( DOG_CHEWING | DOG_BARKING ) );
-    dog_state &= DOG_CHEWING;
+    assert( dog_now == dog_state );
+    dog_now = dog_state &= DOG_CHEWING;
     assert( dog_state == DOG_CHEWING );
+    assert( dog_now == dog_state );
     dog_state = ~dog_state;
     assert( dog_state != DOG_CHEWING );
     dog_state = ~dog_state;
