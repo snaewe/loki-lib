@@ -250,12 +250,12 @@ private:
 
     // These operators are private, and will not instantiate in any
     // event because of the incomplete Forbidden_conversion struct.
-    template < typename T > SafeBitConst operator|( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitConst operator&( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitConst operator^( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitConst operator|=( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitConst operator&=( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitConst operator^=( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst & operator|( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst & operator&( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst & operator^( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst & operator|=( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst & operator&=( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitConst & operator^=( T ) const { Forbidden_conversion< T > wrong; return *this; }
 
     // And the same thing for comparisons: private and unusable.
     //    if ( label1 == label2 ) { ... }
@@ -333,17 +333,17 @@ public:
     SafeBitField operator &  ( const SafeBitField & rhs ) const { return SafeBitField( word & rhs.word ); }
     SafeBitField operator ^  ( const SafeBitField & rhs ) const { return SafeBitField( word ^ rhs.word ); }
     SafeBitField operator ~  ( void ) const { return SafeBitField( ~word ); }
-    SafeBitField operator |= ( const SafeBitField & rhs ) { word |= rhs.word; return *this; }
-    SafeBitField operator &= ( const SafeBitField & rhs ) { word &= rhs.word; return *this; }
-    SafeBitField operator ^= ( const SafeBitField & rhs ) { word ^= rhs.word; return *this; }
+    SafeBitField & operator |= ( const SafeBitField & rhs ) { word |= rhs.word; return *this; }
+    SafeBitField & operator &= ( const SafeBitField & rhs ) { word &= rhs.word; return *this; }
+    SafeBitField & operator ^= ( const SafeBitField & rhs ) { word ^= rhs.word; return *this; }
 
     /// Bitwise operators that use bit-constants.
     SafeBitField operator |  ( const_t rhs ) const { return SafeBitField( word | rhs.word ); }
     SafeBitField operator &  ( const_t rhs ) const { return SafeBitField( word & rhs.word ); }
     SafeBitField operator ^  ( const_t rhs ) const { return SafeBitField( word ^ rhs.word ); }
-    SafeBitField operator |= ( const_t rhs ) { word |= rhs.word; return *this; }
-    SafeBitField operator &= ( const_t rhs ) { word &= rhs.word; return *this; }
-    SafeBitField operator ^= ( const_t rhs ) { word ^= rhs.word; return *this; }
+    SafeBitField & operator |= ( const_t rhs ) { word |= rhs.word; return *this; }
+    SafeBitField & operator &= ( const_t rhs ) { word &= rhs.word; return *this; }
+    SafeBitField & operator ^= ( const_t rhs ) { word ^= rhs.word; return *this; }
 
     // Conversion to bool.
     // This is a major source of headaches, but it's required to support code like this:
@@ -361,15 +361,15 @@ public:
     // It is somewhat safer to convert to a pointer, at least pointers to different types cannot be readilly compared, and there are no
     // bitwise operations on pointers, but the conversion from word_t to a pointer can have run-time cost if they are of different size.
     //
-    operator const bool() const { return ( 0 != word ); }
+    operator bool() const { return ( 0 != word ); }
 
     // Shift operators shift bits inside the bit field. Does not make
     // sense, most of the time, except perhaps to loop over labels and
     // increment them.
     SafeBitField operator <<  ( unsigned int s ) { return SafeBitField( word << s ); }
     SafeBitField operator >>  ( unsigned int s ) { return SafeBitField( word >> s ); }
-    SafeBitField operator <<= ( unsigned int s ) { word <<= s; return *this; }
-    SafeBitField operator >>= ( unsigned int s ) { word >>= s; return *this; }
+    SafeBitField & operator <<= ( unsigned int s ) { word <<= s; return *this; }
+    SafeBitField & operator >>= ( unsigned int s ) { word >>= s; return *this; }
 
     // Word size is also the maximum number of different bit fields for
     // a given word type.
@@ -394,12 +394,12 @@ private:
 
     // These operators are private, and will not instantiate in any
     // event because of the incomplete Forbidden_conversion struct.
-    template < typename T > SafeBitField operator |  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitField operator &  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitField operator ^  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitField operator |= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitField operator &= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
-    template < typename T > SafeBitField operator ^= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField & operator |  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField & operator &  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField & operator ^  ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField & operator |= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField & operator &= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
+    template < typename T > SafeBitField & operator ^= ( T ) const { Forbidden_conversion< T > wrong; return *this; }
 
     // And the same thing for comparisons:
     //    if ( label1 == label2 ) { ... }
