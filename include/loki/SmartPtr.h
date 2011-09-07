@@ -983,7 +983,7 @@ namespace Loki
         static void OnDefault(const P&)
         {
             // Make it depended on template parameter
-            static const bool DependedFalse = sizeof(P*) == 0;
+            static const bool DependedFalse = ( sizeof(P*) == 0 );
 
             LOKI_STATIC_CHECK(DependedFalse, ERROR_This_Policy_Does_Not_Allow_Default_Initialization);
         }
@@ -1196,6 +1196,7 @@ namespace Loki
             (void)helper; // do void cast to remove compiler warning.
             // Dynamic casting from T1 to T and saving result in `this''s pointer
             PointerType p = dynamic_cast< PointerType >( GetImplRef( rhs ) );
+            KP::OnDereference( p );
             GetImplRef( *this ) = OP::Clone( p );
         }
 
@@ -1214,6 +1215,7 @@ namespace Loki
             (void)helper; // do void cast to remove compiler warning.
             // Dynamic casting from T1 to T and saving result in `this''s pointer
             PointerType p = dynamic_cast< PointerType >( GetImplRef( rhs ) );
+            KP::OnDereference( p );
             GetImplRef( *this ) = OP::Clone( p );
         }
 
@@ -1237,6 +1239,7 @@ namespace Loki
 
         SmartPtr(CopyArg& rhs) : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {
+            KP::OnDereference( GetImpl( rhs ) );
             GetImplRef(*this) = OP::Clone(GetImplRef(rhs));
         }
 
@@ -1252,6 +1255,7 @@ namespace Loki
         SmartPtr(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {
+            KP::OnDereference( GetImpl( rhs ) );
             GetImplRef(*this) = OP::Clone(GetImplRef(rhs));
         }
 
@@ -1267,6 +1271,7 @@ namespace Loki
         SmartPtr(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {
+            KP::OnDereference( GetImpl( rhs ) );
             GetImplRef(*this) = OP::Clone(GetImplRef(rhs));
         }
 
