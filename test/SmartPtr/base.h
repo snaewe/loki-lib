@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Test program for The Loki Library
 // Copyright (c) 2006 Richard Sposato
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The authors make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The authors make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +20,7 @@
 class BaseClass
 {
 public:
-    BaseClass( void )
+    BaseClass( void ) : m_refCount( 1 )
     {
         s_constructions++;
     }
@@ -31,8 +31,14 @@ public:
     }
 
     // These 2 functions are so we can pretend we have a COM object.
-    void AddRef( void ) {}
-    void Release( void ) {}
+    void AddRef( void ) { ++m_refCount; }
+    void Release( void )
+    {
+        assert( 0 < m_refCount );
+        --m_refCount;
+        if ( 0 == m_refCount )
+            delete this;
+    }
 
     // This function is used only for the DeepCopy policy.
     virtual BaseClass * Clone( void ) const
@@ -75,6 +81,8 @@ private:
 
     static unsigned int s_constructions;
     static unsigned int s_destructions;
+
+    unsigned int m_refCount;
 };
 
 
