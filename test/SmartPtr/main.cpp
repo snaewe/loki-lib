@@ -1455,6 +1455,44 @@ void DoDeepCopyTests( void )
 
 // ----------------------------------------------------------------------------
 
+typedef Loki::SmartPtr< BaseClass, DestructiveCopy > DestructiveCopyPtr;
+
+DestructiveCopyPtr MakePointer( void )
+{
+    DestructiveCopyPtr p( new BaseClass );
+    return p;
+}
+
+// ----------------------------------------------------------------------------
+
+void DoDestructiveCopyTest( void )
+{
+    cout << "Starting DoDestructiveCopyTest." << endl;
+
+    {
+        DestructiveCopyPtr p1( new BaseClass );
+        assert( p1 );
+        DestructiveCopyPtr p2;
+        assert( !p2 );
+        p2 = p1;
+        assert( !p1 );
+        assert( p2 );
+        DestructiveCopyPtr p3( p2 );
+        assert( p3 );
+        assert( !p2 );
+        /// @todo The following lines need to be uncommented when bug 3224572 gets fixed.
+//        DestructiveCopyPtr p4( MakePointer() );
+//        assert( p4 );
+    }
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoDestructiveCopyTest." << endl;
+}
+
+// ----------------------------------------------------------------------------
+
 int main( int argc, const char * argv[] )
 {
     bool doThreadTest = false;
@@ -1465,6 +1503,7 @@ int main( int argc, const char * argv[] )
     }
 
     DoDeepCopyTests();
+    DoDestructiveCopyTest();
     DoRefLinkTests();
     DoWeakLeakTest();
     DoStrongRefCountTests();
