@@ -1480,9 +1480,31 @@ void DoDestructiveCopyTest( void )
         DestructiveCopyPtr p3( p2 );
         assert( p3 );
         assert( !p2 );
+    }
+
+    {
+        const DestructiveCopyPtr p1( new BaseClass );
+        assert( p1 );
+        /** @note The following code won't compile because p1 is declared const. You can test
+         if Loki's SmartPtr DestructiveCopy policy was designed correctly by uncommenting these
+         lines and seeing if any errors occur when compiling. If you see errors about converting
+         from const to non-const, or about assigning a ready-only reference, then DestructiveCopy
+         was designed correctly.
+         */
+//        DestructiveCopyPtr p2;
+//        assert( !p2 );
+//        p2 = p1;
+//        assert( !p1 );
+//        assert( p2 );
+//        DestructiveCopyPtr p3( p2 );
+//        assert( p3 );
+//        assert( !p2 );
+    }
+
+    {
         /// @todo The following lines need to be uncommented when bug 3224572 gets fixed.
-//        DestructiveCopyPtr p4( MakePointer() );
-//        assert( p4 );
+//        DestructiveCopyPtr p1( MakePointer() );
+//        assert( p1 );
     }
 
     assert( BaseClass::AllDestroyed() );
