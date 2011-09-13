@@ -1252,7 +1252,7 @@ namespace Loki
             template <class> class SP1,
             template <class> class CNP1
         >
-        SmartPtr(const SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
+        SmartPtr( const SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 >& rhs )
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {
             KP::OnDereference( GetImpl( rhs ) );
@@ -1268,7 +1268,7 @@ namespace Loki
             template <class> class SP1,
             template <class> class CNP1
         >
-        SmartPtr(SmartPtr<T1, OP1, CP1, KP1, SP1, CNP1 >& rhs)
+        SmartPtr( SmartPtr< T1, OP1, CP1, KP1, SP1, CNP1 >& rhs )
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {
             KP::OnDereference( GetImpl( rhs ) );
@@ -1277,7 +1277,11 @@ namespace Loki
 
         SmartPtr(RefToValue<SmartPtr> rhs)
         : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
-        {}
+        {
+            SmartPtr & ref = rhs;
+            KP::OnDereference( GetImpl( ref ) );
+            GetImplRef( *this ) = OP::Clone( GetImplRef( ref ) );
+        }
 
         operator RefToValue<SmartPtr>()
         { return RefToValue<SmartPtr>(*this); }
