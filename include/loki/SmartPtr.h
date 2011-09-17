@@ -729,6 +729,14 @@ namespace Loki
         {}
 
         template <class P1>
+        static P Clone( const P1 & val )
+        {
+            P result(val);
+            const_cast< P1 & >( val ) = P1();
+            return result;
+        }
+
+        template <class P1>
         static P Clone(P1& val)
         {
             P result(val);
