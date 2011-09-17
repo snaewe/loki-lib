@@ -40,6 +40,8 @@ extern void DoStrongPtrDynamicCastTests( void );
 extern void DoLockedPtrTest( void );
 extern void DoLockedStorageTest( void );
 
+extern void TryColvinGibbonsTrick( void );
+
 unsigned int BaseClass::s_constructions = 0;
 unsigned int BaseClass::s_destructions = 0;
 
@@ -1488,23 +1490,23 @@ void DoDestructiveCopyTest( void )
         /** @note The following code won't compile because p1 is declared const. You can test
          if Loki's SmartPtr DestructiveCopy policy was designed correctly by uncommenting these
          lines and seeing if any errors occur when compiling. If you see errors about converting
-         from const to non-const, or about assigning a ready-only reference, then DestructiveCopy
+         from const to non-const, or about assigning a read-only reference, then DestructiveCopy
          was designed correctly.
          */
-//        DestructiveCopyPtr p2;
-//        assert( !p2 );
-//        p2 = p1;
-//        assert( !p1 );
-//        assert( p2 );
-//        DestructiveCopyPtr p3( p2 );
-//        assert( p3 );
-//        assert( !p2 );
+        DestructiveCopyPtr p2;
+        assert( !p2 );
+        p2 = p1;
+        assert( !p1 );
+        assert( p2 );
+        DestructiveCopyPtr p3( p2 );
+        assert( p3 );
+        assert( !p2 );
     }
 
     {
         /// @todo The following lines need to be uncommented when bug 3224572 gets fixed.
-//        DestructiveCopyPtr p1( MakePointer() );
-//        assert( p1 );
+        DestructiveCopyPtr p1( MakePointer() );
+        assert( p1 );
     }
 
     assert( BaseClass::AllDestroyed() );
@@ -1544,6 +1546,7 @@ int main( int argc, const char * argv[] )
     DoRefLinkSwapTests();
 
     DoComRefTest();
+	TryColvinGibbonsTrick();
 
     DoStrongConstTests();
     DoConstConversionTests();
