@@ -36,6 +36,7 @@ extern void DoStrongConstTests( void );
 extern void DoStrongForwardReferenceTest( void );
 extern void DoStrongCompareTests( void );
 extern void DoStrongPtrDynamicCastTests( void );
+extern void DoStrongArrayTests( void );
 
 extern void DoLockedPtrTest( void );
 extern void DoLockedStorageTest( void );
@@ -1546,7 +1547,7 @@ int main( int argc, const char * argv[] )
     DoRefLinkSwapTests();
 
     DoComRefTest();
-	TryColvinGibbonsTrick();
+    TryColvinGibbonsTrick();
 
     DoStrongConstTests();
     DoConstConversionTests();
@@ -1554,6 +1555,7 @@ int main( int argc, const char * argv[] )
     DoInheritanceConversionTests();
     DoSmartPtrDynamicCastTests();
     DoStrongPtrDynamicCastTests();
+    DoStrongArrayTests();
 
 #if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
     if ( doThreadTest )
