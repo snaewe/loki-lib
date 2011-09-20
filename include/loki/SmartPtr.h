@@ -355,6 +355,45 @@ namespace Loki
     inline typename LockedStorage<T>::StoredType& GetImplRef(LockedStorage<T>& sp)
     { return sp.pointee_; }
 
+    namespace Private
+    {
+
+        ////////////////////////////////////////////////////////////////////////////////
+        ///  \class DeleteArrayBase
+        ///
+        ///  \ingroup  StrongPointerDeleteGroup
+        ///  Base class used only by the DeleteArray policy class.  This stores the
+        ///   number of elements in an array of shared objects.
+        ////////////////////////////////////////////////////////////////////////////////
+
+        class DeleteArrayBase
+        {
+        public:
+
+            inline size_t GetArrayCount( void ) const { return m_itemCount; }
+
+        protected:
+
+            DeleteArrayBase( void ) : m_itemCount( 0 ) {}
+
+            explicit DeleteArrayBase( size_t itemCount ) : m_itemCount( itemCount ) {}
+
+            DeleteArrayBase( const DeleteArrayBase & that ) : m_itemCount( that.m_itemCount ) {}
+
+            void Swap( DeleteArrayBase & rhs );
+
+            void OnInit( const void * p ) const;
+
+            void OnCheckRange( size_t index ) const;
+
+        private:
+
+            size_t m_itemCount;
+
+        };
+
+    }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class ArrayStorage
@@ -365,7 +404,7 @@ namespace Loki
 
 
     template <class T>
-    class ArrayStorage
+    class ArrayStorage : public ::Loki::Private::DeleteArrayBase
     {
     public:
 
@@ -376,26 +415,30 @@ namespace Loki
 
     protected:
 
-        ArrayStorage() : pointee_(Default())
+        ArrayStorage() : DeleteArrayBase(), pointee_(Default())
         {}
 
         // The storage policy doesn't initialize the stored pointer
         //     which will be initialized by the OwnershipPolicy's Clone fn
-        ArrayStorage(const ArrayStorage&) : pointee_(0)
+        ArrayStorage( const ArrayStorage & that ) : DeleteArrayBase( that ), pointee_( 0 )
         {}
 
         template <class U>
-        ArrayStorage(const ArrayStorage<U>&) : pointee_(0)
+        ArrayStorage( const ArrayStorage< U >& that ) : DeleteArrayBase( that ), pointee_( 0 )
         {}
 
-        explicit ArrayStorage(const StoredType& p) : pointee_(p) {}
+        ArrayStorage( const StoredType & p, size_t count ) : DeleteArrayBase( count ),
+            pointee_( p ) {}
 
         PointerType operator->() const { return pointee_; }
 
         ReferenceType operator*() const { return *pointee_; }
 
-        void Swap(ArrayStorage& rhs)
-        { std::swap(pointee_, rhs.pointee_); }
+        void Swap( ArrayStorage & rhs )
+        {
+            DeleteArrayBase::Swap( rhs );
+            ::std::swap( pointee_, rhs.pointee_ );
+        }
 
         // Accessors
         template <class F>
@@ -844,6 +887,8 @@ namespace Loki
         NoCheck()
         {}
 
+        NoCheck( const NoCheck & ) {}
+
         template <class P1>
         NoCheck(const NoCheck<P1>&)
         {}
@@ -877,6 +922,8 @@ namespace Loki
 
         AssertCheck()
         {}
+
+        AssertCheck( const AssertCheck & ) {}
 
         template <class P1>
         AssertCheck(const AssertCheck<P1>&)
@@ -915,6 +962,8 @@ namespace Loki
 
         AssertCheckStrict()
         {}
+
+        AssertCheckStrict( const AssertCheckStrict & ) {}
 
         template <class U>
         AssertCheckStrict(const AssertCheckStrict<U>&)
@@ -972,6 +1021,8 @@ namespace Loki
         RejectNullStatic()
         {}
 
+        RejectNullStatic( const RejectNullStatic & ) {}
+
         template <class P1>
         RejectNullStatic(const RejectNullStatic<P1>&)
         {}
@@ -1022,6 +1073,8 @@ namespace Loki
         RejectNull()
         {}
 
+        RejectNull( const RejectNull & ) {}
+
         template <class P1>
         RejectNull(const RejectNull<P1>&)
         {}
@@ -1057,6 +1110,8 @@ namespace Loki
 
         RejectNullStrict()
         {}
+
+        RejectNullStrict( const RejectNullStrict & ) {}
 
         template <class P1>
         RejectNullStrict(const RejectNullStrict<P1>&)
@@ -1245,6 +1300,16 @@ namespace Loki
             KP::OnInit(GetImpl(*this));
         }
 
+        /** This constructor was designed to only work with the ArrayStorage policy. Using it with
+         any other Delete policies will cause compiler errors. Call it with this syntax:
+         "ThingyPtr sp2( new Thingy[ 4 ], 4 );" so SmartPtr can do range checking on the number of elements.
+         */
+        SmartPtr( ImplicitArg p, size_t itemCount ) : SP( p, itemCount )
+        {
+            KP::OnInit( GetImpl( *this ) );
+            SP::OnInit( GetImpl( *this ) );
+        }
+
         SmartPtr(CopyArg& rhs) : SP(rhs), OP(rhs), KP(rhs), CP(rhs)
         {
             KP::OnDereference( GetImpl( rhs ) );
@@ -1330,6 +1395,21 @@ namespace Loki
         {
             SmartPtr temp(rhs);
             temp.Swap(*this);
+            return *this;
+        }
+
+        /** This function is equivalent to an assignment operator for SmartPtr's that use the
+         DeleteArray policy where the programmer needs to write the equivalent of "sp = new P;".
+         With DeleteArray, the programmer should write "sp.Assign( new [5] Thingy, 5 );" so the
+         SmartPtr knows how many elements are in the array.
+         */
+        SmartPtr & Assign( T * p, size_t itemCount )
+        {
+            if ( GetImpl( *this ) != p )
+            {
+                SmartPtr temp( p, itemCount );
+                Swap( temp );
+            }
             return *this;
         }
 
@@ -1463,6 +1543,30 @@ namespace Loki
         {
             KP::OnDereference(GetImplRef(*this));
             return SP::operator*();
+        }
+
+        /** operator[] returns a reference to an modifiable object. If the index is greater than or
+         equal to the number of elements, the function will throw a std::out_of_range exception.
+         This only works with DeleteArray policy. Any other policy will cause a compiler error.
+         */
+        ReferenceType operator [] ( size_t index )
+        {
+            PointerType p = SP::operator->();
+            KP::OnDereference( p );
+            SP::OnCheckRange( index );
+            return p[ index ];
+        }
+
+        /** operator[] returns a reference to a const object. If the index is greater than or
+         equal to the number of elements, the function will throw a std::out_of_range exception.
+         This only works with DeleteArray policy. Any other policy will cause a compiler error.
+         */
+        ConstReferenceType operator [] ( size_t index ) const
+        {
+            ConstPointerType p = SP::operator->();
+            KP::OnDereference( p );
+            SP::OnCheckRange( index );
+            return p[ index ];
         }
 
         bool operator!() const // Enables "if (!sp) ..."
