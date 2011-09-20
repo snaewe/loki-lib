@@ -26,18 +26,7 @@
 #include <sstream>
 #include <iostream>
 
-
-using namespace ::std;
-
-#if !defined( NULL )
-    #define NULL 0
-#endif
-
-// define nullptr even though new compilers will have this keyword just so we
-// have a consistent and easy way of identifying which uses of 0 mean null.
-#if !defined( nullptr )
-    #define nullptr NULL
-#endif
+#include <stdlib.h>
 
 #if defined(_WIN32)
 
@@ -56,6 +45,8 @@ using namespace ::std;
 
 #else
 
+	#include <pthread.h>
+
     #define LOKI_pthread_t \
                  pthread_t
     #define LOKI_pthread_create(handle,attr,func,arg) \
@@ -63,6 +54,19 @@ using namespace ::std;
     #define LOKI_pthread_join(thread) \
                  pthread_join(thread, NULL)
 
+#endif
+
+
+using namespace ::std;
+
+#if !defined( NULL )
+    #define NULL 0
+#endif
+
+// define nullptr even though new compilers will have this keyword just so we
+// have a consistent and easy way of identifying which uses of 0 mean null.
+#if !defined( nullptr )
+    #define nullptr NULL
 #endif
 
 // ----------------------------------------------------------------------------
@@ -365,6 +369,9 @@ bool TestThreadLocalClassStaticValue( void )
 
 int main( int argc, const char * const argv[] )
 {
+	(void)argc;
+	(void)argv;
+
     bool okay = true;
     cout << "Starting ThreadLocal tests." << endl;
     cout << "If any tests fail, or any assertions fail," << endl

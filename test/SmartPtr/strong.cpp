@@ -1778,42 +1778,6 @@ void DoStrongCompareTests( void )
 
 // ----------------------------------------------------------------------------
 
-namespace
-{
-
-    class Feline : public BaseClass
-    {
-    public:
-        virtual ~Feline() {}
-    };
-
-    class Lion : public Feline
-    {
-    public:
-        virtual ~Lion() {}
-    };
-
-    class Tiger : public Feline
-    {
-    public:
-        Tiger( void ) : m_stripes( 100 ) {}
-        virtual ~Tiger() {}
-        unsigned int GetStripes( void ) const { return m_stripes; }
-        void SetStripes( unsigned int s ) { m_stripes = s; }
-    private:
-        unsigned int m_stripes;
-    };
-
-    class Dog
-    {
-    public:
-        virtual ~Dog() {}
-    };
-
-}
-
-// ----------------------------------------------------------------------------
-
 void DoStrongPtrDynamicCastTests( void )
 {
     typedef ::Loki::StrongPtr< Feline, true, ::Loki::TwoRefCounts > FelineCountPtr;

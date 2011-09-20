@@ -28,20 +28,28 @@
     // The __APPLE__ macro does not refer to a compiler, but to the Apple OSX operating system.
     #if defined( __APPLE__ )
         #warning "GCC for Apple does not allow thread_local storage, so you can not use some parts of Loki."
-        #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+        #undef LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
 
     #elif defined( __CYGWIN__ )
         #if ( __GNUC__ <= 3 )
             #warning "Older versions of GCC for Cygwin do not allow thread_local storage, so you can not use some parts of Loki."
-            #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+            #undef LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
         #endif
 
     #elif ( __GNUC__ == 4 ) // GNU versions other than Cygwin.
-        #if ( __GNUC_MINOR__ == 4 )
-            #warning "GCC version 4.4 implements thread_local storage incorrectly, so you can not use some parts of Loki."
-            #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+        #if ( __GNUC_MINOR__ < 4 )
+            #warning "GCC versions before 4.4 implements thread_local storage incorrectly, so you can not use some parts of Loki."
+            #undef LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+		#else
+			#warning "Versions 4.4 through 4.6 of GCC implemented thread_local storage for some platforms, but not others. Run ThreadLocal test project."
         #endif
     #endif
+
+#elif defined( _MSC_VER )
+	#if ( _MSC_VER < 1300 )
+		#warning "Only Visual Studio versions 7.0 and after support thread local storage properly, so you can not use some parts of Loki."
+		#undef LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+	#endif
 #endif
 
 #if defined( LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE ) && !defined( LOKI_THREAD_LOCAL )
@@ -57,11 +65,7 @@
  you can't use some parts of Loki.
  */
     #if defined( _MSC_VER )
-        #if ( _MSC_VER >= 1300 )
-            #define LOKI_THREAD_LOCAL __declspec( thread )
-        #else
-            #error "Only Visual Studio versions 7.0 and after supported."
-        #endif
+		#define LOKI_THREAD_LOCAL __declspec( thread )
 
     #elif ( __GNUC__ )
         #define LOKI_THREAD_LOCAL __thread

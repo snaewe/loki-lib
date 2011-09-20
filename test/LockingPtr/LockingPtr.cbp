@@ -3,26 +3,27 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="LockingPtr" />
-		<Option compiler="cygwin" />
+		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug_GCC">
-				<Option output="obj\Debug_GCC\LockingPtr" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug_GCC\" />
+				<Option output="obj/Debug_GCC/LockingPtr" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug_GCC/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-W" />
 					<Add option="-g" />
-					<Add directory="..\..\include\loki" />
-					<Add directory="..\..\include" />
+					<Add option="-W" />
+					<Add directory="../../include/loki" />
+					<Add directory="../../include" />
 				</Compiler>
 				<Linker>
-					<Add library="..\..\lib\GCC\Loki_D.a" />
+					<Add library="../../lib/GCC/Loki_D.a" />
+					<Add library="/usr/lib/libpthread.so" />
 				</Linker>
 			</Target>
 			<Target title="Release_GCC">
-				<Option output="obj\Release_GCC\LockingPtr" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release_GCC\" />
+				<Option output="obj/Release_GCC/LockingPtr" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release_GCC/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -30,43 +31,44 @@
 					<Add option="-Os" />
 					<Add option="-O3" />
 					<Add option="-W" />
-					<Add directory="..\..\include\loki" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include/loki" />
+					<Add directory="../../include" />
 				</Compiler>
 				<Linker>
-					<Add library="..\..\lib\GCC\Loki.a" />
+					<Add library="../../lib/GCC/Loki.a" />
+					<Add library="/usr/lib/libpthread.so" />
 				</Linker>
 			</Target>
 			<Target title="Debug_Cygwin">
-				<Option output="obj\Debug_Cygwin\LockingPtr" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug_Cygwin\" />
+				<Option output="obj/Debug_Cygwin/LockingPtr" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug_Cygwin/" />
 				<Option type="1" />
-				<Option compiler="cygwin" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-W" />
 					<Add option="-g" />
-					<Add directory="..\..\include\loki" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include/loki" />
+					<Add directory="../../include" />
 				</Compiler>
 				<Linker>
-					<Add library="..\..\lib\Cygwin\Loki_D.a" />
+					<Add library="../../lib/Cygwin/Loki_D.a" />
 				</Linker>
 			</Target>
 			<Target title="Release_Cygwin">
-				<Option output="obj\Release_Cygwin\LockingPtr" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release_Cygwin\" />
+				<Option output="obj/Release_Cygwin/LockingPtr" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release_Cygwin/" />
 				<Option type="1" />
-				<Option compiler="cygwin" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-Os" />
 					<Add option="-O3" />
 					<Add option="-W" />
-					<Add directory="..\..\include\loki" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include/loki" />
+					<Add directory="../../include" />
 				</Compiler>
 				<Linker>
-					<Add library="..\..\lib\Cygwin\Loki.a" />
+					<Add library="../../lib/Cygwin/Loki.a" />
 				</Linker>
 			</Target>
 		</Build>

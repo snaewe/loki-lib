@@ -73,9 +73,10 @@ public:
         return s_destructions;
     }
 
+protected:
+    BaseClass( const BaseClass & that ) : m_refCount( that.m_refCount ) {}
+
 private:
-    /// Not implemented.
-    BaseClass( const BaseClass & );
     /// Not implemented.
     BaseClass & operator = ( const BaseClass & );
 
@@ -108,6 +109,44 @@ public:
     {
         return new PrivateSubClass;
     }
+};
+
+// ----------------------------------------------------------------------------
+
+/** @class Feline - The feline family of classes are to test dynamic_cast. Also used to test
+ pointers to arrays of objects.
+ */
+class Feline : public BaseClass
+{
+public:
+    virtual ~Feline() {}
+    virtual Feline * Clone( void ) const = 0;
+};
+
+class Lion : public Feline
+{
+public:
+    virtual ~Lion() {}
+    virtual Lion * Clone( void ) const { return new Lion( *this ); }
+};
+
+class Tiger : public Feline
+{
+public:
+    Tiger( void ) : m_stripes( 100 ) {}
+    virtual ~Tiger() {}
+    virtual Tiger * Clone( void ) const { return new Tiger( *this ); }
+    unsigned int GetStripes( void ) const { return m_stripes; }
+    void SetStripes( unsigned int s ) { m_stripes = s; }
+private:
+    unsigned int m_stripes;
+};
+
+class Dog
+{
+public:
+    virtual ~Dog() {}
+    virtual Dog * Clone( void ) const { return new Dog( *this ); }
 };
 
 
