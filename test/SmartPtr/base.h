@@ -37,7 +37,7 @@ public:
         assert( 0 < m_refCount );
         --m_refCount;
         if ( 0 == m_refCount )
-            delete this;
+            delete this; // Don't even ask me how much I dislike seeing "delete this;"!
     }
 
     // This function is used only for the DeepCopy policy.
