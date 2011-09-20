@@ -15,6 +15,9 @@
 
 #include <loki/StrongPtr.h>
 
+#include <stdexcept>
+#include <string>
+
 #include <memory.h>
 #ifdef DO_EXTRA_LOKI_TESTS
     #include <cassert>
@@ -35,6 +38,45 @@ namespace Loki
 
 namespace Private
 {
+
+// ----------------------------------------------------------------------------
+
+void DeleteArrayBase::Swap( DeleteArrayBase & rhs )
+{
+    assert( NULL != this );
+
+    const size_t temp = m_itemCount;
+    m_itemCount = rhs.m_itemCount;
+    rhs.m_itemCount = temp;
+}
+
+// ----------------------------------------------------------------------------
+
+void DeleteArrayBase::OnInit( const void * p ) const
+{
+    assert( NULL != this );
+    if ( NULL == p )
+    {
+        assert( 0 == m_itemCount );
+    }
+    else
+    {
+        assert( 0 < m_itemCount );
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+void DeleteArrayBase::OnCheckRange( size_t index ) const
+{
+    assert( NULL != this );
+
+    if ( index < m_itemCount )
+        return;
+
+    const ::std::string message( "index out of range in ::Loki::DeleteArrayBase::OnCheckRange" );
+    throw ::std::out_of_range( message );
+}
 
 // ----------------------------------------------------------------------------
 
