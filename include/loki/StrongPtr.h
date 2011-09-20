@@ -134,7 +134,15 @@ static const char * const StrongPtr_Single_Owner_Exception_Message =
 template < class P >
 class DeleteUsingFree
 {
-public:
+protected:
+
+    inline DeleteUsingFree( void ) {}
+
+    inline DeleteUsingFree( const DeleteUsingFree & ) {}
+
+    template < class P1 >
+    inline DeleteUsingFree( const DeleteUsingFree< P1 > & ) {}
+
     inline void static Delete( const P * p )
     {
         if ( 0 != p )
@@ -165,7 +173,15 @@ public:
 template < class P >
 class DeleteNothing
 {
-public:
+protected:
+
+    inline DeleteNothing( void ) {}
+
+    inline DeleteNothing( const DeleteNothing & ) {}
+
+    template < class P1 >
+    inline DeleteNothing( const DeleteNothing< P1 > & ) {}
+
     inline static void Delete( const P * )
     {
         // Do nothing at all!
@@ -177,6 +193,7 @@ public:
     }
 
     inline void Swap( DeleteNothing & ) {}
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +207,15 @@ public:
 template < class P >
 class DeleteSingle
 {
-public:
+protected:
+
+    inline DeleteSingle( void ) {}
+
+    inline DeleteSingle( const DeleteSingle & ) {}
+
+    template < class P1 >
+    inline DeleteSingle( const DeleteSingle< P1 > & ) {}
+
     inline static void Delete( const P * p )
     {
         /** @note If you see an error message about a negative subscript, that
@@ -210,6 +235,45 @@ public:
     inline void Swap( DeleteSingle & ) {}
 };
 
+namespace Private
+{
+
+////////////////////////////////////////////////////////////////////////////////
+///  \class DeleteArrayBase
+///
+///  \ingroup  StrongPointerDeleteGroup
+///  Base class used only by the DeleteArray policy class.  This stores the
+///   number of elements in an array of shared objects.
+////////////////////////////////////////////////////////////////////////////////
+
+class DeleteArrayBase
+{
+public:
+
+    inline size_t GetArrayCount( void ) const { return m_itemCount; }
+
+protected:
+
+    DeleteArrayBase( void ) : m_itemCount( 0 ) {}
+
+    explicit DeleteArrayBase( size_t itemCount ) : m_itemCount( itemCount ) {}
+
+    DeleteArrayBase( const DeleteArrayBase & that ) : m_itemCount( that.m_itemCount ) {}
+
+    void Swap( DeleteArrayBase & rhs );
+
+    void OnInit( const void * p ) const;
+
+    void OnCheckRange( size_t index ) const;
+
+private:
+
+    size_t m_itemCount;
+
+};
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class DeleteArray
 ///
@@ -219,9 +283,19 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 template < class P >
-class DeleteArray
+class DeleteArray : public ::Loki::Private::DeleteArrayBase
 {
 public:
+
+    DeleteArray( void ) : DeleteArrayBase() {}
+
+    explicit DeleteArray( size_t itemCount ) : DeleteArrayBase( itemCount ) {}
+
+    DeleteArray( const DeleteArray & that ) : DeleteArrayBase( that ) {}
+
+    template < class P1 >
+    inline DeleteArray( const DeleteArray< P1 > & that ) : DeleteArrayBase( that ) {}
+
     inline static void Delete( const P * p )
     {
         /** @note If you see an error message about a negative subscript, that
@@ -238,7 +312,6 @@ public:
         return 0;
     }
 
-    inline void Swap( DeleteArray & ) {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1653,19 +1726,30 @@ private:
 
 public:
 
-    StrongPtr( void ) : OP( Strong )
+    StrongPtr( void ) : OP( Strong ), DP()
     {
         KP::OnDefault( GetPointer() );
     }
 
-    explicit StrongPtr( ExplicitArg p ) : OP( p, Strong )
+    explicit StrongPtr( ExplicitArg p ) : OP( p, Strong ), DP()
     {
         KP::OnInit( GetPointer() );
     }
 
-    StrongPtr( ImplicitArg p ) : OP( p, Strong )
+    StrongPtr( ImplicitArg p ) : OP( p, Strong ), DP()
     {
         KP::OnInit( GetPointer() );
+    }
+
+    /** This constructor was designed to only work with the DeleteArray policy. Using it with any
+     other Delete policies will cause compiler errors. Call it with this syntax:
+     "ThingyPtr sp2( new Thingy[ 4 ], 4 );" so the StrongPtr knows how many elements are in the
+     array for range checking.
+     */
+    StrongPtr( ImplicitArg p, size_t itemCount ) : OP( p, Strong ), DP( itemCount )
+    {
+        KP::OnInit( GetPointer() );
+        DP::OnInit( GetPointer() );
     }
 
     StrongPtr( const StrongPtr & rhs )
@@ -1686,7 +1770,7 @@ public:
     >
     StrongPtr(
         const StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
-        : OP( rhs, Strong )
+        : OP( rhs, Strong ), CP( rhs ), DP( rhs )
     {
     }
 
@@ -1703,7 +1787,7 @@ public:
     >
     StrongPtr(
         StrongPtr< T1, S1, OP1, CP1, KP1, RP1, DP1, CNP1 > & rhs )
-        : OP( rhs, Strong )
+        : OP( rhs, Strong ), CP( rhs ), DP( rhs )
     {
     }
 
@@ -1732,6 +1816,21 @@ public:
         if ( GetPointer() != p )
         {
             StrongPtr temp( p );
+            Swap( temp );
+        }
+        return *this;
+    }
+
+    /** This function is equivalent to an assignment operator for StrongPtr's that use the
+     DeleteArray policy where the programmer needs to write the equivalent of "sp = new P;".
+     With DeleteArray, the programmer should write "sp.Assign( new [5] Thingy, 5 );" so the
+     StrongPtr knows how many elements are in the array.
+     */
+    StrongPtr & Assign( T * p, size_t itemCount )
+    {
+        if ( GetPointer() != p )
+        {
+            StrongPtr temp( p, itemCount );
             Swap( temp );
         }
         return *this;
@@ -1967,6 +2066,22 @@ public:
     {
         KP::OnDereference( GetPointer() );
         return * GetPointer();
+    }
+
+    ReferenceType operator [] ( size_t index )
+    {
+        KP::OnDereference( GetPointer() );
+        DP::OnCheckRange( index );
+        PointerType p = GetPointer();
+        return p[ index ];
+    }
+
+    ConstReferenceType operator [] ( size_t index ) const
+    {
+        KP::OnDereference( GetPointer() );
+        DP::OnCheckRange( index );
+        ConstPointerType p = GetPointer();
+        return p[ index ];
     }
 
     /// Helper function which can be called to avoid exposing GetPointer function.
