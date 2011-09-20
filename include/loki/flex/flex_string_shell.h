@@ -1339,17 +1339,17 @@ getline(
     typename flex_string<E, T, A, S>::value_type delim)
 {
   size_t nread = 0;
-  typename std::basic_istream<typename flex_string<E, T, A, S>::value_type,
+  typename basic_istream<typename flex_string<E, T, A, S>::value_type,
     typename flex_string<E, T, A, S>::traits_type>::sentry sentry(is, true);
   if (sentry) {
-    ::std::basic_streambuf<typename flex_string<E, T, A, S>::value_type,
+    basic_streambuf<typename flex_string<E, T, A, S>::value_type,
       typename flex_string<E, T, A, S>::traits_type>* buf = is.rdbuf();
     str.clear();
 
     while (nread < str.max_size()) {
       int c1 = buf->sbumpc();
       if (flex_string<E, T, A, S>::traits_type::eq_int_type(c1, flex_string<E, T, A, S>::traits_type::eof())) {
-        is.setstate(::std::ios_base::eofbit);
+        is.setstate(ios_base::eofbit);
         break;
       }
       else {
@@ -1363,7 +1363,7 @@ getline(
     }
   }
   if (nread == 0 || nread >= str.max_size())
-    is.setstate(::std::ios_base::failbit);
+    is.setstate(ios_base::failbit);
 
   return is;
 }

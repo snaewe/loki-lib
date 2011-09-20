@@ -20,7 +20,7 @@
 
 #include <assert.h>
 
-//#include <process.h>
+#include <process.h>
 #if !defined( _MSC_VER )
     #include <unistd.h> // needed for the usleep function.
 #endif
@@ -86,13 +86,11 @@ Thread::~Thread( void )
 bool Thread::WaitForThread( void ) volatile
 {
     assert( IsValid( m_owner ) );
-
     const volatile Thread * current = Thread::GetCurrentThread();
     if ( this == current )
         return false;
     if ( m_status == Thread::Dead )
         return false;
-
     while ( this->m_status == Thread::Active )
     {
         // Call the wait policy.
@@ -102,8 +100,6 @@ bool Thread::WaitForThread( void ) volatile
         ::usleep( 1000 );
 #endif
     }
-
-    m_status = Thread::Idle;
     return true;
 }
 

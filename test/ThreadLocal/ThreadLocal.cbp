@@ -7,37 +7,28 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug_GCC">
-				<Option output="obj/Debug_GCC/ThreadLocal" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug_GCC/" />
+				<Option output="obj\Debug_GCC\ThreadLocal" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug_GCC\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-Wmain" />
 					<Add option="-pedantic" />
-					<Add option="-g" />
 					<Add option="-W" />
-					<Add directory="../../include" />
+					<Add option="-g" />
+					<Add directory="..\..\include" />
 				</Compiler>
-				<Linker>
-					<Add library="/usr/lib/libpthread.so" />
-					<Add library="/usr/lib/libc.so" />
-				</Linker>
 			</Target>
 			<Target title="Release_GCC">
-				<Option output="obj/Release_GCC/ThreadLocal" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release_GCC/" />
+				<Option output="obj\Release_GCC\ThreadLocal" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release_GCC\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-Wmain" />
-					<Add option="-pedantic" />
-					<Add option="-W" />
-					<Add directory="../../include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="/usr/lib/libpthread.so" />
 				</Linker>
 			</Target>
 		</Build>
@@ -50,7 +41,6 @@
 			<code_completion />
 			<debugger />
 			<lib_finder disable_auto="1" />
-			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

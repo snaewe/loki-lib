@@ -4,9 +4,9 @@
 // Copyright (c) 2008, 2009 Richard Sposato
 // The copyright on this file is protected under the terms of the MIT license.
 //
-// Permission to use, copy, modify, distribute and sell this software for any
-// purpose is hereby granted without fee, provided that the above copyright
-// notice appear in all copies and that both that copyright notice and this
+// Permission to use, copy, modify, distribute and sell this software for any 
+// purpose is hereby granted without fee, provided that the above copyright 
+// notice appear in all copies and that both that copyright notice and this 
 // permission notice appear in supporting documentation.
 //
 // The author makes no representations about the suitability of this software
@@ -22,7 +22,7 @@
 #include "MultiThreadTests.hpp"
 
 #include <assert.h>
-//#include <process.h>
+#include <process.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -239,8 +239,6 @@ void * ValueUnsafeThread( void * p )
 
 void MultiThreadSimpleTest( void )
 {
-	cout << "Starting MultiThreadSimpleTest." << endl;
-
     Thing::Init( 0 );
     const unsigned int threadCount = 5;
     ThreadPool pool( threadCount );
@@ -264,8 +262,6 @@ void MultiThreadSimpleTest( void )
     pool.JoinAll();
 
     Thing::Destroy();
-
-	cout << "Finished MultiThreadSimpleTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -303,17 +299,13 @@ void * TryLockThread( void * p )
 
 void MultiThreadTryLockTest( void )
 {
-	cout << "Starting MultiThreadTryLockTest." << endl;
-
     static const unsigned int threadCount = 3;
     Thing::Init( 0 );
     volatile Thing & thing = Thing::GetIt();
     volatile SleepMutex & mutex = thing.GetMutex();
 
     cout << endl << "Doing multi-threaded TryLock test.  This test should not deadlock." << endl;
-    cout << "Press enter key to continue." << endl;
-    char theKey = 0;
-    cin.get( theKey );
+    ::system( "pause" );
     // First step is to lock the mutex in the main thread so no child thread
     // can ever lock it, change the value, or anything like that.
     MutexErrors::Type result = mutex.Lock();
@@ -321,46 +313,36 @@ void MultiThreadTryLockTest( void )
     bool okay = mutex.IsLockedByCurrentThread();
     assert( okay );
     thing.SetValue( threadCount );
-
+    ThreadPool pool( threadCount );
+    for ( unsigned int ii = 0; ii < threadCount; ++ii )
     {
-    	ThreadPool pool( threadCount );
-		for ( unsigned int ii = 0; ii < threadCount; ++ii )
-		{
-			void * p = reinterpret_cast< void * >( ii );
-			pool.Start( TryLockThread, p );
-		}
-		pool.JoinAll();
+        void * p = reinterpret_cast< void * >( ii );
+        pool.Start( TryLockThread, p );
     }
-
-	const unsigned int value = thing.GetValue();
-	assert( value == threadCount );
-	result = mutex.Unlock();
-	assert( MutexErrors::Success == result );
-	okay = !mutex.IsLockedByCurrentThread();
-	assert( okay );
-	okay = !mutex.IsLocked();
-	assert( okay );
+    pool.JoinAll();
+    const unsigned int value = thing.GetValue();
+    assert( value == threadCount );
+    result = mutex.Unlock();
+    assert( MutexErrors::Success == result );
+    okay = !mutex.IsLockedByCurrentThread();
+    assert( okay );
+    okay = !mutex.IsLocked();
+    assert( okay );
 
     Thing::Destroy();
-
-	cout << "Finished MultiThreadTryLockTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void MultiThreadReentrantTest( void )
 {
-	cout << "Starting MultiThreadReentrantTest." << endl;
-
     Thing::Init( 0 );
     const unsigned int threadCount = 8;
     TestResults::Create( threadCount );
     ThreadPool pool( threadCount );
 
     cout << endl << "Doing thread-safe value test.  This test should pass and not deadlock." << endl;
-    cout << "Press enter key to continue." << endl;
-    char theKey = 0;
-    cin.get( theKey );
+    ::system( "pause" );
     for ( unsigned int ii = 0; ii < threadCount; ++ii )
     {
         void * p = reinterpret_cast< void * >( ii );
@@ -370,8 +352,7 @@ void MultiThreadReentrantTest( void )
     TestResults::GetIt()->OutputResults();
 
     cout << endl << "Doing thread-unsafe value test.  This test may fail." << endl;
-    cout << "Press enter key to continue." << endl;
-     cin.get( theKey );
+    ::system( "pause" );
     for ( unsigned int ii = 0; ii < threadCount; ++ii )
     {
         void * p = reinterpret_cast< void * >( ii );
@@ -382,8 +363,6 @@ void MultiThreadReentrantTest( void )
 
     TestResults::Destroy();
     Thing::Destroy();
-
-	cout << "Finished MultiThreadReentrantTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -667,8 +646,6 @@ void * MultiLockUnsafeThread( void * p )
 
 void MultiThreadMultiLockTest( void )
 {
-	cout << "Starting MultiThreadMultiLockTest." << endl;
-
     Thing::MakePool( thingCount );
     const unsigned int threadCount = 8;
     TestResults::Create( threadCount );
@@ -697,8 +674,6 @@ void MultiThreadMultiLockTest( void )
 
     TestResults::Destroy();
     Thing::DestroyPool();
-
-	cout << "Finished MultiThreadMultiLockTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -833,8 +808,6 @@ void * MultiLockRandomUnsafeThread( void * p )
 
 void MultiThreadRandomMultiLockTest( void )
 {
-	cout << "Starting MultiThreadRandomMultiLockTest." << endl;
-
     Thing::MakePool( thingCount );
     const unsigned int threadCount = 8;
     TestResults::Create( threadCount );
@@ -863,8 +836,6 @@ void MultiThreadRandomMultiLockTest( void )
 
     TestResults::Destroy();
     Thing::DestroyPool();
-
-	cout << "Finished MultiThreadRandomMultiLockTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -965,8 +936,6 @@ void * UnsafeHierarchyTest( void * p )
 
 void MultiThreadHierarchySingleLockTest( void )
 {
-	cout << "Starting MultiThreadHierarchySingleLockTest." << endl;
-
     LevelThing::MakePool( thingCount );
     const unsigned int threadCount = 8;
     TestResults::Create( threadCount );
@@ -995,8 +964,6 @@ void MultiThreadHierarchySingleLockTest( void )
 
     TestResults::Destroy();
     LevelThing::DestroyPool();
-
-	cout << "Finished MultiThreadHierarchySingleLockTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -1098,8 +1065,6 @@ void * UnsafeHierarchyMultiLockTest( void * p )
 void MultiThreadHierarchyMultiLockTest( void )
 {
 
-	cout << "Starting MultiThreadHierarchyMultiLockTest." << endl;
-
     MultiLevelPool::MakePool( 10, thingCount );
     const unsigned int threadCount = 8;
     TestResults::Create( threadCount );
@@ -1128,8 +1093,6 @@ void MultiThreadHierarchyMultiLockTest( void )
 
     TestResults::Destroy();
     MultiLevelPool::DestroyPool();
-
-	cout << "Finished MultiThreadHierarchyMultiLockTest." << endl;
 }
 
 // ----------------------------------------------------------------------------

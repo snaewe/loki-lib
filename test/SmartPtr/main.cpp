@@ -1205,6 +1205,75 @@ void DoForwardReferenceTest( void )
 
 // ----------------------------------------------------------------------------
 
+namespace
+{
+
+    class Feline
+    {
+    public:
+
+        static inline bool AllDestroyed( void )
+        {
+            return ( s_constructions == s_destructions );
+        }
+
+        static inline bool ExtraConstructions( void )
+        {
+            return ( s_constructions > s_destructions );
+        }
+
+        static inline bool ExtraDestructions( void )
+        {
+            return ( s_constructions < s_destructions );
+        }
+
+        static inline unsigned int GetCtorCount( void )
+        {
+            return s_constructions;
+        }
+
+        static inline unsigned int GetDtorCount( void )
+        {
+            return s_destructions;
+        }
+
+        Feline( void ) { s_constructions++; }
+        virtual ~Feline() { s_destructions++; }
+        virtual Feline * Clone( void ) const = 0;
+
+    private:
+        static unsigned int s_constructions;
+        static unsigned int s_destructions;
+    };
+
+    unsigned int Feline::s_constructions = 0;
+    unsigned int Feline::s_destructions = 0;
+
+    class Tiger : public Feline
+    {
+    public:
+        virtual ~Tiger() {}
+        virtual Tiger * Clone( void ) const { return new Tiger( *this ); }
+    };
+
+    class Lion : public Feline
+    {
+    public:
+        virtual ~Lion() {}
+        virtual Lion * Clone( void ) const { return new Lion( *this ); }
+    };
+
+    class Dog
+    {
+    public:
+        virtual ~Dog() {}
+        virtual Dog * Clone( void ) const { return new Dog( *this ); }
+    };
+
+}
+
+// ----------------------------------------------------------------------------
+
 void DoSmartPtrDynamicCastTests( void )
 {
     cout << "Starting DoSmartPtrDynamicCastTests." << endl;
@@ -1290,9 +1359,9 @@ void DoSmartPtrDynamicCastTests( void )
         assert( !pDog );
     }
 
-    assert( BaseClass::AllDestroyed() );
-    assert( !BaseClass::ExtraConstructions() );
-    assert( !BaseClass::ExtraDestructions() );
+    assert( Feline::AllDestroyed() );
+    assert( !Feline::ExtraConstructions() );
+    assert( !Feline::ExtraDestructions() );
     cout << "Finished DoSmartPtrDynamicCastTests." << endl;
 }
 
@@ -1449,161 +1518,6 @@ void DoDestructiveCopyTest( void )
 
 // ----------------------------------------------------------------------------
 
-/// Use these typedefs to test DeleteArray policy.
-
-typedef Loki::SmartPtr< Tiger, RefCounted, DisallowConversion,
-    AssertCheck, ArrayStorage, DontPropagateConst >
-    TigerArray_RefCounted_ptr;
-
-typedef Loki::SmartPtr< Tiger, RefLinked, DisallowConversion,
-    AssertCheck, ArrayStorage, DontPropagateConst >
-    TigerArray_2RefLinks_ptr;
-
-// ----------------------------------------------------------------------------
-
-void DoSmartArrayTests( void )
-{
-    cout << "Starting DoSmartArrayTests." << endl;
-
-    {
-        // test default construction.
-        TigerArray_RefCounted_ptr sp1;
-        assert( !sp1 );
-        assert( 0 == sp1.GetArrayCount() );
-
-        // test assignment.
-        sp1.Assign( new Tiger[ 8 ], 8 );
-        assert( sp1 );
-        assert( 8 == sp1.GetArrayCount() );
-        sp1[ 0 ].SetStripes( 8 );
-        sp1[ 1 ].SetStripes( 16 );
-        sp1[ 2 ].SetStripes( 24 );
-        sp1[ 3 ].SetStripes( 32 );
-        sp1[ 4 ].SetStripes( 40);
-        sp1[ 5 ].SetStripes( 48 );
-        sp1[ 6 ].SetStripes( 56 );
-        sp1[ 7 ].SetStripes( 64 );
-
-        // test initialization construction.
-        TigerArray_RefCounted_ptr sp2( new Tiger[ 4 ], 4 );
-        assert( sp2 );
-        assert( 4 == sp2.GetArrayCount() );
-        sp2[ 0 ].SetStripes( 5 );
-        sp2[ 1 ].SetStripes( 10 );
-        sp2[ 2 ].SetStripes( 15 );
-        sp2[ 3 ].SetStripes( 20 );
-
-        // test range checking.
-        try
-        {
-            Tiger & p4 = sp2[ 4 ];
-            assert( false );
-        }
-        catch ( const ::std::out_of_range & ex )
-        {
-            assert( true );
-        }
-
-        // test range checking.
-        try
-        {
-            Tiger & p8 = sp1[ 8 ];
-            assert( false );
-        }
-        catch ( const ::std::out_of_range & ex )
-        {
-            assert( true );
-        }
-
-        // test swap.
-        sp2.Swap( sp1 );
-        assert( sp1 );
-        assert( sp2 );
-        // test checking of item count.
-        assert( 4 == sp1.GetArrayCount() );
-        assert( 8 == sp2.GetArrayCount() );
-
-        // test that operator[] returns reference to
-        assert(  5 == sp1[ 0 ].GetStripes() );
-        assert( 10 == sp1[ 1 ].GetStripes() );
-        assert( 15 == sp1[ 2 ].GetStripes() );
-        assert( 20 == sp1[ 3 ].GetStripes() );
-        assert(  8 == sp2[ 0 ].GetStripes() );
-        assert( 16 == sp2[ 1 ].GetStripes() );
-        assert( 24 == sp2[ 2 ].GetStripes() );
-        assert( 32 == sp2[ 3 ].GetStripes() );
-        assert( 40 == sp2[ 4 ].GetStripes() );
-        assert( 48 == sp2[ 5 ].GetStripes() );
-        assert( 56 == sp2[ 6 ].GetStripes() );
-        assert( 64 == sp2[ 7 ].GetStripes() );
-
-        try
-        {
-            Tiger & p4 = sp1[ 4 ];
-            assert( false );
-        }
-        catch ( const ::std::out_of_range & ex )
-        {
-            assert( true );
-        }
-
-        try
-        {
-            Tiger & p8 = sp2[ 8 ];
-            assert( false );
-        }
-        catch ( const ::std::out_of_range & ex )
-        {
-            assert( true );
-        }
-
-        const TigerArray_RefCounted_ptr sp3( sp1 );
-        assert( sp3 == sp1 );
-        assert( sp3.GetArrayCount() == sp1.GetArrayCount() );
-        try
-        {
-            const Tiger & p4 = sp3[ 4 ];
-            assert( false );
-        }
-        catch ( const ::std::out_of_range & ex )
-        {
-            assert( true );
-        }
-
-        const TigerArray_RefCounted_ptr sp5( sp2 );
-        assert( sp5 == sp2 );
-        assert( sp5.GetArrayCount() == sp2.GetArrayCount() );
-        try
-        {
-            const Tiger & p8 = sp5[ 8 ];
-            assert( false );
-        }
-        catch ( const ::std::out_of_range & ex )
-        {
-            assert( true );
-        }
-
-        sp2 = sp1;
-        assert( sp1 == sp2 );
-        assert( sp3 == sp2 );
-        assert( sp2.GetArrayCount() == sp1.GetArrayCount() );
-        assert( sp2.GetArrayCount() == sp1.GetArrayCount() );
-        assert( sp1 != sp5 );
-        assert( sp2 != sp5 );
-        assert( sp3 != sp5 );
-        assert( sp1.GetArrayCount() != sp5.GetArrayCount() );
-        assert( sp2.GetArrayCount() != sp5.GetArrayCount() );
-        assert( sp3.GetArrayCount() != sp5.GetArrayCount() );
-    }
-
-    assert( BaseClass::AllDestroyed() );
-    assert( !BaseClass::ExtraConstructions() );
-    assert( !BaseClass::ExtraDestructions() );
-    cout << "Finished DoSmartArrayTests." << endl;
-}
-
-// ----------------------------------------------------------------------------
-
 int main( int argc, const char * argv[] )
 {
     bool doThreadTest = false;
@@ -1642,7 +1556,6 @@ int main( int argc, const char * argv[] )
     DoSmartPtrDynamicCastTests();
     DoStrongPtrDynamicCastTests();
     DoStrongArrayTests();
-    DoSmartArrayTests();
 
 #if defined (LOKI_OBJECT_LEVEL_THREADING) || defined (LOKI_CLASS_LEVEL_THREADING)
     if ( doThreadTest )

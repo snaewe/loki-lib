@@ -48,8 +48,6 @@ typedef ::Loki::LevelMutex< ::Loki::SpinLevelMutex, 1,
 void SingleThreadSimpleTest( void )
 {
 
-	cout << "Starting SingleThreadSimpleTest." << endl;
-
     const unsigned int priorLevel = GetCurrentThreadsLevel();
     const unsigned int priorLockCount  = CountLocksInCurrentThread();
     const unsigned int priorMutexCount = CountMutexesInCurrentThread();
@@ -173,16 +171,12 @@ void SingleThreadSimpleTest( void )
     assert( okay );
     okay = ( CountMutexesAtCurrentLevel()  == priorLevelMutexCount );
     assert( okay );
-
-	cout << "Finished SingleThreadSimpleTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void SingleThreadReentrantTest( void )
 {
-
-	cout << "Starting SingleThreadReentrantTest." << endl;
 
     const unsigned int priorLevel = GetCurrentThreadsLevel();
     const unsigned int priorLockCount  = CountLocksInCurrentThread();
@@ -289,16 +283,12 @@ void SingleThreadReentrantTest( void )
     assert( okay );
     okay = ( CountMutexesAtCurrentLevel()  == priorLevelMutexCount );
     assert( okay );
-
-	cout << "Finished SingleThreadReentrantTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void SingleThreadSimpleMultiLockTest( void )
 {
-
-	cout << "Starting SingleThreadSimpleMultiLockTest." << endl;
 
     const unsigned int priorLevel = GetCurrentThreadsLevel();
     const unsigned int priorLockCount  = CountLocksInCurrentThread();
@@ -491,16 +481,12 @@ void SingleThreadSimpleMultiLockTest( void )
     assert( okay );
     okay = ( CountMutexesAtCurrentLevel()  == priorLevelMutexCount );
     assert( okay );
-
-	cout << "Finished SingleThreadSimpleMultiLockTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
 
 void SingleThreadExceptionTest( void )
 {
-
-	cout << "Starting SingleThreadExceptionTest." << endl;
 
     const unsigned int priorLevel = GetCurrentThreadsLevel();
     const unsigned int priorLockCount  = CountLocksInCurrentThread();
@@ -650,8 +636,6 @@ void SingleThreadExceptionTest( void )
     assert( okay );
     okay = ( CountMutexesAtCurrentLevel()  == priorLevelMutexCount );
     assert( okay );
-
-	cout << "Finished SingleThreadExceptionTest." << endl;
 }
 
 // ----------------------------------------------------------------------------
@@ -676,7 +660,6 @@ int main( int argc, const char * const argv[] )
 
         MultiThreadSimpleTest();
         MultiThreadTryLockTest();
-        cout << "main 679" << endl;
         MultiThreadReentrantTest();
         MultiThreadMultiLockTest();
         MultiThreadRandomMultiLockTest();

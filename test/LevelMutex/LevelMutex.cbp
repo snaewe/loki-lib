@@ -6,24 +6,24 @@
 		<Option compiler="cygwin" />
 		<Build>
 			<Target title="Debug_GCC">
-				<Option output="obj/Debug_GCC/LevelMutex" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug_GCC/" />
+				<Option output="obj\Debug_GCC\LevelMutex" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug_GCC\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-g" />
 					<Add option="-W" />
-					<Add directory="../../include" />
-					<Add directory="../../include/loki" />
+					<Add option="-g" />
+					<Add directory="..\..\include" />
+					<Add directory="..\..\include\loki" />
 				</Compiler>
 				<Linker>
-					<Add library="../../lib/GCC/Loki_D.a" />
-					<Add library="/usr/lib/libpthread.so" />
+					<Add library="..\..\lib\GCC\Loki_D.a" />
+					<Add library="..\..\..\PThreads\lib\pthreadVC2.lib" />
 				</Linker>
 			</Target>
 			<Target title="Release_GCC">
-				<Option output="obj/Release_GCC/LevelMutex" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release_GCC/" />
+				<Option output="obj\Release_GCC\LevelMutex" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release_GCC\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -31,33 +31,33 @@
 					<Add option="-Os" />
 					<Add option="-O3" />
 					<Add option="-W" />
-					<Add directory="../../include" />
-					<Add directory="../../include/loki" />
+					<Add directory="..\..\include" />
+					<Add directory="..\..\include\loki" />
 				</Compiler>
 				<Linker>
-					<Add library="../../lib/GCC/Loki.a" />
-					<Add library="/usr/lib/libpthread.so" />
+					<Add library="..\..\lib\GCC\Loki.a" />
+					<Add library="..\..\..\PThreads\lib\pthreadVC2.lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug_Cygwin">
-				<Option output="obj/Debug_Cygwin/LevelMutex" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug_Cygwin/" />
+				<Option output="obj\Debug_Cygwin\LevelMutex" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug_Cygwin\" />
 				<Option type="1" />
 				<Option compiler="cygwin" />
 				<Compiler>
 					<Add option="-W" />
 					<Add option="-g" />
-					<Add directory="../../include" />
-					<Add directory="../../include/loki" />
+					<Add directory="..\..\include" />
+					<Add directory="..\..\include\loki" />
 				</Compiler>
 				<Linker>
-					<Add library="../../lib/Cygwin/Loki_D.a" />
-					<Add library="../../../PThreads/lib/pthreadVC2.lib" />
+					<Add library="..\..\lib\Cygwin\Loki_D.a" />
+					<Add library="..\..\..\PThreads\lib\pthreadVC2.lib" />
 				</Linker>
 			</Target>
 			<Target title="Release_Cygwin">
-				<Option output="obj/Release_Cygwin/LevelMutex" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release_Cygwin/" />
+				<Option output="obj\Release_Cygwin\LevelMutex" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release_Cygwin\" />
 				<Option type="1" />
 				<Option compiler="cygwin" />
 				<Compiler>
@@ -65,12 +65,12 @@
 					<Add option="-Os" />
 					<Add option="-O3" />
 					<Add option="-W" />
-					<Add directory="../../include" />
-					<Add directory="../../include/loki" />
+					<Add directory="..\..\include" />
+					<Add directory="..\..\include\loki" />
 				</Compiler>
 				<Linker>
-					<Add library="../../lib/Cygwin/Loki.a" />
-					<Add library="../../../PThreads/lib/pthreadVC2.lib" />
+					<Add library="..\..\lib\Cygwin\Loki.a" />
+					<Add library="..\..\..\PThreads\lib\pthreadVC2.lib" />
 				</Linker>
 			</Target>
 		</Build>
