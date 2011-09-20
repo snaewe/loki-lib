@@ -85,7 +85,10 @@
 ///   If you write your own policy, you must implement these 3 functions:
 ///   -# void static Delete( const P * p )
 ///   -# static P * Default( void )
-///   -# void Swap( YourResetPolicy & )
+///   -# Default constructor.
+///   -# Copy constructor.
+///   -# Templated copy constructor.
+///   -# void Swap( YourDeletePolicy & )
 ///
 ///  \par ResetPolicy
 ///   A reset policy tells the ReleaseAll and ResetAll functions whether they
@@ -234,45 +237,6 @@ protected:
 
     inline void Swap( DeleteSingle & ) {}
 };
-
-namespace Private
-{
-
-////////////////////////////////////////////////////////////////////////////////
-///  \class DeleteArrayBase
-///
-///  \ingroup  StrongPointerDeleteGroup
-///  Base class used only by the DeleteArray policy class.  This stores the
-///   number of elements in an array of shared objects.
-////////////////////////////////////////////////////////////////////////////////
-
-class DeleteArrayBase
-{
-public:
-
-    inline size_t GetArrayCount( void ) const { return m_itemCount; }
-
-protected:
-
-    DeleteArrayBase( void ) : m_itemCount( 0 ) {}
-
-    explicit DeleteArrayBase( size_t itemCount ) : m_itemCount( itemCount ) {}
-
-    DeleteArrayBase( const DeleteArrayBase & that ) : m_itemCount( that.m_itemCount ) {}
-
-    void Swap( DeleteArrayBase & rhs );
-
-    void OnInit( const void * p ) const;
-
-    void OnCheckRange( size_t index ) const;
-
-private:
-
-    size_t m_itemCount;
-
-};
-
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class DeleteArray
@@ -2068,19 +2032,27 @@ public:
         return * GetPointer();
     }
 
+    /** operator[] returns a reference to an modifiable object. If the index is greater than or
+     equal to the number of elements, the function will throw a std::out_of_range exception.
+     This only works with DeleteArray policy. Any other policy will cause a compiler error.
+     */
     ReferenceType operator [] ( size_t index )
     {
-        KP::OnDereference( GetPointer() );
-        DP::OnCheckRange( index );
         PointerType p = GetPointer();
+        KP::OnDereference( p );
+        DP::OnCheckRange( index );
         return p[ index ];
     }
 
+    /** operator[] returns a reference to a const object. If the index is greater than or
+     equal to the number of elements, the function will throw a std::out_of_range exception.
+     This only works with DeleteArray policy. Any other policy will cause a compiler error.
+     */
     ConstReferenceType operator [] ( size_t index ) const
     {
-        KP::OnDereference( GetPointer() );
-        DP::OnCheckRange( index );
         ConstPointerType p = GetPointer();
+        KP::OnDereference( p );
+        DP::OnCheckRange( index );
         return p[ index ];
     }
 
