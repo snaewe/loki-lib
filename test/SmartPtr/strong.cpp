@@ -1781,7 +1781,7 @@ void DoStrongCompareTests( void )
 namespace
 {
 
-    class Feline
+    class Feline : public BaseClass
     {
     public:
         virtual ~Feline() {}
@@ -1796,7 +1796,12 @@ namespace
     class Tiger : public Feline
     {
     public:
+        Tiger( void ) : m_stripes( 100 ) {}
         virtual ~Tiger() {}
+        unsigned int GetStripes( void ) const { return m_stripes; }
+        void SetStripes( unsigned int s ) { m_stripes = s; }
+    private:
+        unsigned int m_stripes;
     };
 
     class Dog
@@ -2089,3 +2094,164 @@ void foo()
     // this will not compile:
     //int i = f1.i;
 }
+
+// ----------------------------------------------------------------------------
+
+/// Use these typedefs to test DeleteArray policy.
+
+typedef Loki::StrongPtr< Tiger, true, TwoRefCounts, DisallowConversion,
+    AssertCheck, CantResetWithStrong, DeleteArray, DontPropagateConst >
+    TigerArray_2RefCounts_ptr;
+
+typedef Loki::StrongPtr< Tiger, true, TwoRefLinks, DisallowConversion,
+    AssertCheck, CantResetWithStrong, DeleteArray, DontPropagateConst >
+    TigerArray_2RefLinks_ptr;
+
+typedef Loki::StrongPtr< Tiger, true, LockableTwoRefCounts, DisallowConversion,
+    AssertCheck, CantResetWithStrong, DeleteArray, DontPropagateConst >
+    TigerArray_Lock2RefCounts_ptr;
+
+// ----------------------------------------------------------------------------
+
+void DoStrongArrayTests( void )
+{
+    cout << "Starting DoStrongArrayTests." << endl;
+
+    {
+        // test default construction.
+        TigerArray_2RefCounts_ptr sp1;
+        assert( !sp1 );
+        assert( 0 == sp1.GetArrayCount() );
+
+        // test assignment.
+        sp1.Assign( new Tiger[ 8 ], 8 );
+        assert( sp1 );
+        assert( 8 == sp1.GetArrayCount() );
+        sp1[ 0 ].SetStripes( 8 );
+        sp1[ 1 ].SetStripes( 16 );
+        sp1[ 2 ].SetStripes( 24 );
+        sp1[ 3 ].SetStripes( 32 );
+        sp1[ 4 ].SetStripes( 40);
+        sp1[ 5 ].SetStripes( 48 );
+        sp1[ 6 ].SetStripes( 56 );
+        sp1[ 7 ].SetStripes( 64 );
+
+        // test initialization construction.
+        TigerArray_2RefCounts_ptr sp2( new Tiger[ 4 ], 4 );
+        assert( sp2 );
+        assert( 4 == sp2.GetArrayCount() );
+        sp2[ 0 ].SetStripes( 5 );
+        sp2[ 1 ].SetStripes( 10 );
+        sp2[ 2 ].SetStripes( 15 );
+        sp2[ 3 ].SetStripes( 20 );
+
+        // test range checking.
+        try
+        {
+            Tiger & p4 = sp2[ 4 ];
+            assert( false );
+        }
+        catch ( const ::std::out_of_range & ex )
+        {
+            assert( true );
+        }
+
+        // test range checking.
+        try
+        {
+            Tiger & p8 = sp1[ 8 ];
+            assert( false );
+        }
+        catch ( const ::std::out_of_range & ex )
+        {
+            assert( true );
+        }
+
+        // test swap.
+        sp2.Swap( sp1 );
+        assert( sp1 );
+        assert( sp2 );
+        // test checking of item count.
+        assert( 4 == sp1.GetArrayCount() );
+        assert( 8 == sp2.GetArrayCount() );
+
+        // test that operator[] returns reference to
+        assert(  5 == sp1[ 0 ].GetStripes() );
+        assert( 10 == sp1[ 1 ].GetStripes() );
+        assert( 15 == sp1[ 2 ].GetStripes() );
+        assert( 20 == sp1[ 3 ].GetStripes() );
+        assert(  8 == sp2[ 0 ].GetStripes() );
+        assert( 16 == sp2[ 1 ].GetStripes() );
+        assert( 24 == sp2[ 2 ].GetStripes() );
+        assert( 32 == sp2[ 3 ].GetStripes() );
+        assert( 40 == sp2[ 4 ].GetStripes() );
+        assert( 48 == sp2[ 5 ].GetStripes() );
+        assert( 56 == sp2[ 6 ].GetStripes() );
+        assert( 64 == sp2[ 7 ].GetStripes() );
+
+        try
+        {
+            Tiger & p4 = sp1[ 4 ];
+            assert( false );
+        }
+        catch ( const ::std::out_of_range & ex )
+        {
+            assert( true );
+        }
+
+        try
+        {
+            Tiger & p8 = sp2[ 8 ];
+            assert( false );
+        }
+        catch ( const ::std::out_of_range & ex )
+        {
+            assert( true );
+        }
+
+        const TigerArray_2RefCounts_ptr sp3( sp1 );
+        assert( sp3 == sp1 );
+        assert( sp3.GetArrayCount() == sp1.GetArrayCount() );
+        try
+        {
+            const Tiger & p4 = sp3[ 4 ];
+            assert( false );
+        }
+        catch ( const ::std::out_of_range & ex )
+        {
+            assert( true );
+        }
+
+        const TigerArray_2RefCounts_ptr sp5( sp2 );
+        assert( sp5 == sp2 );
+        assert( sp5.GetArrayCount() == sp2.GetArrayCount() );
+        try
+        {
+            const Tiger & p8 = sp5[ 8 ];
+            assert( false );
+        }
+        catch ( const ::std::out_of_range & ex )
+        {
+            assert( true );
+        }
+
+        sp2 = sp1;
+        assert( sp1 == sp2 );
+        assert( sp3 == sp2 );
+        assert( sp2.GetArrayCount() == sp1.GetArrayCount() );
+        assert( sp2.GetArrayCount() == sp1.GetArrayCount() );
+        assert( sp1 != sp5 );
+        assert( sp2 != sp5 );
+        assert( sp3 != sp5 );
+        assert( sp1.GetArrayCount() != sp5.GetArrayCount() );
+        assert( sp2.GetArrayCount() != sp5.GetArrayCount() );
+        assert( sp3.GetArrayCount() != sp5.GetArrayCount() );
+    }
+
+    assert( BaseClass::AllDestroyed() );
+    assert( !BaseClass::ExtraConstructions() );
+    assert( !BaseClass::ExtraDestructions() );
+    cout << "Finished DoStrongArrayTests." << endl;
+}
+
+// ----------------------------------------------------------------------------
