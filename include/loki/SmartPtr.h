@@ -400,6 +400,13 @@ namespace Loki
 ///
 ///  \ingroup  SmartPointerStorageGroup
 ///  Implementation of the ArrayStorage used by SmartPtr
+///  This assumes the pointer points to the zeroth element in an array, and uses
+///  the array-delete operator to deconstruct and deallocate the array. DeepCopy
+///  is not compatible with ArrayStorage DeepCopy::Clone will only copy the first
+///  element in the array and won't know the size of the array. Even if it did
+///  know the size, it would need to use array new to safely work the array
+///  delete operator in ArrayStorage, but array new will not copy the elements
+///  in the source array since it calls the default constructor for each element.
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -663,7 +670,12 @@ namespace Loki
 ///  \ingroup  SmartPointerOwnershipGroup
 ///  Implementation of the OwnershipPolicy used by SmartPtr
 ///  Implements deep copy semantics, assumes existence of a Clone() member
-///  function of the pointee type
+///  function of the pointee type. DeepCopy is not compatible with ArrayStorage
+///  DeepCopy::Clone will only copy the first element in the array and won't
+///  know the size of the array. Even if it did know the size, it would need to
+///  use array new to safely work the array delete operator in ArrayStorage, but
+///  array new will not copy the elements in the source array since it calls the
+///  default constructor for each array element.
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class P>
