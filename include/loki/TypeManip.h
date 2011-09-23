@@ -2,15 +2,27 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
-//     permission notice appear in supporting documentation.
-// The author or Addison-Welsey Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
-//     without express or implied warranty.
+// Code covered by the MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef LOKI_TYPEMANIP_INC_
 #define LOKI_TYPEMANIP_INC_
@@ -32,7 +44,7 @@ namespace Loki
     {
         enum { value = v };
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template Type2Type
 // Converts each type into a unique, insipid type
@@ -45,7 +57,7 @@ namespace Loki
     {
         typedef T OriginalType;
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template Select
 // Selects one of two types based upon a boolean constant
@@ -66,7 +78,7 @@ namespace Loki
     {
         typedef U Result;
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template IsSameType
 // Return true iff two given types are the same
@@ -81,7 +93,7 @@ namespace Loki
     {
         enum { value = false };
     };
-    
+
     template <typename T>
     struct IsSameType<T,T>
     {
@@ -133,27 +145,27 @@ namespace Loki
         enum { exists2Way = exists && Conversion<U, T>::exists };
         enum { sameType = false };
     };
-    
+
     template <class T>
-    struct Conversion<T, T>    
+    struct Conversion<T, T>
     {
         enum { exists = 1, exists2Way = 1, sameType = 1 };
     };
-    
+
     template <class T>
-    struct Conversion<void, T>    
+    struct Conversion<void, T>
     {
         enum { exists = 0, exists2Way = 0, sameType = 0 };
     };
-    
+
     template <class T>
-    struct Conversion<T, void>    
+    struct Conversion<T, void>
     {
         enum { exists = 0, exists2Way = 0, sameType = 0 };
     };
-    
+
     template <>
-    struct Conversion<void, void>    
+    struct Conversion<void, void>
     {
     public:
         enum { exists = 1, exists2Way = 1, sameType = 1 };
@@ -161,8 +173,8 @@ namespace Loki
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template SuperSubclass
-// Invocation: SuperSubclass<B, D>::value where B and D are types. 
-// Returns true if B is a public base of D, or if B and D are aliases of the 
+// Invocation: SuperSubclass<B, D>::value where B and D are types.
+// Returns true if B is a public base of D, or if B and D are aliases of the
 // same type.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
@@ -173,40 +185,40 @@ struct SuperSubclass
 {
     enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
                   !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
-      
+
     // Dummy enum to make sure that both classes are fully defined.
     enum{ dontUseWithIncompleteTypes = ( sizeof (T) == sizeof (U) ) };
 };
 
 template <>
-struct SuperSubclass<void, void> 
+struct SuperSubclass<void, void>
 {
     enum { value = false };
 };
 
 template <class U>
-struct SuperSubclass<void, U> 
+struct SuperSubclass<void, U>
 {
     enum { value = (::Loki::Conversion<const volatile U*, const volatile void*>::exists &&
                   !::Loki::Conversion<const volatile void*, const volatile void*>::sameType) };
-      
+
     // Dummy enum to make sure that both classes are fully defined.
     enum{ dontUseWithIncompleteTypes = ( 0 == sizeof (U) ) };
 };
 
 template <class T>
-struct SuperSubclass<T, void> 
+struct SuperSubclass<T, void>
 {
     enum { value = (::Loki::Conversion<const volatile void*, const volatile T*>::exists &&
                   !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
-      
+
     // Dummy enum to make sure that both classes are fully defined.
     enum{ dontUseWithIncompleteTypes = ( sizeof (T) == 0 ) };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // class template SuperSubclassStrict
-// Invocation: SuperSubclassStrict<B, D>::value where B and D are types. 
+// Invocation: SuperSubclassStrict<B, D>::value where B and D are types.
 // Returns true if B is a public base of D.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
@@ -218,35 +230,35 @@ struct SuperSubclassStrict
     enum { value = (::Loki::Conversion<const volatile U*, const volatile T*>::exists &&
                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
                  !::Loki::Conversion<const volatile T*, const volatile U*>::sameType) };
-    
+
     // Dummy enum to make sure that both classes are fully defined.
     enum{ dontUseWithIncompleteTypes = ( sizeof (T) == sizeof (U) ) };
 };
 
 template<>
-struct SuperSubclassStrict<void, void> 
+struct SuperSubclassStrict<void, void>
 {
     enum { value = false };
 };
 
 template<class U>
-struct SuperSubclassStrict<void, U> 
+struct SuperSubclassStrict<void, U>
 {
     enum { value = (::Loki::Conversion<const volatile U*, const volatile void*>::exists &&
                  !::Loki::Conversion<const volatile void*, const volatile void*>::sameType &&
                  !::Loki::Conversion<const volatile void*, const volatile U*>::sameType) };
-    
+
     // Dummy enum to make sure that both classes are fully defined.
     enum{ dontUseWithIncompleteTypes = ( 0 == sizeof (U) ) };
 };
 
 template<class T>
-struct SuperSubclassStrict<T, void> 
+struct SuperSubclassStrict<T, void>
 {
     enum { value = (::Loki::Conversion<const volatile void*, const volatile T*>::exists &&
                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType &&
                  !::Loki::Conversion<const volatile T*, const volatile void*>::sameType) };
-    
+
     // Dummy enum to make sure that both classes are fully defined.
     enum{ dontUseWithIncompleteTypes = ( sizeof (T) == 0 ) };
 };
@@ -256,8 +268,8 @@ struct SuperSubclassStrict<T, void>
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS
-// Invocation: SUPERSUBCLASS(B, D) where B and D are types. 
-// Returns true if B is a public base of D, or if B and D are aliases of the 
+// Invocation: SUPERSUBCLASS(B, D) where B and D are types.
+// Returns true if B is a public base of D, or if B and D are aliases of the
 // same type.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.
@@ -269,7 +281,7 @@ struct SuperSubclassStrict<T, void>
 
 ////////////////////////////////////////////////////////////////////////////////
 // macro SUPERSUBCLASS_STRICT
-// Invocation: SUPERSUBCLASS(B, D) where B and D are types. 
+// Invocation: SUPERSUBCLASS(B, D) where B and D are types.
 // Returns true if B is a public base of D.
 //
 // Caveat: might not work if T and U are in a private inheritance hierarchy.

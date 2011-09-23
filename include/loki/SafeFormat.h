@@ -1,13 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2005 by Andrei Alexandrescu
 // Copyright (c) 2006 Peter Kümmel
-// Permission to use, copy, modify, distribute, and sell this software for any
-//     purpose is hereby granted without fee, provided that the above copyright
-//     notice appear in all copies and that both that copyright notice and this
-//     permission notice appear in supporting documentation.
-// The author makes no representations about the suitability of this software 
-//     for any purpose. It is provided "as is" without express or implied 
-//     warranty.
+// Code covered by the MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef LOKI_SAFEFORMAT_INC_
 #define LOKI_SAFEFORMAT_INC_
@@ -16,8 +28,8 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// This file contains definitions for SafePrintf. SafeScanf coming soon (the 
-//   design is similar). 
+// This file contains definitions for SafePrintf. SafeScanf coming soon (the
+//   design is similar).
 // See Alexandrescu, Andrei: Type-safe Formatting, C/C++ Users Journal, Aug 2005
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -45,12 +57,12 @@
 #endif
 
 // Windows headers could have min/max defined
-#ifdef max 
-#  undef max 
-#endif 
-#ifdef min 
-#  undef min 
-#endif 
+#ifdef max
+#  undef max
+#endif
+#ifdef min
+#  undef min
+#endif
 
 namespace Loki
 {
@@ -74,7 +86,7 @@ namespace Loki
         assert(from <= to);
         if(from + s.second < to)
             throw std::overflow_error("");
-        // s.first: position one past the final copied element 
+        // s.first: position one past the final copied element
         s.first = std::copy(from, to, s.first);
         // remaining buffer size
         s.second -= to - from;
@@ -88,7 +100,7 @@ namespace Loki
 
     template <class Device, class Char>
     struct PrintfState {
-        PrintfState(Device dev, const Char * format) 
+        PrintfState(Device dev, const Char * format)
                 : device_(dev)
                 , format_(format)
                 , width_(0)
@@ -97,7 +109,7 @@ namespace Loki
                 , result_(0) {
             Advance();
         }
-        
+
         ~PrintfState() {
         }
 
@@ -125,7 +137,7 @@ namespace Loki
         PrintfState& operator()(LOKI_SAFEFORMAT_UNSIGNED_LONG i) {
             if (result_ == -1) return *this; // don't even bother
             // % [flags] [width] [.prec] [modifier] type_char
-            // Fetch the flags 
+            // Fetch the flags
             ReadFlags();
             if (*format_ == '*') {
                 // read the width and get out
@@ -163,7 +175,7 @@ namespace Loki
             PrintUsing_snprintf(n,"p");
             return *this;
         }
-        
+
         PrintfState& operator()(double n) {
             if (result_ == -1) return *this; // don't even bother
             PrintUsing_snprintf(n,"eEfgG");
@@ -180,17 +192,17 @@ namespace Loki
         PrintfState& operator()(int * pi) {
             return StoreCountHelper(pi);
         }
-        
+
         // Store the number of characters printed so far
         PrintfState& operator()(short * pi) {
             return StoreCountHelper(pi);
         }
-        
+
         // Store the number of characters printed so far
         PrintfState& operator()(long * pi) {
             return StoreCountHelper(pi);
         }
-        
+
         PrintfState& operator()(const std::string& stdstr) {
             return operator()(stdstr.c_str());
         }
@@ -222,16 +234,16 @@ namespace Loki
             Next();
             return *this;
         }
-        
+
         PrintfState& operator()(const void *const p) {
             return (*this)(reinterpret_cast<LOKI_SAFEFORMAT_UNSIGNED_LONG>(p));
         }
-        
+
         // read the result
         operator int() const {
             return static_cast<int>(result_);
         }
-        
+
     private:
         PrintfState& operator=(const PrintfState&);
         template <typename T>
@@ -275,7 +287,7 @@ namespace Loki
             Char * bufLast = buf + (sizeof(buf) / sizeof(Char) - 1);
             Char signChar = 0;
             unsigned int base = 10;
-            
+
             if (formatChar == 'c') {
                 // Format only one character
                 // The 'fill with zeros' flag is ignored
@@ -289,7 +301,7 @@ namespace Loki
                 bufLast = isSigned
                     ? RenderWithoutSign(static_cast<LOKI_SAFEFORMAT_SIGNED_LONG>(i), bufLast, base,
                         formatChar == 'X')
-                    : RenderWithoutSign(i, bufLast, base, 
+                    : RenderWithoutSign(i, bufLast, base,
                         formatChar == 'X');
                 // Add the sign
                 if (isSigned) {
@@ -299,12 +311,12 @@ namespace Loki
                     : 0;
                 }
             }
-            // precision 
-            size_t 
+            // precision
+            size_t
                 countDigits = bufEnd - bufLast,
-                countZeros = prec_ != size_t(-1) && countDigits < prec_ && 
+                countZeros = prec_ != size_t(-1) && countDigits < prec_ &&
                         formatChar != 'c'
-                    ? prec_ - countDigits 
+                    ? prec_ - countDigits
                     : 0,
                 countBase = base != 10 && AlternateForm() && i != 0
                     ? (base == 16 ? 2 : countZeros > 0 ? 0 : 1)
@@ -337,7 +349,7 @@ namespace Loki
             // done, advance
             Next();
         }
-        
+
         void Write(const Char* b, const Char* e) {
             if (result_ < 0) return;
             const LOKI_SAFEFORMAT_SIGNED_LONG x = e - b;
@@ -366,7 +378,7 @@ namespace Loki
             memcpy(fmtBuf, fmt, (format_ - fmt) * sizeof(Char));
             fmtBuf[format_ - fmt] = 0;
 
-            const int stored = 
+            const int stored =
 #ifdef _MSC_VER
 #if _MSC_VER < 1400
             _snprintf
@@ -374,10 +386,10 @@ namespace Loki
             _snprintf_s
 #endif
 #else
-            snprintf 
-#endif        
+            snprintf
+#endif
                      (resultBuf, sizeof(resultBuf) / sizeof(Char), fmtBuf, n);
-                     
+
             if (stored < 0) {
                 result_ = -1;
                 return;
@@ -391,8 +403,8 @@ namespace Loki
                 Write(&c, &c + 1);
             }
         }
-       
-        Char* RenderWithoutSign(LOKI_SAFEFORMAT_UNSIGNED_LONG n, char* bufLast, 
+
+        Char* RenderWithoutSign(LOKI_SAFEFORMAT_UNSIGNED_LONG n, char* bufLast,
                 unsigned int base, bool uppercase) {
             const Char hex1st = uppercase ? 'A' : 'a';
             for (;;) {
@@ -407,11 +419,11 @@ namespace Loki
             return bufLast;
         }
 
-        char* RenderWithoutSign(LOKI_SAFEFORMAT_SIGNED_LONG n, char* bufLast, unsigned int base, 
+        char* RenderWithoutSign(LOKI_SAFEFORMAT_SIGNED_LONG n, char* bufLast, unsigned int base,
                 bool uppercase) {
             if (n != LONG_MIN) {
                 return RenderWithoutSign(static_cast<LOKI_SAFEFORMAT_UNSIGNED_LONG>(n < 0 ? -n : n),
-                    bufLast, base, uppercase);            
+                    bufLast, base, uppercase);
             }
             // annoying corner case
             char* save = bufLast;
@@ -421,17 +433,17 @@ namespace Loki
             --(*save);
             return bufLast;
         }
-        
+
         void Next() {
             ++format_;
             Advance();
         }
-        
+
         void Advance() {
             ResetAll();
             const Char* begin = format_;
             for (;;) {
-                if (*format_ == '%') { 
+                if (*format_ == '%') {
                     if (format_[1] != '%') { // It's a format specifier
                         Write(begin, format_);
                         ++format_;
@@ -440,7 +452,7 @@ namespace Loki
                     // It's a "%%"
                     Write(begin, ++format_);
                     begin = ++format_;
-                    continue; 
+                    continue;
                 }
                 if (*format_ == 0) {
                     Write(begin, format_);
@@ -449,7 +461,7 @@ namespace Loki
                 ++format_;
             }
         }
-        
+
         void ReadFlags() {
             for (;; ++format_) {
                 switch (*format_) {
@@ -462,7 +474,7 @@ namespace Loki
                 }
             }
         }
-        
+
         void ParseDecimalSizeT(size_t& dest) {
             if (!std::isdigit(*format_, std::locale())) return;
             size_t r = 0;
@@ -474,17 +486,17 @@ namespace Loki
             } while (std::isdigit(*format_, std::locale()));
             dest = r;
         }
-        
+
         void ReadWidth() {
             ParseDecimalSizeT(width_);
-        }    
-        
+        }
+
         void ReadPrecision() {
             assert(*format_ == '.');
             ++format_;
             ParseDecimalSizeT(prec_);
-        }    
-        
+        }
+
         void ReadModifiers() {
             switch (*format_) {
                 case 'h': SetForceShort(); ++format_; break;
@@ -492,15 +504,15 @@ namespace Loki
                 // more (C99 and platform-specific modifiers) to come
             }
         }
-        
+
         void ReadLeaders() {
             ReadFlags();
             ReadWidth();
             if (*format_ == '.') ReadPrecision();
             ReadModifiers();
         }
-        
-        enum { 
+
+        enum {
             leftJustify = 1,
             showSignAlways = 2,
             blank = 4,
@@ -508,7 +520,7 @@ namespace Loki
             fillZeros = 16,
             forceShort = 32
         };
-        
+
         bool LeftJustify() const { return (flags_ & leftJustify) != 0; }
         bool ShowSignAlways() const { return (flags_ & showSignAlways) != 0; }
         void SetWidth(size_t w) { width_  = w; }
@@ -525,7 +537,7 @@ namespace Loki
         void SetFillZeros() { flags_ |= fillZeros; }
         void ResetFillZeros() { flags_ &= ~fillZeros; }
         void SetForceShort() { flags_ |= forceShort; }
-        
+
         void ResetAll() {
             assert(result_ != EOF);
             width_ = 0;
@@ -577,7 +589,7 @@ namespace Loki
     }
 
     template <class Char, std::size_t N>
-    PrintfState<std::pair<Char*, std::size_t>, Char> 
+    PrintfState<std::pair<Char*, std::size_t>, Char>
     BufPrintf(Char (&buf)[N], const Char* format) {
         std::pair<Char*, std::size_t> temp(buf, N);
         return PrintfState<std::pair<Char*, std::size_t>, Char>(temp, format);

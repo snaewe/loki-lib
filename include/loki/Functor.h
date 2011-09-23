@@ -2,15 +2,28 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
-//     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
-//     without express or implied warranty.
+//
+// Code covered by the MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef LOKI_FUNCTOR_INC_
 #define LOKI_FUNCTOR_INC_
@@ -48,7 +61,7 @@ namespace Loki
     namespace Private
     {
         template <typename R, template <class, class> class ThreadingModel>
-        struct FunctorImplBase 
+        struct FunctorImplBase
 #ifdef LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
         {
 #else
@@ -98,12 +111,12 @@ namespace Loki
 #ifdef LOKI_FUNCTORS_ARE_COMPARABLE
 
             virtual bool operator==(const FunctorImplBase&) const = 0;
-           
-#endif            
-         
+
+#endif
+
         };
     }
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 // macro LOKI_DEFINE_CLONE_FUNCTORIMPL
 // Implements the DoClone function for a functor implementation
@@ -121,7 +134,7 @@ namespace Loki
 // Specializations of FunctorImpl for up to 15 parameters follow
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename R, class TList, 
+    template <typename R, class TList,
         template <class, class> class ThreadingModel = LOKI_DEFAULT_THREADING_NO_OBJ_LEVEL>
     class FunctorImpl;
 
@@ -159,7 +172,7 @@ namespace Loki
 // Specialization for 2 parameters
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename R, typename P1, typename P2, 
+    template <typename R, typename P1, typename P2,
         template <class, class> class ThreadingModel>
     class FunctorImpl<R, Seq<P1, P2>, ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -271,7 +284,7 @@ namespace Loki
         typedef typename TypeTraits<P5>::ParameterType Parm5;
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7) = 0;
     };
 
@@ -297,7 +310,7 @@ namespace Loki
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8) = 0;
     };
 
@@ -324,7 +337,7 @@ namespace Loki
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9) = 0;
     };
 
@@ -353,7 +366,7 @@ namespace Loki
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10) = 0;
     };
 
@@ -384,7 +397,7 @@ namespace Loki
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11) = 0;
     };
 
@@ -416,7 +429,7 @@ namespace Loki
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12) = 0;
     };
 
@@ -449,7 +462,7 @@ namespace Loki
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13) = 0;
     };
 
@@ -484,7 +497,7 @@ namespace Loki
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14) = 0;
     };
 
@@ -520,7 +533,7 @@ namespace Loki
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
         typedef typename TypeTraits<P15>::ParameterType Parm15;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14,
             Parm15) = 0;
     };
@@ -547,7 +560,7 @@ namespace Loki
 // Specialization for 2 parameters
 ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename R, typename P1, typename P2, 
+    template <typename R, typename P1, typename P2,
         template <class, class> class ThreadingModel>
     class FunctorImpl<R, LOKI_TYPELIST_2(P1, P2), ThreadingModel>
         : public Private::FunctorImplBase<R, ThreadingModel>
@@ -659,7 +672,7 @@ namespace Loki
         typedef typename TypeTraits<P5>::ParameterType Parm5;
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7) = 0;
     };
 
@@ -685,7 +698,7 @@ namespace Loki
         typedef typename TypeTraits<P6>::ParameterType Parm6;
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8) = 0;
     };
 
@@ -712,7 +725,7 @@ namespace Loki
         typedef typename TypeTraits<P7>::ParameterType Parm7;
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9) = 0;
     };
 
@@ -741,7 +754,7 @@ namespace Loki
         typedef typename TypeTraits<P8>::ParameterType Parm8;
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10) = 0;
     };
 
@@ -772,7 +785,7 @@ namespace Loki
         typedef typename TypeTraits<P9>::ParameterType Parm9;
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11) = 0;
     };
 
@@ -804,7 +817,7 @@ namespace Loki
         typedef typename TypeTraits<P10>::ParameterType Parm10;
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12) = 0;
     };
 
@@ -837,7 +850,7 @@ namespace Loki
         typedef typename TypeTraits<P11>::ParameterType Parm11;
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13) = 0;
     };
 
@@ -872,7 +885,7 @@ namespace Loki
         typedef typename TypeTraits<P12>::ParameterType Parm12;
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14) = 0;
     };
 
@@ -908,7 +921,7 @@ namespace Loki
         typedef typename TypeTraits<P13>::ParameterType Parm13;
         typedef typename TypeTraits<P14>::ParameterType Parm14;
         typedef typename TypeTraits<P15>::ParameterType Parm15;
-        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6, 
+        virtual R operator()(Parm1, Parm2, Parm3, Parm4, Parm5, Parm6,
             Parm7, Parm8, Parm9, Parm10, Parm11, Parm12, Parm13, Parm14,
             Parm15) = 0;
     };
@@ -943,9 +956,9 @@ namespace Loki
         typedef typename Base::Parm13 Parm13;
         typedef typename Base::Parm14 Parm14;
         typedef typename Base::Parm15 Parm15;
-        
+
         FunctorHandler(const Fun& fun) : f_(fun) {}
-        
+
         LOKI_DEFINE_CLONE_FUNCTORIMPL(FunctorHandler)
 
 
@@ -954,7 +967,7 @@ namespace Loki
 
         bool operator==(const typename Base::FunctorImplBaseType& rhs) const
         {
-            // there is no static information if Functor holds a member function 
+            // there is no static information if Functor holds a member function
             // or a free function; this is the main difference to tr1::function
             if(typeid(*this) != typeid(rhs))
                 return false; // cannot be equal
@@ -966,79 +979,79 @@ namespace Loki
         }
 #endif
         // operator() implementations for up to 15 arguments
-                
+
         ResultType operator()()
         { return f_(); }
 
         ResultType operator()(Parm1 p1)
         { return f_(p1); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2)
         { return f_(p1, p2); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
         { return f_(p1, p2, p3); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
         { return f_(p1, p2, p3, p4); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
         { return f_(p1, p2, p3, p4, p5); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6)
         { return f_(p1, p2, p3, p4, p5, p6); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7)
         { return f_(p1, p2, p3, p4, p5, p6, p7); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8)
         { return f_(p1, p2, p3, p4, p5, p6, p7, p8); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
         { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
         { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
         { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12)
         { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13)
         { return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14)
         {
-            return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+            return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,
                 p14);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
         {
-            return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+            return f_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,
                 p14, p15);
         }
-        
+
     private:
         Fun f_;
     };
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template FunctorHandler
 // Wraps pointers to member functions
@@ -1068,10 +1081,10 @@ namespace Loki
         typedef typename Base::Parm14 Parm14;
         typedef typename Base::Parm15 Parm15;
 
-        MemFunHandler(const PointerToObj& pObj, PointerToMemFn pMemFn) 
+        MemFunHandler(const PointerToObj& pObj, PointerToMemFn pMemFn)
         : pObj_(pObj), pMemFn_(pMemFn)
         {}
-        
+
         LOKI_DEFINE_CLONE_FUNCTORIMPL(MemFunHandler)
 
 
@@ -1080,97 +1093,97 @@ namespace Loki
         bool operator==(const typename Base::FunctorImplBaseType& rhs) const
         {
             if(typeid(*this) != typeid(rhs))
-                return false; // cannot be equal 
+                return false; // cannot be equal
 
             const MemFunHandler& mfh = static_cast<const MemFunHandler&>(rhs);
             // if this line gives a compiler error, you are using a function object.
             // you need to implement bool MyFnObj::operator == (const MyFnObj&) const;
             return  pObj_==mfh.pObj_ && pMemFn_==mfh.pMemFn_;
         }
-#endif   
+#endif
 
         ResultType operator()()
         { return ((*pObj_).*pMemFn_)(); }
 
         ResultType operator()(Parm1 p1)
         { return ((*pObj_).*pMemFn_)(p1); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2)
         { return ((*pObj_).*pMemFn_)(p1, p2); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
         { return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
         {
-            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
                 p11);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12)
         {
-            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
                 p11, p12);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13)
         {
-            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
                 p11, p12, p13);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14)
         {
-            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
                 p11, p12, p13, p14);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
         {
-            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, 
+            return ((*pObj_).*pMemFn_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
                 p11, p12, p13, p14, p15);
         }
-        
+
     private:
         PointerToObj pObj_;
         PointerToMemFn pMemFn_;
     };
-        
+
 ////////////////////////////////////////////////////////////////////////////////
 // TR1 exception
 //////////////////////////////////////////////////////////////////////////////////
@@ -1188,7 +1201,7 @@ namespace Loki
 
 #else
 
-#define LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL 
+#define LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
 
 #endif
 
@@ -1199,9 +1212,9 @@ namespace Loki
 ///  A generalized functor implementation with value semantics
 ///
 /// \par Macro: LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT
-/// Define 
+/// Define
 /// \code LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT \endcode
-/// to avoid static instantiation/delete 
+/// to avoid static instantiation/delete
 /// order problems.
 /// It often helps against crashes when using static Functors and multi threading.
 /// Defining also removes problems when unloading Dlls which hosts
@@ -1210,7 +1223,7 @@ namespace Loki
 /// \par Macro: LOKI_FUNCTORS_ARE_COMPARABLE
 /// To enable the operator== define the macro
 /// \code LOKI_FUNCTORS_ARE_COMPARABLE \endcode
-/// The macro is disabled by default, because it breaks compiling functor 
+/// The macro is disabled by default, because it breaks compiling functor
 /// objects  which have no operator== implemented, keep in mind when you enable
 /// operator==.
 ////////////////////////////////////////////////////////////////////////////////
@@ -1243,13 +1256,13 @@ namespace Loki
 
         Functor() : spImpl_(0)
         {}
-        
+
         Functor(const Functor& rhs) : spImpl_(Impl::Clone(rhs.spImpl_.get()))
         {}
-        
+
         Functor(std::auto_ptr<Impl> spImpl) : spImpl_(spImpl)
         {}
-        
+
         template <typename Fun>
         Functor(Fun fun)
         : spImpl_(new FunctorHandler<Functor, Fun>(fun))
@@ -1313,90 +1326,90 @@ namespace Loki
         ResultType operator()() const
         {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(); 
+            return (*spImpl_)();
         }
 
         ResultType operator()(Parm1 p1) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1); 
+            return (*spImpl_)(p1);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2) const
-        {    
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2); 
+            return (*spImpl_)(p1, p2);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3) const
-        {    
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3); 
+            return (*spImpl_)(p1, p2, p3);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4); 
+            return (*spImpl_)(p1, p2, p3, p4);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5); 
+            return (*spImpl_)(p1, p2, p3, p4, p5);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6); 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7); 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8); 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9); 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11) const
-        { 
+        {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12) const
         {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
                 p12);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13) const
@@ -1405,33 +1418,33 @@ namespace Loki
             return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
             p12, p13);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14) const
         {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
                 p12, p13, p14);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15) const
         {
             LOKI_FUNCTION_THROW_BAD_FUNCTION_CALL
-            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+            return (*spImpl_)(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
                 p12, p13, p14, p15);
         }
 
     private:
         std::auto_ptr<Impl> spImpl_;
     };
-    
+
 
 ////////////////////////////////////////////////////////////////////////////////
-//  
-//  BindersFirst and Chainer 
+//
+//  BindersFirst and Chainer
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1454,7 +1467,7 @@ namespace Loki
 
             typedef typename BoundFunctorType::Impl Impl;
 
-        };  
+        };
 
 
         template<class T>
@@ -1465,26 +1478,26 @@ namespace Loki
         {
             typedef typename TypeTraits<T>::ParameterType RefOrValue;
         };
-        
+
         template <typename R, class TList, template <class, class> class ThreadingModel>
         struct BinderFirstBoundTypeStorage< Functor<R, TList, ThreadingModel> >
         {
             typedef Functor<R, TList, ThreadingModel> OriginalFunctor;
             typedef const typename TypeTraits<OriginalFunctor>::ReferredType RefOrValue;
-        };  
+        };
 
 
     } // namespace Private
 
 ////////////////////////////////////////////////////////////////////////////////
 ///  \class BinderFirst
-///  
+///
 ///  \ingroup FunctorGroup
 ///  Binds the first parameter of a Functor object to a specific value
 ////////////////////////////////////////////////////////////////////////////////
 
     template <class OriginalFunctor>
-    class BinderFirst 
+    class BinderFirst
         : public Private::BinderFirstTraits<OriginalFunctor>::Impl
     {
         typedef typename Private::BinderFirstTraits<OriginalFunctor>::Impl Base;
@@ -1497,7 +1510,7 @@ namespace Loki
                              ::OriginalParm1>
                          ::RefOrValue
                 BoundTypeStorage;
-                        
+
         typedef typename OriginalFunctor::Parm2 Parm1;
         typedef typename OriginalFunctor::Parm3 Parm2;
         typedef typename OriginalFunctor::Parm4 Parm3;
@@ -1515,7 +1528,7 @@ namespace Loki
         typedef EmptyType Parm15;
 
     public:
-        
+
         BinderFirst(const OriginalFunctor& fun, BoundType bound)
         : f_(fun), b_(bound)
         {}
@@ -1523,11 +1536,11 @@ namespace Loki
         LOKI_DEFINE_CLONE_FUNCTORIMPL(BinderFirst)
 
 #ifdef LOKI_FUNCTORS_ARE_COMPARABLE
-        
+
         bool operator==(const typename Base::FunctorImplBaseType& rhs) const
         {
             if(typeid(*this) != typeid(rhs))
-                return false; // cannot be equal 
+                return false; // cannot be equal
             // if this line gives a compiler error, you are using a function object.
             // you need to implement bool MyFnObj::operator == (const MyFnObj&) const;
             return    f_ == ((static_cast<const BinderFirst&> (rhs)).f_) &&
@@ -1536,72 +1549,72 @@ namespace Loki
 #endif
 
         // operator() implementations for up to 15 arguments
-                
+
         ResultType operator()()
         { return f_(b_); }
 
         ResultType operator()(Parm1 p1)
         { return f_(b_, p1); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2)
         { return f_(b_, p1, p2); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
         { return f_(b_, p1, p2, p3); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
         { return f_(b_, p1, p2, p3, p4); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
         { return f_(b_, p1, p2, p3, p4, p5); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6)
         { return f_(b_, p1, p2, p3, p4, p5, p6); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13)
         { return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14)
         {
-            return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+            return f_(b_, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,
                 p14);
         }
-        
+
     private:
         OriginalFunctor f_;
         BoundTypeStorage b_;
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 ///  Binds the first parameter of a Functor object to a specific value
 ///  \ingroup FunctorGroup
@@ -1610,12 +1623,12 @@ namespace Loki
     template <class Fctor>
     typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
     BindFirst(
-        const Fctor& fun, 
+        const Fctor& fun,
         typename Fctor::Parm1 bound)
     {
         typedef typename Private::BinderFirstTraits<Fctor>::BoundFunctorType
             Outgoing;
-        
+
         return Outgoing(std::auto_ptr<typename Outgoing::Impl>(
             new BinderFirst<Fctor>(fun, bound)));
     }
@@ -1649,17 +1662,17 @@ namespace Loki
         typedef typename Base::Parm13 Parm13;
         typedef typename Base::Parm14 Parm14;
         typedef typename Base::Parm15 Parm15;
-        
+
         Chainer(const Fun1& fun1, const Fun2& fun2) : f1_(fun1), f2_(fun2) {}
 
         LOKI_DEFINE_CLONE_FUNCTORIMPL(Chainer)
 
 #ifdef LOKI_FUNCTORS_ARE_COMPARABLE
-                
+
         bool operator==(const typename Base::Impl::FunctorImplBaseType& rhs) const
         {
             if(typeid(*this) != typeid(rhs))
-                return false; // cannot be equal 
+                return false; // cannot be equal
             // if this line gives a compiler error, you are using a function object.
             // you need to implement bool MyFnObj::operator == (const MyFnObj&) const;
             return    f1_ == ((static_cast<const Chainer&> (rhs)).f2_) &&
@@ -1674,58 +1687,58 @@ namespace Loki
 
         ResultType operator()(Parm1 p1)
         { return f1_(p1), f2_(p1); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2)
         { return f1_(p1, p2), f2_(p1, p2); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3)
         { return f1_(p1, p2, p3), f2_(p1, p2, p3); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4)
         { return f1_(p1, p2, p3, p4), f2_(p1, p2, p3, p4); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5)
         { return f1_(p1, p2, p3, p4, p5), f2_(p1, p2, p3, p4, p5); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6)
         { return f1_(p1, p2, p3, p4, p5, p6), f2_(p1, p2, p3, p4, p5, p6); }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7),
                 f2_(p1, p2, p3, p4, p5, p6, p7);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11)
         {
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12)
@@ -1733,7 +1746,7 @@ namespace Loki
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13)
@@ -1741,32 +1754,32 @@ namespace Loki
             return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13),
                 f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14)
         {
-            return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+            return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,
                     p14),
-                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,
                    p14);
         }
-        
+
         ResultType operator()(Parm1 p1, Parm2 p2, Parm3 p3, Parm4 p4, Parm5 p5,
             Parm6 p6, Parm7 p7, Parm8 p8, Parm9 p9, Parm10 p10, Parm11 p11,
             Parm12 p12, Parm13 p13, Parm14 p14, Parm15 p15)
         {
-            return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+            return f1_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,
                     p14, p15),
-                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, 
+                f2_(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,
                     p14, p15);
         }
-        
+
     private:
         Fun1 f1_;
         Fun2 f2_;
     };
-    
+
 ////////////////////////////////////////////////////////////////////////////////
 ///  Chains two functor calls one after another
 ///  \ingroup FunctorGroup

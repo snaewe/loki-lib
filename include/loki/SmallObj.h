@@ -2,15 +2,25 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
-//     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
-//     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
-//     without express or implied warranty.
+// Code covered by the MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef LOKI_SMALLOBJ_INC_
 #define LOKI_SMALLOBJ_INC_
@@ -57,7 +67,7 @@ namespace Loki
     {
         /** @struct DieAsSmallObjectParent
             @ingroup SmallObjectGroup
-            Lifetime policy to manage lifetime dependencies of 
+            Lifetime policy to manage lifetime dependencies of
             SmallObject base and child classes.
             The Base class should have this lifetime
         */
@@ -66,14 +76,14 @@ namespace Loki
 
         /** @struct DieAsSmallObjectChild
             @ingroup SmallObjectGroup
-            Lifetime policy to manage lifetime dependencies of 
+            Lifetime policy to manage lifetime dependencies of
             SmallObject base and child classes.
             The Child class should have this lifetime
         */
         template <class T>
         struct DieAsSmallObjectChild  : DieDirectlyBeforeLast<T> {};
 
-    } 
+    }
 
     namespace Private
     {
@@ -108,7 +118,7 @@ namespace Loki
     public:
         /** Allocates a block of memory of requested size.  Complexity is often
          constant-time, but might be O(C) where C is the number of Chunks in a
-         FixedAllocator. 
+         FixedAllocator.
 
          @par Exception Safety Level
          Provides either strong-exception safety, or no-throw exception-safety
@@ -201,7 +211,7 @@ namespace Loki
      This template class is derived from
      SmallObjAllocator in order to pass template arguments into it, and still
      have a default constructor for the singleton.  Each instance is a unique
-     combination of all the template parameters, and hence is singleton only 
+     combination of all the template parameters, and hence is singleton only
      with respect to those parameters.  The template parameters have default
      values and the class has typedefs identical to both SmallObject and
      SmallValueObject so that this class can be used directly instead of going
@@ -342,9 +352,9 @@ namespace Loki
         @ingroup SmallObjectGroup
      Base class for small object allocation classes.
      The shared implementation of the new and delete operators are here instead
-     of being duplicated in both SmallObject or SmallValueObject, later just 
-     called Small-Objects.  This class is not meant to be used directly by clients, 
-     or derived from by clients. Class has no data members so compilers can 
+     of being duplicated in both SmallObject or SmallValueObject, later just
+     called Small-Objects.  This class is not meant to be used directly by clients,
+     or derived from by clients. Class has no data members so compilers can
      use Empty-Base-Optimization.
 
      @par ThreadingModel
@@ -359,24 +369,24 @@ namespace Loki
      a thread-safe allocator, use the ClassLevelLockable policy.
 
      @par Lifetime Policy
-     
+
      The SmallObjectBase template needs a lifetime policy because it owns
-     a singleton of SmallObjAllocator which does all the low level functions. 
+     a singleton of SmallObjAllocator which does all the low level functions.
      When using a Small-Object in combination with the SingletonHolder template
      you have to choose two lifetimes, that of the Small-Object and that of
      the singleton. The rule is: The Small-Object lifetime must be greater than
      the lifetime of the singleton hosting the Small-Object. Violating this rule
      results in a crash on exit, because the hosting singleton tries to delete
-     the Small-Object which is then already destroyed. 
-     
-     The lifetime policies recommended for use with Small-Objects hosted 
-     by a SingletonHolder template are 
+     the Small-Object which is then already destroyed.
+
+     The lifetime policies recommended for use with Small-Objects hosted
+     by a SingletonHolder template are
          - LongevityLifetime::DieAsSmallObjectParent / LongevityLifetime::DieAsSmallObjectChild
          - SingletonWithLongevity
          - FollowIntoDeath (not supported by MSVC 7.1)
          - NoDestroy
-     
-     The default lifetime of Small-Objects is 
+
+     The default lifetime of Small-Objects is
      LongevityLifetime::DieAsSmallObjectParent to
      insure that memory is not released before a object with the lifetime
      LongevityLifetime::DieAsSmallObjectChild using that
@@ -384,45 +394,45 @@ namespace Loki
      lifetime has the highest possible value of a SetLongevity lifetime, so
      you can use it in combination with your own lifetime not having also
      the highest possible value.
-     
-     The DefaultLifetime and PhoenixSingleton policies are *not* recommended 
-     since they can cause the allocator to be destroyed and release memory 
+
+     The DefaultLifetime and PhoenixSingleton policies are *not* recommended
+     since they can cause the allocator to be destroyed and release memory
      for singletons hosting a object which inherit from either SmallObject
-     or SmallValueObject.  
-     
+     or SmallValueObject.
+
      @par Lifetime usage
-    
-        - LongevityLifetime: The Small-Object has 
+
+        - LongevityLifetime: The Small-Object has
           LongevityLifetime::DieAsSmallObjectParent policy and the Singleton
-          hosting the Small-Object has LongevityLifetime::DieAsSmallObjectChild. 
-          The child lifetime has a hard coded SetLongevity lifetime which is 
-          shorter than the lifetime of the parent, thus the child dies 
+          hosting the Small-Object has LongevityLifetime::DieAsSmallObjectChild.
+          The child lifetime has a hard coded SetLongevity lifetime which is
+          shorter than the lifetime of the parent, thus the child dies
           before the parent.
-         
+
         - Both Small-Object and Singleton use SingletonWithLongevity policy.
           The longevity level for the singleton must be lower than that for the
-          Small-Object. This is why the AllocatorSingleton's GetLongevity function 
+          Small-Object. This is why the AllocatorSingleton's GetLongevity function
           returns the highest value.
-         
-        - FollowIntoDeath lifetime: The Small-Object has 
+
+        - FollowIntoDeath lifetime: The Small-Object has
           FollowIntoDeath::With<LIFETIME>::AsMasterLiftime
-          policy and the Singleton has 
+          policy and the Singleton has
           FollowIntoDeath::AfterMaster<MASTERSINGLETON>::IsDestroyed policy,
-          where you could choose the LIFETIME. 
-        
-        - Both Small-Object and Singleton use NoDestroy policy. 
+          where you could choose the LIFETIME.
+
+        - Both Small-Object and Singleton use NoDestroy policy.
           Since neither is ever destroyed, the destruction order does not matter.
           Note: you will get memory leaks!
-         
+
         - The Small-Object has NoDestroy policy but the Singleton has
           SingletonWithLongevity policy. Note: you will get memory leaks!
-         
-     
+
+
      You should *not* use NoDestroy for the singleton, and then use
-     SingletonWithLongevity for the Small-Object. 
-     
+     SingletonWithLongevity for the Small-Object.
+
      @par Examples:
-     
+
      - test/SmallObj/SmallSingleton.cpp
      - test/Singleton/Dependencies.cpp
      */
@@ -440,12 +450,12 @@ namespace Loki
 
 #if (LOKI_MAX_SMALL_OBJECT_SIZE != 0) && (LOKI_DEFAULT_CHUNK_SIZE != 0) && (LOKI_DEFAULT_OBJECT_ALIGNMENT != 0)
 
-    public:        
-        /// Defines type of allocator singleton, must be public 
+    public:
+        /// Defines type of allocator singleton, must be public
         /// to handle singleton lifetime dependencies.
         typedef AllocatorSingleton< ThreadingModel, chunkSize,
             maxSmallObjectSize, objectAlignSize, LifetimePolicy > ObjAllocatorSingleton;
-    
+
     private:
 
         /// Defines type for thread-safety locking mechanism.
@@ -453,7 +463,7 @@ namespace Loki
 
         /// Use singleton defined in AllocatorSingleton.
         typedef typename ObjAllocatorSingleton::MyAllocatorSingleton MyAllocatorSingleton;
-        
+
     public:
 
         /// Throwing single-object new throws bad_alloc when allocation fails.

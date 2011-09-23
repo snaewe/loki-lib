@@ -1,13 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The Loki Library
 // Copyright (c) 2006 Peter Kümmel
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
-//     permission notice appear in supporting documentation.
-// The author makes no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
-//     without express or implied warranty.
+// Code covered by the MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef LOKI_PIMPL_INC_
 #define LOKI_PIMPL_INC_
@@ -15,7 +27,7 @@
 // $Id$
 
 
-///  \defgroup PimplGroup Pimpl 
+///  \defgroup PimplGroup Pimpl
 
 #ifndef LOKI_INHERITED_PIMPL_NAME
 #define LOKI_INHERITED_PIMPL_NAME d
@@ -45,7 +57,7 @@ namespace Loki
         T& operator*()    { return *ptr_; }
         const T* operator->() const    { return  ptr_; }
         const T& operator*()  const    { return *ptr_; }
-    
+
     private:
         ConstPropPtr();
         ConstPropPtr(const ConstPropPtr&);
@@ -62,17 +74,17 @@ namespace Loki
     ///  Implements the Pimpl idiom. It's a wrapper for a smart pointer which
     ///  automatically creates and deletes the implementation object and adds
     ///  const propagation to the smart pointer.
-    ///  
+    ///
     ///  \par Usage
     ///  see test/Pimpl
     ////////////////////////////////////////////////////////////////////////////////
 
     template
-    <    
-        class T, 
+    <
+        class T,
         typename Pointer = ConstPropPtr<T>
     >
-    class Pimpl 
+    class Pimpl
     {
     public:
 
@@ -86,9 +98,9 @@ namespace Loki
             // Don't compile with incomplete type
             //
             // If compilation breaks here make sure
-            // the compiler does not auto-generate the 
+            // the compiler does not auto-generate the
             // destructor of the class hosting the pimpl:
-            // - implement the destructor of the class 
+            // - implement the destructor of the class
             // - don't inline the destructor
             typedef char T_must_be_defined[sizeof(T) ? 1 : -1 ];
         }
@@ -134,8 +146,8 @@ namespace Loki
 
 
     template<class T, typename Pointer = ConstPropPtr<T> >
-    struct PimplOwner 
-    {    
+    struct PimplOwner
+    {
         Pimpl<T,Pointer> LOKI_INHERITED_PIMPL_NAME;
     };
 
@@ -144,7 +156,7 @@ namespace Loki
     /// \class  ImplOf
     ///
     /// \ingroup PimplGroup
-    /// Convenience template for the 
+    /// Convenience template for the
     /// implementations which Pimpl points to.
     //////////////////////////////////////////
 
@@ -191,7 +203,7 @@ namespace Loki
         };
 
     };
-  
+
 }
 
 #endif // end file guardian

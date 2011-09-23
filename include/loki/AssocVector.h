@@ -2,15 +2,26 @@
 // The Loki Library
 // Copyright (c) 2001 by Andrei Alexandrescu
 // This code accompanies the book:
-// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+// Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 //     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
-//     permission notice appear in supporting documentation.
-// The author or Addison-Wesley Longman make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
-//     without express or implied warranty.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef LOKI_ASSOCVECTOR_INC_
 #define LOKI_ASSOCVECTOR_INC_
@@ -42,21 +53,21 @@ namespace Loki
         public:
             AssocVectorCompare()
             {}
-            
+
             AssocVectorCompare(const C& src) : C(src)
             {}
-            
-            bool operator()(const first_argument_type& lhs, 
+
+            bool operator()(const first_argument_type& lhs,
                 const first_argument_type& rhs) const
             { return C::operator()(lhs, rhs); }
-            
+
             bool operator()(const Data& lhs, const Data& rhs) const
             { return operator()(lhs.first, rhs.first); }
-            
-            bool operator()(const Data& lhs, 
+
+            bool operator()(const Data& lhs,
                 const first_argument_type& rhs) const
             { return operator()(lhs.first, rhs); }
-            
+
             bool operator()(const first_argument_type& lhs,
                 const Data& rhs) const
             { return operator()(lhs, rhs.first); }
@@ -82,7 +93,7 @@ namespace Loki
         class C = std::less<K>,
         class A = std::allocator< std::pair<K, V> >
     >
-    class AssocVector 
+    class AssocVector
         : private std::vector< std::pair<K, V>, A >
         , private Private::AssocVectorCompare<V, C>
     {
@@ -112,7 +123,7 @@ namespace Loki
             , private key_compare
         {
             friend class AssocVector;
-        
+
         protected:
             value_compare(key_compare pred) : key_compare(pred)
             {}
@@ -121,27 +132,27 @@ namespace Loki
             bool operator()(const value_type& lhs, const value_type& rhs) const
             { return key_compare::operator()(lhs.first, rhs.first); }
         };
-        
+
         // 23.3.1.1 construct/copy/destroy
 
-        explicit AssocVector(const key_compare& comp = key_compare(), 
+        explicit AssocVector(const key_compare& comp = key_compare(),
             const A& alloc = A())
         : Base(alloc), MyCompare(comp)
         {}
-        
+
         template <class InputIterator>
-        AssocVector(InputIterator first, InputIterator last, 
-            const key_compare& comp = key_compare(), 
+        AssocVector(InputIterator first, InputIterator last,
+            const key_compare& comp = key_compare(),
             const A& alloc = A())
         : Base(first, last, alloc), MyCompare(comp)
         {
             MyCompare& me = *this;
             std::sort(begin(), end(), me);
         }
-        
+
         AssocVector& operator=(const AssocVector& rhs)
-        { 
-            AssocVector(rhs).swap(*this); 
+        {
+            AssocVector(rhs).swap(*this);
             return *this;
         }
 
@@ -155,7 +166,7 @@ namespace Loki
         const_reverse_iterator rbegin() const { return Base::rbegin(); }
         reverse_iterator rend() { return Base::rend(); }
         const_reverse_iterator rend() const { return Base::rend(); }
-        
+
         // capacity:
         bool empty() const { return Base::empty(); }
         size_type size() const { return Base::size(); }
@@ -182,18 +193,18 @@ namespace Loki
         //http://developer.apple.com/documentation/DeveloperTools/gcc-3.3/libstdc++/23_containers/howto.html#4
         iterator insert(iterator pos, const value_type& val)
         {
-            if( (pos == begin() || this->operator()(*(pos-1),val)) && 
+            if( (pos == begin() || this->operator()(*(pos-1),val)) &&
                 (pos == end()    || this->operator()(val, *pos)) )
             {
                 return Base::insert(pos, val);
             }
             return insert(val).first;
         }
-       
+
         template <class InputIterator>
         void insert(InputIterator first, InputIterator last)
         { for (; first != last; ++first) insert(*first); }
-        
+
         void erase(iterator pos)
         { Base::erase(pos); }
 
@@ -215,7 +226,7 @@ namespace Loki
             MyCompare& rhs = other;
             std::swap(me, rhs);
         }
-        
+
         void clear()
         { Base::clear(); }
 
@@ -241,7 +252,7 @@ namespace Loki
         }
 
         const_iterator find(const key_type& k) const
-        {       
+        {
             const_iterator i(lower_bound(k));
             if (i != end() && this->operator()(k, i->first))
             {
@@ -351,7 +362,7 @@ namespace Loki
     template <class K, class V, class C, class A>
     void swap(AssocVector<K, V, C, A>& lhs, AssocVector<K, V, C, A>& rhs)
     { lhs.swap(rhs); }
-    
+
 } // namespace Loki
 
 #endif // end file guardian
