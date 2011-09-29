@@ -88,7 +88,7 @@ namespace Loki
     namespace Private
     {
         class FixedAllocator;
-    }; // end namespace Private
+    } // end namespace Private
 
     /** @class SmallObjAllocator
         @ingroup SmallObjectGroupInternal

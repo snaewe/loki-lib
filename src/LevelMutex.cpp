@@ -200,7 +200,7 @@ unsigned int CountMutexesAtCurrentLevel( void )
 
 MutexErrors::Type DoMutexesMatchContainer( const LevelMutexInfo::MutexContainer & mutexes )
 {
-    const unsigned int count = mutexes.size();
+    const std::size_t count = mutexes.size();
     if ( 0 == count )
         return MutexErrors::EmptyContainer;
     unsigned int currentLevel = GetCurrentThreadsLevel();
@@ -334,7 +334,7 @@ MutexErrors::Type LevelMutexInfo::MultiLock( MutexContainer & mutexes )
 {
     assert( IsValidList() );
 
-    const unsigned int count = mutexes.size();
+    const std::size_t count = mutexes.size();
     if ( count == 0 )
         return MutexErrors::EmptyContainer;
 
@@ -417,7 +417,8 @@ MutexErrors::Type LevelMutexInfo::MultiLock( MutexContainer & mutexes,
 
     if ( 0 == milliSeconds )
         return MultiLock( mutexes );
-    const unsigned int count = mutexes.size();
+    
+    const std::size_t count = mutexes.size();
     if ( 0 == count )
         return MutexErrors::EmptyContainer;
 
@@ -507,7 +508,7 @@ MutexErrors::Type LevelMutexInfo::MultiUnlock( MutexContainer & mutexes )
             LevelMutexInfo::UnlockedLevel, result );
     }
 
-    const unsigned int count = mutexes.size();
+    const std::size_t count = mutexes.size();
     if ( 1 < count )
     {
         ::std::sort( mutexes.begin(), mutexes.end() );
@@ -628,7 +629,7 @@ bool LevelMutexInfo::IsRecentLock( void ) const volatile
 
 // ----------------------------------------------------------------------------
 
-bool LevelMutexInfo::IsRecentLock( unsigned int count ) const volatile
+bool LevelMutexInfo::IsRecentLock( std::size_t count ) const volatile
 {
     LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
 

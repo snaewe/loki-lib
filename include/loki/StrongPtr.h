@@ -1468,9 +1468,9 @@ protected:
 
     inline explicit TwoRefLinks( bool strong )
         : m_pointer( 0 )
-        , m_strong( strong )
         , m_prev( this )
         , m_next( this )
+        , m_strong( strong )
     {
     }
 

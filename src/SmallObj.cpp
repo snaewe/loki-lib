@@ -1119,7 +1119,7 @@ void DefaultDeallocator( void * p )
 
 // ----------------------------------------------------------------------------
 
-}; // end namespace Private
+} // end namespace Private
 
 using namespace ::Loki::Private;
 

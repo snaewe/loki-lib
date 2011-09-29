@@ -1,7 +1,7 @@
 include ../Makefile.common
 
 BIN := main$(BIN_SUFFIX)
-SRC := main.cpp strong.cpp LockTest.cpp
+SRC := main.cpp strong.cpp LockTest.cpp colvin_gibbons_trick.cpp
 OBJ := $(SRC:.cpp=.o)
 LDLIBS += -lpthread
 

@@ -344,9 +344,9 @@ void SingleOwnerRefCount::SetPointer( void * p )
 
 TwoRefLinks::TwoRefLinks( const void * p, bool strong )
     : m_pointer( const_cast< void * >( p ) )
-    , m_strong( strong )
     , m_prev( this )
     , m_next( this )
+    , m_strong( strong )
 {
     assert( IsValid() );
 }

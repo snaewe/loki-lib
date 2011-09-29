@@ -254,7 +254,7 @@ public:
     /** Returns true if this mutex was locked within the last count mutexes.
      @param count How many recent mutexes to look through to find this mutex.
      */
-    bool IsRecentLock( unsigned int count ) const volatile;
+    bool IsRecentLock( std::size_t count ) const volatile;
 
     /// Returns true if this was locked by current thread.
     bool IsLockedByCurrentThread( void ) const volatile;
