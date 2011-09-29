@@ -15,11 +15,13 @@
 					<Add option="-Wmain" />
 					<Add option="-pedantic" />
 					<Add option="-g" />
-					<Add option="-W -lc" />
+					<Add option="-W -fPIE" />
 					<Add directory="../../include" />
 				</Compiler>
 				<Linker>
-					<Add library="/usr/lib/libpthread.a" />
+					<Add option="-pie" />
+					<Add library="/usr/lib/libpthread.so" />
+					<Add library="/usr/lib/libc.so" />
 				</Linker>
 			</Target>
 			<Target title="Release_GCC">
@@ -29,9 +31,14 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-W -fPIE" />
+					<Add directory="../../include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-pie" />
+					<Add library="/usr/lib/libpthread.so" />
+					<Add library="/usr/lib/libc.so" />
 				</Linker>
 			</Target>
 		</Build>
@@ -39,6 +46,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="ThreadPool.cpp" />
+		<Unit filename="ThreadPool.hpp" />
+		<Unit filename="ThreadTests.cpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
