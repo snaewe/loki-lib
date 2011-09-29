@@ -40,19 +40,22 @@
     // The __APPLE__ macro does not refer to a compiler, but to the Apple OSX operating system.
     #if defined( __APPLE__ )
         #warning "GCC for Apple does not allow thread_local storage, so you can not use some parts of Loki."
-        #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+        #undef LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
 
     #elif defined( __CYGWIN__ )
         #if ( __GNUC__ <= 3 )
             #warning "Older versions of GCC for Cygwin do not allow thread_local storage, so you can not use some parts of Loki."
-            #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+            #undef LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
         #endif
 
     #elif ( __GNUC__ == 4 ) // GNU versions other than Cygwin.
-        #if ( __GNUC_MINOR__ == 4 )
-            #warning "GCC version 4.4 implements thread_local storage incorrectly, so you can not use some parts of Loki."
-            #undef COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+        #if ( __GNUC_MINOR__ < 4 )
+            #warning "GCC versions before 4.4 implement thread_local storage incorrectly, so you can not use some parts of Loki."
+            #undef LOKI_THINKS_COMPILER_ALLOWS_THREAD_LOCAL_STORAGE
+        #elif ( __GNUC_MINOR__ == 4 )
+            #warning "GCC version 4.4 implements thread_local storage incorrectly for some platforms but not others."
         #endif
+
     #endif
 #endif
 
