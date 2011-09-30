@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
-		<Project filename="Loki.cbp" />
+		<Project filename="Loki.cbp" active="1" />
+		<Project filename="test/AssocVector/AssocVector.cbp" />
 		<Project filename="test/CachedFactory/CachedFactory.cbp">
 			<Depends filename="Loki.cbp" />
 		</Project>
@@ -16,6 +17,9 @@
 		<Project filename="test/LevelMutex/LevelMutex.cbp">
 			<Depends filename="Loki.cbp" />
 		</Project>
+		<Project filename="test/Lockable/Lockable.cbp">
+			<Depends filename="Loki.cbp" />
+		</Project>
 		<Project filename="test/LockingPtr/LockingPtr.cbp" />
 		<Project filename="test/Longevity/Longevity.cbp" />
 		<Project filename="test/OrderedStatic/OrderedStatic.cbp">
@@ -26,6 +30,7 @@
 		<Project filename="test/RegressionTest/RegressionTest.cbp">
 			<Depends filename="Loki.cbp" />
 		</Project>
+		<Project filename="test/SafeBits/SafeBits.cbp" />
 		<Project filename="test/SafeFormat/SafeFormat.cbp">
 			<Depends filename="Loki.cbp" />
 		</Project>
@@ -40,11 +45,7 @@
 		<Project filename="test/SmartPtr/SmartPtr.cbp">
 			<Depends filename="Loki.cbp" />
 		</Project>
-		<Project filename="test/Visitor/Visitor.cbp" />
-		<Project filename="test/SafeBits/SafeBits.cbp" />
 		<Project filename="test/ThreadLocal/ThreadLocal.cbp" />
-		<Project filename="test/Lockable/Lockable.cbp" active="1">
-			<Depends filename="Loki.cbp" />
-		</Project>
+		<Project filename="test/Visitor/Visitor.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
