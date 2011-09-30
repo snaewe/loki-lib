@@ -33,6 +33,9 @@
 #include <functional>
 #include <vector>
 #include <utility>
+#include <iterator>
+#include <map>
+
 
 namespace Loki
 {
@@ -144,10 +147,18 @@ namespace Loki
         AssocVector(InputIterator first, InputIterator last,
             const key_compare& comp = key_compare(),
             const A& alloc = A())
-        : Base(first, last, alloc), MyCompare(comp)
+        : Base( alloc ), MyCompare( comp )
         {
-            MyCompare& me = *this;
-            std::sort(begin(), end(), me);
+            typedef ::std::vector< ::std::pair< K, V >, A > BaseType;
+            typedef ::std::map< K, V, C, A > TempMap;
+            typedef ::std::back_insert_iterator< Base > MyInserter;
+            MyCompare & me = *this;
+            // Make a temporary map similar to this type to prevent any duplicates elements.
+            TempMap temp( first, last, me, alloc );
+            Base::reserve( temp.size() );
+            BaseType & target = static_cast< BaseType & >( *this );
+            MyInserter myInserter = ::std::back_inserter( target );
+            ::std::copy( temp.begin(), temp.end(), myInserter );
         }
 
         AssocVector& operator=(const AssocVector& rhs)
