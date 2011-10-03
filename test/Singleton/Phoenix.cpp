@@ -81,6 +81,9 @@ public:
 
 int main(int argc, char* argv[])
 {
+	(void)argc;
+	(void)argv;
+
     Example *example = new Example();
      SetLongevity<Example, void (*)(Example*)>(example, 1, &Loki::Private::Deleter<Example>::Delete);
     LogBook::Instance().echo("LogClass now instantiated.");
