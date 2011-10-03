@@ -36,6 +36,7 @@ extern void DoStrongConstTests( void );
 extern void DoStrongForwardReferenceTest( void );
 extern void DoStrongCompareTests( void );
 extern void DoStrongPtrDynamicCastTests( void );
+extern void DoSingleOwnerTests( void );
 extern void DoStrongArrayTests( void );
 
 extern void DoLockedPtrTest( void );
@@ -59,6 +60,10 @@ class Thingy;
 typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
     NoCheck, DefaultSPStorage, PropagateConst >
     Thingy_DefaultStorage_ptr;
+
+//typedef Loki::SmartPtr< Thingy, RefCountedMTAdj< >, DisallowConversion,
+//    AssertCheck, DefaultSPStorage, PropagateConst >
+//    Thingy_Locked_ptr;
 
 typedef Loki::SmartPtr< Thingy, RefCounted, DisallowConversion,
     AssertCheck, HeapStorage, PropagateConst >
@@ -1425,20 +1430,23 @@ void DoDestructiveCopyTest( void )
          from const to non-const, or about assigning a read-only reference, then DestructiveCopy
          was designed correctly.
          */
-        DestructiveCopyPtr p2;
-        assert( !p2 );
-        p2 = p1;
-        assert( !p1 );
-        assert( p2 );
-        DestructiveCopyPtr p3( p2 );
-        assert( p3 );
-        assert( !p2 );
+        //DestructiveCopyPtr p2;
+        //assert( !p2 );
+        //p2 = p1;
+        //assert( !p1 );
+        //assert( p2 );
+        //DestructiveCopyPtr p3( p2 );
+        //assert( p3 );
+        //assert( !p2 );
     }
 
     {
         /// @todo The following lines need to be uncommented when bug 3224572 gets fixed.
         DestructiveCopyPtr p1( MakePointer() );
         assert( p1 );
+        DestructiveCopyPtr p2;
+        p2 = MakePointer();
+        assert( p2 );
     }
 
     assert( BaseClass::AllDestroyed() );
@@ -1497,10 +1505,12 @@ void DoSmartArrayTests( void )
         try
         {
             Tiger & p4 = sp2[ 4 ];
+            (void)p4;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -1508,10 +1518,12 @@ void DoSmartArrayTests( void )
         try
         {
             Tiger & p8 = sp1[ 8 ];
+            (void)p8;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -1540,20 +1552,24 @@ void DoSmartArrayTests( void )
         try
         {
             Tiger & p4 = sp1[ 4 ];
+            (void)p4;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
         try
         {
             Tiger & p8 = sp2[ 8 ];
+            (void)p8;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -1563,10 +1579,12 @@ void DoSmartArrayTests( void )
         try
         {
             const Tiger & p4 = sp3[ 4 ];
+            (void)p4;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -1576,10 +1594,12 @@ void DoSmartArrayTests( void )
         try
         {
             const Tiger & p8 = sp5[ 8 ];
+            (void)p8;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -1622,6 +1642,7 @@ int main( int argc, const char * argv[] )
     DoStrongReleaseTests();
     DoWeakCycleTests();
     DoStrongCompareTests();
+    DoSingleOwnerTests();
 
     DoForwardReferenceTest();
     DoStrongForwardReferenceTest();
@@ -1633,7 +1654,7 @@ int main( int argc, const char * argv[] )
     DoRefLinkSwapTests();
 
     DoComRefTest();
-    TryColvinGibbonsTrick();
+//    TryColvinGibbonsTrick();
 
     DoStrongConstTests();
     DoConstConversionTests();
