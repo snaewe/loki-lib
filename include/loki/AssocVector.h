@@ -153,8 +153,9 @@ namespace Loki
             typedef ::std::map< K, V, C, A > TempMap;
             typedef ::std::back_insert_iterator< Base > MyInserter;
             MyCompare & me = *this;
-            // Make a temporary map similar to this type to prevent any duplicates elements.
-            TempMap temp( first, last, me, alloc );
+            const A tempAlloc;
+            // Make a temporary map similar to this type to prevent any duplicate elements.
+            TempMap temp( first, last, me, tempAlloc );
             Base::reserve( temp.size() );
             BaseType & target = static_cast< BaseType & >( *this );
             MyInserter myInserter = ::std::back_inserter( target );
