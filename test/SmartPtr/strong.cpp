@@ -2113,10 +2113,12 @@ void DoStrongArrayTests( void )
         try
         {
             Tiger & p4 = sp2[ 4 ];
+            (void)p4;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -2124,10 +2126,12 @@ void DoStrongArrayTests( void )
         try
         {
             Tiger & p8 = sp1[ 8 ];
+            (void)p8;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -2156,20 +2160,24 @@ void DoStrongArrayTests( void )
         try
         {
             Tiger & p4 = sp1[ 4 ];
+            (void)p4;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
         try
         {
             Tiger & p8 = sp2[ 8 ];
+            (void)p8;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -2179,10 +2187,12 @@ void DoStrongArrayTests( void )
         try
         {
             const Tiger & p4 = sp3[ 4 ];
+            (void)p4;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
@@ -2192,10 +2202,12 @@ void DoStrongArrayTests( void )
         try
         {
             const Tiger & p8 = sp5[ 8 ];
+            (void)p8;
             assert( false );
         }
         catch ( const ::std::out_of_range & ex )
         {
+            (void)ex;
             assert( true );
         }
 
