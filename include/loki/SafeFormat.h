@@ -135,6 +135,11 @@ namespace Loki
 
         // Print (or gobble in case of the "*" specifier) an int
         PrintfState& operator()(LOKI_SAFEFORMAT_UNSIGNED_LONG i) {
+            if ( '\0' == *format_ )
+            {
+                ::std::logic_error ex( "invalid number of parameters for Loki::SafeFormat!" );
+                throw ex;
+            }
             if (result_ == -1) return *this; // don't even bother
             // % [flags] [width] [.prec] [modifier] type_char
             // Fetch the flags
@@ -208,6 +213,11 @@ namespace Loki
         }
 
         PrintfState& operator()(const char *const s) {
+            if ( '\0' == *format_ )
+            {
+                ::std::logic_error ex( "invalid number of parameters for Loki::SafeFormat!" );
+                throw ex;
+            }
             if (result_ == -1) return *this;
             ReadLeaders();
             const char fmt = *format_;
@@ -219,7 +229,7 @@ namespace Loki
                 result_ = -1;
                 return *this;
             }
-			const size_t len = std::min(std::strlen(s), prec_);
+            const size_t len = std::min(std::strlen(s), prec_);
             if (width_ > len) {
                 if (LeftJustify()) {
                     Write(s, s + len);
@@ -359,6 +369,11 @@ namespace Loki
 
         template <class Value>
         void PrintUsing_snprintf(Value n, const char* check_fmt_char) {
+            if ( '\0' == *format_ )
+            {
+                ::std::logic_error ex( "invalid number of parameters for Loki::SafeFormat!" );
+                throw ex;
+            }
             const Char *const fmt = format_ - 1;
             assert(*fmt == '%');
             // enforce format string validity
