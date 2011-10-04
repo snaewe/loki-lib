@@ -100,6 +100,21 @@ namespace Loki
 
     template <class Device, class Char>
     struct PrintfState {
+
+        /** This constructor exists only to convert a PrintfState for one device type into a
+         PrintfState for another device type. It is not for public use.
+         */
+        template < class Device2 >
+        PrintfState( Device2 & dev, const Char * format, size_t width, size_t prec,
+            unsigned int flags, LOKI_SAFEFORMAT_SIGNED_LONG result )
+                : device_( dev )
+                , format_( format )
+                , width_( width )
+                , prec_( prec )
+                , flags_( flags )
+                , result_( result ) {
+        }
+
         PrintfState(Device dev, const Char * format)
                 : device_(dev)
                 , format_(format)
@@ -111,6 +126,15 @@ namespace Loki
         }
 
         ~PrintfState() {
+        }
+
+        /** This function converts a PrintfState for one device type into a PrintfState for
+         another device type. It is not for public use.
+         */
+        template < class Device2 >
+        PrintfState< Device2, Char > ChangeDevice( Device2 & device ) const
+        {
+            return PrintfState< Device2, Char >( device, format_, width_, prec_, flags_, result_ );
         }
 
         #define LOKI_PRINTF_STATE_FORWARD(type) \

@@ -66,27 +66,51 @@ namespace Loki
 
 
     PrintfState<std::FILE*, char> Printf(const char* format) {
-        return PrintfState<std::FILE*, char>(stdout, format);
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format );
+        ::std::fwrite( buffer.c_str(), 1, buffer.size(), stdout );
+        PrintfState< std::FILE *, char > printState2 = state1.ChangeDevice( stdout );
+        return printState2;
     }
 
     PrintfState<std::FILE*, char> Printf(const std::string& format) {
-        return PrintfState<std::FILE*, char>(stdout, format.c_str());
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format.c_str() );
+        ::std::fwrite( buffer.c_str(), 1, buffer.size(), stdout );
+        PrintfState< std::FILE *, char > printState2 = state1.ChangeDevice( stdout );
+        return printState2;
     }
 
     PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const char* format) {
-        return PrintfState<std::FILE*, char>(f, format);
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format );
+        ::std::fwrite( buffer.c_str(), 1, buffer.size(), f );
+        PrintfState< std::FILE *, char > printState2 = state1.ChangeDevice( f );
+        return printState2;
     }
 
     PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const std::string& format) {
-        return PrintfState<std::FILE*, char>(f, format.c_str());
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format.c_str() );
+        ::std::fwrite( buffer.c_str(), 1, buffer.size(), f );
+        PrintfState< std::FILE *, char > printState2 = state1.ChangeDevice( f );
+        return printState2;
     }
 
     PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const char* format) {
-        return PrintfState<std::ostream&, char>(f, format);
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format );
+        f.write( buffer.c_str(), buffer.size() );
+        PrintfState< ::std::ostream &, char > printState2 = state1.ChangeDevice< ::std::ostream & >( f );
+        return printState2;
     }
 
     PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const std::string& format) {
-        return PrintfState<std::ostream&, char>(f, format.c_str());
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format.c_str() );
+        f.write( buffer.c_str(), buffer.size() );
+        PrintfState< std::ostream &, char > printState2 = state1.ChangeDevice< ::std::ostream & >( f );
+        return printState2;
     }
 
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format) {
