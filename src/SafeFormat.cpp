@@ -43,6 +43,11 @@ namespace Loki
 
     void write(std::string& s, const char* from, const char* to) {
         assert(from <= to);
+        const size_t addCount = to - from;
+        if ( s.capacity() <= s.size() + addCount )
+        {
+            s.reserve( 2 * s.size() + addCount );
+        }
         s.append(from, to);
     }
 
@@ -85,10 +90,14 @@ namespace Loki
     }
 
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format) {
+        const size_t estimate = ::strlen( format ) + 128;
+        s.reserve( estimate );
         return PrintfState<std::string&, char>(s, format);
     }
 
     PrintfState<std::string&, char> SPrintf(std::string& s, const std::string& format) {
+        const size_t estimate = format.size() + 128;
+        s.reserve( estimate );
         return PrintfState<std::string&, char>(s, format.c_str());
     }
 
