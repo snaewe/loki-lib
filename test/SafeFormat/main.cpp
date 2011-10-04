@@ -20,6 +20,8 @@
 #include <cstdlib>
 
 #include "../SmallObj/timer.h"
+#include "ThreadPool.hpp"
+
 
 #if defined(_MSC_VER)
 #if _MSC_VER >= 1400
@@ -146,7 +148,7 @@ void SpeedTest( unsigned int loop )
 
     t.start();
     for (int i=loop; i > 0; --i)
-        Printf("Hey, %u frobnicators and %u twiddlicators\n")(i)(i);
+        ::Loki::Printf("Hey, %u frobnicators and %u twiddlicators\n")(i)(i);
     t.stop();
     int t_Printf = t.t();
 
@@ -354,7 +356,122 @@ void RandomTest( unsigned int loopCount )
         }
     }
 
-    cout << endl << "Finished RandomTest" << endl;
+    cout << "Finished RandomTest" << endl;
+}
+
+// ----------------------------------------------------------------------------
+
+void * DoLokiPrintfLoop( void * p )
+{
+    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+
+	for ( unsigned int loop = 0; loop < 10; ++loop )
+	{
+		::Loki::Printf( "Loop: [%u]  Thread: [%u]\n" )( loop )( threadIndex );
+	}
+
+	return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void * DoLokiFPrintfLoop( void * p )
+{
+    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+
+	for ( unsigned int loop = 0; loop < 10; ++loop )
+	{
+		::Loki::FPrintf( cout, "Loop: [%u]  Thread: [%u]\n" )( loop )( threadIndex );
+	}
+
+	return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void * DoCoutLoop( void * p )
+{
+    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+
+	for ( unsigned int loop = 0; loop < 10; ++loop )
+	{
+		cout << "Loop: [" << loop << "]  Thread: [" << threadIndex << "]\n";
+	}
+
+	return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void * DoStdOutLoop( void * p )
+{
+    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+
+	for ( unsigned int loop = 0; loop < 10; ++loop )
+	{
+		printf( "Loop: [%d]  Thread: [%d]\n", loop, threadIndex );
+	}
+
+	return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void AtomicTest( void )
+{
+    char ender;
+
+    cout << "Starting Loki::Printf AtomicTest" << endl;
+    {
+        ThreadPool pool;
+        pool.Create( 20, &DoLokiPrintfLoop );
+        pool.Start();
+        pool.Join();
+    }
+    cout << "Finished Loki::Printf AtomicTest." << endl;
+	cout << "If the output lines up in neat columns, the test passed." << endl;
+	cout << "If the output is not in columns, then the test failed." << endl;
+    cout << "Press <Enter> key to continue. ";
+    cin.get( ender );
+
+    cout << "Starting Loki::FPrintf AtomicTest" << endl;
+    {
+        ThreadPool pool;
+        pool.Create( 20, &DoLokiFPrintfLoop );
+        pool.Start();
+        pool.Join();
+    }
+    cout << "Finished Loki::FPrintf AtomicTest." << endl;
+	cout << "If the output lines up in neat columns, the test passed." << endl;
+	cout << "If the output is not in columns, then the test failed." << endl;
+    cout << "Press <Enter> key to continue. ";
+    cin.get( ender );
+
+    cout << "Starting stdout AtomicTest" << endl;
+    {
+        ThreadPool pool;
+        pool.Create( 20, &DoStdOutLoop );
+        pool.Start();
+        pool.Join();
+    }
+    cout << "Finished stdout AtomicTest." << endl;
+	cout << "If the output lines up in neat columns, your compiler implements printf correctly." << endl;
+	cout << "If the output is not in columns, then your compiler implements printf incorrectly." << endl;
+    cout << "Press <Enter> key to continue. ";
+    cin.get( ender );
+
+    cout << "Starting cout AtomicTest" << endl;
+    {
+        ThreadPool pool;
+        pool.Create( 20, &DoCoutLoop );
+        pool.Start();
+        pool.Join();
+    }
+    cout << "Finished cout AtomicTest." << endl;
+	cout << "If the output lines up in neat columns, your compiler implements cout correctly." << endl;
+	cout << "If the output is not in columns, then your compiler implements cout incorrectly." << endl;
+    cout << "Press <Enter> key to continue. ";
+    cin.get( ender );
 }
 
 // ----------------------------------------------------------------------------
@@ -371,6 +488,7 @@ public:
     inline bool DoSpeedTest( void ) const { return ( 0 < m_speedLoopCount ); }
     inline bool DoRandomTest( void ) const { return ( 0 < m_randomLoopCount ); }
     inline bool DoFormatTest( void ) const { return m_doFormatTest; }
+	inline bool DoAtomicTest( void ) const { return m_doAtomicTest; }
     inline bool DoShowHelp( void ) const { return m_showHelp; }
 
     void ShowHelp( void ) const;
@@ -380,6 +498,7 @@ private:
     unsigned int m_speedLoopCount;
     unsigned int m_randomLoopCount;
     bool m_doFormatTest;
+	bool m_doAtomicTest;
     bool m_showHelp;
     const char * m_exeName;
 };
@@ -390,6 +509,7 @@ CommandLineArgs::CommandLineArgs( unsigned int argc, const char * argv[] ) :
     m_speedLoopCount( 0 ),
     m_randomLoopCount( 0 ),
     m_doFormatTest( false ),
+	m_doAtomicTest( false ),
     m_showHelp( false ),
     m_exeName( argv[0] )
 {
@@ -416,6 +536,7 @@ CommandLineArgs::CommandLineArgs( unsigned int argc, const char * argv[] ) :
             default: isValid = false; break;
             case 'h': m_showHelp = true; break;
             case 'f': m_doFormatTest = true; break;
+			case 'a': m_doAtomicTest = true; break;
 
             case 'r':
             {
@@ -458,6 +579,7 @@ void CommandLineArgs::ShowHelp( void ) const
     cout << "Usage: " << m_exeName << " [-h] [-f] [-r:#] [-s:#]" << endl;
     cout << " -h    Show this help info and exit. Overrides all other options." << endl;
     cout << " -f    Run formatting tests." << endl;
+	cout << " -a    Run atomic tests." << endl;
     cout << " -r:#  Run random tests for # of loops. # is a positive decimal value greater than 100." << endl;
     cout << " -s:#  Run speed tests for # of loops. # is a positive decimal value greater than 100." << endl;
 }
@@ -487,6 +609,10 @@ int main( int argc, const char * argv[] )
     {
         FormatTest();
     }
+	if ( args.DoAtomicTest() )
+	{
+		AtomicTest();
+	}
 }
 
 // ----------------------------------------------------------------------------
