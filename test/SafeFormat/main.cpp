@@ -213,6 +213,7 @@ void FormatTest( void )
     }
     catch ( const ::std::logic_error & ex )
     {
+        (void)ex;
         assert( true );
     }
     result.clear();
@@ -225,6 +226,7 @@ void FormatTest( void )
     }
     catch ( const ::std::logic_error & ex )
     {
+        (void)ex;
         assert( true );
     }
     result.clear();
@@ -237,6 +239,7 @@ void FormatTest( void )
     }
     catch ( const ::std::logic_error & ex )
     {
+        (void)ex;
         assert( true );
     }
     result.clear();
@@ -249,6 +252,7 @@ void FormatTest( void )
     }
     catch ( const ::std::logic_error & ex )
     {
+        (void)ex;
         assert( true );
     }
     result.clear();
