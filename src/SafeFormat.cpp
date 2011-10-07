@@ -69,7 +69,8 @@ namespace Loki
         ::std::string buffer;
         const PrintfState< ::std::string &, char > state1( buffer, format );
         ::std::fwrite( buffer.c_str(), 1, buffer.size(), stdout );
-        PrintfState< std::FILE *, char > printState2 = state1.ChangeDevice( stdout );
+        ::std::FILE * f = stdout;
+        PrintfState< std::FILE *, char > printState2( state1.ChangeDevice( f ) );
         return printState2;
     }
 
@@ -77,7 +78,8 @@ namespace Loki
         ::std::string buffer;
         const PrintfState< ::std::string &, char > state1( buffer, format.c_str() );
         ::std::fwrite( buffer.c_str(), 1, buffer.size(), stdout );
-        PrintfState< std::FILE *, char > printState2 = state1.ChangeDevice( stdout );
+        ::std::FILE * f = stdout;
+        PrintfState< std::FILE *, char > printState2( state1.ChangeDevice( f ) );
         return printState2;
     }
 
