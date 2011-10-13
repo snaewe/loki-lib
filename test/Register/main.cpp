@@ -2,12 +2,12 @@
 // The Loki Library
 // Copyright (c) 2006,2009 Peter Kümmel
 // Copyright (C) 2009 Andy Balaam
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The author makes no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The author makes no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -50,6 +50,7 @@ void test_typelist_foreach_forward()
     Loki::ForEachType< MyTypeList, NumMeth > dummy( num_meth );
 
     const std::vector<NumMeth::IdxType>& called_for = num_meth.called_for_;
+    (void)called_for;
 
     std::string int_typename = typeid( static_cast<int>(0)          ).name();
     std::string dou_typename = typeid( static_cast<double>(0)       ).name();
@@ -71,6 +72,7 @@ void test_typelist_foreach_backward()
     Loki::ForEachType< MyTypeList, NumMeth, Loki::OrderPolicyBackward > dummy( num_meth );
 
     const std::vector<NumMeth::IdxType>& called_for = num_meth.called_for_;
+    (void)called_for;
 
     std::string dou_typename = typeid( static_cast<double>(0) ).name();
     std::string str_typename = typeid( dou_typename           ).name();
@@ -109,10 +111,12 @@ int main()
     {
         Loki::RegisterOnCreateSet<ClassList> registerAllClasses;
         Loki::UnRegisterOnDeleteSet<ClassList> unregisterAllClasses;
+        (void)registerAllClasses;
+        (void)unregisterAllClasses;
 
         Base* foo = BaseFactory::Instance().CreateObject("Foo");
         Base* boo = BaseFactory::Instance().CreateObject("Boo");
-        
+
         foo->foo();
         boo->foo();
 
