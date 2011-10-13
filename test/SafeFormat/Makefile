@@ -1,9 +1,10 @@
 include ../Makefile.common
 
 BIN := main$(BIN_SUFFIX)
-SRC := main.cpp
+SRC := main.cpp ThreadPool.cpp
 OBJ := $(SRC:.cpp=.o)
 CXXFLAGS := $(CXXWARNFLAGS) -g -fexpensive-optimizations -O3
+LDLIBS += -lpthread
 
 .PHONY: all clean
 all: $(BIN)
