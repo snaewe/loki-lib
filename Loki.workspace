@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
-	<Workspace title="Workspace">
-		<Project filename="Loki.cbp" active="1" />
+	<Workspace title="Loki_Projects">
+		<Project filename="Loki.cbp" />
 		<Project filename="test/AssocVector/AssocVector.cbp" />
 		<Project filename="test/CachedFactory/CachedFactory.cbp">
 			<Depends filename="Loki.cbp" />
@@ -47,5 +47,8 @@
 		</Project>
 		<Project filename="test/ThreadLocal/ThreadLocal.cbp" />
 		<Project filename="test/Visitor/Visitor.cbp" />
+		<Project filename="test/SmallObj/SmallObjSingleton.cbp" active="1">
+			<Depends filename="Loki.cbp" />
+		</Project>
 	</Workspace>
 </CodeBlocks_workspace_file>
