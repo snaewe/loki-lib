@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Test program for The Loki Library
 // Copyright (c) 2006 Richard Sposato
-// Permission to use, copy, modify, distribute and sell this software for any 
-//     purpose is hereby granted without fee, provided that the above copyright 
-//     notice appear in all copies and that both that copyright notice and this 
+// Permission to use, copy, modify, distribute and sell this software for any
+//     purpose is hereby granted without fee, provided that the above copyright
+//     notice appear in all copies and that both that copyright notice and this
 //     permission notice appear in supporting documentation.
-// The authors make no representations about the 
-//     suitability of this software for any purpose. It is provided "as is" 
+// The authors make no representations about the
+//     suitability of this software for any purpose. It is provided "as is"
 //     without express or implied warranty.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -425,18 +425,23 @@ void * Run( void * id )
 
 void DoLockedPtrTest( void )
 {
-    cout << "Doing thread-locked pointer tests." << endl;
+    char ender;
+
     SafeA::GetIt();
     UnsafeA::GetIt();
-    ::system( "pause" );
+    cout << "Doing thread-locked pointer tests." << endl;
+    cout << "Press <Enter> key to start test. " << endl;
+    cin.get( ender );
     {
         ThreadPool pool;
         pool.Create( 5, RunLocked );
         pool.Start();
         pool.Join();
     }
+
     cout << "Doing thread-unsafe pointer tests." << endl;
-    ::system( "pause" );
+    cout << "Press <Enter> key to start test. " << endl;
+    cin.get( ender );
     {
         ThreadPool pool;
         pool.Create( 5, Run );
@@ -451,22 +456,25 @@ void DoLockedPtrTest( void )
 
 void DoLockedStorageTest( void )
 {
-    cout << "Doing LockedStorage tests." << endl;
+    char ender;
     SelfLockedA::GetIt();
-    ::system( "pause" );
+    cout << "Doing LockedStorage tests." << endl;
+    cout << "Press <Enter> key to start test. " << endl;
+    cin.get( ender );
     {
         ThreadPool pool;
         pool.Create( 5, RunLockedStorage );
         pool.Start();
         pool.Join();
     }
-    ::system( "pause" );
+    cout << "Press <Enter> key when ready. " << endl;
+    cin.get( ender );
     SelfLockedA::Destroy();
 }
 
 // ----------------------------------------------------------------------------
 
-#endif //#ifdef using multi-threaded model 
+#endif //#ifdef using multi-threaded model
 
 // ----------------------------------------------------------------------------
 
