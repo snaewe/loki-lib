@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2DE18D06-0F3A-4C6D-AF2B-40E074B3C3DC}</ProjectGuid>
+    <RootNamespace>Function</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>-wd4996 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\include;c:\sandbox\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE _SECURE_SCL=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\loki\AbstractFunction.h" />
+    <ClInclude Include="..\..\include\loki\AssocVector.h" />
+    <ClInclude Include="..\..\include\loki\DataGenerators.h" />
+    <ClInclude Include="..\..\include\loki\EmptyType.h" />
+    <ClInclude Include="..\..\include\loki\Function.h" />
+    <ClInclude Include="..\..\include\loki\HierarchyGenerators.h" />
+    <ClInclude Include="..\..\include\loki\LockingPtr.h" />
+    <ClInclude Include="..\..\include\loki\LokiTypeInfo.h" />
+    <ClInclude Include="..\..\include\loki\MultiMethods.h" />
+    <ClInclude Include="..\..\include\loki\NullType.h" />
+    <ClInclude Include="..\..\include\loki\OrderedStatic.h" />
+    <ClInclude Include="..\..\include\loki\SafeFormat.h" />
+    <ClInclude Include="..\..\include\loki\ScopeGuard.h" />
+    <ClInclude Include="..\..\include\loki\Sequence.h" />
+    <ClInclude Include="..\..\include\loki\Singleton.h" />
+    <ClInclude Include="..\..\include\loki\SmallObj.h" />
+    <ClInclude Include="..\..\include\loki\SmartPtr.h" />
+    <ClInclude Include="..\..\include\loki\static_check.h" />
+    <ClInclude Include="..\..\include\loki\Threads.h" />
+    <ClInclude Include="..\..\include\loki\Tuple.h" />
+    <ClInclude Include="..\..\include\loki\Typelist.h" />
+    <ClInclude Include="..\..\include\loki\TypelistMacros.h" />
+    <ClInclude Include="..\..\include\loki\TypeManip.h" />
+    <ClInclude Include="..\..\include\loki\TypeTraits.h" />
+    <ClInclude Include="..\..\include\loki\Visitor.h" />
+    <ClInclude Include="..\..\include\loki\flex\allocatorstringstorage.h" />
+    <ClInclude Include="..\..\include\loki\flex\cowstringopt.h" />
+    <ClInclude Include="..\..\include\loki\flex\flex_string.h" />
+    <ClInclude Include="..\..\include\loki\flex\flex_string_details.h" />
+    <ClInclude Include="..\..\include\loki\flex\flex_string_shell.h" />
+    <ClInclude Include="..\..\include\loki\flex\simplestringstorage.h" />
+    <ClInclude Include="..\..\include\loki\flex\smallstringopt.h" />
+    <ClInclude Include="..\..\include\loki\flex\vectorstringstorage.h" />
+    <ClInclude Include="..\..\include\loki\Functor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Singleton.cpp" />
+    <ClCompile Include="..\..\src\SmallObj.cpp" />
+    <ClCompile Include="FunctionTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\library.vcxproj">
+      <Project>{cbdb8e7a-4286-4ae3-a190-ba33d7c53ff0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>false</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
