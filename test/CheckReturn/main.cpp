@@ -135,6 +135,7 @@ int main( int argc, const char * argv[] )
         // Should not assert since caller stores return value ...
         BoolReturn checkBool = CheckRequired();
         // and then deliberately ignores it before destructor runs.
+        // Ignore any compiler warnings that says code does not check return value.
         (bool)checkBool;
         cout << "Called CheckRequired, stored return value, and ignored it."
              << endl;
@@ -143,26 +144,28 @@ int main( int argc, const char * argv[] )
     {
         // This should not assert since caller deliberately chooses to not
         // check return value by casting to return value to correct type.
+        // Ignore any compiler warnings that says code does not check return value.
         (bool)CheckRequired();
     }
 
     {
         // This should not assert since caller deliberately chooses to not
         // check return value by casting to return value to correct type.
+        // Ignore any compiler warnings that says code does not check return value.
         (bool)CheckRequired( false );
         cout << "Made a nested call to CheckRequired." << endl;
     }
 
-	{
-		BoolReturnStderr check = CheckRequiredStderr();
-	}
-	cout << "There should be a error message: \nCheckReturn: return value was not checked" << endl;
+    {
+        BoolReturnStderr check = CheckRequiredStderr();
+    }
+    cout << "There should be a error message: \nCheckReturn: return value was not checked" << endl;
 
     // This should assert since caller does not check return value.
     CheckRequired();
     cout << "Should assert before this line!  How did we get here?" << endl;
 
-	return 0;
+    return 0;
 }
 
 // ----------------------------------------------------------------------------
