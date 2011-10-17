@@ -773,6 +773,6 @@ struct CheckStaticFor
 
 // ----------------------------------------------------------------------------
 
-}; // end namespace Loki
+} // end namespace Loki
 
 #endif
