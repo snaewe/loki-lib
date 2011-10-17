@@ -177,8 +177,8 @@ public:
 #ifndef LOKI_BIT_FIELD_NONTEMPLATE_INIT
     template < unsigned int i > static SafeBitConst make_bit_const()
     {
-        LOKI_STATIC_CHECK( i <= ( 8 * sizeof(word_t) ), Index_is_beyond_size_of_data );
-        LOKI_STATIC_CHECK( sizeof(SafeBitConst) == sizeof(word_t), Object_size_does_not_match_data_size );
+        LOKI_STATIC_CHECK( ( i <= ( 8 * sizeof(word_t) ) ), Index_is_beyond_size_of_data );
+        LOKI_STATIC_CHECK( ( sizeof(SafeBitConst) == sizeof(word_t) ), Object_size_does_not_match_data_size );
         // Why check for ( i > 0 ) again inside the shift if the shift
         // can never be evaluated for i == 0? Some compilers see shift by ( i - 1 )
         // and complain that for i == 0 the number is invalid, without
