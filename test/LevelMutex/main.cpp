@@ -20,7 +20,7 @@
 // ----------------------------------------------------------------------------
 
 
-#include "LevelMutex.h"
+#include "loki/LevelMutex.h"
 
 #include "MultiThreadTests.hpp"
 #include "Thing.hpp"
@@ -642,6 +642,7 @@ void SingleThreadExceptionTest( void )
 
 int main( int argc, const char * const argv[] )
 {
+    char ender;
 
     cout << "Starting LevelMutex tests." << endl;
     if ( 1 < argc )
@@ -674,7 +675,9 @@ int main( int argc, const char * const argv[] )
         cout << "Caught unknown exception!" << endl;
     }
 
-    ::system( "pause" );
+    cout << "Press <Enter> key to continue. ";
+    cin.get( ender );
+
     return 0;
 }
 
