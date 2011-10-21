@@ -177,7 +177,7 @@ void FormatTest( void )
     string result;
     unsigned int i = 1;
     signed short ss = 2;
-    float f = 3.4;
+    float f = 3.4F;
     const char * message = " over here! ";
 
     const char * format = "";
@@ -365,6 +365,20 @@ void RandomTest( unsigned int loopCount )
 
 // ----------------------------------------------------------------------------
 
+void * DoLokiFPrintfLoop( void * p )
+{
+    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+
+	for ( unsigned int loop = 0; loop < 10; ++loop )
+	{
+		::Loki::FPrintf( "Loop: [%u]  Thread: [%u]\n" )( loop )( threadIndex );
+	}
+
+	return 0;
+}
+
+// ----------------------------------------------------------------------------
+
 void * DoLokiPrintfLoop( void * p )
 {
     const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
@@ -379,13 +393,13 @@ void * DoLokiPrintfLoop( void * p )
 
 // ----------------------------------------------------------------------------
 
-void * DoLokiFPrintfLoop( void * p )
+void * DoStdOutLoop( void * p )
 {
     const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
 
 	for ( unsigned int loop = 0; loop < 10; ++loop )
 	{
-		::Loki::FPrintf( cout, "Loop: [%u]  Thread: [%u]\n" )( loop )( threadIndex );
+		printf( "Loop: [%d]  Thread: [%d]\n", loop, threadIndex );
 	}
 
 	return 0;
@@ -400,20 +414,6 @@ void * DoCoutLoop( void * p )
 	for ( unsigned int loop = 0; loop < 10; ++loop )
 	{
 		cout << "Loop: [" << loop << "]  Thread: [" << threadIndex << "]\n";
-	}
-
-	return 0;
-}
-
-// ----------------------------------------------------------------------------
-
-void * DoStdOutLoop( void * p )
-{
-    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
-
-	for ( unsigned int loop = 0; loop < 10; ++loop )
-	{
-		printf( "Loop: [%d]  Thread: [%d]\n", loop, threadIndex );
 	}
 
 	return 0;
