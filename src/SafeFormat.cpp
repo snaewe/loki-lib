@@ -99,6 +99,22 @@ namespace Loki
         return printState2;
     }
 
+    PrintfState< std::ostream &, char > FPrintf( const char * format ) {
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format );
+        ::std::cout << buffer.c_str();
+        PrintfState< ::std::ostream &, char > printState2 = state1.ChangeDevice< ::std::ostream & >( ::std::cout );
+        return printState2;
+    }
+
+    PrintfState< std::ostream &, char > FPrintf( const std::string & format ) {
+        ::std::string buffer;
+        const PrintfState< ::std::string &, char > state1( buffer, format.c_str() );
+        ::std::cout << buffer.c_str();
+        PrintfState< std::ostream &, char > printState2 = state1.ChangeDevice< ::std::ostream & >( ::std::cout );
+        return printState2;
+    }
+
     PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const char* format) {
         ::std::string buffer;
         const PrintfState< ::std::string &, char > state1( buffer, format );

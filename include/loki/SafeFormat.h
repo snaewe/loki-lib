@@ -605,6 +605,14 @@ namespace Loki
     LOKI_EXPORT
     PrintfState<std::FILE*, char> FPrintf(std::FILE* f, const std::string& format);
 
+	/// Prints to cout.
+    LOKI_EXPORT
+    PrintfState<std::ostream&, char> FPrintf( const char * format );
+
+	/// Prints to cout.
+    LOKI_EXPORT
+    PrintfState<std::ostream&, char> FPrintf( const std::string & format );
+
     LOKI_EXPORT
     PrintfState<std::ostream&, char> FPrintf(std::ostream& f, const char* format);
 
