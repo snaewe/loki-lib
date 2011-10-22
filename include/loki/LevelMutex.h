@@ -51,6 +51,7 @@
 #endif
 
 #include <loki/ThreadLocal.h> // Include Loki's form of thread_local declaration.
+#include <loki/Checker.h> // Needed to check class invariants.
 
 #if !defined( LOKI_THREAD_LOCAL )
     #warning "Your compiler will not allow Loki::LevelMutex."
@@ -264,26 +265,12 @@ public:
 
 protected:
 
-    /** @class Checker Performs validity check on mutex to insure no class invariants
-     were violated inside any member function.  This class only gets used in debug
-     builds, and any instance of it gets optimized away in release builds.  A checker
-     is created inside many of member functions so that it's destructor gets called
-     when the function exits.  It determines if any class invariants were violated
-     during the function call.
+    /** @note CheckFor performs validity checking in many functions to determine if the
+     code violated any invariants, if any content changed, or if the function threw an
+     exception. The checkers only get used in debug builds, and get optimized away in
+     release builds.
      */
-    class Checker
-    {
-    public:
-        inline explicit Checker( const volatile LevelMutexInfo * mutex ) :
-            m_mutex( mutex ) { Check(); }
-        inline ~Checker( void ) { Check(); }
-        inline bool Check( void ) const { return m_mutex->IsValid(); }
-    private:
-        Checker( void );
-        Checker( const Checker & );
-        Checker & operator = ( const Checker & );
-        const volatile LevelMutexInfo * m_mutex;
-    };
+    typedef ::Loki::CheckFor< LevelMutexInfo > CheckFor;
 
     /** @class MutexUndoer
      Undoes actions by MultiLock if an exception occurs.  It keeps track of
@@ -778,7 +765,7 @@ public:
 
     virtual MutexErrors::Type TryLock( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( true );
         if ( MutexErrors::Success == result )
@@ -799,7 +786,7 @@ public:
 
     virtual MutexErrors::Type Lock( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( false );
         if ( MutexErrors::Success == result )
@@ -818,7 +805,7 @@ public:
 
     virtual MutexErrors::Type Lock( unsigned int milliSeconds ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( false );
         if ( MutexErrors::Success == result )
@@ -853,7 +840,7 @@ public:
 
     virtual MutexErrors::Type Unlock( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreUnlockCheck();
         if ( MutexErrors::Success == result )
@@ -898,7 +885,7 @@ private:
      */
     virtual MutexErrors::Type LockThis( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
         assert( this != LevelMutexInfo::GetCurrentMutex() );
 
         const MutexErrors::Type result = m_mutex.Lock();
@@ -918,7 +905,7 @@ private:
      */
     virtual MutexErrors::Type LockThis( unsigned int milliSeconds ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
 
         clock_t timeOut = clock() + milliSeconds;
         while ( clock() < timeOut )
@@ -943,7 +930,7 @@ private:
      */
     virtual MutexErrors::Type UnlockThis( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( Checker checker( this ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
         assert( NULL != LevelMutexInfo::GetCurrentMutex() );
 
         if ( 1 < LevelMutexInfo::GetLockCount() )
