@@ -28,8 +28,8 @@
 #include <algorithm>
 #include <functional>
 
-#include <SafeFormat.h>
-#include <LockingPtr.h>
+#include <loki/SafeFormat.h>
+#include <loki/LockingPtr.h>
 
 using namespace ::Loki;
 
