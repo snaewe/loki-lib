@@ -20,7 +20,6 @@
 
 #include <assert.h>
 
-#include <process.h>
 #if !defined( _MSC_VER )
     #include <unistd.h> // needed for the usleep function.
 #endif
@@ -75,7 +74,6 @@ Thread::Thread( volatile ThreadPool * owner, CallFunction function,
 Thread::~Thread( void )
 {
     assert( IsValid( m_owner ) );
-    assert( Thread::Dead == m_status );
     assert( nullptr == m_func );
     assert( nullptr == m_parm );
     assert( m_stop );
