@@ -22,8 +22,8 @@
 #ifndef LOKI_TEST_LEVEL_MUTEX_THING_H
 #define LOKI_TEST_LEVEL_MUTEX_THING_H
 
-#include <LevelMutex.h>
-#include <Allocator.h>
+#include <loki/LevelMutex.h>
+#include <loki/Allocator.h>
 
 #include <vector>
 
