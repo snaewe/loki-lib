@@ -36,6 +36,7 @@
 				</Compiler>
 				<Linker>
 					<Add library="../../lib/GCC/Loki.a" />
+					<Add library="/usr/lib/libpthread.so" />
 				</Linker>
 			</Target>
 			<Target title="Debug_Cygwin">
