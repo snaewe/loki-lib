@@ -60,13 +60,13 @@ namespace Loki
  - and determining which exception safety level a function provides.
 
  @par Class & Data Invariants
- ContractChecker and StaticChecker define invariants as "expressions that are
- true for particular data".  They call a function which returns true if all data
- are valid, and returns false if any datum is invalid.  This is called the
- validator function, and the host class or function provides a pointer to it.
- The validator could also assert for any invariant which fails rather than
- return false.  If the validator is a static member function, you can use it
- with checkers in any function, but especially standalone functions and class
+ ContractChecker and StaticChecker define invariants as "conditions that are
+ true for particular objects".  They call a function which returns true if all
+ conditions are valid, and returns false if any condition is invalid.  This is
+ called the validator function, and the host class or function provides a
+ pointer to it. The validator may assert for any invariant which fails rather
+ than return false.  If the validator is a static member function, you can use
+ it with checkers in any function, but especially standalone functions and class
  static functions.  If the validator is a non-static member function, you can
  use it only within non-static member functions.
 
@@ -92,22 +92,27 @@ namespace Loki
 
  @par Provided Exception Policies
  Loki provides several exception policies for use with ContractChecker.
- - CheckForNoChangeOrThrow
+ - CheckForNoThrowOrChange
  - CheckForNoThrow
+ - CheckForNoChangeOnThrow
  - CheckForNoChange
- - CheckForEquality
  - CheckForNothing
  Loki also provides these two policies for StaticChecker.
  - CheckStaticForNoThrow
  - CheckStaticForNothing
 
- @par Writing Your Own Policies for ContractChecker
- Loki provides several exception policies for ContractChecker.  These policies
- assert if an object changed or a function threw an exception.  If you prefer
- policies that log failures to a file, send an email, file a bug report, pop-up
- a message box, notify your unit-test framework, or whatever else, you can
- easily write your own policies.  Please follow these guidelines when writing
- your own policies:
+ @par Reasons to Write Your Own Policies for ContractChecker
+ Loki provides several exception policies for ContractChecker that assert if an
+ object changed or a function threw an exception.  These are good reasons to
+ write your own policies:
+ - you want to log failures to a file,
+ - you want to create a bug report,
+ - you want to stop your unit-test framework,
+ - your classes don't have copy-constructors or equality operators,
+ - or whatever else.
+
+ @par Guidelines for Writing Your Own Policies for ContractChecker
+ Please follow these guidelines when writing your own policies:
  - Each policy class must provide three public functions, a constructor, a destructor, and a Check function.
  - The destructor could be implied.  (Not actually written, and provided by the compiler.)
  - The constructor and Check functions accept a pointer to const instance of the host class.
@@ -238,15 +243,16 @@ public:
 
 // ----------------------------------------------------------------------------
 
-template < class Host, class Memento > class CheckForNoChange;
+template < class Host, class Memento > class CheckForNoChangeOnThrow;
 
-/** @class CheckForNoChange
+/** @class CheckForNoChangeOnThrow
 
  @par Exception Safety Level:
  This exception-checking policy class for ContractChecker asserts only if a
  copy of the host differs from the host object when an exception occurs.  Host
  classes can use this policy to show which member functions provide the strong
- exception guarantee.
+ exception guarantee. Such functions provide transaction semantics - either the
+ action succeeds or the object rollsback to its previous state.
 
  @par Requirements:
  This policy requires hosts to provide both the copy-constructor and the
@@ -254,11 +260,11 @@ template < class Host, class Memento > class CheckForNoChange;
  */
 
 template < class Host >
-class CheckForNoChange< Host, void >
+class CheckForNoChangeOnThrow< Host, void >
 {
 public:
 
-    inline explicit CheckForNoChange( const Host * host ) :
+    inline explicit CheckForNoChangeOnThrow( const Host * host ) :
         m_compare( *host ) {}
 
     inline bool Check( const Host * host ) const
@@ -274,11 +280,11 @@ private:
 };
 
 template < class Host, class Memento >
-class CheckForNoChange
+class CheckForNoChangeOnThrow
 {
 public:
 
-    inline explicit CheckForNoChange( const Host * host ) :
+    inline explicit CheckForNoChangeOnThrow( const Host * host ) :
         m_compare( *host ) {}
 
     inline bool Check( const Host * host ) const
@@ -295,9 +301,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
-template < class Host, class Memento > class CheckForNoChangeOrThrow;
+template < class Host, class Memento > class CheckForNoThrowOrChange;
 
-/** @class CheckForNoChangeOrThrow
+/** @class CheckForNoThrowOrChange
  This policy comes in two forms - one uses a memento, and one does not.  The
  memento form does not copy the host object, but stores info about the host in
  a memento for later comparison with the host.  The other form copies the host
@@ -315,11 +321,11 @@ template < class Host, class Memento > class CheckForNoChangeOrThrow;
  */
 
 template < class Host, class Memento >
-class CheckForNoChangeOrThrow
+class CheckForNoThrowOrChange
 {
 public:
 
-    inline explicit CheckForNoChangeOrThrow( const Host * host ) :
+    inline explicit CheckForNoThrowOrChange( const Host * host ) :
         m_compare( *host ) {}
 
     inline bool Check( const Host * host ) const
@@ -336,11 +342,11 @@ private:
 };
 
 template < class Host >
-class CheckForNoChangeOrThrow< Host, void >
+class CheckForNoThrowOrChange< Host, void >
 {
 public:
 
-    inline explicit CheckForNoChangeOrThrow( const Host * host ) :
+    inline explicit CheckForNoThrowOrChange( const Host * host ) :
         m_compare( *host ) {}
 
     inline bool Check( const Host * host ) const
@@ -358,9 +364,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
-template < class Host, class Memento > class CheckForEquality;
+template < class Host, class Memento > class CheckForNoChange;
 
-/** @class CheckForEquality
+/** @class CheckForNoChange
 
  @par Exception Safety Level:
  This exception-checking policy class for ContractChecker asserts if a copy of
@@ -378,11 +384,11 @@ template < class Host, class Memento > class CheckForEquality;
  */
 
 template < class Host, class Memento >
-class CheckForEquality
+class CheckForNoChange
 {
 public:
 
-    inline explicit CheckForEquality( const Host * host ) :
+    inline explicit CheckForNoChange( const Host * host ) :
         m_compare( *host ) {}
 
     inline bool Check( const Host * host ) const
@@ -397,11 +403,11 @@ private:
 };
 
 template < class Host >
-class CheckForEquality< Host, void >
+class CheckForNoChange< Host, void >
 {
 public:
 
-    inline explicit CheckForEquality( const Host * host ) :
+    inline explicit CheckForNoChange( const Host * host ) :
         m_compare( *host ) {}
 
     inline bool Check( const Host * host ) const
@@ -468,18 +474,18 @@ public:
  -# Add one of these lines at the top of various class member functions to
    construct a checker near the top of each public function.  You may also pass
    in pointers to functions which check pre- and post-conditions.
-   - CheckFor::NoChangeOrThrow checker( this, &Host::IsValid );
+   - CheckFor::NoThrowOrChange checker( this, &Host::IsValid );
+   - CheckFor::NoChangeOnThrow checker( this, &Host::IsValid );
    - CheckFor::NoThrow checker( this, &Host::IsValid );
    - CheckFor::NoChange checker( this, &Host::IsValid );
-   - CheckFor::Equality checker( this, &Host::IsValid );
    - CheckFor::Invariants checker( this, &Host::IsValid );
  -# Use these guidelines to decide which policy to use inside which function:
     - If the function never throws, then use the CheckForNoThrow policy.
-    - If the function never changes any data members, then use CheckForEquality
+    - If the function never changes any data members, then use CheckForNoChange
       policy.
     - If the function's normal execution flow changes data, but must make sure
       data remains unchanged when any exceptions occur, then use the
-      CheckForNoChange policy.
+      CheckForNoChangeOnThrow policy.
     - Otherwise use the CheckInvariants policy.
  -# Recompile a debug version of your program, run the program and all the unit
     tests, and look for which assertions failed.
@@ -569,10 +575,10 @@ private:
     /// Pointer to member function that checks Host object's invariants.
     Validator m_validator;
 
-    /// Pointer to member function that checks Host object's pre-conditions.
+    /// Pointer to member function that checks Host function's pre-conditions.
     Validator m_pre;
 
-    /// Pointer to member function that checks Host object's post-conditions.
+    /// Pointer to member function that checks Host function's post-conditions.
     Validator m_post;
 
 };
@@ -590,10 +596,10 @@ template < class Host, class Memento = void >
 struct CheckFor
 {
     // These lines declare checkers for non-static functions in a host class.
-    typedef ContractChecker< Host, CheckForNoChangeOrThrow, Memento > NoChangeOrThrow;
+    typedef ContractChecker< Host, CheckForNoThrowOrChange, Memento > NoThrowOrChange;
+    typedef ContractChecker< Host, CheckForNoChangeOnThrow, Memento > NoChangeOnThrow;
     typedef ContractChecker< Host, CheckForNoThrow,         Memento > NoThrow;
     typedef ContractChecker< Host, CheckForNoChange,        Memento > NoChange;
-    typedef ContractChecker< Host, CheckForEquality,        Memento > Equality;
     typedef ContractChecker< Host, CheckForNothing,         Memento > Invariants;
 };
 
@@ -745,10 +751,10 @@ private:
     /// Pointer to member function that checks Host object's invariants.
     Validator m_validator;
 
-    /// Pointer to member function that checks Host object's pre-conditions.
+    /// Pointer to member function that checks Host function's pre-conditions.
     Validator m_pre;
 
-    /// Pointer to member function that checks Host object's post-conditions.
+    /// Pointer to member function that checks Host function's post-conditions.
     Validator m_post;
 
 };
