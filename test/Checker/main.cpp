@@ -70,7 +70,7 @@ public:
 
     unsigned int DoSomething( bool doThrow ) const;
 
-    void DoSomethingElse( void ) const;
+    void DoSomethingElse( unsigned int count, bool doThrow );
 
     void AddCount( unsigned int count );
 
@@ -235,7 +235,7 @@ unsigned int Thingy::GetValue( void ) const
 // This example shows how to use the equality checker.
 unsigned int Thingy::DoSomething( bool doThrow ) const
 {
-    CheckMementoFor::Equality checker( this, &Thingy::IsValid );
+    CheckMementoFor::NoChange checker( this, &Thingy::IsValid );
     (void)checker;
     if ( doThrow )
         throw ::std::logic_error( "Test Exception." );
@@ -245,10 +245,16 @@ unsigned int Thingy::DoSomething( bool doThrow ) const
 // ----------------------------------------------------------------------------
 
 // This example shows how to use the no-change checker.
-void Thingy::DoSomethingElse( void ) const
+void Thingy::DoSomethingElse( unsigned int count, bool doThrow )
 {
-    CheckMementoFor::NoChange checker( this, &Thingy::IsValid );
+    CheckMementoFor::NoChangeOnThrow checker( this, &Thingy::IsValid );
     (void)checker;
+
+	IntBlock counts( m_counts );
+	counts.push_back( count );
+    if ( doThrow )
+        throw ::std::logic_error( "Test Exception." );
+	counts.swap( m_counts );
 }
 
 // ----------------------------------------------------------------------------
@@ -270,7 +276,7 @@ unsigned int Thingy::GetCount( unsigned int index ) const
     // This function's checker cares about class invariants and both the pre- and
     // post-conditions, so it passes in pointers for all 3 validators.  The pre-
     // and post-conditions are both about making sure the container is not empty.
-    CheckMementoFor::NoChangeOrThrow checker( this, &Thingy::IsValid, &Thingy::IsValidFull, &Thingy::IsValidFull );
+    CheckMementoFor::NoThrowOrChange checker( this, &Thingy::IsValid, &Thingy::IsValidFull, &Thingy::IsValidFull );
     if ( m_counts.size() <= index )
         return 0;
     const unsigned int count = m_counts[ index ];
@@ -360,53 +366,89 @@ int main( int argc, const char * const argv[] )
 
     (void)argc;
     (void)argv;
+    cout << "These tests confirm the Checker exception policies work properly." << endl;
+    cout << "The tests will throw exceptions. If you see any assertions, the test failed." << endl;
+
     try
     {
         cout << "Just before call to ThrowTest." << endl;
         ThrowTest();
         cout << "Just after call to ThrowTest." << endl;
+		assert( false );
     }
     catch ( const ::std::logic_error & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a logic_error exception!  " << ex.what() << endl;
+		assert( true );
     }
     catch ( const ::std::exception & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a standard exception!  " << ex.what() << endl;
+		assert( false );
     }
     catch ( ... )
     {
-        cout << "Caught an exception!" << endl;
+        cout << "Caught an unknown exception!" << endl;
+		assert( false );
     }
 
     unsigned int count = 0;
     try
     {
-        cout << "Running basic tests with Thingy." << endl;
+        cout << "Starting test of CheckFor::NoChange policy." << endl;
         // First do some tests on class member functions.
         Thingy t1( 1 );
         t1.DoSomething( false );
+		assert( true );
         Thingy t2( 2 );
         t2.DoSomething( true );
-        cout << "Done with basic tests with Thingy." << endl;
+		assert( false );
     }
     catch ( const ::std::logic_error & ex )
     {
         cout << "Caught an exception!  " << ex.what() << endl;
+		assert( true );
     }
     catch ( const ::std::exception & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a standard exception!  " << ex.what() << endl;
     }
     catch ( ... )
     {
-        cout << "Caught an exception!" << endl;
+        cout << "Caught an unknown exception!" << endl;
     }
+	cout << "Done testing CheckFor::NoChange policy." << endl;
 
     try
     {
+        cout << "Starting test of CheckFor::NoChangeOnThrow policy." << endl;
         Thingy t1( 1 );
-        cout << "Now running tests with Thingy counts." << endl;
+        t1.DoSomethingElse( 3, false );
+        Thingy t2( 2 );
+        t2.DoSomethingElse( 5, true );
+		assert( false );
+    }
+    catch ( const ::std::logic_error & ex )
+    {
+        cout << "Caught an exception!  " << ex.what() << endl;
+		assert( true );
+    }
+    catch ( const ::std::exception & ex )
+    {
+        cout << "Caught a standard exception!  " << ex.what() << endl;
+		assert( false );
+    }
+    catch ( ... )
+    {
+        cout << "Caught an unknown exception!" << endl;
+		assert( false );
+    }
+	cout << "Finished test of CheckFor::NoChangeOnThrow policy." << endl;
+
+    try
+    {
+        cout << "Starting tests of CheckFor::Invariants and CheckFor::NoThrowOrChange policy." << endl;
+        Thingy t1( 1 );
         // These lines will exercise the functions with pre- and post-conditions.
         t1.AddCount( 11 );
         t1.AddCount( 13 );
@@ -421,54 +463,64 @@ int main( int argc, const char * const argv[] )
     }
     catch ( const ::std::logic_error & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a logic_error exception!  " << ex.what() << endl;
     }
     catch ( const ::std::exception & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a standard exception!  " << ex.what() << endl;
+		assert( false );
     }
     catch ( ... )
     {
-        cout << "Caught an exception!" << endl;
+        cout << "Caught an unknown exception!" << endl;
+		assert( false );
     }
+	cout << "Finished tests of CheckFor::Invariants and CheckFor::NoThrowOrChange policy." << endl;
 
     try
     {
-        cout << "Now run tests on static member functions" << endl;
+        cout << "Starting test of CheckStaticFor::Invariants policy." << endl;
         // Next do some tests with static member functions.
         Thingy::ChangeThat();
         const unsigned int value = Thingy::GetThat();
         assert( value != 0 );
-        cout << "Done with tests on static member functions" << endl;
+		assert( true );
     }
     catch ( const ::std::logic_error & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a logic_error exception!  " << ex.what() << endl;
+		assert( false );
     }
     catch ( const ::std::exception & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a standard exception!  " << ex.what() << endl;
+		assert( false );
     }
     catch ( ... )
     {
-        cout << "Caught an exception!" << endl;
+        cout << "Caught an unknown exception!" << endl;
+		assert( false );
     }
+	cout << "Finished test of CheckStaticFor::Invariants policy." << endl;
 
     try
     {
-        cout << "Now run test on a standalone function." << endl;
+        cout << "Starting test of CheckStaticFor::NoThrow policy." << endl;
         // Then do a test with a standalone function.
         DoSomething();
-        cout << "Done with test on a standalone function." << endl;
+		assert( true );
     }
     catch ( const ::std::exception & ex )
     {
-        cout << "Caught an exception!  " << ex.what() << endl;
+        cout << "Caught a standard exception!  " << ex.what() << endl;
+		assert( false );
     }
     catch ( ... )
     {
-        cout << "Caught an exception!" << endl;
+        cout << "Caught an unknown exception!" << endl;
+		assert( false );
     }
+	cout << "Finished test of CheckStaticFor::NoThrow policy." << endl;
 
     cout << "All done!  If you see this line, and no assertions failed, then the test passed!" << endl;
     return 0;
