@@ -6,37 +6,38 @@
 		<Option compiler="cygwin" />
 		<Build>
 			<Target title="Debug_GCC">
-				<Option output=".\lib\GCC\Loki_D.a" prefix_auto="0" extension_auto="0" />
+				<Option output="./lib/GCC/Loki_D.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="obj\Debug_GCC\" />
+				<Option object_output="obj/Debug_GCC/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-W" />
 					<Add option="-g" />
+					<Add option="-W" />
+					<Add option="-DDEBUG" />
 					<Add directory="." />
-					<Add directory=".\include" />
-					<Add directory=".\include\loki" />
+					<Add directory="./include" />
+					<Add directory="./include/loki" />
 				</Compiler>
 			</Target>
 			<Target title="Release_GCC">
-				<Option output=".\lib\GCC\Loki.a" prefix_auto="0" extension_auto="0" />
+				<Option output="./lib/GCC/Loki.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="obj\Release_GCC\" />
+				<Option object_output="obj/Release_GCC/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-W" />
-					<Add directory=".\include\loki" />
-					<Add directory=".\include" />
+					<Add directory="./include/loki" />
+					<Add directory="./include" />
 				</Compiler>
 			</Target>
 			<Target title="Debug_Cygwin">
-				<Option output=".\lib\Cygwin\Loki_D.a" prefix_auto="0" extension_auto="0" />
+				<Option output="./lib/Cygwin/Loki_D.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="obj\Debug_Cygwin\" />
+				<Option object_output="obj/Debug_Cygwin/" />
 				<Option type="2" />
 				<Option compiler="cygwin" />
 				<Option createDefFile="1" />
@@ -44,88 +45,88 @@
 					<Add option="-W" />
 					<Add option="-g" />
 					<Add directory="." />
-					<Add directory=".\include" />
-					<Add directory=".\include\loki" />
+					<Add directory="./include" />
+					<Add directory="./include/loki" />
 				</Compiler>
 			</Target>
 			<Target title="Release_Cygwin">
-				<Option output=".\lib\Cygwin\Loki.a" prefix_auto="0" extension_auto="0" />
+				<Option output="./lib/Cygwin/Loki.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="obj\Release_Cygwin\" />
+				<Option object_output="obj/Release_Cygwin/" />
 				<Option type="2" />
 				<Option compiler="cygwin" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-W" />
-					<Add directory=".\include\loki" />
-					<Add directory=".\include" />
+					<Add directory="./include/loki" />
+					<Add directory="./include" />
 				</Compiler>
 			</Target>
 		</Build>
-		<Unit filename="include\loki\AbstractFactory.h" />
-		<Unit filename="include\loki\Allocator.h" />
-		<Unit filename="include\loki\AssocVector.h" />
-		<Unit filename="include\loki\CachedFactory.h" />
-		<Unit filename="include\loki\CheckReturn.h" />
-		<Unit filename="include\loki\Checker.h" />
-		<Unit filename="include\loki\ConstPolicy.h" />
-		<Unit filename="include\loki\DataGenerators.h" />
-		<Unit filename="include\loki\EmptyType.h" />
-		<Unit filename="include\loki\Factory.h" />
-		<Unit filename="include\loki\Function.h" />
-		<Unit filename="include\loki\Functor.h" />
-		<Unit filename="include\loki\HierarchyGenerators.h" />
-		<Unit filename="include\loki\Key.h" />
-		<Unit filename="include\loki\LevelMutex.h" />
-		<Unit filename="include\loki\LockingPtr.h" />
-		<Unit filename="include\loki\LokiExport.h" />
-		<Unit filename="include\loki\LokiTypeInfo.h" />
-		<Unit filename="include\loki\MultiMethods.h" />
-		<Unit filename="include\loki\NullType.h" />
-		<Unit filename="include\loki\OrderedStatic.h" />
-		<Unit filename="include\loki\Pimpl.h" />
-		<Unit filename="include\loki\RefToValue.h" />
-		<Unit filename="include\loki\Register.h" />
-		<Unit filename="include\loki\SPCachedFactory.h" />
-		<Unit filename="include\loki\SafeBits.h" />
-		<Unit filename="include\loki\SafeFormat.h" />
-		<Unit filename="include\loki\ScopeGuard.h" />
-		<Unit filename="include\loki\Sequence.h" />
-		<Unit filename="include\loki\Singleton.h" />
-		<Unit filename="include\loki\SmallObj.h" />
-		<Unit filename="include\loki\SmartPtr.h" />
-		<Unit filename="include\loki\StrongPtr.h" />
-		<Unit filename="include\loki\ThreadLocal.h" />
-		<Unit filename="include\loki\Threads.h" />
-		<Unit filename="include\loki\Tuple.h" />
-		<Unit filename="include\loki\TypeManip.h" />
-		<Unit filename="include\loki\TypeTraits.h" />
-		<Unit filename="include\loki\Typelist.h" />
-		<Unit filename="include\loki\TypelistMacros.h" />
-		<Unit filename="include\loki\Visitor.h" />
-		<Unit filename="include\loki\flex\allocatorstringstorage.h" />
-		<Unit filename="include\loki\flex\cowstringopt.h" />
-		<Unit filename="include\loki\flex\flex_string.h" />
-		<Unit filename="include\loki\flex\flex_string_details.h" />
-		<Unit filename="include\loki\flex\flex_string_shell.h" />
-		<Unit filename="include\loki\flex\simplestringstorage.h" />
-		<Unit filename="include\loki\flex\smallstringopt.h" />
-		<Unit filename="include\loki\flex\vectorstringstorage.h" />
-		<Unit filename="include\loki\static_check.h" />
-		<Unit filename="include\loki\yasli\platform.h" />
-		<Unit filename="include\loki\yasli\random.h" />
-		<Unit filename="include\loki\yasli\yasli_fill_iterator.h" />
-		<Unit filename="include\loki\yasli\yasli_memory.h" />
-		<Unit filename="include\loki\yasli\yasli_protocols.h" />
-		<Unit filename="include\loki\yasli\yasli_traits.h" />
-		<Unit filename="include\loki\yasli\yasli_vector.h" />
-		<Unit filename="src\LevelMutex.cpp" />
-		<Unit filename="src\OrderedStatic.cpp" />
-		<Unit filename="src\SafeFormat.cpp" />
-		<Unit filename="src\Singleton.cpp" />
-		<Unit filename="src\SmallObj.cpp" />
-		<Unit filename="src\SmartPtr.cpp" />
-		<Unit filename="src\StrongPtr.cpp" />
+		<Unit filename="include/loki/AbstractFactory.h" />
+		<Unit filename="include/loki/Allocator.h" />
+		<Unit filename="include/loki/AssocVector.h" />
+		<Unit filename="include/loki/CachedFactory.h" />
+		<Unit filename="include/loki/CheckReturn.h" />
+		<Unit filename="include/loki/Checker.h" />
+		<Unit filename="include/loki/ConstPolicy.h" />
+		<Unit filename="include/loki/DataGenerators.h" />
+		<Unit filename="include/loki/EmptyType.h" />
+		<Unit filename="include/loki/Factory.h" />
+		<Unit filename="include/loki/Function.h" />
+		<Unit filename="include/loki/Functor.h" />
+		<Unit filename="include/loki/HierarchyGenerators.h" />
+		<Unit filename="include/loki/Key.h" />
+		<Unit filename="include/loki/LevelMutex.h" />
+		<Unit filename="include/loki/LockingPtr.h" />
+		<Unit filename="include/loki/LokiExport.h" />
+		<Unit filename="include/loki/LokiTypeInfo.h" />
+		<Unit filename="include/loki/MultiMethods.h" />
+		<Unit filename="include/loki/NullType.h" />
+		<Unit filename="include/loki/OrderedStatic.h" />
+		<Unit filename="include/loki/Pimpl.h" />
+		<Unit filename="include/loki/RefToValue.h" />
+		<Unit filename="include/loki/Register.h" />
+		<Unit filename="include/loki/SPCachedFactory.h" />
+		<Unit filename="include/loki/SafeBits.h" />
+		<Unit filename="include/loki/SafeFormat.h" />
+		<Unit filename="include/loki/ScopeGuard.h" />
+		<Unit filename="include/loki/Sequence.h" />
+		<Unit filename="include/loki/Singleton.h" />
+		<Unit filename="include/loki/SmallObj.h" />
+		<Unit filename="include/loki/SmartPtr.h" />
+		<Unit filename="include/loki/StrongPtr.h" />
+		<Unit filename="include/loki/ThreadLocal.h" />
+		<Unit filename="include/loki/Threads.h" />
+		<Unit filename="include/loki/Tuple.h" />
+		<Unit filename="include/loki/TypeManip.h" />
+		<Unit filename="include/loki/TypeTraits.h" />
+		<Unit filename="include/loki/Typelist.h" />
+		<Unit filename="include/loki/TypelistMacros.h" />
+		<Unit filename="include/loki/Visitor.h" />
+		<Unit filename="include/loki/flex/allocatorstringstorage.h" />
+		<Unit filename="include/loki/flex/cowstringopt.h" />
+		<Unit filename="include/loki/flex/flex_string.h" />
+		<Unit filename="include/loki/flex/flex_string_details.h" />
+		<Unit filename="include/loki/flex/flex_string_shell.h" />
+		<Unit filename="include/loki/flex/simplestringstorage.h" />
+		<Unit filename="include/loki/flex/smallstringopt.h" />
+		<Unit filename="include/loki/flex/vectorstringstorage.h" />
+		<Unit filename="include/loki/static_check.h" />
+		<Unit filename="include/loki/yasli/platform.h" />
+		<Unit filename="include/loki/yasli/random.h" />
+		<Unit filename="include/loki/yasli/yasli_fill_iterator.h" />
+		<Unit filename="include/loki/yasli/yasli_memory.h" />
+		<Unit filename="include/loki/yasli/yasli_protocols.h" />
+		<Unit filename="include/loki/yasli/yasli_traits.h" />
+		<Unit filename="include/loki/yasli/yasli_vector.h" />
+		<Unit filename="src/LevelMutex.cpp" />
+		<Unit filename="src/OrderedStatic.cpp" />
+		<Unit filename="src/SafeFormat.cpp" />
+		<Unit filename="src/Singleton.cpp" />
+		<Unit filename="src/SmallObj.cpp" />
+		<Unit filename="src/SmartPtr.cpp" />
+		<Unit filename="src/StrongPtr.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
