@@ -144,8 +144,10 @@ class LevelMutexInfo
 {
 public:
 
-    /** Level for thread that has not locked any mutex. Maximum possible level
-     for a mutex is UnlockedLevel-1;  No mutex may have a level of UnlockedLevel.
+    /** This is the default level for a thread that has not locked any mutex. The
+     maximum possible level for a mutex is UnlockedLevel-1, and I doubt any software
+     will ever have a call stack of more than 2^32-2 functions. No mutex may have a
+     level of UnlockedLevel.
      */
     static const unsigned int UnlockedLevel = 0xFFFFFFFF;
 
@@ -265,12 +267,35 @@ public:
 
 protected:
 
+    /// @class Memento Stores content of LevelMutexInfo so CheckFor can check invariants.
+    class Memento
+    {
+    public:
+
+        explicit Memento( const volatile LevelMutexInfo & mutex );
+
+        bool operator == ( const volatile LevelMutexInfo & mutex ) const;
+
+    private:
+        /// Level of this mutex.
+        const unsigned int m_level;
+
+        /// How many times this mutex got locked.
+        const unsigned int m_count;
+
+        /// Pointer to mutex locked before this one.
+        const volatile LevelMutexInfo * const m_previous;
+
+        /// True if mutex was locked when Memento was constructed.
+        const bool m_locked;
+    };
+
     /** @note CheckFor performs validity checking in many functions to determine if the
      code violated any invariants, if any content changed, or if the function threw an
      exception. The checkers only get used in debug builds, and get optimized away in
      release builds.
      */
-    typedef ::Loki::CheckFor< LevelMutexInfo > CheckFor;
+    typedef ::Loki::CheckFor< volatile LevelMutexInfo, Memento > CheckFor;
 
     /** @class MutexUndoer
      Undoes actions by MultiLock if an exception occurs.  It keeps track of
@@ -334,6 +359,17 @@ protected:
      */
     bool IsValid( void ) const volatile;
 
+    /** Returns true if no class invariant broken, otherwise asserts.  This function
+    only gets called in debug builds.
+     */
+    bool IsValid( void ) const;
+
+    /// Returns true if all pre-conditions for PostLock function are valid.
+    bool PostLockValidator( void ) const volatile;
+
+    /// Returns true if all pre-conditions for PreUnlock function are valid.
+    bool PreUnlockValidator( void ) const volatile;
+
 private:
 
     /// Copy constructor is not implemented.
@@ -358,6 +394,16 @@ private:
 
     /// Called only by MultiUnlock to unlock each particular mutex within a container.
     virtual MutexErrors::Type UnlockThis( void ) volatile = 0;
+
+    /** The actual implementation of IsLockedByCurrentThread. This does not do any
+     invariant checking because the functions which call it already have.
+     */
+    bool IsLockedByCurrentThreadImpl( void ) const volatile;
+
+    /** Does just the opposite of IsLockedByCurrentThread. Called as a post-condition
+    check by another function.
+     */
+    bool IsNotLockedByCurrentThread( void ) const volatile;
 
     /// Pointer to singly-linked list of mutexes locked by the current thread.
     static LOKI_THREAD_LOCAL volatile LevelMutexInfo * s_currentMutex;
@@ -765,7 +811,7 @@ public:
 
     virtual MutexErrors::Type TryLock( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::NoChangeOnThrow checker( this, &IsValid ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( true );
         if ( MutexErrors::Success == result )
@@ -786,7 +832,7 @@ public:
 
     virtual MutexErrors::Type Lock( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::NoChangeOnThrow checker( this, &IsValid ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( false );
         if ( MutexErrors::Success == result )
@@ -805,7 +851,7 @@ public:
 
     virtual MutexErrors::Type Lock( unsigned int milliSeconds ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::NoChangeOnThrow checker( this, &IsValid ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreLockCheck( false );
         if ( MutexErrors::Success == result )
@@ -840,7 +886,7 @@ public:
 
     virtual MutexErrors::Type Unlock( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::NoChangeOnThrow checker( this, &IsValid ); (void)checker; )
 
         MutexErrors::Type result = LevelMutexInfo::PreUnlockCheck();
         if ( MutexErrors::Success == result )
@@ -885,7 +931,7 @@ private:
      */
     virtual MutexErrors::Type LockThis( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::NoChangeOnThrow checker( this, &IsValid ); (void)checker; )
         assert( this != LevelMutexInfo::GetCurrentMutex() );
 
         const MutexErrors::Type result = m_mutex.Lock();
@@ -905,7 +951,7 @@ private:
      */
     virtual MutexErrors::Type LockThis( unsigned int milliSeconds ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::NoChangeOnThrow checker( this, &IsValid ); (void)checker; )
 
         clock_t timeOut = clock() + milliSeconds;
         while ( clock() < timeOut )
@@ -930,7 +976,7 @@ private:
      */
     virtual MutexErrors::Type UnlockThis( void ) volatile
     {
-        LOKI_MUTEX_DEBUG_CODE( CheckFor::Invariants checker( this, &IsValid() ); (void)checker; )
+        LOKI_MUTEX_DEBUG_CODE( CheckFor::NoChangeOnThrow checker( this, &IsValid ); (void)checker; )
         assert( NULL != LevelMutexInfo::GetCurrentMutex() );
 
         if ( 1 < LevelMutexInfo::GetLockCount() )
