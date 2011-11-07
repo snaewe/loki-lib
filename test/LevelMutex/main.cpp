@@ -14,11 +14,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-// $Id$
-
-
-// ----------------------------------------------------------------------------
-
 
 #include "loki/LevelMutex.h"
 
@@ -522,7 +517,6 @@ void SingleThreadExceptionTest( void )
     ExceptionMutex mutex2a( 2 );
     mutex2a.GetMutexPolicy().SetTossPolicy( ExceptionTossingMutex::Never );
     MutexErrors::Type result = MutexErrors::Success;
-
     try
     {
         mutex1a.Lock();
@@ -557,6 +551,7 @@ void SingleThreadExceptionTest( void )
     ExceptionMutex mutex2d( 2 );
     mutex2d.GetMutexPolicy().SetTossPolicy( ExceptionTossingMutex::Never );
     LevelMutexInfo::MutexContainer mutexes;
+
     try
     {
         mutexes.push_back( &mutex2a );
@@ -587,6 +582,7 @@ void SingleThreadExceptionTest( void )
     ExceptionMutex mutex3b( 3 );
     mutex3b.GetMutexPolicy().SetTossPolicy( ExceptionTossingMutex::Never );
     mutexes.clear();
+
     try
     {
         mutexes.push_back( &mutex3a );
