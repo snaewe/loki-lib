@@ -601,6 +601,8 @@ struct CheckFor
     typedef ContractChecker< Host, CheckForNoThrow,         Memento > NoThrow;
     typedef ContractChecker< Host, CheckForNoChange,        Memento > NoChange;
     typedef ContractChecker< Host, CheckForNothing,         Memento > Invariants;
+
+    typedef bool ( Host:: * Validator )( void ) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -775,6 +777,7 @@ struct CheckStaticFor
     typedef StaticChecker< CheckStaticForNoThrow > NoThrow;
     typedef StaticChecker< CheckStaticForNothing > Invariants;
 
+    typedef bool ( * Validator )( void );
 };
 
 // ----------------------------------------------------------------------------
