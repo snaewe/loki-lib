@@ -272,11 +272,15 @@ protected:
     {
     public:
 
-        explicit Memento( const volatile LevelMutexInfo & mutex );
+        explicit Memento( const LevelMutexInfo & mutex );
 
-        bool operator == ( const volatile LevelMutexInfo & mutex ) const;
+        bool operator == ( const LevelMutexInfo & mutex ) const;
 
     private:
+
+        /// Copy-assignment operator is not implemented.
+        Memento & operator = ( const Memento & );
+
         /// Level of this mutex.
         const unsigned int m_level;
 
@@ -295,7 +299,7 @@ protected:
      exception. The checkers only get used in debug builds, and get optimized away in
      release builds.
      */
-    typedef ::Loki::CheckFor< volatile LevelMutexInfo, Memento > CheckFor;
+    typedef ::Loki::CheckFor< const LevelMutexInfo, Memento > CheckFor;
 
     /** @class MutexUndoer
      Undoes actions by MultiLock if an exception occurs.  It keeps track of
@@ -362,13 +366,13 @@ protected:
     /** Returns true if no class invariant broken, otherwise asserts.  This function
     only gets called in debug builds.
      */
-    bool IsValid( void ) const;
+    bool IsValid2( void ) const;
 
     /// Returns true if all pre-conditions for PostLock function are valid.
-    bool PostLockValidator( void ) const volatile;
+    bool PostLockValidator( void ) const;
 
     /// Returns true if all pre-conditions for PreUnlock function are valid.
-    bool PreUnlockValidator( void ) const volatile;
+    bool PreUnlockValidator( void ) const;
 
 private:
 
@@ -395,15 +399,21 @@ private:
     /// Called only by MultiUnlock to unlock each particular mutex within a container.
     virtual MutexErrors::Type UnlockThis( void ) volatile = 0;
 
+    void PostLock( void );
+
     /** The actual implementation of IsLockedByCurrentThread. This does not do any
      invariant checking because the functions which call it already have.
      */
     bool IsLockedByCurrentThreadImpl( void ) const volatile;
 
+    bool IsLockedByCurrentThreadImpl( void ) const;
+
     /** Does just the opposite of IsLockedByCurrentThread. Called as a post-condition
     check by another function.
      */
     bool IsNotLockedByCurrentThread( void ) const volatile;
+
+    bool IsNotLockedByCurrentThread( void ) const;
 
     /// Pointer to singly-linked list of mutexes locked by the current thread.
     static LOKI_THREAD_LOCAL volatile LevelMutexInfo * s_currentMutex;

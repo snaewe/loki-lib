@@ -232,7 +232,7 @@ MutexErrors::Type DoMutexesMatchContainer( const LevelMutexInfo::MutexContainer 
 
 // ----------------------------------------------------------------------------
 
-LevelMutexInfo::Memento::Memento( const volatile LevelMutexInfo & mutex ) :
+LevelMutexInfo::Memento::Memento( const LevelMutexInfo & mutex ) :
     m_level( mutex.m_level ),
     m_count( mutex.m_count ),
     m_previous( mutex.m_previous ),
@@ -243,7 +243,7 @@ LevelMutexInfo::Memento::Memento( const volatile LevelMutexInfo & mutex ) :
 
 // ----------------------------------------------------------------------------
 
-bool LevelMutexInfo::Memento::operator == ( const volatile LevelMutexInfo & mutex ) const
+bool LevelMutexInfo::Memento::operator == ( const LevelMutexInfo & mutex ) const
 {
     assert( this != nullptr );
 
@@ -594,20 +594,20 @@ LevelMutexInfo::~LevelMutexInfo( void )
 
 bool LevelMutexInfo::IsValid( void ) const volatile
 {
+    const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+    return pThis->IsValid2();
+}
+
+// ----------------------------------------------------------------------------
+
+bool LevelMutexInfo::IsValid2( void ) const
+{
     assert( nullptr != this );
     assert( LevelMutexInfo::UnlockedLevel != m_level );
     assert( m_previous != this );
     assert( ( nullptr == m_previous ) || ( 0 < m_count ) );
     assert( IsValidList() );
     return true;
-}
-
-// ----------------------------------------------------------------------------
-
-bool LevelMutexInfo::IsValid( void ) const
-{
-    const volatile LevelMutexInfo * pThis = const_cast< const volatile LevelMutexInfo * >( this );
-    return pThis->IsValid();
 }
 
 // ----------------------------------------------------------------------------
@@ -636,7 +636,8 @@ bool LevelMutexInfo::IsLockedByCurrentThread( void ) const volatile
     // gets called by various functions that are called to clean up after an exception
     // is thrown
     LOKI_MUTEX_DEBUG_CODE(
-        CheckFor::NoChange checker( this, &LevelMutexInfo::IsValid );
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+        CheckFor::NoChange checker( pThis, &LevelMutexInfo::IsValid2 );
         (void)checker;
     )
     return IsLockedByCurrentThreadImpl();
@@ -645,6 +646,14 @@ bool LevelMutexInfo::IsLockedByCurrentThread( void ) const volatile
 // ----------------------------------------------------------------------------
 
 bool LevelMutexInfo::IsLockedByCurrentThreadImpl( void ) const volatile
+{
+    const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+    return pThis->IsLockedByCurrentThreadImpl();
+}
+
+// ----------------------------------------------------------------------------
+
+bool LevelMutexInfo::IsLockedByCurrentThreadImpl( void ) const
 {
     if ( !IsLocked() )
         return false;
@@ -681,7 +690,8 @@ bool LevelMutexInfo::IsNotLockedByCurrentThread( void ) const volatile
 bool LevelMutexInfo::IsRecentLock( void ) const volatile
 {
     LOKI_MUTEX_DEBUG_CODE(
-        CheckFor::NoThrowOrChange checker( this, &LevelMutexInfo::IsValid );
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+        CheckFor::NoThrowOrChange checker( pThis, &LevelMutexInfo::IsValid2 );
         (void)checker;
     )
 
@@ -705,7 +715,8 @@ bool LevelMutexInfo::IsRecentLock( void ) const volatile
 bool LevelMutexInfo::IsRecentLock( std::size_t count ) const volatile
 {
     LOKI_MUTEX_DEBUG_CODE(
-        CheckFor::NoThrowOrChange checker( this, &LevelMutexInfo::IsValid );
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+        CheckFor::NoThrowOrChange checker( pThis, &LevelMutexInfo::IsValid2 );
         (void)checker;
     )
 
@@ -728,7 +739,8 @@ bool LevelMutexInfo::IsRecentLock( std::size_t count ) const volatile
 bool LevelMutexInfo::IsLockedByAnotherThread( void ) const volatile
 {
     LOKI_MUTEX_DEBUG_CODE(
-        CheckFor::NoThrowOrChange checker( this, &LevelMutexInfo::IsValid );
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+        CheckFor::NoThrowOrChange checker( pThis, &LevelMutexInfo::IsValid2 );
         (void)checker;
     )
 
@@ -743,7 +755,7 @@ bool LevelMutexInfo::IsLockedByAnotherThread( void ) const volatile
 
 // ----------------------------------------------------------------------------
 
-bool LevelMutexInfo::PostLockValidator( void ) const volatile
+bool LevelMutexInfo::PostLockValidator( void ) const
 {
     assert( 0 == m_count );
     assert( nullptr == m_previous );
@@ -757,8 +769,17 @@ bool LevelMutexInfo::PostLockValidator( void ) const volatile
 
 void LevelMutexInfo::PostLock( void ) volatile
 {
+    LevelMutexInfo * pThis = const_cast< LevelMutexInfo * >( this );
+    pThis->PostLock();
+}
+
+// ----------------------------------------------------------------------------
+
+void LevelMutexInfo::PostLock( void )
+{
     LOKI_MUTEX_DEBUG_CODE(
-        CheckFor::NoThrow checker( this, &LevelMutexInfo::IsValid,
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+        CheckFor::NoThrow checker( pThis, &LevelMutexInfo::IsValid2,
             &LevelMutexInfo::PostLockValidator, &LevelMutexInfo::IsLockedByCurrentThreadImpl );
         (void)checker;
     )
@@ -775,7 +796,7 @@ void LevelMutexInfo::PostLock( void ) volatile
 
 // ----------------------------------------------------------------------------
 
-bool LevelMutexInfo::PreUnlockValidator( void ) const volatile
+bool LevelMutexInfo::PreUnlockValidator( void ) const
 {
     assert( 1 == m_count );
     assert( nullptr != s_currentMutex );
@@ -790,9 +811,10 @@ bool LevelMutexInfo::PreUnlockValidator( void ) const volatile
 void LevelMutexInfo::PreUnlock( void ) volatile
 {
     LOKI_MUTEX_DEBUG_CODE(
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
         // This must use CheckFor::Invariants instead of CheckFor::NoThrow because the
         // function gets called when MultiLock has to clean up after an exception.
-        CheckFor::Invariants checker( this, &LevelMutexInfo::IsValid,
+        CheckFor::Invariants checker( pThis, &LevelMutexInfo::IsValid2,
             &LevelMutexInfo::PreUnlockValidator, &LevelMutexInfo::IsNotLockedByCurrentThread );
         (void)checker;
     )
@@ -812,7 +834,8 @@ void LevelMutexInfo::PreUnlock( void ) volatile
 MutexErrors::Type LevelMutexInfo::PreLockCheck( bool forTryLock ) volatile
 {
     LOKI_MUTEX_DEBUG_CODE(
-        CheckFor::NoThrow checker( this, &LevelMutexInfo::IsValid );
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+        CheckFor::NoThrow checker( pThis, &LevelMutexInfo::IsValid2 );
         (void)checker;
     )
 
@@ -849,7 +872,8 @@ MutexErrors::Type LevelMutexInfo::PreLockCheck( bool forTryLock ) volatile
 MutexErrors::Type LevelMutexInfo::PreUnlockCheck( void ) volatile
 {
     LOKI_MUTEX_DEBUG_CODE(
-        CheckFor::NoThrow checker( this, &LevelMutexInfo::IsValid );
+        const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+        CheckFor::NoThrow checker( pThis, &LevelMutexInfo::IsValid2 );
         (void)checker;
     )
 
