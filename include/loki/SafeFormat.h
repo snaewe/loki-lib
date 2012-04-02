@@ -44,6 +44,7 @@
 #include <iostream>
 
 #include <loki/LokiExport.h>
+#include <loki/TypeTraits.h>
 
 
 // long is 32 bit on 64-bit Windows!
@@ -132,7 +133,7 @@ namespace Loki
          another device type. It is not for public use.
          */
         template < class Device2 >
-        PrintfState< Device2, Char > ChangeDevice( Device2 & device ) const
+        PrintfState< Device2, Char > ChangeDevice( typename Loki::TypeTraits< Device2 >::ParameterType device ) const
         {
             return PrintfState< Device2, Char >( device, format_, width_, prec_, flags_, result_ );
         }
