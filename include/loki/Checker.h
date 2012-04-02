@@ -524,7 +524,9 @@ public:
     {
         assert( Check() );
         if ( 0 != m_pre )
+        {
             assert( ( m_host->*( m_pre ) )() );
+        }
     }
 
     /** The destructor checks if any Host invariants failed, and then calls the
@@ -535,7 +537,9 @@ public:
     {
         assert( Check() );
         if ( 0 != m_post )
+        {
             assert( ( m_host->*( m_post ) )() );
+        }
         assert( Ep::Check( m_host ) );
     }
 
