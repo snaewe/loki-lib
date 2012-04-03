@@ -718,8 +718,8 @@ private:
  either pthreads or the Windows CRITICAL_SECTION. If you want to use a mutex
  mechanism besides one of those, then all you have to do is provide a class
  which wraps the mutex and implements these functions.
-    explicit SpinLevelMutex( unsigned int level );
-    virtual ~SpinLevelMutex( void );
+    explicit MutexPolicy( unsigned int level );
+    virtual ~MutexPolicy( void );
     virtual MutexErrors::Type Lock( void ) volatile;
     virtual MutexErrors::Type TryLock( void ) volatile;
     virtual MutexErrors::Type Unlock( void ) volatile;
