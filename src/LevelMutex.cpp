@@ -671,6 +671,14 @@ bool LevelMutexInfo::IsLockedByCurrentThreadImpl( void ) const
 
 bool LevelMutexInfo::IsNotLockedByCurrentThread( void ) const volatile
 {
+	const LevelMutexInfo * pThis = const_cast< const LevelMutexInfo * >( this );
+	return pThis->IsNotLockedByCurrentThread();
+}
+
+// ----------------------------------------------------------------------------
+
+bool LevelMutexInfo::IsNotLockedByCurrentThread( void ) const
+{
     if ( !IsLocked() )
         return true;
 
