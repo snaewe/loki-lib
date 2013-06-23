@@ -139,7 +139,7 @@ public:
 
     void JoinAll( void ) const volatile;
 
-    unsigned int GetCount( void ) const volatile;
+    size_t GetCount( void ) const volatile;
 
     unsigned int GetCount( Thread::Status status ) const volatile;
 

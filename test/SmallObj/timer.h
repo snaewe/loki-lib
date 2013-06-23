@@ -38,8 +38,8 @@ public:
     {
         t1 = clock();
     }
-    
-    int t()
+
+    clock_t t()
     {
         return t1-t0;
     }
@@ -67,8 +67,8 @@ public:
         std::cout << s << "\tseconds: " << sec(t) << "\trelative time: " << rel(t) << "%\tspeed-up factor: " << speedup(t) << "" << std::endl;
     }
 private:
-    int t0;
-    int t1;
+    clock_t t0;
+    clock_t t1;
 };
 
 #endif

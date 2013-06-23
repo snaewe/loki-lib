@@ -177,7 +177,7 @@ unsigned int ThreadPool::Create( unsigned int threadCount ) volatile
     if ( threadCount <= countNow )
         return threadCount;
 
-    const unsigned int totalCount = pThis->m_threads.size();
+    const size_t totalCount = pThis->m_threads.size();
     const unsigned int howManyToAdd = threadCount - countNow;
     if ( pThis->m_threads.capacity() <= howManyToAdd )
         pThis->m_threads.reserve( totalCount + howManyToAdd );
@@ -200,12 +200,12 @@ unsigned int ThreadPool::Create( unsigned int threadCount ) volatile
 
 // ----------------------------------------------------------------------------
 
-unsigned int ThreadPool::GetCount( void ) const volatile
+size_t ThreadPool::GetCount( void ) const volatile
 {
     assert( IsValid() );
     LOKI_DEBUG_CODE( Checker checker( this ); (void)checker; )
     ThreadPool * pThis = const_cast< ThreadPool * >( this );
-    const unsigned int count = pThis->m_threads.size();
+    const size_t count = pThis->m_threads.size();
     return count;
 }
 
