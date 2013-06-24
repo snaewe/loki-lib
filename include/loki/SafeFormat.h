@@ -35,7 +35,6 @@
 
 #include <cstdio>
 #include <climits>
-#include <string>
 #include <cstring>
 #include <stdexcept>
 #include <utility>
@@ -254,7 +253,7 @@ namespace Loki
                 result_ = -1;
                 return *this;
             }
-            const size_t len = std::min(std::strlen(s), prec_);
+            const size_t len = std::min(::std::strlen(s), prec_);
             if (width_ > len) {
                 if (LeftJustify()) {
                     Write(s, s + len);
@@ -309,7 +308,7 @@ namespace Loki
                 SetAlternateForm(); // printed with '0x' in front
                 isSigned = true; // that's what gcc does
             }
-            if (!strchr("cdiuoxX", formatChar)) {
+            if (!::std::strchr("cdiuoxX", formatChar)) {
                 result_ = -1;
                 return;
             }
@@ -404,7 +403,7 @@ namespace Loki
             // enforce format string validity
             ReadLeaders();
             // enforce format spec
-            if (!strchr(check_fmt_char, *format_)) {
+            if (!::std::strchr(check_fmt_char, *format_)) {
                 result_ = -1;
                 return;
             }
@@ -434,7 +433,7 @@ namespace Loki
                 result_ = -1;
                 return;
             }
-            Write(resultBuf, resultBuf + strlen(resultBuf));
+            Write(resultBuf, resultBuf + ::std::strlen(resultBuf));
             Advance(); // output stuff to the next format directive
         }
 

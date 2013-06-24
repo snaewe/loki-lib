@@ -132,7 +132,7 @@ namespace Loki
     }
 
     PrintfState<std::string&, char> SPrintf(std::string& s, const char* format) {
-        const size_t estimate = ::strlen( format ) + 128;
+        const size_t estimate = ::std::strlen( format ) + 128;
         s.reserve( estimate );
         return PrintfState<std::string&, char>(s, format);
     }
