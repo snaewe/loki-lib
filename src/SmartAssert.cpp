@@ -524,4 +524,4 @@ void CommandLineAssertPolicy::AbortNow( const SmartAssertBase * )
     #pragma warning( pop )
 #endif
 
-}; // end namespace
+} // end namespace

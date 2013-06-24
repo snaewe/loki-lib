@@ -236,7 +236,7 @@ public:
 		VoidPtr,
 		Float,
 		Double,
-		LongDouble,
+		LongDouble
 	};
 
 	static const char * GetName( DataTypeTag tag );
