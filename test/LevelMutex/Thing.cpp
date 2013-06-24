@@ -195,7 +195,7 @@ void TestResults::Reset( unsigned int threadCount )
 
 // ----------------------------------------------------------------------------
 
-void TestResults::SetResult( unsigned int threadIndex, unsigned int total,
+void TestResults::SetResult( uintptr_t threadIndex, unsigned int total,
     unsigned int fails )
 {
     assert( NULL != this );
@@ -361,7 +361,7 @@ Thing::~Thing( void )
 
 // ----------------------------------------------------------------------------
 
-void Thing::Print( unsigned int value, unsigned int index, unsigned int startSize ) const volatile
+void Thing::Print( uintptr_t value, unsigned int index, unsigned int startSize ) const volatile
 {
     assert( NULL != this );
     MutexLocker locker( m_mutex );
@@ -374,7 +374,7 @@ void Thing::Print( unsigned int value, unsigned int index, unsigned int startSiz
 
 // ----------------------------------------------------------------------------
 
-void Thing::Print( unsigned int value, unsigned int index, unsigned int startSize ) const
+void Thing::Print( uintptr_t value, unsigned int index, unsigned int startSize ) const
 {
     assert( NULL != this );
     switch ( startSize )
@@ -402,7 +402,7 @@ void Thing::Print( unsigned int value, unsigned int index, unsigned int startSiz
 
 // ----------------------------------------------------------------------------
 
-void Thing::SetValue( unsigned int value ) volatile
+void Thing::SetValue( uintptr_t value ) volatile
 {
     assert( NULL != this );
     SingleThingLocker pSafeThis( *this, m_mutex );
@@ -506,7 +506,7 @@ void LevelThing::UnlockHierarchy( void ) volatile
 
 // ----------------------------------------------------------------------------
 
-void LevelThing::SetValue( unsigned int value ) volatile
+void LevelThing::SetValue( uintptr_t value ) volatile
 {
     assert( NULL != this );
     MutexLocker locker( m_mutex, !m_mutex.IsLockedByCurrentThread() );
@@ -522,7 +522,7 @@ void LevelThing::SetValue( unsigned int value ) volatile
 
 // ----------------------------------------------------------------------------
 
-void LevelThing::SetValue( unsigned int value )
+void LevelThing::SetValue( uintptr_t value )
 {
     assert( NULL != this );
     m_value = value;
@@ -536,7 +536,7 @@ void LevelThing::SetValue( unsigned int value )
 
 // ----------------------------------------------------------------------------
 
-bool LevelThing::DoValuesMatch( unsigned int value ) const volatile
+bool LevelThing::DoValuesMatch( uintptr_t value ) const volatile
 {
     assert( NULL != this );
     {
@@ -555,7 +555,7 @@ bool LevelThing::DoValuesMatch( unsigned int value ) const volatile
 
 // ----------------------------------------------------------------------------
 
-bool LevelThing::DoValuesMatch( unsigned int value ) const
+bool LevelThing::DoValuesMatch( uintptr_t value ) const
 {
     assert( NULL != this );
     if ( m_value != value )
@@ -592,7 +592,7 @@ SomeThing::~SomeThing( void )
 
 // ----------------------------------------------------------------------------
 
-void SomeThing::SetValue( unsigned int value ) volatile
+void SomeThing::SetValue( uintptr_t value ) volatile
 {
     assert( NULL != this );
     SomeThingLocker pSafeThis( *this, m_mutex );
@@ -707,7 +707,7 @@ ManyThingsPool * MultiLevelPool::GetFromPool( unsigned int index )
 // ----------------------------------------------------------------------------
 
 void CheckForMatchingValues( unsigned int & failCount, unsigned int & testCount,
-    unsigned int value, const SomeThingPool & pool )
+    uintptr_t value, const SomeThingPool & pool )
 {
     const unsigned int count = pool.size();
     for ( unsigned int ii = 0; ii < count; ++ii )
@@ -723,7 +723,7 @@ void CheckForMatchingValues( unsigned int & failCount, unsigned int & testCount,
 // ----------------------------------------------------------------------------
 
 void CheckForMatchingValues( unsigned int & failCount, unsigned int & testCount,
-    unsigned int value, const SomeThingPool & pool, bool locked )
+    uintptr_t value, const SomeThingPool & pool, bool locked )
 {
     if ( !locked )
     {

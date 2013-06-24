@@ -27,6 +27,16 @@
 
 #include <vector>
 
+#if !defined(_MSC_VER)
+    #if defined(__sparc__)
+        #include <inttypes.h>
+    #else
+        #include <stdint.h>
+    #endif
+#else
+    typedef unsigned int uintptr_t;
+#endif
+
 
 // ----------------------------------------------------------------------------
 
@@ -89,7 +99,7 @@ public:
 
     void Reset( unsigned int threadCount );
 
-    void SetResult( unsigned int threadIndex, unsigned int total,
+    void SetResult( uintptr_t threadIndex, unsigned int total,
         unsigned int fails );
 
     void OutputResults( void );
@@ -142,17 +152,17 @@ public:
 
     static void DestroyPool( void );
 
-    void Print( unsigned int value, unsigned int index, unsigned int startSize ) const volatile;
+    void Print( uintptr_t value, unsigned int index, unsigned int startSize ) const volatile;
 
-    void Print( unsigned int value, unsigned int index, unsigned int startSize ) const;
+    void Print( uintptr_t value, unsigned int index, unsigned int startSize ) const;
 
-    unsigned int GetValue( void ) const volatile { return m_value; }
+    uintptr_t GetValue( void ) const volatile { return m_value; }
 
-    unsigned int GetValue( void ) const { return m_value; }
+    uintptr_t GetValue( void ) const { return m_value; }
 
-    void SetValue( unsigned int value ) volatile;
+    void SetValue( uintptr_t value ) volatile;
 
-    void SetValue( unsigned int value ) { m_value = value; }
+    void SetValue( uintptr_t value ) { m_value = value; }
 
     inline volatile SleepMutex & GetMutex( void ) volatile { return m_mutex; }
 
@@ -175,7 +185,7 @@ private:
     static TestResults s_results;
 
     mutable volatile SleepMutex m_mutex;
-    unsigned int m_value;
+    uintptr_t m_value;
 };
 
 typedef ::std::vector< Thing * > UnsafeThingPool;
@@ -219,17 +229,17 @@ public:
 
     void UnlockHierarchy( void ) volatile;
 
-    void SetValue( unsigned int value ) volatile;
+    void SetValue( uintptr_t value ) volatile;
 
-    void SetValue( unsigned int value );
+    void SetValue( uintptr_t value );
 
-    inline unsigned int GetValue( void ) const volatile { return m_value; }
+    inline uintptr_t GetValue( void ) const volatile { return m_value; }
 
-    inline unsigned int GetValue( void ) const { return m_value; }
+    inline uintptr_t GetValue( void ) const { return m_value; }
 
-    bool DoValuesMatch( unsigned int value ) const volatile;
+    bool DoValuesMatch( uintptr_t value ) const volatile;
 
-    bool DoValuesMatch( unsigned int value ) const;
+    bool DoValuesMatch( uintptr_t value ) const;
 
     inline volatile ::Loki::LevelMutexInfo & GetMutex( void ) volatile { return m_mutex; }
 
@@ -251,7 +261,7 @@ private:
 
     mutable volatile SleepMutex m_mutex;
     const unsigned int m_place;
-    unsigned int m_value;
+    uintptr_t m_value;
 };
 
 // ----------------------------------------------------------------------------
@@ -266,13 +276,13 @@ public:
 
     inline unsigned int GetLevel( void ) const volatile { return m_level; }
 
-    void SetValue( unsigned int value ) volatile;
+    void SetValue( uintptr_t value ) volatile;
 
-    void SetValue( unsigned int value );
+    void SetValue( uintptr_t value );
 
-    inline unsigned int GetValue( void ) const volatile { return m_value; }
+    inline uintptr_t GetValue( void ) const volatile { return m_value; }
 
-    inline unsigned int GetValue( void ) const { return m_value; }
+    inline uintptr_t GetValue( void ) const { return m_value; }
 
     inline volatile ::Loki::LevelMutexInfo & GetMutex( void ) volatile { return m_mutex; }
 
@@ -287,7 +297,7 @@ private:
     mutable volatile SleepMutex m_mutex;
     const unsigned int m_place;
     const unsigned int m_level;
-    unsigned int m_value;
+    uintptr_t m_value;
 };
 
 typedef ::std::vector< volatile SomeThing * > SomeThingPool;
@@ -346,10 +356,10 @@ private:
 // ----------------------------------------------------------------------------
 
 void CheckForMatchingValues( unsigned int & failCount, unsigned int & testCount,
-    unsigned int value, const SomeThingPool & pool );
+    uintptr_t value, const SomeThingPool & pool );
 
 void CheckForMatchingValues( unsigned int & failCount, unsigned int & testCount,
-    unsigned int value, const SomeThingPool & pool, bool locked );
+    uintptr_t value, const SomeThingPool & pool, bool locked );
 
 void MakePool( SomeThingPool & pool );
 

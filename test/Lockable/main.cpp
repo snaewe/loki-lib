@@ -36,6 +36,17 @@
 #include "ThreadPool.hpp"
 
 
+#if !defined(_MSC_VER)
+    #if defined(__sparc__)
+        #include <inttypes.h>
+    #else
+        #include <stdint.h>
+    #endif
+#else
+    typedef unsigned int uintptr_t;
+#endif
+
+
 using namespace std;
 
 static unsigned int g = 0;
@@ -58,25 +69,25 @@ public:
 
     typedef ::Loki::ObjectLevelLockable< LockableObject > BaseClass;
 
-    explicit LockableObject( unsigned int index ) :
+    explicit LockableObject( uintptr_t index ) :
         BaseClass(), m_index( index ), m_value( ObjectCount ) {}
 
     ~LockableObject( void ) {}
 
-    unsigned int GetIndex( void ) const { return m_index; }
+    uintptr_t GetIndex( void ) const { return m_index; }
 
-    unsigned int GetValue( void ) const { return m_value; }
+    uintptr_t GetValue( void ) const { return m_value; }
 
-    void SetValue( unsigned int value ) { m_value = value; }
+    void SetValue( uintptr_t value ) { m_value = value; }
 
     void DoSomething( void );
 
-    void Print( unsigned int threadIndex );
+    void Print( uintptr_t threadIndex );
 
 private:
 
-    const unsigned int m_index;
-    unsigned int m_value;
+    const uintptr_t m_index;
+    uintptr_t m_value;
 
 };
 
@@ -90,7 +101,7 @@ void LockableObject::DoSomething( void)
 
 // ----------------------------------------------------------------------------
 
-void LockableObject::Print( unsigned int threadIndex )
+void LockableObject::Print( uintptr_t threadIndex )
 {
     assert( NULL != this );
     const char * result = ( threadIndex != m_value ) ? "Mismatch!" : "";
@@ -126,7 +137,7 @@ LockableObject * GetLockableObject( unsigned int index )
 
 void * RunObjectTest( void * p )
 {
-    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+    const uintptr_t threadIndex = reinterpret_cast< uintptr_t >( p );
     assert( threadIndex < ThreadCount );
 
     unsigned int failCount = 0;
@@ -140,7 +151,7 @@ void * RunObjectTest( void * p )
         object->DoSomething();
         object->Print( threadIndex );
         object->DoSomething();
-        const unsigned int value = object->GetValue();
+        const uintptr_t value = object->GetValue();
         if ( value != threadIndex )
             ++failCount;
     }
@@ -192,23 +203,23 @@ public:
 
     typedef ::Loki::ClassLevelLockable< LockableClass > BaseClass;
 
-    explicit LockableClass( unsigned int index ) : BaseClass(), m_index( index ) {}
+    explicit LockableClass( uintptr_t index ) : BaseClass(), m_index( index ) {}
 
     ~LockableClass( void ) {}
 
-    unsigned int GetIndex( void ) const { return m_index; }
+    uintptr_t GetIndex( void ) const { return m_index; }
 
-    void Print( unsigned int threadIndex );
+    void Print( uintptr_t threadIndex );
 
 private:
     /// Assignment operator is not implemented.
     LockableClass & operator = ( const LockableClass & );
-    const unsigned int m_index;
+    const uintptr_t m_index;
 };
 
 // ----------------------------------------------------------------------------
 
-void LockableClass::Print( unsigned int threadIndex )
+void LockableClass::Print( uintptr_t threadIndex )
 {
     assert( NULL != this );
     DO; ::Loki::Printf( "%u: %u: -----\n" )( m_index )( threadIndex );
@@ -245,7 +256,7 @@ LockableClass * GetLockableClass( unsigned int index )
 
 void * RunClassTest( void * p )
 {
-    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+    const uintptr_t threadIndex = reinterpret_cast< uintptr_t >( p );
     assert( threadIndex < ThreadCount );
 
     for ( unsigned int ii = 0; ii < ClassCount; ++ii )

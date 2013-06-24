@@ -37,11 +37,22 @@
 #include <cassert>
 
 
+#if !defined(_MSC_VER)
+    #if defined(__sparc__)
+        #include <inttypes.h>
+    #else
+        #include <stdint.h>
+    #endif
+#else
+    typedef unsigned int uintptr_t;
+#endif
+
+
 // ----------------------------------------------------------------------------
 
-typedef ::std::vector< unsigned int > IntVector;
+typedef ::std::vector< uintptr_t > IntVector;
 
-static LOKI_THREAD_LOCAL unsigned int StandaloneStaticValue = 0;
+static LOKI_THREAD_LOCAL uintptr_t StandaloneStaticValue = 0;
 
 static const unsigned int ThreadCount = 4;
 
@@ -49,7 +60,7 @@ static const unsigned int ThreadCount = 4;
 
 IntVector & GetIntVector( void )
 {
-    unsigned int v = 0;
+    uintptr_t v = 0;
     static IntVector addresses( ThreadCount, v );
     return addresses;
 }
@@ -59,7 +70,7 @@ IntVector & GetIntVector( void )
 void * AddToIntVector( void * p )
 {
     assert( 0 == StandaloneStaticValue );
-    const unsigned int ii = reinterpret_cast< unsigned int >( p );
+    const uintptr_t ii = reinterpret_cast< uintptr_t >( p );
     assert( 0 < ii );
     assert( ii < ThreadCount + 1 );
     StandaloneStaticValue = ii;
@@ -86,10 +97,10 @@ bool TestThreadLocalStaticValue( void )
     IntVector & v = GetIntVector();
     for ( unsigned int i1 = 0; i1 < ThreadCount - 1; ++i1 )
     {
-        const unsigned int v1 = v[ i1 ];
+        const uintptr_t v1 = v[ i1 ];
         for ( unsigned int i2 = i1 + 1; i2 < ThreadCount; ++i2 )
         {
-            const unsigned int v2 = v[ i2 ];
+            const uintptr_t v2 = v[ i2 ];
             if ( v1 == v2 )
             {
                 allDifferent = false;
@@ -106,9 +117,9 @@ bool TestThreadLocalStaticValue( void )
 
 // ----------------------------------------------------------------------------
 
-unsigned int & GetFunctionThreadLocalValue( void )
+uintptr_t & GetFunctionThreadLocalValue( void )
 {
-    static LOKI_THREAD_LOCAL unsigned int FunctionStaticValue = 0;
+    static LOKI_THREAD_LOCAL uintptr_t FunctionStaticValue = 0;
     return FunctionStaticValue;
 }
 
@@ -116,9 +127,9 @@ unsigned int & GetFunctionThreadLocalValue( void )
 
 void * ChangeFunctionStaticValue( void * p )
 {
-    unsigned int & thatValue = GetFunctionThreadLocalValue();
+    uintptr_t & thatValue = GetFunctionThreadLocalValue();
     assert( 0 == thatValue );
-    const unsigned int ii = reinterpret_cast< unsigned int >( p );
+    const uintptr_t ii = reinterpret_cast< uintptr_t >( p );
     assert( 0 < ii );
     assert( ii < ThreadCount + 1 );
     thatValue = ii + ThreadCount;
@@ -151,10 +162,10 @@ bool TestThreadLocalFunctionStaticValue( void )
     bool allDifferent = true;
     for ( unsigned int i1 = 0; i1 < ThreadCount - 1; ++i1 )
     {
-        const unsigned int v1 = v[ i1 ];
+        const uintptr_t v1 = v[ i1 ];
         for ( unsigned int i2 = i1 + 1; i2 < ThreadCount; ++i2 )
         {
-            const unsigned int v2 = v[ i2 ];
+            const uintptr_t v2 = v[ i2 ];
             if ( v1 == v2 )
             {
                 allDifferent = false;
@@ -175,24 +186,24 @@ class ThreadAware
 {
 public:
 
-    static inline void SetValue( unsigned int value ) { ClassThreadLocal = value; }
+    static inline void SetValue( uintptr_t value ) { ClassThreadLocal = value; }
 
-    static inline unsigned int GetValue( void ) { return ClassThreadLocal; }
+    static inline uintptr_t GetValue( void ) { return ClassThreadLocal; }
 
 private:
 
-    static LOKI_THREAD_LOCAL unsigned int ClassThreadLocal;
+    static LOKI_THREAD_LOCAL uintptr_t ClassThreadLocal;
 
 };
 
-LOKI_THREAD_LOCAL unsigned int ThreadAware::ClassThreadLocal = 0;
+LOKI_THREAD_LOCAL uintptr_t ThreadAware::ClassThreadLocal = 0;
 
 // ----------------------------------------------------------------------------
 
 void * ChangeClassStaticValue( void * p )
 {
     assert( ThreadAware::GetValue() == 0 );
-    const unsigned int ii = reinterpret_cast< unsigned int >( p );
+    const uintptr_t ii = reinterpret_cast< uintptr_t >( p );
     assert( 0 < ii );
     assert( ii < ThreadCount + 1 );
     ThreadAware::SetValue( ii + 2 * ThreadCount );
@@ -225,10 +236,10 @@ bool TestThreadLocalClassStaticValue( void )
     bool allDifferent = true;
     for ( unsigned int i1 = 0; i1 < ThreadCount - 1; ++i1 )
     {
-        const unsigned int v1 = v[ i1 ];
+        const uintptr_t v1 = v[ i1 ];
         for ( unsigned int i2 = i1 + 1; i2 < ThreadCount; ++i2 )
         {
-            const unsigned int v2 = v[ i2 ];
+            const uintptr_t v2 = v[ i2 ];
             if ( v1 == v2 )
             {
                 allDifferent = false;

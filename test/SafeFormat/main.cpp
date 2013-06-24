@@ -23,6 +23,17 @@
 #include "ThreadPool.hpp"
 
 
+#if !defined(_MSC_VER)
+    #if defined(__sparc__)
+        #include <inttypes.h>
+    #else
+        #include <stdint.h>
+    #endif
+#else
+    typedef unsigned int uintptr_t;
+#endif
+
+
 #if defined(_MSC_VER)
 #if _MSC_VER >= 1400
 #define sprintf     sprintf_s
@@ -367,7 +378,7 @@ void RandomTest( unsigned int loopCount )
 
 void * DoLokiFPrintfLoop( void * p )
 {
-    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+    const uintptr_t threadIndex = reinterpret_cast< uintptr_t >( p );
 
 	for ( unsigned int loop = 0; loop < 10; ++loop )
 	{
@@ -381,7 +392,7 @@ void * DoLokiFPrintfLoop( void * p )
 
 void * DoLokiPrintfLoop( void * p )
 {
-    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+    const uintptr_t threadIndex = reinterpret_cast< uintptr_t >( p );
 
 	for ( unsigned int loop = 0; loop < 10; ++loop )
 	{
@@ -395,7 +406,7 @@ void * DoLokiPrintfLoop( void * p )
 
 void * DoStdOutLoop( void * p )
 {
-    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+    const uintptr_t threadIndex = reinterpret_cast< uintptr_t >( p );
 
 	for ( unsigned int loop = 0; loop < 10; ++loop )
 	{
@@ -409,7 +420,7 @@ void * DoStdOutLoop( void * p )
 
 void * DoCoutLoop( void * p )
 {
-    const unsigned int threadIndex = reinterpret_cast< unsigned int >( p );
+    const uintptr_t threadIndex = reinterpret_cast< uintptr_t >( p );
 
 	for ( unsigned int loop = 0; loop < 10; ++loop )
 	{
