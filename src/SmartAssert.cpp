@@ -51,7 +51,7 @@ using namespace ::std;
 namespace Loki
 {
 
-bool SmartAssertBase::s_alwaysIgnore = true;
+static bool s_alwaysIgnore = true;
 
 const char * const SmartAssertBase::FileDesc = "file";
 const char * const SmartAssertBase::LineDesc = "line";
@@ -92,119 +92,121 @@ const char * AssertInfo::GetName( DataTypeTag tag )
 
 // ---------------------------------------------------------------------
 
-void AssertInfo::DataValue::Output( DataTypeTag theType ) const
+void AssertInfo::DataValue::Output( DataTypeTag theType, bool use_cerr ) const
 {
+    ::std::basic_ostream< char > & out = ( use_cerr ) ? ::std::cerr : ::std::cout;
+
 	switch ( theType )
 	{
 		case Unknown:
 		{
-			cout << "\t Error! Unknown data type! " << theType;
+			out << "\t Error! Unknown data type! " << theType;
 			break;
 		}
 		case Boolean:
 		{
 			const char * message = m_bool ? "true" : "false";
-			cout << message;
+			out << message;
 			break;
 		}
 		case JustChar:
 		{
-			cout << m_char;
+			out << m_char;
 			break;
 		}
 		case SignedChar:
 		{
-			cout << m_s_char;
+			out << m_s_char;
 			break;
 		}
 		case UnsignedChar:
 		{
-			cout << m_u_char;
+			out << m_u_char;
 			break;
 		}
 		case SignedShort:
 		{
-			cout << m_s_short;
+			out << m_s_short;
 			break;
 		}
 		case UnsignedShort:
 		{
-			cout << m_u_short;
+			out << m_u_short;
 			break;
 		}
 		case JustInt:
 		{
-			cout << m_int;
+			out << m_int;
 			break;
 		}
 		case SignedInt:
 		{
-			cout << m_int;
+			out << m_int;
 			break;
 		}
 		case UnsignedInt:
 		{
-			cout << m_u_int;
+			out << m_u_int;
 			break;
 		}
 		case Long:
 		{
-			cout << m_long;
+			out << m_long;
 			break;
 		}
 		case UnsignedLong:
 		{
-			cout << m_u_long;
+			out << m_u_long;
 			break;
 		}
 		case LongInt:
 		{
-			cout << m_s_long_int;
+			out << m_s_long_int;
 			break;
 		}
 		case UnsignedLongInt:
 		{
-			cout << m_u_long_int;
+			out << m_u_long_int;
 			break;
 		}
 		case CharPtr:
 		{
-			cout << m_p_char;
+			out << m_p_char;
 			break;
 		}
 		case SignedCharPtr:
 		{
-			cout << m_p_s_char;
+			out << m_p_s_char;
 			break;
 		}
 		case UnsignedCharPtr:
 		{
-			cout << m_p_u_char;
+			out << m_p_u_char;
 			break;
 		}
 		case VoidPtr:
 		{
-			cout << m_p_v;
+			out << m_p_v;
 			break;
 		}
 		case Float:
 		{
-			cout << m_float;
+			out << m_float;
 			break;
 		}
 		case Double:
 		{
-			cout << m_double;
+			out << m_double;
 			break;
 		}
 		case LongDouble:
 		{
-			cout << m_l_double;
+			out << m_l_double;
 			break;
 		}
 		default:
 		{
-			cout << "\t Error! Undefined data type! " << theType;
+			out << "\t Error! Undefined data type! " << theType;
 			break;
 		}
 	}
@@ -212,11 +214,12 @@ void AssertInfo::DataValue::Output( DataTypeTag theType ) const
 
 // ---------------------------------------------------------------------
 
-void AssertInfo::Output() const
+void AssertInfo::Output( bool use_cerr ) const
 {
-	cout << "\t" << GetName( m_type ) << ": ";
-	m_value.Output( m_type );
-	cout << endl;
+    ::std::basic_ostream< char > & out = ( use_cerr ) ? ::std::cerr : ::std::cout;
+	out << "\t" << GetName( m_type ) << ": ";
+	m_value.Output( m_type, use_cerr );
+	out << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -241,16 +244,17 @@ AssertContext::AssertContext( const char * description, const char * value )
 
 // ---------------------------------------------------------------------
 
-void AssertContext::Output() const
+void AssertContext::Output( bool use_cerr ) const
 {
-	cout << m_description << ": ";
+    ::std::basic_ostream< char > & out = ( use_cerr ) ? ::std::cerr : ::std::cout;
+	out << m_description << ": ";
 	if ( m_value != nullptr )
 	{
-		cout << m_value;
+		out << m_value;
 	}
 	else
 	{
-		cout << m_line;
+		out << m_line;
 	}
 }
 
@@ -354,28 +358,14 @@ SmartAssertBase & SmartAssertBase::AddInfo( const AssertInfo & info )
 
 void SmartAssertBase::CallOutput() const
 {
-	CommandLineAssertPolicy::Output( this );
-}
-
-// ---------------------------------------------------------------------
-
-void SmartAssertBase::CallDebugger() const
-{
-	CommandLineAssertPolicy::Debugger( this );
-}
-
-// ---------------------------------------------------------------------
-
-SmartAssertBase::UserResponse SmartAssertBase::AskUser() const
-{
-	return CommandLineAssertPolicy::AskUser( this );
+	CerrAssertPolicy::Output( this );
 }
 
 // ---------------------------------------------------------------------
 
 void SmartAssertBase::AbortNow() const
 {
-	CommandLineAssertPolicy::AbortNow( this );
+	CerrAssertPolicy::AbortNow( this );
 }
 
 // ---------------------------------------------------------------------
@@ -383,15 +373,18 @@ void SmartAssertBase::AbortNow() const
 void SmartAssertBase::HandleFailure()
 {
 	m_handled = true;
+    if ( FixedProblem() )
+    {
+        return;
+    }
 
 	try
 	{
+		CallOutput();
 		if ( Info_ == m_level )
 		{
-			CallOutput();
 			return;
 		}
-		CallOutput();
 		if ( m_level == Fatal_ )
 		{
 			AbortNow();
@@ -431,57 +424,42 @@ void SmartAssertBase::HandleFailure()
 
 // ---------------------------------------------------------------------
 
-void CommandLineAssertPolicy::Output( const SmartAssertBase * asserter )
+void CommonOutput( const SmartAssertBase * asserter, bool use_cerr )
 {
-	cout << SmartAssertBase::GetName( asserter->m_level )
-		 << "!  Assertion failed!  " << asserter->m_expression << endl;
+    ::std::basic_ostream< char > & out = ( use_cerr ) ? ::std::cerr : ::std::cout;
+	out << SmartAssertBase::GetName( asserter->m_level )
+		<< "!  Assertion failed!  " << asserter->m_expression << endl;
 	if ( nullptr != asserter->m_context )
 	{
-		cout << "\t";
-		asserter->m_context->Output();
+		out << "\t";
+		asserter->m_context->Output( use_cerr );
 		for ( const AssertContext * p = asserter->m_context->m_next; ( p != nullptr ); p = p->m_next )
 		{
-			cout << "  ";
-			p->Output();
+			out << "  ";
+			p->Output( use_cerr );
 		}
-		cout << endl;
+		out << endl;
 	}
 	if ( ( nullptr != asserter->m_message ) && ( '\0' != *asserter->m_message ) )
 	{
-		cout << "\t" << asserter->m_message << endl;
+		out << "\t" << asserter->m_message << endl;
 	}
 	for ( const AssertInfo * p = asserter->m_info; ( p != nullptr ); p = p->m_next )
 	{
-		p->Output();
+		p->Output( use_cerr );
 	}
 }
 
 // ---------------------------------------------------------------------
 
-void CommandLineAssertPolicy::Debugger( const SmartAssertBase * )
+SmartAssertBase::UserResponse CommonAskUser( const SmartAssertBase * asserter, bool use_cerr )
 {
-#if defined( _WIN32 ) || defined( __WIN32__ ) || defined( WIN32 )
-	::DebugBreak(); // Win32
+    ::std::basic_ostream< char > & output = ( use_cerr ) ? ::std::cerr : ::std::cout;
 
-#elif ( defined _MSC_VER ) || ( defined __BORLANDC__) || ( defined __MWERKS__ )
-	__asm { int 3 };
-
-#elif defined(__GNUC__)  // GCC
-	__asm ("int $0x3");
-
-#else
-	#  error "Please supply instruction to DebugBreak (like 'int 3' on Intel processors)"
-#endif
-}
-
-// ---------------------------------------------------------------------
-
-SmartAssertBase::UserResponse CommandLineAssertPolicy::AskUser( const SmartAssertBase * asserter )
-{
 	const char * prompt = ( SmartAssertBase::Error_ == asserter->m_level ) ?
 		"\tChoose option: (I)gnore This Time,  Ignore (E)ach Time,  (D)ebug,  (A)bort  " :
 		"\tChoose option: (I)gnore This Time,  Ignore (E)ach Time,  (D)ebug  ";
-	::std::cout << prompt;
+	output << prompt;
 
 	bool keep_asking = true;
 	while ( keep_asking )
@@ -502,7 +480,7 @@ SmartAssertBase::UserResponse CommandLineAssertPolicy::AskUser( const SmartAsser
 		}
 		if ( !isspace( ch ) && keep_asking ) // ignore spaces
 		{
-			std::cout << prompt;
+			output << prompt;
 		}
 	}
 
@@ -511,11 +489,66 @@ SmartAssertBase::UserResponse CommandLineAssertPolicy::AskUser( const SmartAsser
 
 // ---------------------------------------------------------------------
 
-void CommandLineAssertPolicy::AbortNow( const SmartAssertBase * )
+bool CoutAssertPolicy::FixedProblem( const SmartAssertBase * )
+{
+    return false;
+}
+
+// ---------------------------------------------------------------------
+
+void CoutAssertPolicy::Output( const SmartAssertBase * asserter )
+{
+    CommonOutput( asserter, false );
+}
+
+// ---------------------------------------------------------------------
+
+void CoutAssertPolicy::Debugger( const SmartAssertBase * )
+{
+#if defined( _WIN32 ) || defined( __WIN32__ ) || defined( WIN32 )
+	::DebugBreak(); // Win32
+
+#elif ( defined _MSC_VER ) || ( defined __BORLANDC__) || ( defined __MWERKS__ )
+	__asm { int 3 };
+
+#elif defined(__GNUC__)  // GCC
+	__asm ("int $0x3");
+
+#else
+	#  error "Please supply instruction to DebugBreak (like 'int 3' on Intel processors)"
+#endif
+}
+
+// ---------------------------------------------------------------------
+
+SmartAssertBase::UserResponse CoutAssertPolicy::AskUser( const SmartAssertBase * asserter )
+{
+    const SmartAssertBase::UserResponse reply = CommonAskUser( asserter, false );
+	return reply;
+}
+
+// ---------------------------------------------------------------------
+
+void CoutAssertPolicy::AbortNow( const SmartAssertBase * )
 {
 	// This might be a good time to call any cleanup services,
 	// and to log any useful information to a file.
 	abort();
+}
+
+// ---------------------------------------------------------------------
+
+void CerrAssertPolicy::Output( const SmartAssertBase * asserter )
+{
+    CommonOutput( asserter, true );
+}
+
+// ---------------------------------------------------------------------
+
+SmartAssertBase::UserResponse CerrAssertPolicy::AskUser( const SmartAssertBase * asserter )
+{
+    const SmartAssertBase::UserResponse reply = CommonAskUser( asserter, true );
+	return reply;
 }
 
 // ---------------------------------------------------------------------

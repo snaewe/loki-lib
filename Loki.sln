@@ -115,8 +115,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssocVector", "test\AssocVe
 		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadLocal", "test\ThreadLocal\ThreadLocal.vcxproj", "{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lockable", "test\Lockable\Lockable.vcxproj", "{22A34627-1480-4180-A8B6-4C05E77E27F8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
@@ -127,12 +125,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Register", "test\Register\R
 		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "library", "src\Library.vcxproj", "{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "src\Library.vcxproj", "{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartAssert", "test\SmartAssert\SmartAssert.vcxproj", "{DA7BBAE5-1C1A-4B5E-ABF1-2B5090DB2988}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0} = {CBDB8E7A-4286-4AE3-A190-BA33D7C53FF0}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadLocal", "test\ThreadLocal\ThreadLocal.vcxproj", "{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -232,10 +232,6 @@ Global
 		{0605A820-D075-48AC-ABB6-D3FF05D5CD1F}.Debug|Win32.Build.0 = Debug|Win32
 		{0605A820-D075-48AC-ABB6-D3FF05D5CD1F}.Release|Win32.ActiveCfg = Release|Win32
 		{0605A820-D075-48AC-ABB6-D3FF05D5CD1F}.Release|Win32.Build.0 = Release|Win32
-		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Debug|Win32.ActiveCfg = Debug|Win32
-		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Debug|Win32.Build.0 = Debug|Win32
-		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release|Win32.ActiveCfg = Release|Win32
-		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release|Win32.Build.0 = Release|Win32
 		{22A34627-1480-4180-A8B6-4C05E77E27F8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{22A34627-1480-4180-A8B6-4C05E77E27F8}.Debug|Win32.Build.0 = Debug|Win32
 		{22A34627-1480-4180-A8B6-4C05E77E27F8}.Release|Win32.ActiveCfg = Release|Win32
@@ -252,6 +248,10 @@ Global
 		{DA7BBAE5-1C1A-4B5E-ABF1-2B5090DB2988}.Debug|Win32.Build.0 = Debug|Win32
 		{DA7BBAE5-1C1A-4B5E-ABF1-2B5090DB2988}.Release|Win32.ActiveCfg = Release|Win32
 		{DA7BBAE5-1C1A-4B5E-ABF1-2B5090DB2988}.Release|Win32.Build.0 = Release|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Debug|Win32.ActiveCfg = Debug|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Debug|Win32.Build.0 = Debug|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release|Win32.ActiveCfg = Release|Win32
+		{27CB0BB1-1754-46AB-A8C6-697D1B9B9C41}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

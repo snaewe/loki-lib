@@ -37,6 +37,9 @@
 
 #include <iostream>
 
+#include <cassert>
+
+
 // ---------------------------------------------------------------------
 
 class Bogus { };
@@ -138,6 +141,66 @@ void test_ignore( int argc )
 
 // ---------------------------------------------------------------------
 
+/** @class ListAssertInfoOnSameLine
+ This policy class demonstrates how to write and use your own policies.
+ It lists assert info descriptions on the same line as their values. It
+ assumes that if an AssertInfo type is a C-style string, then it must be
+ a description of the next AssertInfo value. It also puts a blank at the
+ start of the output to vertically separate the assertion info from any
+ previous output by the host program.
+ */
+class ListAssertInfoOnSameLine : public Loki::CerrAssertPolicy
+{
+public:
+	/// Displays information about assertion to the user.
+	static void Output( const Loki::SmartAssertBase * asserter );
+};
+
+// ---------------------------------------------------------------------
+
+void ListAssertInfoOnSameLine::Output( const ::Loki::SmartAssertBase * asserter )
+{
+    assert( nullptr != asserter );
+
+	::std::cerr << ::std::endl << ::Loki::SmartAssertBase::GetName( asserter->m_level )
+		 << "!  Assertion failed!  " << asserter->m_expression << ::std::endl;
+	if ( nullptr != asserter->m_context )
+	{
+		::std::cerr << "\t";
+		asserter->m_context->Output( true );
+		for ( const ::Loki::AssertContext * p = asserter->m_context->m_next; ( p != nullptr ); p = p->m_next )
+		{
+			::std::cerr << "  ";
+			p->Output( true );
+		}
+		::std::cerr << ::std::endl;
+	}
+	if ( ( nullptr != asserter->m_message ) && ( '\0' != *asserter->m_message ) )
+	{
+		::std::cerr << "\t" << asserter->m_message << ::std::endl;
+	}
+
+    const char * description = nullptr;
+	for ( const ::Loki::AssertInfo * p = asserter->m_info; ( p != nullptr ); p = p->m_next )
+	{
+        if ( ( ::Loki::AssertInfo::CharPtr == p->m_type )
+          && ( p->m_next != nullptr ) )
+        {
+            description = p->m_value.m_p_char;
+            p = p->m_next;
+        }
+        else
+        {
+            description = "";
+        }
+	    ::std::cerr << "\t" << Loki::AssertInfo::GetName( p->m_type ) << ": " << description << " (";
+	    p->m_value.Output( p->m_type, true );
+	    ::std::cerr << ')' << ::std::endl;
+	}
+}
+
+// ---------------------------------------------------------------------
+
 int main( int argc, const char * argv[] )
 {
 
@@ -156,8 +219,23 @@ int main( int argc, const char * argv[] )
     int a3 = 3;
 	LOKI_SMART_ASSERT( 0 == argc ).Warn()( a1 )( a2 )( a3 )();
 
-    // Show how to put names of variables into assertion info.
-	LOKI_SMART_ASSERT( 0 == argc ).Warn()( a1 )( "a1" )( a2 )( "a2" )( a3 )( "a3" )();
+    const unsigned int counted = 57;
+    const char * name = "Darth Cuddles";
+    const bool result = true;
+    // Show how to put variables names into assertion info.
+	LOKI_SMART_ASSERT( 0 == argc ).Warn()( counted )( "counted" )( name )( "name" )( result )( "result" )();
+
+    // Same as before, but this shows how to use a policy to put variable names on the same line as their values.
+	LOKI_SMART_ASSERT_POLICIED( 0 == argc, ListAssertInfoOnSameLine ).Warn()
+        ( counted )( "counted" )( name )( "name" )( result )( "result" )();
+
+    // Same as before, but this shows how to use a policy to put variable descriptions on the same line as their values.
+	LOKI_SMART_ASSERT_POLICIED( 0 == argc, ListAssertInfoOnSameLine ).Warn()
+        ( counted )( "death toll" )( name )( "villain" )( result )( "Does evil lose?" )();
+
+    // Same as before, but this shows how to mix names/descriptions and unnamed variables in the same assertion output.
+	LOKI_SMART_ASSERT_POLICIED( 0 == argc, ListAssertInfoOnSameLine ).Warn()( a1 )
+        ( counted )( "death toll" )( name )( "villain" )( a3 )( result )( "Does evil lose?" )( a2 )();
 
 	test_data_types( argc, argv );
 	test_ignore( argc );

@@ -104,8 +104,8 @@ namespace Loki
  @endcode
 
  @par Setting the Severity Level
-  Assertions treat all error conditions as an excuse to commit suicide. That
-  one-size-fits-all solution seems overly drastic for minor errors. At least
+  Typical assertions treat all error conditions as an excuse to commit suicide.
+  That one-size-fits-all solution seems overly drastic for minor errors. At least
   SmartAssert gives the developer more detailed output to help understand why
   the program died.
 
@@ -153,20 +153,15 @@ namespace Loki
  @par Write Your Own Policy.
   Many parts of Loki were implemented using policy-based software design, and
   SmartAssert follows that tradition. SmartAssert has a default policy that
-  mimics the behaviors of assert. If you want to make your own policy class,
-  write that class to have the same function signatures as
-  CommandLineAssertPolicy, and use the LOKI_SMART_ASSERT_POLICIED macro instead
-  of LOKI_SMART_ASSERT.
-
- @par Potential Policies
- - To call a special debugger rather than the default one.
- - To send output to a log file instead of to cout.
- - To create a popup dialog box to ask the user.
- - To attempt last moment cleanup before the program dies.
+  mimics the behaviors of assert. You can implement your own policies to handle
+  assertions by making a class with the function signatures shown below. If you
+  write your own policy class, you should also use the LOKI_SMART_ASSERT_POLICIED
+  macro, and not the LOKI_SMART_ASSERT macro.
 
  @code
   class MyPolicy 
   {
+    static bool FixedProblem( const SmartAssertBase * asserter );
 	static void Output( const SmartAssertBase * asserter );
 	static void Debugger( const SmartAssertBase * asserter );
 	static SmartAssertBase::UserResponse AskUser( const SmartAssertBase * asserter );
@@ -174,6 +169,16 @@ namespace Loki
   };
   LOKI_SMART_ASSERT_POLICIED( cond, MyPolicy );
  @endcode
+
+ @par Potential Policies You Can Create
+ - To provide a different output message than the default one.
+ - To call a special debugger rather than the default one.
+ - To send output to a log file, syslog, or cout, instead of to cerr.
+ - To create a popup dialog box to ask the user.
+ - To attempt last moment cleanup before the program dies.
+ - To correct the problem.
+ - To fix data invariants caused by the problem.
+ - Handle assertion by throwing exception.
 
  @par Thread Safety.
   Each SmartAssert object is declared locally within a function, so it is only
@@ -239,6 +244,7 @@ public:
 		LongDouble
 	};
 
+    /// Provides human readable name of data type.
 	static const char * GetName( DataTypeTag tag );
 
 	/// @union DataValue Can be configured as any primitive data type.
@@ -285,7 +291,11 @@ public:
 		DataValue( const double                 v ) : m_double(     v ) {}
 		DataValue( const long double            v ) : m_l_double(   v ) {}
 
-		void Output( DataTypeTag type ) const;
+        /** Sends output of datatype and value to cerr or cout.
+         @param type What type of data is in the union.
+         @param use_cerr True to send output to standard error instead of standard out.
+         */
+		void Output( DataTypeTag type, bool use_cerr ) const;
 	};
 
 	AssertInfo()                           : m_type( Unknown ),         m_value(),    m_next( nullptr ) {}
@@ -309,11 +319,13 @@ public:
 	AssertInfo( double v )                 : m_type( Double ),          m_value( v ), m_next( nullptr ) {}
 	AssertInfo( long double v )            : m_type( LongDouble ),      m_value( v ), m_next( nullptr ) {}
 
-	/// Function provides default output action.
-	void Output() const;
+	/** Provides default output action.
+     @param use_cerr True to send output to standard error instead of standard out.
+     */
+	void Output( bool use_cerr ) const;
 
-	DataTypeTag  m_type;  ///< What type of data this stores.
-	DataValue    m_value; ///< Value of that data.
+	DataTypeTag  m_type;               ///< What type of data this stores.
+	DataValue    m_value;              ///< Value of that data.
 	mutable const AssertInfo * m_next; ///< Pointer to next piece of info, if any.
 };
 
@@ -337,7 +349,7 @@ public:
 	AssertContext( const char * description, const char * value );
 
 	/// Function provides default output action.
-	void Output() const;
+	void Output( bool use_cerr ) const;
 
 	unsigned int m_line;         ///< Line number within file.
 	const char * m_value;        ///< Pointer to either filename or function name.
@@ -383,13 +395,15 @@ public:
 	static const char * const LineDesc;
 	static const char * const FunctionDesc;
 
-	mutable const AssertContext * m_context; /// Linked-list of contexts of where assertion occurred.
-	mutable const AssertInfo * m_info; ///< Linked-list of values provided for output purposes.
-	SeverityLevel m_level;  ///< How bad is this assertion?
-	bool *        m_ignore; ///< Pointer to ignore-always flag.
-	const char *  m_expression; ///< Pointer to C-style string of failed assertion expression.
-	const char *  m_message;  ///< Simple message made by developer.
-	bool          m_handled;  ///< True if this assertion was handled before destructor.
+    /// @note All the variables are public so developers can access them through policy classes.
+
+	mutable const AssertContext * m_context; ///< Linked-list of contexts of where assertion occurred.
+	mutable const AssertInfo * m_info;       ///< Linked-list of values provided for output purposes.
+	SeverityLevel m_level;                   ///< How bad is this assertion?
+	bool *        m_ignore;                  ///< Pointer to ignore-always flag.
+	const char *  m_expression;              ///< Pointer to C-style string of failed assertion expression.
+	const char *  m_message;                 ///< Simple message made by developer.
+	bool          m_handled;                 ///< True if this assertion was handled before destructor.
 
 protected:
 
@@ -414,33 +428,37 @@ protected:
 	/// Called to handle assertion failure.
 	void HandleFailure();
 
-	/// Default implementation of code to output information about assertion.
+private:
+
+    /// @note Virtual functions are private to prevent policy classes from using them.
+
+    /// Calls policy class to find out if host program fixed problem.
+    virtual bool FixedProblem() const = 0;
+
+	/// Calls policy class to output information about assertion.
 	virtual void CallOutput() const;
 
-	/// Default implementation of code to call debugger.
-	virtual void CallDebugger() const;
+	/// Calls policy class to invoke debugger.
+	virtual void CallDebugger() const = 0;
 
-	/// Default implementation of code to ask user what to do.
-	virtual UserResponse AskUser() const;
+	/// Calls policy class to ask user what to do.
+	virtual UserResponse AskUser() const = 0;
 
-	/// Default implementation of code to abort program.
+	/// Calls policy class to abort program.
 	virtual void AbortNow() const;
-
-	/// Ignore-always flag used by assertions created in release builds.
-	static bool s_alwaysIgnore;
 };
 
 // ---------------------------------------------------------------------
 
-/** @class CommandLineAssertPolicy Default policy for command line programs.
- Developers can implement their own policies to handle assertions by making a
- class with the same function signatures as this class. If you write your own
- policy class, you should also use the LOKI_SMART_ASSERT_POLICIED macro, and
- not the LOKI_SMART_ASSERT macro.
+/** @class CoutAssertPolicy This is a policy for command line programs. It
+ sends assertion messages to the standard output stream, std::cout.
 */
-class CommandLineAssertPolicy
+class CoutAssertPolicy
 {
 public:
+
+	/// SmartAssert will ignore error if this returns true.
+	static bool FixedProblem( const SmartAssertBase * asserter );
 
 	/// Displays information about assertion to the user.
 	static void Output( const SmartAssertBase * asserter );
@@ -453,6 +471,24 @@ public:
 
 	/// This call should end the program.
 	static void AbortNow( const SmartAssertBase * asserter );
+
+};
+
+// ---------------------------------------------------------------------
+
+/** @class CerrAssertPolicy This is a policy for command line programs. It
+ sends assertion messages to the standard error stream, std::cerr. This is
+ the default policy for SmartAssert.
+*/
+class CerrAssertPolicy : public CoutAssertPolicy
+{
+public:
+
+	/// Displays information about assertion to the user.
+	static void Output( const SmartAssertBase * asserter );
+
+	/// Asks user how to handle assertion.
+	static SmartAssertBase::UserResponse AskUser( const SmartAssertBase * asserter );
 
 };
 
@@ -486,7 +522,10 @@ public:
 	/// Called to do non-default actions when assertion fails.
 	void operator ()() { HandleFailure(); }
 
-	/// Adds one piece of information to assertion, generally a variable or result of function call.
+	/** Adds one piece of information to assertion, generally a variable or result of function call.
+     This function relies on conversion constructors in AssertInfo to create an AssertInfo from a
+     single variable.
+     */
 	SmartAssert & operator ()( const AssertInfo & info )
 	{
 		return static_cast< SmartAssert & >( AddInfo( info ) );
@@ -500,21 +539,33 @@ public:
 
 private:
 
+    /// @note Virtual functions are private to prevent policy classes from using them.
+
+    /// Calls policy class to find out if host program fixed problem.
+    virtual bool FixedProblem() const
+	{
+		return AssertPolicy::FixedProblem( dynamic_cast< const SmartAssertBase * >( this ) );
+	}
+
+    /// Calls policy class to output information about assertion.
 	virtual void CallOutput() const
 	{
 		AssertPolicy::Output( dynamic_cast< const SmartAssertBase * >( this ) );
 	}
 
+	/// Calls policy class to invoke debugger.
 	virtual void CallDebugger() const
 	{
 		AssertPolicy::Debugger( dynamic_cast< const SmartAssertBase * >( this ) );
 	}
 
+	/// Calls policy class to ask user what to do.
 	virtual SmartAssertBase::UserResponse AskUser() const
 	{
 		return AssertPolicy::AskUser( dynamic_cast< const SmartAssertBase * >( this ) );
 	}
 
+	/// Calls policy class to abort program.
 	virtual void AbortNow() const
 	{
 		AssertPolicy::AbortNow( dynamic_cast< const SmartAssertBase * >( this ) );
@@ -603,9 +654,9 @@ private:
 
 #define LOKI_MAKE_SMART_ASSERT( class_name, ignore_var_name, expr ) \
 	static bool ignore_var_name = false; \
-	class class_name : public ::Loki::SmartAssert< ::Loki::CommandLineAssertPolicy > \
+	class class_name : public ::Loki::SmartAssert< ::Loki::CerrAssertPolicy > \
 	{ public: \
-		typedef ::Loki::SmartAssert< ::Loki::CommandLineAssertPolicy > BaseClass; \
+		typedef ::Loki::SmartAssert< ::Loki::CerrAssertPolicy > BaseClass; \
 		class_name( bool * ignore, const char * expression ) \
 			: BaseClass( ignore, expression ) {} \
 		virtual ~class_name() {} \
@@ -621,7 +672,7 @@ private:
 #else
 	#define LOKI_SMART_ASSERT( expr ) \
 		if ( true ) ; else \
-			::Loki::SmartAssert< ::Loki::CommandLineAssertPolicy >()
+			::Loki::SmartAssert< ::Loki::CerrAssertPolicy >()
 			// Do nothing. Compiler should optimize away the else branch.
 #endif
 
